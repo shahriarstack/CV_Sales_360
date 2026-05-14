@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CV Sales360 | ACI Motors</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/9mMv1BxY/Untitled.png">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -3104,6 +3105,10 @@
             },
 
             renderDataUpload: () => {
+                if (app.currentUser.role !== 'admin') {
+                    app.showToast("Access Denied: Only Admins can access data management.", "error");
+                    return;
+                }
                 const html = `
                     <div class="max-w-6xl mx-auto pb-10">
                         <div class="mb-6">
@@ -3418,6 +3423,10 @@
             },
 
             downloadTemplate: (type) => {
+                if (app.currentUser.role !== 'admin') {
+                    app.showToast("Permission Denied: Templates are for Admins only.", "error");
+                    return;
+                }
                 let csvContent = "data:text/csv;charset=utf-8,";
                 let headers = "";
                 let filename = "";
@@ -3463,6 +3472,10 @@
             },
 
             simulateUpload: (input, typeName, dataKey) => {
+                if (app.currentUser.role !== 'admin') {
+                    app.showToast("Critical Error: Upload privileges revoked.", "error");
+                    return;
+                }
                 if (input.files.length > 0) {
                     const fileName = input.files[0].name;
                     app.showLoader(`Scanning ${fileName}...`);
