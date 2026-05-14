@@ -3423,13 +3423,13 @@
                 let filename = "";
 
                 if (type === 'target') {
-                    headers = "FY,Territory_Name,Upazila,Brand,Model,Target_Qty\n";
-                    headers += "2025-26,Dhaka North,Mirpur,Foton,TM3,45\n";
+                    headers = "FY,Territory_Name,Upazila,Brand,Model,Sale_Type,Target_Qty\n";
+                    headers += "2025-26,Dhaka North,Mirpur,Foton,TM3,New Sale,45\n";
                     filename = "ACI_Yearly_Target_Template.csv";
                 } else if (type === 'projection') {
-                    headers = "FY,Month,Territory_Name,Brand,Projection_Qty\n";
-                    headers += "2025-26,April,Dhaka North,Foton,15\n";
-                    headers += "2025-26,April,Dhaka North,Mahindra,10\n";
+                    headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
+                    headers += "2025-26,April,Dhaka North,Foton,New Sale,15\n";
+                    headers += "2025-26,April,Dhaka North,Mahindra,Resale,10\n";
                     filename = "ACI_Current_Month_Projection_Template.csv";
                 } else if (type === 'sales') {
                     headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
