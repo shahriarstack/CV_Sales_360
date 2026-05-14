@@ -733,10 +733,10 @@
             ],
             targets: [
                 // Yearly targets by Upazila
-                { id: 'tg1', fy: '2025-26', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', target_qty: 45 },
-                { id: 'tg2', fy: '2025-26', territory_id: 't1', upazila: 'Uttara', brand: 'Foton', target_qty: 35 },
-                { id: 'tg3', fy: '2025-26', territory_id: 't1', upazila: 'Savar', brand: 'Foton', target_qty: 60 },
-                { id: 'tg4', fy: '2025-26', territory_id: 't1', upazila: 'Mirpur', brand: 'Mahindra', target_qty: 30 }
+                { id: 'tg1', fy: '2025-26', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', sale_type: 'New Sale', target_qty: 45 },
+                { id: 'tg2', fy: '2025-26', territory_id: 't1', upazila: 'Uttara', brand: 'Foton', sale_type: 'New Sale', target_qty: 35 },
+                { id: 'tg3', fy: '2025-26', territory_id: 't1', upazila: 'Savar', brand: 'Foton', sale_type: 'New Sale', target_qty: 60 },
+                { id: 'tg4', fy: '2025-26', territory_id: 't1', upazila: 'Mirpur', brand: 'Mahindra', sale_type: 'New Sale', target_qty: 30 }
             ],
             notices: [
                 { id: 'n1', title: 'Q2 Performance Target Updates', message: 'All Area Managers must submit Q2 performance targets by the 25th of this month. Please refer to the attached guideline for instructions.', timestamp: '14/04/2026', fileType: 'pdf', fileName: 'Q2_Guidelines.pdf' },
@@ -748,10 +748,10 @@
             ],
             projections: [
                 // Monthly projections
-                { id: 'p1', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', projection_qty: 5 },
-                { id: 'p2', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Uttara', brand: 'Foton', projection_qty: 3 },
-                { id: 'p3', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Savar', brand: 'Foton', projection_qty: 8 },
-                { id: 'p4', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Mirpur', brand: 'Mahindra', projection_qty: 4 }
+                { id: 'p1', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', sale_type: 'New Sale', projection_qty: 5 },
+                { id: 'p2', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Uttara', brand: 'Foton', sale_type: 'New Sale', projection_qty: 3 },
+                { id: 'p3', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Savar', brand: 'Foton', sale_type: 'New Sale', projection_qty: 8 },
+                { id: 'p4', fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Mirpur', brand: 'Mahindra', sale_type: 'New Sale', projection_qty: 4 }
             ],
             sales: [
                 // System Sales Data
@@ -1482,7 +1482,7 @@
                 const activeModels = DB.models.filter(m => m.brand === brandFilter).map(m => m.name);
 
                 // Calculate Monthly Budget for the current view
-                let activeTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.brand === brandFilter);
+                let activeTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                 if (isAM) {
                     activeTgts = activeTgts.filter(tg => app.currentUser.territories.includes(tg.territory_id));
                 }
@@ -1523,10 +1523,10 @@
                     areaStatsMap[amName].lastMonth.sales += perf.lastMonth.sales;
                     areaStatsMap[amName].lastMonth.sply += perf.lastMonth.sply;
 
-                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter);
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                     areaStatsMap[amName].currBudget += Math.round(tTargets.reduce((sum, tg) => sum + tg.target_qty, 0) / 12);
 
-                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === 'April');
+                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === 'April' && p.sale_type === currentSaleType);
                     areaStatsMap[amName].currProj += tProjs.reduce((sum, p) => sum + p.projection_qty, 0);
 
                     const tSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === 'April');
@@ -1736,11 +1736,11 @@
                     const perf = DB.so_performance?.[t.id]?.[brandFilter] || { lastMonth: { budget: 0, sales: 0, sply: 0 }, ytd: { budget: 0, sales: 0, sply: 0 } };
 
                     // Current Month Data Crunching
-                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter);
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                     const totalYearlyTarget = tTargets.reduce((sum, tg) => sum + tg.target_qty, 0);
                     const currBudget = Math.round(totalYearlyTarget / 12);
 
-                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === 'April');
+                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === 'April' && p.sale_type === currentSaleType);
                     const currProj = tProjs.reduce((sum, p) => sum + p.projection_qty, 0);
 
                     const currSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === 'April');
@@ -1934,7 +1934,7 @@
                 if (typeof lucide !== 'undefined') lucide.createIcons();
 
                 // Calculate YOY Chart specific data based on local YOY Brand Tab
-                let yoyTgts = DB.targets.filter(tg => tg.fy === currentFY);
+                let yoyTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.sale_type === currentSaleType);
                 if (app.yoyBrandTab !== 'All') yoyTgts = yoyTgts.filter(tg => tg.brand === app.yoyBrandTab);
                 if (isAM) yoyTgts = yoyTgts.filter(tg => app.currentUser.territories.includes(tg.territory_id));
                 if (app.yoyTerritoryFilter !== 'All') yoyTgts = yoyTgts.filter(tg => tg.territory_id === app.yoyTerritoryFilter);
@@ -3344,14 +3344,14 @@
                     title = 'Yearly Targets';
                     icon = 'target';
                     themeColor = 'indigo';
-                    headers = ['FY', 'Territory', 'Upazila', 'Brand', 'Target Qty'];
-                    rows = DB.targets.map(t => [t.fy, DB.territories.find(tr => tr.id === t.territory_id)?.name || t.territory_id, t.upazila, t.brand, `<span class="font-bold text-slate-800">${t.target_qty}</span>`]);
+                    headers = ['FY', 'Territory', 'Upazila', 'Brand', 'Sale Type', 'Target Qty'];
+                    rows = DB.targets.map(t => [t.fy, DB.territories.find(tr => tr.id === t.territory_id)?.name || t.territory_id, t.upazila, t.brand, t.sale_type, `<span class="font-bold text-slate-800">${t.target_qty}</span>`]);
                 } else if (type === 'projections') {
                     title = 'Monthly Projections';
                     icon = 'trending-up';
                     themeColor = 'amber';
-                    headers = ['FY', 'Month', 'Territory', 'Upazila', 'Brand', 'Proj Qty'];
-                    rows = DB.projections.map(p => [p.fy, p.month, DB.territories.find(tr => tr.id === p.territory_id)?.name || p.territory_id, p.upazila, p.brand, `<span class="font-bold text-slate-800">${p.projection_qty}</span>`]);
+                    headers = ['FY', 'Month', 'Territory', 'Upazila', 'Brand', 'Sale Type', 'Proj Qty'];
+                    rows = DB.projections.map(p => [p.fy, p.month, DB.territories.find(tr => tr.id === p.territory_id)?.name || p.territory_id, p.upazila, p.brand, p.sale_type, `<span class="font-bold text-slate-800">${p.projection_qty}</span>`]);
                 } else if (type === 'sales') {
                     title = 'System Sales (Current FY)';
                     icon = 'shopping-cart';
@@ -3489,9 +3489,9 @@
                                 const newId = Math.floor(Math.random() * 9000) + 1000;
 
                                 if (dataKey === 'targets') {
-                                    DB.targets.push({ id: `tg_new_${newId}`, fy: '2025-26', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', target_qty: 150 });
+                                    DB.targets.push({ id: `tg_new_${newId}`, fy: '2025-26', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', sale_type: 'New Sale', target_qty: 150 });
                                 } else if (dataKey === 'projections') {
-                                    DB.projections.push({ id: `p_new_${newId}`, fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', projection_qty: 25 });
+                                    DB.projections.push({ id: `p_new_${newId}`, fy: '2025-26', month: 'April', territory_id: 't1', upazila: 'Mirpur', brand: 'Foton', sale_type: 'New Sale', projection_qty: 25 });
                                 } else if (dataKey === 'emi') {
                                     DB.emi.push({ id: `e_new_${newId}`, customer_code: `NEW-CUST-${newId}`, customer: 'Freshly Uploaded Customer Ltd.', phone: '01711000000', location: 'Dhaka', delivery_date: '2026-04-01', first_inst_date: '2026-05-01', overdue_count: 0, overdue_total: 0, installment: 20000, territory_id: 't1', collected: 0, brand: 'Foton', model: 'TM3', installment_no: 1 });
                                 } else if (dataKey === 'sales') {
@@ -4579,11 +4579,11 @@
                 const ytdSalesUnits = ytdSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
 
                 // --- 2. Filter Targets (Yearly) & Projections (Monthly) ---
-                const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === currentFY);
+                const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === currentFY && t.sale_type === saleType);
                 const totalYearlyTarget = yearlyTargets.reduce((sum, t) => sum + t.target_qty, 0);
                 const monthlyBudget = Math.round(totalYearlyTarget / 12); // Derived monthly budget
 
-                const monthlyProjections = DB.projections.filter(p => p.territory_id === terrId && p.brand === brand && p.month === currentMonth && p.fy === currentFY);
+                const monthlyProjections = DB.projections.filter(p => p.territory_id === terrId && p.brand === brand && p.month === currentMonth && p.fy === currentFY && p.sale_type === saleType);
                 const totalMonthlyProjection = monthlyProjections.reduce((sum, p) => sum + p.projection_qty, 0);
 
                 // --- 3. Mock SPLY Data ---
