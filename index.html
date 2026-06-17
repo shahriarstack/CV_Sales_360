@@ -2637,10 +2637,8 @@
                     salesData = salesData.filter(s => app.currentUser.territories.includes(s.territory_id));
                 }
 
-
-
-                const currFYSales = salesData.filter(s => s.fy === currentFY);
-                const lastFYSales = salesData.filter(s => s.fy === lastFY);
+                const currFYSales = salesData.filter(s => s.fy === currentFY && s.sale_type === currentSaleType);
+                const lastFYSales = salesData.filter(s => s.fy === lastFY && s.sale_type === currentSaleType);
 
                 const totalUnits = currFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                 const lastYearUnits = lastFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
