@@ -3146,9 +3146,9 @@
                     // ===================================== -->
                     ${(() => {
                         const brands = ['Foton', 'Mahindra'];
-                        const ytdMonths = ['July','August','September','October','November','December','January','February','March','April'];
-                        const lastMonth = 'April';
-                        const currMonth = 'May';
+                        const ytdMonths = app.getYtdMonths(app.currentMonth);
+                        const lastMonth = app.lastMonth;
+                        const currMonth = app.currentMonth;
                         
                         let brandSummaryRowsHTML = '';
                         let gTot = { fyBgt: 0, yBgt: 0, yAct: 0, ySht: 0, lBgt: 0, lAct: 0, cBgt: 0, cTM3: 0, cAum: 0, cTun: 0, cTot: 0 };
@@ -3239,9 +3239,9 @@
                                             <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[9px] border-b border-slate-200">
                                                 <th class="px-4 py-3 font-black border-r border-slate-200 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
                                                 <th class="px-3 py-3 font-extrabold text-center border-r border-slate-200" rowspan="2">Total FY Budget</th>
-                                                <th class="px-3 py-2 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200 font-black" colspan="4">YTD (Apr)</th>
-                                                <th class="px-3 py-2 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200 font-black" colspan="3">Last Month (Apr)</th>
-                                                <th class="px-3 py-2 text-center bg-emerald-500/10 text-emerald-800 font-black" colspan="6">Current Month (May)</th>
+                                                <th class="px-3 py-2 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200 font-black" colspan="4">YTD (${ytdMonths.length > 0 ? `Jul-${lastMonth.substring(0,3)}` : 'N/A'})</th>
+                                                <th class="px-3 py-2 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200 font-black" colspan="3">Last Month (${lastMonth.substring(0,3)})</th>
+                                                <th class="px-3 py-2 text-center bg-emerald-500/10 text-emerald-800 font-black" colspan="6">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
                                             <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
                                                 <!-- YTD -->
