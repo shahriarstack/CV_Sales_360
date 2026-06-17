@@ -6344,9 +6344,13 @@
                                                 newRecords.push(record);
                                             } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
+                                                const customerId = app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`;
+                                                const salesYear = parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || 2026;
+                                                const model = app.getCSVValue(row, ['Model']) || 'TM3';
+                                                
                                                 const record = {
-                                                    id: `s_u_${Date.now()}_${idx}`,
-                                                    customer_id: app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`,
+                                                    id: `s_u_${customerId}_${model}_${salesYear}_${recordMonth}`.replace(/\s+/g, '_'),
+                                                    customer_id: customerId,
                                                     district: app.getCSVValue(row, ['District', 'Zila']) || 'Dhaka',
                                                     territory_id: terrId,
                                                     upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
@@ -6382,9 +6386,9 @@
                                                 const promises = chunk.map(r => {
                                                      if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`;
                                                      if(dataKey === 'projections') return app.neonSQL`INSERT INTO projections (id, fy, month, territory_id, brand, sale_type, projection_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.brand}, ${r.sale_type}, ${r.projection_qty})`;
-                                                     if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no})`;
-                                                     if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type})`;
-                                                     if(dataKey === 'recovery_od') return app.neonSQL`INSERT INTO recovery_od (id, fy, month, territory_id, perfile_od, total_overdue) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.perfile_od}, ${r.total_overdue})`;
+                                                     if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no}) ON CONFLICT (id) DO NOTHING`;
+                                                     if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type}) ON CONFLICT (id) DO NOTHING`;
+                                                     if(dataKey === 'recovery_od') return app.neonSQL`INSERT INTO recovery_od (id, fy, month, territory_id, perfile_od, total_overdue) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.perfile_od}, ${r.total_overdue}) ON CONFLICT (id) DO NOTHING`;
                                                 });
                                                 await Promise.all(promises);
                                             }
