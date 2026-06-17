@@ -952,9 +952,18 @@
                     app.neonSQL = sql;
                     console.log("Successfully initialized Neon Database connection");
 
-                    // Simple test query to verify connection
-                    const result = await sql`SELECT NOW() as time`;
-                    console.log("Neon DB Server Time:", result[0].time);
+                    // Fetch data
+                    DB.targets = await sql`SELECT * FROM targets`;
+                    DB.projections = await sql`SELECT * FROM projections`;
+                    DB.emi = await sql`SELECT * FROM emi`;
+                    DB.sales = await sql`SELECT * FROM sales`;
+                    DB.recovery_od = await sql`SELECT * FROM recovery_od`;
+                    console.log("Data successfully loaded from Neon DB.");
+                    
+                    // Re-render dashboard if user is already logged in and dashboard is visible
+                    if (app.currentUser && document.getElementById('dashboard-view') && !document.getElementById('dashboard-view').classList.contains('hidden')) {
+                         app.renderAdminDashboard();
+                    }
                 } catch (e) {
                     console.error("Failed to connect to Neon DB:", e);
                 }
@@ -970,8 +979,7 @@
                     }
                 };
 
-                app.initNeonDB(); // Connect to Neon DB
-                app.loadDBState(); // Restore uploaded data if any
+                app.initNeonDB(); // Connect to Neon DB and fetch data
                 app.populateLoginDropdown(); // Setup Login Select Options
                 app.refreshIcons();
                 document.getElementById('login-form').addEventListener('submit', app.handleLogin);
@@ -6230,123 +6238,142 @@
                             setTimeout(() => {
                                 app.showLoader(`Writing ${parsedData.length} new records...`);
 
-                                setTimeout(() => {
-                                    // 1. PURGE OLD DATA
-                                    if (dataKey === 'targets') DB.targets = [];
-                                    else if (dataKey === 'projections') DB.projections = [];
-                                    else if (dataKey === 'emi') DB.emi = [];
-                                    else if (dataKey === 'sales') DB.sales = DB.sales.filter(s => s.fy !== '2025-26');
-                                    else if (dataKey === 'last_year_sales') DB.sales = DB.sales.filter(s => s.fy !== '2024-25');
-                                    else if (dataKey === 'recovery_od') DB.recovery_od = [];
-
-                                    // 2. INSERT REAL DATA FROM CSV
-                                    parsedData.forEach((row, idx) => {
-                                        const terr = app.findTerritory(row);
-                                        const terrId = terr ? terr.id : 't1';
-
+                                setTimeout(async () => {
+                                    try {
+                                        // 1. PURGE OLD DATA
                                         if (dataKey === 'targets') {
-                                            DB.targets.push({
-                                                id: `tg_u_${Date.now()}_${idx}`,
-                                                fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
-                                                month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
-                                                territory_id: terrId,
-                                                upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
-                                                brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
-                                                sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
-                                                target_qty: parseInt(app.getCSVValue(row, ['Target_Qty', 'TargetQty', 'Target'])) || 0
-                                            });
+                                            DB.targets = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM targets`;
                                         } else if (dataKey === 'projections') {
-                                            DB.projections.push({
-                                                id: `p_u_${Date.now()}_${idx}`,
-                                                fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
-                                                month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
-                                                territory_id: terrId,
-                                                brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
-                                                sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
-                                                projection_qty: parseInt(app.getCSVValue(row, ['Projection_Qty', 'ProjectionQty', 'Projection'])) || 0
-                                            });
+                                            DB.projections = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM projections`;
                                         } else if (dataKey === 'emi') {
-                                            DB.emi.push({
-                                                id: `e_u_${Date.now()}_${idx}`,
-                                                customer_code: app.getCSVValue(row, ['Customer_Code', 'CustomerCode', 'Code']) || `C-${idx}`,
-                                                customer: app.getCSVValue(row, ['Customer_Name', 'CustomerName', 'Customer']) || 'Unknown Customer',
-                                                phone: app.getCSVValue(row, ['Phone', 'Mobile']) || '01700000000',
-                                                location: terr ? terr.name : (app.getCSVValue(row, ['Location', 'Sales_Territory', 'Territory']) || 'Dhaka'),
-                                                delivery_date: app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery']) || '2026-04-01',
-                                                first_inst_date: app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate']) || '2026-05-01',
-                                                overdue_count: parseInt(app.getCSVValue(row, ['OverDue_Hash', 'OverdueHash', 'OverdueCount', 'Overdue_Count'])) || 0,
-                                                overdue_total: parseInt(app.getCSVValue(row, ['OverDue_Taka', 'OverdueTaka', 'OverdueTotal', 'Overdue_Total'])) || 0,
-                                                installment: parseInt(app.getCSVValue(row, ['Installment_Size', 'InstallmentSize', 'Installment'])) || 0,
-                                                territory_id: terrId,
-                                                collected: 0,
-                                                brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
-                                                model: app.getCSVValue(row, ['Model']) || 'TM3',
-                                                installment_no: 1
-                                            });
-                                        } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
-                                            DB.sales.push({
-                                                id: `s_u_${Date.now()}_${idx}`,
-                                                customer_id: app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`,
-                                                district: app.getCSVValue(row, ['District', 'Zila']) || 'Dhaka',
-                                                territory_id: terrId,
-                                                upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
-                                                brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
-                                                model: app.getCSVValue(row, ['Model']) || 'TM3',
-                                                unit_qty: parseInt(app.getCSVValue(row, ['Unit_Qty', 'UnitQty', 'Qty', 'Quantity'])) || 0,
-                                                fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), (dataKey === 'sales' ? '2025-26' : '2024-25')),
-                                                sales_year: parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || 2026,
-                                                sales_month: app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month'])),
-                                                sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']))
-                                            });
+                                            DB.emi = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM emi`;
+                                        } else if (dataKey === 'sales') {
+                                            DB.sales = DB.sales.filter(s => s.fy !== '2025-26');
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = '2025-26'`;
+                                        } else if (dataKey === 'last_year_sales') {
+                                            DB.sales = DB.sales.filter(s => s.fy !== '2024-25');
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = '2024-25'`;
                                         } else if (dataKey === 'recovery_od') {
-                                            DB.recovery_od.push({
-                                                id: `rod_u_${Date.now()}_${idx}`,
-                                                fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
-                                                month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
-                                                territory_id: terrId,
-                                                perfile_od: parseInt(app.getCSVValue(row, ['Perfile_OD', 'PerfileOD', 'PerFileOverdue'])) || 0,
-                                                total_overdue: parseInt(app.getCSVValue(row, ['Total_Overdue', 'TotalOverdue'])) || 0
-                                            });
+                                            DB.recovery_od = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`;
                                         }
-                                    });
 
-                                    app.saveDBState();
-                                    app.hideLoader();
-                                    app.showToast(`${parsedData.length} ${typeName} records uploaded successfully!`, 'success');
-                                    input.value = ''; // reset input
-                                }, 1000);
-                            }, 1000);
-                        }, 1000);
+                                        // 2. INSERT REAL DATA FROM CSV
+                                        const newRecords = [];
+                                        parsedData.forEach((row, idx) => {
+                                            const terr = app.findTerritory(row);
+                                            const terrId = terr ? terr.id : 't1';
+
+                                            if (dataKey === 'targets') {
+                                                const record = {
+                                                    id: `tg_u_${Date.now()}_${idx}`,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
+                                                    month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
+                                                    territory_id: terrId,
+                                                    upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
+                                                    target_qty: parseInt(app.getCSVValue(row, ['Target_Qty', 'TargetQty', 'Target'])) || 0
+                                                };
+                                                DB.targets.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'projections') {
+                                                const record = {
+                                                    id: `p_u_${Date.now()}_${idx}`,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
+                                                    month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
+                                                    territory_id: terrId,
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
+                                                    projection_qty: parseInt(app.getCSVValue(row, ['Projection_Qty', 'ProjectionQty', 'Projection'])) || 0
+                                                };
+                                                DB.projections.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'emi') {
+                                                const record = {
+                                                    id: `e_u_${Date.now()}_${idx}`,
+                                                    customer_code: app.getCSVValue(row, ['Customer_Code', 'CustomerCode', 'Code']) || `C-${idx}`,
+                                                    customer: app.getCSVValue(row, ['Customer_Name', 'CustomerName', 'Customer']) || 'Unknown Customer',
+                                                    phone: app.getCSVValue(row, ['Phone', 'Mobile']) || '01700000000',
+                                                    location: terr ? terr.name : (app.getCSVValue(row, ['Location', 'Sales_Territory', 'Territory']) || 'Dhaka'),
+                                                    delivery_date: app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery']) || '2026-04-01',
+                                                    first_inst_date: app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate']) || '2026-05-01',
+                                                    overdue_count: parseInt(app.getCSVValue(row, ['OverDue_Hash', 'OverdueHash', 'OverdueCount', 'Overdue_Count'])) || 0,
+                                                    overdue_total: parseInt(app.getCSVValue(row, ['OverDue_Taka', 'OverdueTaka', 'OverdueTotal', 'Overdue_Total'])) || 0,
+                                                    installment: parseInt(app.getCSVValue(row, ['Installment_Size', 'InstallmentSize', 'Installment'])) || 0,
+                                                    territory_id: terrId,
+                                                    collected: 0,
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    model: app.getCSVValue(row, ['Model']) || 'TM3',
+                                                    installment_no: 1
+                                                };
+                                                DB.emi.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
+                                                const record = {
+                                                    id: `s_u_${Date.now()}_${idx}`,
+                                                    customer_id: app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`,
+                                                    district: app.getCSVValue(row, ['District', 'Zila']) || 'Dhaka',
+                                                    territory_id: terrId,
+                                                    upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    model: app.getCSVValue(row, ['Model']) || 'TM3',
+                                                    unit_qty: parseInt(app.getCSVValue(row, ['Unit_Qty', 'UnitQty', 'Qty', 'Quantity'])) || 0,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), (dataKey === 'sales' ? '2025-26' : '2024-25')),
+                                                    sales_year: parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || 2026,
+                                                    sales_month: app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month'])),
+                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']))
+                                                };
+                                                DB.sales.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'recovery_od') {
+                                                const record = {
+                                                    id: `rod_u_${Date.now()}_${idx}`,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
+                                                    month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
+                                                    territory_id: terrId,
+                                                    perfile_od: parseInt(app.getCSVValue(row, ['Perfile_OD', 'PerfileOD', 'PerFileOverdue'])) || 0,
+                                                    total_overdue: parseInt(app.getCSVValue(row, ['Total_Overdue', 'TotalOverdue'])) || 0
+                                                };
+                                                DB.recovery_od.push(record);
+                                                newRecords.push(record);
+                                            }
+                                        });
+
+                                        if (app.neonSQL && newRecords.length > 0) {
+                                            const batchSize = 100;
+                                            for(let i=0; i<newRecords.length; i+=batchSize) {
+                                                const chunk = newRecords.slice(i, i+batchSize);
+                                                const promises = chunk.map(r => {
+                                                     if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`;
+                                                     if(dataKey === 'projections') return app.neonSQL`INSERT INTO projections (id, fy, month, territory_id, brand, sale_type, projection_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.brand}, ${r.sale_type}, ${r.projection_qty})`;
+                                                     if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no})`;
+                                                     if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type})`;
+                                                     if(dataKey === 'recovery_od') return app.neonSQL`INSERT INTO recovery_od (id, fy, month, territory_id, perfile_od, total_overdue) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.perfile_od}, ${r.total_overdue})`;
+                                                });
+                                                await Promise.all(promises);
+                                            }
+                                        }
+
+                                        app.hideLoader();
+                                        app.showToast(`${parsedData.length} ${typeName} records uploaded successfully!`, 'success');
+                                        input.value = ''; // reset input
+                                    } catch (err) {
+                                        console.error("Upload error:", err);
+                                        app.hideLoader();
+                                        app.showToast("Failed to upload data.", "error");
+                                    }
+                                }, 100);
+                            }, 500);
+                        }, 500);
                     };
                     reader.onerror = () => {
                         app.showToast("Failed to read file.", "error");
                     };
                     reader.readAsText(file);
-                }
-            },
-
-            saveDBState: () => {
-                const state = {
-                    targets: DB.targets,
-                    projections: DB.projections,
-                    emi: DB.emi,
-                    sales: DB.sales,
-                    recovery_od: DB.recovery_od
-                };
-                localStorage.setItem('aci_db_state', JSON.stringify(state));
-            },
-
-            loadDBState: () => {
-                const saved = localStorage.getItem('aci_db_state');
-                if (saved) {
-                    try {
-                        const parsed = JSON.parse(saved);
-                        if (parsed.targets) DB.targets = parsed.targets;
-                        if (parsed.projections) DB.projections = parsed.projections;
-                        if (parsed.emi) DB.emi = parsed.emi;
-                        if (parsed.sales) DB.sales = parsed.sales;
-                        if (parsed.recovery_od) DB.recovery_od = parsed.recovery_od;
-                    } catch (e) { console.error("DB State Load Failed", e); }
                 }
             },
 
