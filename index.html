@@ -952,17 +952,29 @@
                     app.neonSQL = sql;
                     console.log("Successfully initialized Neon Database connection");
 
-                    // Fetch data
-                    DB.targets = await sql`SELECT * FROM targets`;
-                    DB.projections = await sql`SELECT * FROM projections`;
-                    DB.emi = await sql`SELECT * FROM emi`;
-                    DB.sales = await sql`SELECT * FROM sales`;
-                    DB.recovery_od = await sql`SELECT * FROM recovery_od`;
+                    // Fetch data concurrently to speed up loading
+                    const [targets, projections, emi, sales, recovery_od] = await Promise.all([
+                        sql`SELECT * FROM targets`,
+                        sql`SELECT * FROM projections`,
+                        sql`SELECT * FROM emi`,
+                        sql`SELECT * FROM sales`,
+                        sql`SELECT * FROM recovery_od`
+                    ]);
+                    
+                    DB.targets = targets;
+                    DB.projections = projections;
+                    DB.emi = emi;
+                    DB.sales = sales;
+                    DB.recovery_od = recovery_od;
                     console.log("Data successfully loaded from Neon DB.");
                     
                     // Re-render dashboard if user is already logged in and dashboard is visible
                     if (app.currentUser && document.getElementById('dashboard-view') && !document.getElementById('dashboard-view').classList.contains('hidden')) {
-                         app.renderAdminDashboard();
+                         if (app.currentUser.role === 'so') {
+                             if(typeof app.renderSODashboard === 'function') app.renderSODashboard();
+                         } else {
+                             if(typeof app.renderAdminDashboard === 'function') app.renderAdminDashboard();
+                         }
                     }
                 } catch (e) {
                     console.error("Failed to connect to Neon DB:", e);
@@ -6161,20 +6173,36 @@
                 return 'New Sale';
             },
 
-            normalizeFY: (fy, defaultFY) => {
+            normalizeFY: (fy, monthStr, defaultFY) => {
                 if (!fy) return defaultFY;
                 const str = fy.toString().trim().replace(/\s+/g, '');
+                
+                // Matches 2024-2025 -> 2024-25
                 const longMatch = str.match(/^(\d{4})-(\d{4})$/);
                 if (longMatch) {
                     return `${longMatch[1]}-${longMatch[2].substring(2)}`;
                 }
+                // Matches 24-25 -> 2024-25
                 const shortMatch = str.match(/^(\d{2})-(\d{2})$/);
                 if (shortMatch) {
                     return `20${shortMatch[1]}-${shortMatch[2]}`;
                 }
+                // Matches 2024-25 directly
                 if (/^\d{4}-\d{2}$/.test(str)) {
                     return str;
                 }
+                
+                // If it's a 4 digit year like 2024, deduce FY from the month!
+                if (/^\d{4}$/.test(str)) {
+                    const year = parseInt(str);
+                    const h2Months = ['January', 'February', 'March', 'April', 'May', 'June'];
+                    if (h2Months.includes(monthStr)) {
+                        return `${year - 1}-${year.toString().slice(-2)}`;
+                    } else {
+                        return `${year}-${(year + 1).toString().slice(-2)}`;
+                    }
+                }
+                
                 return defaultFY;
             },
 
@@ -6187,24 +6215,24 @@
                 const ytdMonths = app.getYtdMonths(currentMonth);
 
                 // Last Month Metrics
-                const lmSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === currentFY).reduce((sum, s) => sum + s.unit_qty, 0);
+                const lmSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                 const lmTgtObj = DB.targets.filter(t => t.territory_id === territoryId && t.brand === brand && t.sale_type === saleType && t.fy === currentFY);
                 const lmBudgetTgts = lmTgtObj.filter(t => t.month === lastMonth);
-                const lmBudget = lmBudgetTgts.length > 0 ? lmBudgetTgts.reduce((sum, t) => sum + t.target_qty, 0) : Math.round(lmTgtObj.reduce((sum, t) => sum + t.target_qty, 0) / 12);
-                const lmSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === lastFY).reduce((sum, s) => sum + s.unit_qty, 0);
+                const lmBudget = lmBudgetTgts.length > 0 ? lmBudgetTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) : Math.round(lmTgtObj.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) / 12);
+                const lmSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // YTD Metrics (Until Last Month)
-                const ytdSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === currentFY).reduce((sum, s) => sum + s.unit_qty, 0);
+                const ytdSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 let ytdBudget = 0;
                 const monthlyTargets = lmTgtObj.filter(t => ytdMonths.includes(t.month));
                 if (monthlyTargets.length > 0) {
-                    ytdBudget = monthlyTargets.reduce((sum, t) => sum + t.target_qty, 0);
+                    ytdBudget = monthlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
                 } else {
-                    ytdBudget = Math.round((lmTgtObj.reduce((sum, t) => sum + t.target_qty, 0) / 12) * ytdMonths.length);
+                    ytdBudget = Math.round((lmTgtObj.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) / 12) * ytdMonths.length);
                 }
 
-                const ytdSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === lastFY).reduce((sum, s) => sum + s.unit_qty, 0);
+                const ytdSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 return {
                     lastMonth: { budget: lmBudget, sales: lmSales, sply: lmSply },
@@ -6268,10 +6296,11 @@
                                             const terrId = terr ? terr.id : 't1';
 
                                             if (dataKey === 'targets') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
                                                 const record = {
                                                     id: `tg_u_${Date.now()}_${idx}`,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
-                                                    month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, '2025-26'),
+                                                    month: recordMonth,
                                                     territory_id: terrId,
                                                     upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
@@ -6281,10 +6310,11 @@
                                                 DB.targets.push(record);
                                                 newRecords.push(record);
                                             } else if (dataKey === 'projections') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
                                                 const record = {
                                                     id: `p_u_${Date.now()}_${idx}`,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
-                                                    month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, '2025-26'),
+                                                    month: recordMonth,
                                                     territory_id: terrId,
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
@@ -6313,6 +6343,7 @@
                                                 DB.emi.push(record);
                                                 newRecords.push(record);
                                             } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
                                                 const record = {
                                                     id: `s_u_${Date.now()}_${idx}`,
                                                     customer_id: app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`,
@@ -6322,18 +6353,19 @@
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     model: app.getCSVValue(row, ['Model']) || 'TM3',
                                                     unit_qty: parseInt(app.getCSVValue(row, ['Unit_Qty', 'UnitQty', 'Qty', 'Quantity'])) || 0,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), (dataKey === 'sales' ? '2025-26' : '2024-25')),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? '2025-26' : '2024-25')),
                                                     sales_year: parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || 2026,
-                                                    sales_month: app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month'])),
+                                                    sales_month: recordMonth,
                                                     sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']))
                                                 };
                                                 DB.sales.push(record);
                                                 newRecords.push(record);
                                             } else if (dataKey === 'recovery_od') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
                                                 const record = {
                                                     id: `rod_u_${Date.now()}_${idx}`,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), '2025-26'),
-                                                    month: app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth'])),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, '2025-26'),
+                                                    month: recordMonth,
                                                     territory_id: terrId,
                                                     perfile_od: parseInt(app.getCSVValue(row, ['Perfile_OD', 'PerfileOD', 'PerFileOverdue'])) || 0,
                                                     total_overdue: parseInt(app.getCSVValue(row, ['Total_Overdue', 'TotalOverdue'])) || 0
