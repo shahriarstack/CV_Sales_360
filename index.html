@@ -2611,8 +2611,8 @@
                 const currFYSales = salesData.filter(s => s.fy === currentFY);
                 const lastFYSales = salesData.filter(s => s.fy === lastFY);
 
-                const totalUnits = currFYSales.reduce((sum, s) => sum + s.unit_qty, 0);
-                const lastYearUnits = lastFYSales.reduce((sum, s) => sum + s.unit_qty, 0);
+                const totalUnits = currFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const lastYearUnits = lastFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // YOY Math
                 const yoyGrowthPct = lastYearUnits > 0 ? Math.round(((totalUnits - lastYearUnits) / lastYearUnits) * 100) : 0;
@@ -2620,8 +2620,8 @@
                 const yoyIcon = yoyGrowthPct >= 0 ? 'trending-up' : 'trending-down';
                 const yoySign = yoyGrowthPct > 0 ? '+' : '';
 
-                const fotonUnits = currFYSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + s.unit_qty, 0);
-                const mahindraUnits = currFYSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + s.unit_qty, 0);
+                const fotonUnits = currFYSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const mahindraUnits = currFYSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 const brandFilter = app.adminBrandTab || 'Foton';
                 const activeModels = DB.models.filter(m => m.brand === brandFilter).map(m => m.name);
@@ -2634,9 +2634,9 @@
                 if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
                     activeTgts = activeTgts.filter(tg => tg.territory_id === app.adminTerritoryFilter);
                 }
-                const totalYearlyTarget = activeTgts.reduce((sum, tg) => sum + tg.target_qty, 0);
+                const totalYearlyTarget = activeTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
                 const currentActiveTgts = activeTgts.filter(tg => tg.month === app.currentMonth);
-                const monthlyBudget = currentActiveTgts.length > 0 ? currentActiveTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : (Math.round(totalYearlyTarget / 12) || 0);
+                const monthlyBudget = currentActiveTgts.length > 0 ? currentActiveTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : (Math.round(totalYearlyTarget / 12) || 0);
 
                 // Helpers for table
                 const ach = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
@@ -2655,18 +2655,18 @@
                 let mappedTerritories = pulseTerritories.map(t => {
                     const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
                     const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
-                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + tg.target_qty, 0);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
 
                     const currBudgetTgts = tTargets.filter(tg => tg.month === app.currentMonth);
-                    const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(tTargets.reduce((sum, tg) => sum + tg.target_qty, 0) / 12);
+                    const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
 
                     const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType);
-                    const currProj = tProjs.reduce((sum, p) => sum + p.projection_qty, 0);
+                    const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
 
                     const currSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth);
-                    const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
+                    const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const modelMap = {};
-                    currSalesRecords.forEach(s => { modelMap[s.model] = (modelMap[s.model] || 0) + s.unit_qty; });
+                    currSalesRecords.forEach(s => { modelMap[s.model] = (modelMap[s.model] || 0) + Number(s.unit_qty || 0); });
 
                     const ytdAchVal = ach(perf.ytd.sales, perf.ytd.budget);
                     const h = ytdAchVal >= 90 ? 'emerald' : (ytdAchVal >= 70 ? 'blue' : 'rose');
@@ -2759,18 +2759,18 @@
 
                     const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                     const currentTgtsStats = tTargets.filter(tg => tg.month === app.currentMonth);
-                    const tBudgetStats = currentTgtsStats.length > 0 ? currentTgtsStats.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(tTargets.reduce((sum, tg) => sum + tg.target_qty, 0) / 12);
+                    const tBudgetStats = currentTgtsStats.length > 0 ? currentTgtsStats.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
                     areaStatsMap[amName].currBudget += tBudgetStats;
 
                     const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType);
-                    areaStatsMap[amName].currProj += tProjs.reduce((sum, p) => sum + p.projection_qty, 0);
+                    areaStatsMap[amName].currProj += tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
 
                     const tSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth);
-                    const tSales = tSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
+                    const tSales = tSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     areaStatsMap[amName].currSales += tSales;
-                    tSalesRecords.forEach(s => { areaStatsMap[amName].modelSales[s.model] = (areaStatsMap[amName].modelSales[s.model] || 0) + s.unit_qty; });
+                    tSalesRecords.forEach(s => { areaStatsMap[amName].modelSales[s.model] = (areaStatsMap[amName].modelSales[s.model] || 0) + Number(s.unit_qty || 0); });
 
-                    const tCurrSply = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + s.unit_qty, 0);
+                    const tCurrSply = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     areaStatsMap[amName].mockCurrSply += tCurrSply;
                 });
                 let areaStats = Object.values(areaStatsMap).sort((a, b) => b.currSales - a.currSales);
@@ -2858,14 +2858,14 @@
                              const ytdMonths = app.getYtdMonths(app.currentMonth);
                              const passedMonths = ytdMonths.length;
                              const monthlyTargets = activeTgts.filter(tg => ytdMonths.includes(tg.month));
-                             const ytdTargetTillLastMonth = monthlyTargets.length > 0 ? monthlyTargets.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round((totalYearlyTarget / 12) * passedMonths);
-                             const tillLastMonthSalesUnits = currFYSales.filter(s => s.brand === brandFilter && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + s.unit_qty, 0);
+                             const ytdTargetTillLastMonth = monthlyTargets.length > 0 ? monthlyTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round((totalYearlyTarget / 12) * passedMonths);
+                             const tillLastMonthSalesUnits = currFYSales.filter(s => s.brand === brandFilter && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
-                             const totalMonthlyProjection = DB.projections.filter(p => activeTerritories.some(t => t.id === p.territory_id) && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + p.projection_qty, 0);
-                             const currMonthSalesTotal = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + s.unit_qty, 0);
+                             const totalMonthlyProjection = DB.projections.filter(p => activeTerritories.some(t => t.id === p.territory_id) && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                             const currMonthSalesTotal = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                              const amSplyYtd = activeTerritories.reduce((sum, t) => sum + app.getPerformance(t.id, brandFilter, currentSaleType).ytd.sply, 0);
-                             const amSplyMonth = activeTerritories.reduce((sum, t) => sum + DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + s.unit_qty, 0), 0);
+                             const amSplyMonth = activeTerritories.reduce((sum, t) => sum + DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0), 0);
 
                              return `
                                  <!-- YTD Overall -->
@@ -2919,8 +2919,8 @@
                                         <div class="space-y-1">
                                             ${activeTerritories.map(t => {
                                 const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
-                                const tBudgetYTD = Math.round((tTgtObj.reduce((sum, tg) => sum + tg.target_qty, 0) / 12) * passedMonths);
-                                const tSalesYTD = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + s.unit_qty, 0);
+                                const tBudgetYTD = Math.round((tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12) * passedMonths);
+                                const tSalesYTD = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                 const tAch = ach(tSalesYTD, tBudgetYTD);
                                 const tSply = app.getPerformance(t.id, brandFilter, currentSaleType).ytd.sply;
                                 const tGrw = grw(tSalesYTD, tSply);
@@ -2970,9 +2970,9 @@
                                             ${activeTerritories.map(t => {
                                 const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                                 const currentTgtsM = tTgtObj.filter(tg => tg.month === app.currentMonth);
-                                const tBudgetM = currentTgtsM.length > 0 ? currentTgtsM.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + tg.target_qty, 0) / 12);
-                                const tProjM = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + p.projection_qty, 0);
-                                const tSalesM = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + s.unit_qty, 0);
+                                const tBudgetM = currentTgtsM.length > 0 ? currentTgtsM.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const tProjM = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                                const tSalesM = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                 const tAchB = ach(tSalesM, tBudgetM);
                                 const tAchP = ach(tSalesM, tProjM);
 
@@ -2995,7 +2995,7 @@
 
                             <!-- Area Manager: Current Month Performance Dashboard (Creative pacing) -->
                             ${(() => {
-                            const currMonthSalesPacing = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + s.unit_qty, 0);
+                            const currMonthSalesPacing = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                             const currMonthBudget = monthlyBudget;
                             const monthAch = ach(currMonthSalesPacing, currMonthBudget);
                             const daysInMonth = 30;
@@ -3059,8 +3059,8 @@
                                             ${activeTerritories.map(t => {
                                 const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                                 const currTgtsT = tTgtObj.filter(tg => tg.month === app.currentMonth);
-                                const tBudget = currTgtsT.length > 0 ? currTgtsT.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + tg.target_qty, 0) / 12);
-                                const tSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + s.unit_qty, 0);
+                                const tBudget = currTgtsT.length > 0 ? currTgtsT.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const tSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                 const tAch = ach(tSales, tBudget);
                                 const tIsAhead = tAch >= monthProgress;
 
@@ -3189,25 +3189,25 @@
                                 bProjs = bProjs.filter(p => p.territory_id === app.adminTerritoryFilter);
                             }
 
-                            const fyBgt = bTgts.reduce((sum, t) => sum + t.target_qty, 0);
-                            const yBgt = bTgts.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + t.target_qty, 0) || Math.round((fyBgt / 12) * ytdMonths.length);
-                            const yAct = bSales.filter(s => ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + s.unit_qty, 0);
+                            const fyBgt = bTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                            const yBgt = bTgts.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + Number(t.target_qty || 0), 0) || Math.round((fyBgt / 12) * ytdMonths.length);
+                            const yAct = bSales.filter(s => ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                             const yAch = yBgt > 0 ? Math.round((yAct/yBgt)*100) : 0;
                             const ySht = yBgt - yAct;
 
-                            const lBgt = bTgts.filter(t => t.month === lastMonth).reduce((sum, t) => sum + t.target_qty, 0) || Math.round(fyBgt / 12);
-                            const lAct = bSales.filter(s => s.sales_month === lastMonth).reduce((sum, s) => sum + s.unit_qty, 0);
+                            const lBgt = bTgts.filter(t => t.month === lastMonth).reduce((sum, t) => sum + Number(t.target_qty || 0), 0) || Math.round(fyBgt / 12);
+                            const lAct = bSales.filter(s => s.sales_month === lastMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                             const lAch = lBgt > 0 ? Math.round((lAct/lBgt)*100) : 0;
 
-                            const cBgt = bTgts.filter(t => t.month === currMonth).reduce((sum, t) => sum + t.target_qty, 0) || Math.round(fyBgt / 12);
+                            const cBgt = bTgts.filter(t => t.month === currMonth).reduce((sum, t) => sum + Number(t.target_qty || 0), 0) || Math.round(fyBgt / 12);
                             
                             const cSales = bSales.filter(s => s.sales_month === currMonth);
-                            const cTM3 = b === 'Foton' ? cSales.filter(s => s.model === 'TM3').reduce((sum, s) => sum + s.unit_qty, 0) : 0;
-                            const cAum = b === 'Foton' ? cSales.filter(s => s.model === 'Auman').reduce((sum, s) => sum + s.unit_qty, 0) : 0;
-                            const cTun = b === 'Foton' ? cSales.filter(s => s.model === 'Tunland').reduce((sum, s) => sum + s.unit_qty, 0) : 0;
+                            const cTM3 = b === 'Foton' ? cSales.filter(s => s.model === 'TM3').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0) : 0;
+                            const cAum = b === 'Foton' ? cSales.filter(s => s.model === 'Auman').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0) : 0;
+                            const cTun = b === 'Foton' ? cSales.filter(s => s.model === 'Tunland').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0) : 0;
                             
-                            let cTot = bProjs.reduce((sum, p) => sum + p.projection_qty, 0);
-                            if (cTot === 0) cTot = cSales.reduce((sum, s) => sum + s.unit_qty, 0);
+                            let cTot = bProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                            if (cTot === 0) cTot = cSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                             const cAch = cBgt > 0 ? Math.round((cTot/cBgt)*100) : 0;
 
@@ -3420,13 +3420,13 @@
                                 const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
                                 const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                                 const currTgts = tTargets.filter(tg => tg.month === app.currentMonth);
-                                const currBudget = currTgts.length > 0 ? currTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(tTargets.reduce((sum, tg) => sum + tg.target_qty, 0) / 12);
+                                const currBudget = currTgts.length > 0 ? currTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
                                 const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType);
-                                const currProj = tProjs.reduce((sum, p) => sum + p.projection_qty, 0);
+                                const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
                                 const currSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth);
-                                const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
+                                const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                 const modelMap = {};
-                                currSalesRecords.forEach(s => { modelMap[s.model] = (modelMap[s.model] || 0) + s.unit_qty; });
+                                currSalesRecords.forEach(s => { modelMap[s.model] = (modelMap[s.model] || 0) + Number(s.unit_qty || 0); });
                                 const ytdAchVal = ach(perf.ytd.sales, perf.ytd.budget);
                                 const h = ytdAchVal >= 90 ? 'emerald' : (ytdAchVal >= 70 ? 'blue' : 'rose');
 
@@ -3640,9 +3640,9 @@
                                                 const monthlyPerf = {};
                                                 fiscalMonths.forEach(m => {
                                                     const monthTgts = tTargets.filter(tg => tg.month === m);
-                                                    const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(totalFYBudget / 12);
-                                                    const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + s.unit_qty, 0);
-                                                    const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + s.unit_qty, 0);
+                                                    const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                                                    const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                                    const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                                     monthlyPerf[m] = {
                                                         budget: mBudget,
                                                         sales: mSales,
@@ -3729,9 +3729,9 @@
 
                                                 fiscalMonths.forEach(m => {
                                                     const monthTgts = tTargets.filter(tg => tg.month === m);
-                                                    const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(totalFYBudget / 12);
-                                                    const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + s.unit_qty, 0);
-                                                    const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + s.unit_qty, 0);
+                                                    const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                                                    const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                                    const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                                     
                                                     grandMonth[m].budget += mBudget;
                                                     grandMonth[m].sales += mSales;
@@ -3980,9 +3980,9 @@
                                         const monthlyPerf = {};
                                         fiscalMonths.forEach(m => {
                                             const monthTgts = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.month === m);
-                                            const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(totalFYBudget / 12);
-                                            const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + s.unit_qty, 0);
-                                            const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + s.unit_qty, 0);
+                                            const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                                            const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                            const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                             monthlyPerf[m] = {
                                                 budget: mBudget,
                                                 sales: mSales,
@@ -4352,7 +4352,7 @@
                 const yoyMonthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 const yoyMonthlyBudgets = yoyMonthsList.map(m => {
                     const monthTgts = yoyTgts.filter(tg => tg.month === m);
-                    return monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : (Math.round(yoyTgts.reduce((sum, tg) => sum + tg.target_qty, 0) / 12) || 0);
+                    return monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : (Math.round(yoyTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12) || 0);
                 });
 
                 let yoyCurrSales = currFYSales;
@@ -4391,12 +4391,12 @@
 
                 currData.forEach(s => {
                     const idx = fullMonths.indexOf(s.sales_month);
-                    if (idx > -1) currAgg[idx] += s.unit_qty;
+                    if (idx > -1) currAgg[idx] += Number(s.unit_qty || 0);
                 });
 
                 lastData.forEach(s => {
                     const idx = fullMonths.indexOf(s.sales_month);
-                    if (idx > -1) lastAgg[idx] += s.unit_qty;
+                    if (idx > -1) lastAgg[idx] += Number(s.unit_qty || 0);
                 });
 
                 // Truncate future months based on selected current reporting month
@@ -4559,8 +4559,8 @@
                 const currentSales = DB.sales.filter(s => s.fy === currentFY && s.sales_month === currentMonth);
 
                 currentSales.forEach(s => {
-                    totalActual += s.unit_qty;
-                    if (brandStats[s.brand]) brandStats[s.brand].actual += s.unit_qty;
+                    totalActual += Number(s.unit_qty || 0);
+                    if (brandStats[s.brand]) brandStats[s.brand].actual += Number(s.unit_qty || 0);
                 });
 
                 DB.targets.filter(t => t.fy === currentFY).forEach(t => {
@@ -4576,7 +4576,7 @@
 
                 // LY Stats for Growth Analysis
                 DB.sales.filter(s => s.fy === '2024-25' && s.sales_month === currentMonth).forEach(s => {
-                    if (brandStats[s.brand]) brandStats[s.brand].lyActual += s.unit_qty;
+                    if (brandStats[s.brand]) brandStats[s.brand].lyActual += Number(s.unit_qty || 0);
                 });
 
                 // AI Predictions
@@ -4587,7 +4587,7 @@
 
                 // Territory Heat Analysis
                 const terrPerformance = DB.territories.map(t => {
-                    const tActual = currentSales.filter(s => s.territory_id === t.id).reduce((sum, s) => sum + s.unit_qty, 0);
+                    const tActual = currentSales.filter(s => s.territory_id === t.id).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const tTarget = DB.targets.filter(tg => tg.territory_id === t.id && tg.fy === currentFY).reduce((sum, tg) => {
                         const mTarget = tg.month === currentMonth ? tg.target_qty : (tg.month ? 0 : Math.round(tg.target_qty / 12));
                         return sum + mTarget;
@@ -4605,7 +4605,7 @@
                 const modelUpazilaMap = {};
                 currentSales.forEach(s => {
                     const key = `${s.model}|${s.upazila}`;
-                    modelUpazilaMap[key] = (modelUpazilaMap[key] || 0) + s.unit_qty;
+                    modelUpazilaMap[key] = (modelUpazilaMap[key] || 0) + Number(s.unit_qty || 0);
                 });
 
                 const upazilaAffinities = [];
@@ -4623,7 +4623,7 @@
                 // 2. Underperforming Models (Bottom 3 by Volume)
                 const modelTotalSales = {};
                 DB.models.forEach(m => modelTotalSales[m.name] = 0);
-                currentSales.forEach(s => { modelTotalSales[s.model] += s.unit_qty; });
+                currentSales.forEach(s => { modelTotalSales[s.model] += Number(s.unit_qty || 0); });
 
                 const modelInsights = DB.models.map(m => ({
                     ...m,
@@ -4636,8 +4636,8 @@
                 // 3. Brand Dominance Battleground
                 const brandDominance = DB.territories.map(t => {
                     const tSales = currentSales.filter(s => s.territory_id === t.id);
-                    const f = tSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + s.unit_qty, 0);
-                    const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + s.unit_qty, 0);
+                    const f = tSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const leader = f > m ? 'Foton' : (m > f ? 'Mahindra' : 'Contested');
                     const leaderColor = leader === 'Foton' ? 'indigo' : (leader === 'Mahindra' ? 'rose' : 'slate');
                     return { name: t.name, f, m, leader, leaderColor, total: f + m };
@@ -5095,7 +5095,7 @@
                 const dataAgg = {};
                 filteredSales.forEach(s => {
                     const key = viewMode === 'district' ? s.district : s.upazila;
-                    if (key) dataAgg[key] = (dataAgg[key] || 0) + s.unit_qty;
+                    if (key) dataAgg[key] = (dataAgg[key] || 0) + Number(s.unit_qty || 0);
                 });
 
                 const maxSales = Math.max(...Object.values(dataAgg), 1);
@@ -5463,8 +5463,8 @@
                 salesData.forEach(s => {
                     const tName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
                     if (!terrData[tName]) terrData[tName] = { foton: 0, mahindra: 0 };
-                    if (s.brand === 'Foton') terrData[tName].foton += s.unit_qty;
-                    if (s.brand === 'Mahindra') terrData[tName].mahindra += s.unit_qty;
+                    if (s.brand === 'Foton') terrData[tName].foton += Number(s.unit_qty || 0);
+                    if (s.brand === 'Mahindra') terrData[tName].mahindra += Number(s.unit_qty || 0);
                 });
 
                 const labels = Object.keys(terrData);
@@ -7822,26 +7822,26 @@
 
                 // Current Month Sales
                 const currentSalesRecords = brandSales.filter(s => s.sales_month === currentMonth && s.fy === currentFY);
-                const currentSalesUnits = currentSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
+                const currentSalesUnits = currentSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // YTD Sales (Assuming YTD is all sales in FY)
                 const ytdSalesRecords = brandSales.filter(s => s.fy === currentFY);
-                const ytdSalesUnits = ytdSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
+                const ytdSalesUnits = ytdSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // --- 2. Filter Targets (Yearly) & Projections (Monthly) ---
                 const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === currentFY && t.sale_type === saleType);
-                const totalYearlyTarget = yearlyTargets.reduce((sum, t) => sum + t.target_qty, 0);
+                const totalYearlyTarget = yearlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
                 const monthlyBudgetTgts = yearlyTargets.filter(t => t.month === currentMonth);
-                const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, t) => sum + t.target_qty, 0) : Math.round(totalYearlyTarget / 12); // Use monthly or derived budget
+                const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) : Math.round(totalYearlyTarget / 12); // Use monthly or derived budget
 
                 const monthlyProjections = DB.projections.filter(p => p.territory_id === terrId && p.brand === brand && p.month === currentMonth && p.fy === currentFY && p.sale_type === saleType);
-                const totalMonthlyProjection = monthlyProjections.reduce((sum, p) => sum + p.projection_qty, 0);
+                const totalMonthlyProjection = monthlyProjections.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
 
                 // --- 3. Dynamic Performance Sync ---
                 const perf = app.getPerformance(terrId, brand, saleType);
                 const mockSply = perf.lastMonth; // Use real calculated last month data
                 const ytdSply = perf.ytd.sply;
-                const currentSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === currentMonth && s.fy === '2024-25').reduce((sum, s) => sum + s.unit_qty, 0);
+                const currentSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === currentMonth && s.fy === '2024-25').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // Helpers
                 const ach = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
@@ -7856,7 +7856,7 @@
 
                 ytdSalesRecords.forEach(s => {
                     if (upaStats[s.upazila]) {
-                        upaStats[s.upazila].ytdSales += s.unit_qty;
+                        upaStats[s.upazila].ytdSales += Number(s.unit_qty || 0);
                     }
                 });
 
@@ -7870,19 +7870,19 @@
 
                 let ytdTargetTillLastMonth = 0;
                 if (yearlyTargets.some(t => t.month)) {
-                    ytdTargetTillLastMonth = yearlyTargets.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + t.target_qty, 0);
+                    ytdTargetTillLastMonth = yearlyTargets.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
                 } else {
                     ytdTargetTillLastMonth = Math.round((totalYearlyTarget / 12) * passedMonths);
                 }
 
                 const tillLastMonthSales = brandSales.filter(s => s.fy === currentFY && ytdMonths.includes(s.sales_month));
-                const tillLastMonthSalesUnits = tillLastMonthSales.reduce((sum, s) => sum + s.unit_qty, 0);
+                const tillLastMonthSalesUnits = tillLastMonthSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 const selMonth = app.soMonthTab || app.lastMonth;
                 const selMonthSalesRecords = brandSales.filter(s => s.sales_month === selMonth && s.fy === currentFY);
-                const selMonthSalesUnits = selMonthSalesRecords.reduce((sum, s) => sum + s.unit_qty, 0);
+                const selMonthSalesUnits = selMonthSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                 // Basic mock fallback for older months without explicit mock entries:
-                const selMonthSply = selMonth === app.currentMonth ? (DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === app.currentMonth && s.fy === '2024-25').reduce((sum, s) => sum + s.unit_qty, 0) || Math.floor(monthlyBudget * 0.9)) : (selMonth === app.lastMonth ? mockSply.sply : Math.floor(monthlyBudget * 0.8));
+                const selMonthSply = selMonth === app.currentMonth ? (DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === app.currentMonth && s.fy === '2024-25').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0) || Math.floor(monthlyBudget * 0.9)) : (selMonth === app.lastMonth ? mockSply.sply : Math.floor(monthlyBudget * 0.8));
 
                 // Fetch Recovery OD Data (Territory specific, applies to all brands)
                 const recoveryData = DB.recovery_od.find(r => r.territory_id === terrId && r.fy === currentFY && r.month === currentMonth) || { perfile_od: 0, total_overdue: 0 };
@@ -8194,8 +8194,8 @@
                         territory.upazilas.forEach(u => {
                             // Fiscal Year Targets & Sales for Zero-Zone check
                             const uTgts = DB.targets.filter(t => t.territory_id === terrId && t.upazila === u && t.brand === brand && t.fy === currentFY && t.sale_type === saleType);
-                            const uTargetYTD = uTgts.reduce((sum, t) => sum + t.target_qty, 0);
-                            const uSalesYTD = ytdSalesRecords.filter(s => s.upazila === u).reduce((sum, s) => sum + s.unit_qty, 0);
+                            const uTargetYTD = uTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                            const uSalesYTD = ytdSalesRecords.filter(s => s.upazila === u).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                             // Flag zero sales upazilas that have a YTD budget
                             if (uSalesYTD === 0 && uTargetYTD > 0) zeroSalesUpazilas.push(u);
@@ -8203,7 +8203,7 @@
                             // Calculate top gap for current month (AI Directive)
                             const uMonthTgtObj = uTgts.find(t => t.month === currentMonth);
                             const uMonthTarget = uMonthTgtObj ? uMonthTgtObj.target_qty : Math.round(uTargetYTD / 12);
-                            const uMonthSales = currentSalesRecords.filter(s => s.upazila === u).reduce((sum, s) => sum + s.unit_qty, 0);
+                            const uMonthSales = currentSalesRecords.filter(s => s.upazila === u).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                             const monthGap = uMonthTarget - uMonthSales;
 
                             if (monthGap > maxMonthGap) {
@@ -8364,13 +8364,13 @@
 
                 // Calculate Monthly Budget (Variable or Fixed)
                 const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === fy && t.sale_type === saleType);
-                const totalTarget = yearlyTargets.reduce((sum, t) => sum + t.target_qty, 0);
+                const totalTarget = yearlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
                 const budgetData = months.map(m => {
                     const mtFiltered = yearlyTargets.filter(tg => tg.month === m);
-                    return mtFiltered.length > 0 ? mtFiltered.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(totalTarget / 12);
+                    return mtFiltered.length > 0 ? mtFiltered.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalTarget / 12);
                 });
                 const monthlyBudgetTgts = yearlyTargets.filter(t => t.month === currentMonth);
-                const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, tg) => sum + tg.target_qty, 0) : Math.round(totalTarget / 12) || 0;
+                const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalTarget / 12) || 0;
 
                 // Calculate Monthly Sales (Only up to the current month to create a month-to-month growth line)
                 const currentMonthIdx = months.indexOf(currentMonth);
@@ -8380,7 +8380,7 @@
                 records.forEach(r => {
                     const idx = months.indexOf(r.sales_month);
                     if (idx !== -1 && idx <= currentMonthIdx) {
-                        salesData[idx] += r.unit_qty;
+                        salesData[idx] += Number(r.unit_qty || 0);
                     }
                 });
 
@@ -9194,15 +9194,15 @@
 
                 const rowsHTML = territories.map((t, idx) => {
                     const tTargets      = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brand && tg.sale_type === saleType && tg.fy === currentFY);
-                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + tg.target_qty, 0);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
                     grandFYBudget += totalFYBudget;
 
                     const monthlyPerf = {};
                     fiscalMonths.forEach(m => {
                         const mTgts   = tTargets.filter(tg => tg.month === m);
                         const mBudget = mTgts.length > 0 ? mTgts.reduce((s, tg) => s + tg.target_qty, 0) : Math.round(totalFYBudget / 12);
-                        const mSales  = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === currentFY && s.sales_month === m).reduce((s, r) => s + r.unit_qty, 0);
-                        const mSply   = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === lastFY  && s.sales_month === m).reduce((s, r) => s + r.unit_qty, 0);
+                        const mSales  = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === currentFY && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
+                        const mSply   = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === lastFY  && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
                         monthlyPerf[m] = { budget:mBudget, sales:mSales, sply:mSply, ach:ach(mSales,mBudget), growth:calcGrw(mSales,mSply) };
                         grandMonth[m].budget += mBudget; grandMonth[m].sales += mSales; grandMonth[m].sply += mSply;
                     });
