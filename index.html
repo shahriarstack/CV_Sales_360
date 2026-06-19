@@ -553,10 +553,10 @@
             <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-15"
                 style="--blob-color-1: #0F2942; --blob-color-2: #1e3a5f;"></div>
         </div>
-        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-80"></canvas>
+        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-95"></canvas>
 
         <div
-            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/30 sm:bg-white/30 backdrop-blur-xl sm:backdrop-blur-2xl p-8 sm:rounded-[1.25rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative z-20 sm:mx-4 border-none sm:border border-white/60 glass-shine flex flex-col justify-center sm:block">
+            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/10 sm:bg-white/25 backdrop-blur-sm sm:backdrop-blur-xl p-8 sm:rounded-[1.25rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative z-20 sm:mx-4 border-none sm:border border-white/50 glass-shine flex flex-col justify-center sm:block">
             <div class="text-center mb-8">
                 <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors"
                     class="h-10 mx-auto object-contain mb-8">
@@ -1015,26 +1015,26 @@
                 
                 const particles = [];
                 // Adaptive count: fewer particles on mobile (<640px) for cleanliness and performance
-                const numParticles = Math.min(Math.floor(width / 12), width < 640 ? 35 : 90);
+                const numParticles = Math.min(Math.floor(width / 11), width < 640 ? 38 : 95);
                 
                 const colors = [
-                    'rgba(15, 41, 66, 0.65)',   // ACI Blue
-                    'rgba(15, 41, 66, 0.45)',   // Translucent ACI Blue
-                    'rgba(244, 169, 21, 0.55)'  // ACI Gold
+                    'rgba(15, 41, 66, 0.88)',   // Dark ACI Blue
+                    'rgba(24, 76, 120, 0.78)',  // Medium ACI Blue
+                    'rgba(244, 169, 21, 0.92)'  // Bright ACI Gold
                 ];
                 
                 for (let i = 0; i < numParticles; i++) {
                     particles.push({
                         x: Math.random() * width,
                         y: Math.random() * height,
-                        vx: (Math.random() - 0.5) * 0.6,
-                        vy: (Math.random() - 0.5) * 0.6,
-                        radius: Math.random() * 1.5 + 0.6,
+                        vx: (Math.random() - 0.5) * 0.55,
+                        vy: (Math.random() - 0.5) * 0.55,
+                        radius: Math.random() * 2.2 + 1.2, // Larger dots (1.2px to 3.4px)
                         color: colors[Math.floor(Math.random() * colors.length)]
                     });
                 }
                 
-                const mouse = { x: null, y: null, radius: 140 };
+                const mouse = { x: null, y: null, radius: 160 }; // Increased interaction range
                 const loginView = document.getElementById('login-view');
                 
                 const handleMouseMove = (e) => {
@@ -1072,9 +1072,9 @@
                             if (dist < mouse.radius) {
                                 const force = (mouse.radius - dist) / mouse.radius;
                                 const angle = Math.atan2(dy, dx);
-                                // Push away gently
-                                p.x += Math.cos(angle) * force * 2.2;
-                                p.y += Math.sin(angle) * force * 2.2;
+                                // Push away smoothly
+                                p.x += Math.cos(angle) * force * 2.4;
+                                p.y += Math.sin(angle) * force * 2.4;
                             }
                         }
                         
@@ -1085,39 +1085,47 @@
                         if (p.y < 0) { p.y = 0; p.vy *= -1; }
                         else if (p.y > height) { p.y = height; p.vy *= -1; }
                         
-                        // Draw dot
+                        // Draw dot with high-tech glow
                         ctx.beginPath();
                         ctx.fillStyle = p.color;
+                        if (p.color.includes('244')) {
+                            ctx.shadowBlur = 6;
+                            ctx.shadowColor = 'rgba(244, 169, 21, 0.6)';
+                        } else {
+                            ctx.shadowBlur = 4;
+                            ctx.shadowColor = 'rgba(15, 41, 66, 0.35)';
+                        }
                         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                         ctx.fill();
+                        ctx.shadowBlur = 0; // Reset shadow so it doesn't affect connection lines
                         
-                        // Connect to mouse cursor
+                        // Connect to mouse cursor with distinct thicker line
                         if (mouse.x !== null && mouse.y !== null) {
                             const dx = p.x - mouse.x;
                             const dy = p.y - mouse.y;
                             const dist = Math.hypot(dx, dy);
-                            if (dist < 130) {
+                            if (dist < 150) {
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(15, 41, 66, ${0.18 * (1 - dist / 130)})`;
-                                ctx.lineWidth = 0.65;
+                                ctx.strokeStyle = `rgba(15, 41, 66, ${0.35 * (1 - dist / 150)})`;
+                                ctx.lineWidth = 1.0;
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(mouse.x, mouse.y);
                                 ctx.stroke();
                             }
                         }
                         
-                        // Connect to other dots
+                        // Connect to other dots (interconnected web)
                         for (let j = i + 1; j < particles.length; j++) {
                             let p2 = particles[j];
                             let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                            if (dist < 110) {
+                            if (dist < 125) { // Increased connection distance
                                 ctx.beginPath();
                                 if (p.color.includes('244') || p2.color.includes('244')) {
-                                    ctx.strokeStyle = `rgba(244, 169, 21, ${0.14 * (1 - dist / 110)})`;
+                                    ctx.strokeStyle = `rgba(244, 169, 21, ${0.3 * (1 - dist / 125)})`;
                                 } else {
-                                    ctx.strokeStyle = `rgba(15, 41, 66, ${0.18 * (1 - dist / 110)})`;
+                                    ctx.strokeStyle = `rgba(15, 41, 66, ${0.32 * (1 - dist / 125)})`;
                                 }
-                                ctx.lineWidth = 0.45;
+                                ctx.lineWidth = 0.75; // Thicker lines
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(p2.x, p2.y);
                                 ctx.stroke();
