@@ -97,6 +97,10 @@
         }
 
         /* Modern Liquid Glass Cards */
+        @keyframes shimmer {
+            100% { transform: translateX(150%); }
+        }
+
         .glass {
             background: rgba(255, 255, 255, 0.72) !important;
             backdrop-filter: blur(16px) saturate(180%) !important;
@@ -543,6 +547,7 @@
         style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);">
 
         <!-- Animated Liquid Layer Backdrop -->
+        <canvas id="login-particles" class="absolute inset-0 z-0 opacity-60"></canvas>
         <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
         <div class="liquid-container !filter-none opacity-30">
             <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-15"></div>
@@ -601,8 +606,13 @@
                     </label>
                 </div>
                 <button type="submit"
-                    class="w-full mt-4 btn-liquid text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98]">
-                    Sign In
+                    class="group relative w-full mt-4 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(15,41,66,0.3)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-[#0F2942] to-[#1e3a5f]">
+                    <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)] -translate-x-[150%] animate-[shimmer_2s_infinite]"></div>
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)]"></div>
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        Sign In
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+                    </span>
                 </button>
             </form>
             <div class="mt-8 text-center text-xs text-slate-500 font-medium">
@@ -991,6 +1001,68 @@
                 }
             },
 
+            initLoginParticles: () => {
+                const canvas = document.getElementById('login-particles');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = window.innerWidth;
+                let height = canvas.height = window.innerHeight;
+                
+                const particles = [];
+                const numParticles = Math.min(Math.floor(window.innerWidth / 15), 100);
+                
+                for (let i = 0; i < numParticles; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.8,
+                        vy: (Math.random() - 0.5) * 0.8,
+                        radius: Math.random() * 1.5 + 0.5
+                    });
+                }
+                
+                let animFrame;
+                function draw() {
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    ctx.fillStyle = 'rgba(15, 41, 66, 0.4)';
+                    for (let i = 0; i < particles.length; i++) {
+                        let p = particles[i];
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        
+                        if (p.x < 0 || p.x > width) p.vx *= -1;
+                        if (p.y < 0 || p.y > height) p.vy *= -1;
+                        
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        for (let j = i + 1; j < particles.length; j++) {
+                            let p2 = particles[j];
+                            let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                            if (dist < 120) {
+                                ctx.beginPath();
+                                ctx.strokeStyle = `rgba(15, 41, 66, ${0.15 * (1 - dist / 120)})`;
+                                ctx.lineWidth = 0.5;
+                                ctx.moveTo(p.x, p.y);
+                                ctx.lineTo(p2.x, p2.y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    animFrame = requestAnimationFrame(draw);
+                }
+                draw();
+                
+                app.loginParticleAnimFrame = animFrame;
+                
+                window.addEventListener('resize', () => {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                });
+            },
+
             init: async () => {
                 app.updateViewport();
 
@@ -1007,6 +1079,7 @@
 
                 await app.initNeonDB(); // Connect to Neon DB and fetch data
                 app.populateLoginDropdown(); // Setup Login Select Options
+                app.initLoginParticles(); // Initialize background web animation
                 app.refreshIcons();
                 document.getElementById('login-form').addEventListener('submit', app.handleLogin);
 
