@@ -446,21 +446,7 @@
             }
         }
 
-        .mobile-bottom-nav {
-            background: rgba(255, 255, 255, 0.22) !important;
-            backdrop-filter: blur(24px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.35) !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
-            transform: translateX(-50%) !important; /* Center dynamic alignment */
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
-        }
 
-        .mobile-bottom-nav.nav-hidden {
-            transform: translate(-50%, 100px) scale(0.85) !important;
-            opacity: 0 !important;
-            pointer-events: none;
-        }
 
         .nav-tab-active {
             color: #0F2942;
@@ -779,41 +765,7 @@
                     class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-extrabold text-[12px] tracking-wide">Shahriar</span>
             </div>
 
-            <!-- PREMIUM MOBILE BOTTOM NAVIGATION -->
-            <div id="mobile-bottom-nav"
-                class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[300px] h-12 md:hidden z-50 flex items-center justify-around px-1.5 mobile-bottom-nav rounded-full">
-                <button onclick="app.navigateMobile('dashboard')"
-                    class="flex flex-col items-center gap-1 text-slate-400 transition-all active:scale-95 px-4"
-                    id="nav-dashboard">
-                    <div class="p-2 rounded-xl transition-all"><i data-lucide="layout-grid" class="w-6 h-6"></i></div>
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">Portal</span>
-                </button>
-                <button onclick="app.navigateMobile('map')"
-                    class="flex flex-col items-center gap-1 text-slate-400 transition-all active:scale-95 px-4"
-                    id="nav-map">
-                    <div class="p-2 rounded-xl transition-all"><i data-lucide="map-pin" class="w-6 h-6"></i></div>
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">GeoMap</span>
-                </button>
-                <div class="relative -top-4">
-                    <button onclick="app.navigateMobile('ai')"
-                        class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-xl shadow-indigo-500/30 flex items-center justify-center text-white border-2 border-white/50 active:scale-90 transition-all"
-                        id="nav-ai">
-                        <i data-lucide="sparkles" class="w-7 h-7"></i>
-                    </button>
-                </div>
-                <button onclick="app.navigateMobile('emi')"
-                    class="flex flex-col items-center gap-1 text-slate-400 transition-all active:scale-95 px-4"
-                    id="nav-emi">
-                    <div class="p-2 rounded-xl transition-all"><i data-lucide="wallet" class="w-6 h-6"></i></div>
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">EMI</span>
-                </button>
-                <button onclick="app.navigateMobile('notices')"
-                    class="flex flex-col items-center gap-1 text-slate-400 transition-all active:scale-95 px-4"
-                    id="nav-notices">
-                    <div class="p-2 rounded-xl transition-all"><i data-lucide="megaphone" class="w-6 h-6"></i></div>
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">Notice</span>
-                </button>
-            </div>
+
         </main>
     </div>
 
@@ -1041,21 +993,7 @@
             init: async () => {
                 app.updateViewport();
 
-                // Smart auto-hide bottom navigation on scroll
-                const mainEl = document.querySelector('main');
-                const bottomNav = document.getElementById('mobile-bottom-nav');
-                if (mainEl && bottomNav) {
-                    let lastScrollTop = 0;
-                    mainEl.addEventListener('scroll', () => {
-                        const scrollTop = mainEl.scrollTop;
-                        if (scrollTop > lastScrollTop && scrollTop > 60) {
-                            bottomNav.classList.add('nav-hidden');
-                        } else {
-                            bottomNav.classList.remove('nav-hidden');
-                        }
-                        lastScrollTop = scrollTop;
-                    }, { passive: true });
-                }
+
 
                 // Intercept localStorage.setItem to auto-update sidebar highlighted active states
                 const originalSetItem = localStorage.setItem;
@@ -1249,7 +1187,6 @@
                 setTimeout(() => {
                     document.getElementById('app-container').classList.remove('hidden');
                     app.setupSidebar();
-                    app.setupMobileBottomNav();
 
                     const lastPage = localStorage.getItem('aci_last_page');
                     const lastRole = localStorage.getItem('aci_last_role');
@@ -1315,52 +1252,7 @@
                 }
             },
 
-            navigateMobile: (target) => {
-                localStorage.setItem('aci_last_page', target);
-                localStorage.setItem('aci_last_role', app.currentUser.role);
-                // Clear active states
-                const bottomNav = document.getElementById('mobile-bottom-nav');
-                if (bottomNav) {
-                    bottomNav.querySelectorAll('button').forEach(btn => {
-                        btn.classList.remove('nav-tab-active', 'text-aci-blue');
-                        btn.classList.add('text-slate-400');
-                    });
-                }
 
-                // Set active
-                const activeEl = document.getElementById(`nav-${target}`);
-                if (activeEl) {
-                    activeEl.classList.add('nav-tab-active', 'text-aci-blue');
-                    activeEl.classList.remove('text-slate-400');
-                }
-
-                // Route based on role
-                if (app.currentUser.role === 'so') {
-                    app.navigateSO(target);
-                } else if (app.currentUser.role === 'am') {
-                    switch (target) {
-                        case 'dashboard': app.renderAdminDashboard(); break;
-                        case 'pulse': app.renderAMPulseMatrix(); break;
-                        case 'emi': app.renderAdminEMI(); break;
-                        case 'profile': app.renderSOProfile(); break;
-                        default: app.renderAdminDashboard();
-                    }
-                } else {
-                    switch (target) {
-                        case 'dashboard': app.renderAdminDashboard(); break;
-                        case 'map': app.renderAdminSalesMap(); break;
-                        case 'ai': app.renderAdminAIInsights(); break;
-                        case 'emi': app.renderAdminEMI(); break;
-                        case 'notices': app.renderAdminNotices(); break;
-                        case 'profile': app.renderSOProfile(); break;
-                        default: app.renderAdminDashboard();
-                    }
-                }
-                const mainEl = document.querySelector('main');
-                if (mainEl) {
-                    mainEl.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            },
 
             setupSidebar: () => {
                 document.getElementById('sidebar-user-name').innerText = app.currentUser.name;
@@ -1443,72 +1335,7 @@
                 app.refreshIcons();
             },
 
-            setupMobileBottomNav: () => {
-                const bottomNav = document.getElementById('mobile-bottom-nav');
-                if (!bottomNav) return;
 
-                const activePage = localStorage.getItem('aci_last_page') || 'dashboard';
-
-                const renderBottomBtn = (page, label, iconName, badgeHtml = '', isCenter = false) => {
-                    const isActive = activePage === page;
-                    const activeColor = 'text-aci-blue font-bold';
-                    const inactiveColor = 'text-slate-400 hover:text-slate-600';
-
-                    if (isCenter) {
-                        return `
-                            <div class="relative -top-2">
-                                <button onclick="app.navigateMobile('${page}')"
-                                    class="w-10 h-10 bg-gradient-to-br from-indigo-600/90 to-purple-700/90 rounded-full shadow-lg shadow-indigo-500/20 flex items-center justify-center text-white border border-white/20 active:scale-90 transition-all backdrop-blur-md">
-                                    <i data-lucide="${iconName}" class="w-4.5 h-4.5"></i>
-                                </button>
-                            </div>
-                        `;
-                    }
-
-                    return `
-                        <button onclick="app.navigateMobile('${page}')" id="nav-${page}"
-                            class="flex flex-col items-center justify-center ${isActive ? activeColor : inactiveColor} transition-all active:scale-95 px-2 relative h-full flex-1">
-                            <div class="relative flex flex-col items-center">
-                                <i data-lucide="${iconName}" class="w-4.5 h-4.5 transition-all duration-300 ${isActive ? 'scale-110 text-aci-blue drop-shadow-[0_0_8px_rgba(15,41,66,0.3)]' : 'text-slate-500'}"></i>
-                                ${isActive ? `<span class="w-1 h-1 bg-aci-blue rounded-full mt-0.5 animate-pulse"></span>` : `<span class="text-[6px] font-black uppercase tracking-tighter text-slate-400 mt-0.5">${label}</span>`}
-                                ${badgeHtml}
-                            </div>
-                        </button>
-                    `;
-                };
-
-                let html = '';
-                if (app.currentUser.role === 'admin') {
-                    html = [
-                        renderBottomBtn('dashboard', 'Portal', 'layout-grid'),
-                        renderBottomBtn('map', 'GeoMap', 'map-pin'),
-                        renderBottomBtn('ai', 'AI', 'sparkles', '', true),
-                        renderBottomBtn('emi', 'EMI', 'wallet'),
-                        renderBottomBtn('notices', 'Notice', 'megaphone')
-                    ].join('');
-                } else if (app.currentUser.role === 'am') {
-                    html = [
-                        renderBottomBtn('dashboard', 'Portal', 'layout-grid'),
-                        renderBottomBtn('pulse', 'Matrix', 'calendar-range'),
-                        renderBottomBtn('emi', 'EMI', 'wallet'),
-                        renderBottomBtn('profile', 'Profile', 'user')
-                    ].join('');
-                } else if (app.currentUser.role === 'so') {
-                    html = [
-                        renderBottomBtn('dashboard', 'Portal', 'layout-grid'),
-                        renderBottomBtn('pulse', 'Matrix', 'calendar-range'),
-                        renderBottomBtn('emi', 'EMI', 'wallet', '<span id="so-overdue-badge-mobile" class="hidden absolute top-0 right-0 transform translate-x-1 -translate-y-1 bg-red-500 text-white text-[8px] font-bold px-1 py-0.2 rounded-full min-w-[12px] text-center">0</span>'),
-                        renderBottomBtn('tiv', 'TIV', 'bar-chart-3'),
-                        renderBottomBtn('profile', 'Profile', 'user')
-                    ].join('');
-                }
-
-                bottomNav.innerHTML = html;
-                app.refreshIcons();
-                if (app.currentUser.role === 'so') {
-                    app.updateSOBadge();
-                }
-            },
 
             // ==========================================
             // ADMIN / AM VIEWS
@@ -9257,12 +9084,6 @@
                 if (badge) {
                     badge.innerText = overdueCount;
                     badge.style.display = overdueCount > 0 ? 'block' : 'none';
-                }
-                
-                const badgeMobile = document.getElementById('so-overdue-badge-mobile');
-                if (badgeMobile) {
-                    badgeMobile.innerText = overdueCount;
-                    badgeMobile.style.display = overdueCount > 0 ? 'block' : 'none';
                 }
             },
 
