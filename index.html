@@ -6052,7 +6052,7 @@
                 app.refreshIcons();
             },
 
-            saveRowData: (type, id) => {
+            saveRowData: async (type, id) => {
                 const row = document.getElementById(`row-${id}`);
                 const inputs = row.querySelectorAll('input[data-field]');
 
@@ -6063,6 +6063,8 @@
                 else if (type === 'emi') item = DB.emi.find(e => e.id === id);
                 else if (type === 'recovery_od') item = DB.recovery_od.find(r => r.id === id);
 
+                if (!item) return;
+
                 inputs.forEach(input => {
                     const field = input.dataset.field;
                     let val = input.value;
@@ -6071,6 +6073,26 @@
                     }
                     item[field] = val;
                 });
+
+                if (app.neonSQL) {
+                    try {
+                        if (type === 'targets') {
+                            await app.neonSQL`UPDATE targets SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, upazila = ${item.upazila}, brand = ${item.brand}, sale_type = ${item.sale_type}, target_qty = ${item.target_qty} WHERE id = ${id}`;
+                        } else if (type === 'projections') {
+                            await app.neonSQL`UPDATE projections SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, brand = ${item.brand}, sale_type = ${item.sale_type}, projection_qty = ${item.projection_qty} WHERE id = ${id}`;
+                        } else if (type === 'sales' || type === 'last_year_sales') {
+                            await app.neonSQL`UPDATE sales SET customer_id = ${item.customer_id}, district = ${item.district}, territory_id = ${item.territory_id}, upazila = ${item.upazila}, brand = ${item.brand}, model = ${item.model}, unit_qty = ${item.unit_qty}, fy = ${item.fy}, sales_year = ${item.sales_year}, sales_month = ${item.sales_month}, sale_type = ${item.sale_type} WHERE id = ${id}`;
+                        } else if (type === 'emi') {
+                            await app.neonSQL`UPDATE emi SET customer_code = ${item.customer_code}, customer = ${item.customer}, phone = ${item.phone}, location = ${item.location}, delivery_date = ${item.delivery_date}, first_inst_date = ${item.first_inst_date}, overdue_count = ${item.overdue_count}, overdue_total = ${item.overdue_total}, installment = ${item.installment}, collected = ${item.collected}, territory_id = ${item.territory_id}, brand = ${item.brand}, model = ${item.model}, installment_no = ${item.installment_no} WHERE id = ${id}`;
+                        } else if (type === 'recovery_od') {
+                            await app.neonSQL`UPDATE recovery_od SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, perfile_od = ${item.perfile_od}, total_overdue = ${item.total_overdue} WHERE id = ${id}`;
+                        }
+                    } catch (err) {
+                        console.error("Failed to update record in Neon DB:", err);
+                        app.showToast("Failed to update record in database.", "error");
+                        return;
+                    }
+                }
 
                 app.saveDBState();
                 app.viewUploadedData(type);
@@ -6390,8 +6412,16 @@
                                                 newRecords.push(record);
                                             } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
+                                                const recordFY = app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? '2025-26' : '2024-25'));
+                                                const targetFY = dataKey === 'sales' ? '2025-26' : '2024-25';
+                                                
+                                                // Skip rows that do not match the target fiscal year to prevent duplicates and cross-contamination
+                                                if (recordFY !== targetFY) {
+                                                    return;
+                                                }
+
                                                 const customerId = app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`;
-                                                const salesYear = parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || 2026;
+                                                const salesYear = parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || (dataKey === 'sales' ? 2026 : 2025);
                                                 const model = app.getCSVValue(row, ['Model']) || 'TM3';
                                                 
                                                 const record = {
@@ -6403,8 +6433,8 @@
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     model: app.getCSVValue(row, ['Model']) || 'TM3',
                                                     unit_qty: parseInt(app.getCSVValue(row, ['Unit_Qty', 'UnitQty', 'Qty', 'Quantity'])) || 0,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? '2025-26' : '2024-25')),
-                                                    sales_year: parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || 2026,
+                                                    fy: recordFY,
+                                                    sales_year: salesYear,
                                                     sales_month: recordMonth,
                                                     sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']))
                                                 };
@@ -7927,8 +7957,8 @@
                 const selMonth = app.soMonthTab || app.lastMonth;
                 const selMonthSalesRecords = brandSales.filter(s => s.sales_month === selMonth && s.fy === currentFY);
                 const selMonthSalesUnits = selMonthSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
-                // Basic mock fallback for older months without explicit mock entries:
-                const selMonthSply = selMonth === app.currentMonth ? (DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === app.currentMonth && s.fy === '2024-25').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0) || Math.floor(monthlyBudget * 0.9)) : (selMonth === app.lastMonth ? mockSply.sply : Math.floor(monthlyBudget * 0.8));
+                // Exact SPLY calculation for the selected month using actual historical data
+                const selMonthSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === selMonth && s.fy === '2024-25').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // Fetch Recovery OD Data (Territory specific, applies to all brands)
                 const recoveryData = DB.recovery_od.find(r => r.territory_id === terrId && r.fy === currentFY && r.month === currentMonth) || { perfile_od: 0, total_overdue: 0 };
@@ -9213,6 +9243,19 @@
                 const fmtGrw  = (g) => g > 0 ? `<span class="text-emerald-600 font-black">+${g}%</span>` : (g < 0 ? `<span class="text-rose-500 font-black">${g}%</span>` : `<span class="text-slate-400 font-medium">0%</span>`);
                 const fmtGrwText = (g) => g > 0 ? `+${g}%` : `${g}%`;
 
+                const activeMonths = [];
+                let foundCurrent = false;
+                const cMonth = app.currentMonth || 'April';
+                for (const m of fiscalMonths) {
+                    activeMonths.push(m);
+                    if (m === cMonth) {
+                        foundCurrent = true;
+                        break;
+                    }
+                }
+                if (!foundCurrent) activeMonths.push(...fiscalMonths);
+
+
                 // ── Metric sub-headers row (Bgt / Sal / Ach% / SPLY / Gr% × 16 blocks) ──
                 const borderMap   = { Q1:'border-l-2 border-violet-200', Q2:'border-l-2 border-amber-200', Q3:'border-l-2 border-emerald-200', Q4:'border-l-2 border-cyan-200' };
                 const qtBorderMap = { Q1:'border-l-2 border-violet-300 bg-violet-500/5', Q2:'border-l-2 border-amber-300 bg-amber-500/5', Q3:'border-l-2 border-emerald-300 bg-emerald-500/5', Q4:'border-l-2 border-cyan-300 bg-cyan-500/5' };
@@ -9255,9 +9298,10 @@
 
                     const quarterPerf = {};
                     Object.entries(quarters).forEach(([qName, qMs]) => {
-                        const qBudget = qMs.reduce((s, m) => s + monthlyPerf[m].budget, 0);
-                        const qSales  = qMs.reduce((s, m) => s + monthlyPerf[m].sales,  0);
-                        const qSply   = qMs.reduce((s, m) => s + monthlyPerf[m].sply,   0);
+                        const activeMs = qMs.filter(m => activeMonths.includes(m));
+                        const qBudget = activeMs.reduce((s, m) => s + monthlyPerf[m].budget, 0);
+                        const qSales  = activeMs.reduce((s, m) => s + monthlyPerf[m].sales,  0);
+                        const qSply   = activeMs.reduce((s, m) => s + monthlyPerf[m].sply,   0);
                         quarterPerf[qName] = { budget:qBudget, sales:qSales, sply:qSply, ach:ach(qSales,qBudget), growth:calcGrw(qSales,qSply) };
                         grandQuarter[qName].budget += qBudget; grandQuarter[qName].sales += qSales; grandQuarter[qName].sply += qSply;
                     });
