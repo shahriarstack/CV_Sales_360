@@ -438,7 +438,11 @@
             }
 
             #app-header {
-                padding-top: calc(env(safe-area-inset-top, 24px) + 8px) !important;
+                padding-top: calc(max(44px, env(safe-area-inset-top, 0px)) + 8px) !important;
+            }
+
+            #sidebar-header {
+                padding-top: calc(max(32px, env(safe-area-inset-top, 0px)) + 12px) !important;
             }
         }
 
@@ -631,7 +635,7 @@
         <!-- OFFCANVAS SIDEBAR (All Roles) -->
         <aside id="desktop-sidebar"
             class="fixed left-0 top-0 h-full w-64 bg-aci-dark text-slate-300 flex-col shadow-[10px_0_40px_rgba(0,0,0,0.3)] z-50 transform -translate-x-full transition-transform duration-300 flex mesh-gradient-sidebar">
-            <div class="p-5 flex items-center justify-between border-b border-slate-800 bg-slate-900/50">
+            <div id="sidebar-header" class="p-5 flex items-center justify-between border-b border-slate-800 bg-slate-900/50">
                 <div class="flex flex-col">
                     <div class="flex items-center gap-2 mb-1">
                         <div
@@ -1220,6 +1224,7 @@
                 setTimeout(() => {
                     document.getElementById('app-container').classList.remove('hidden');
                     app.setupSidebar();
+                    app.setupMobileBottomNav();
 
                     const lastPage = localStorage.getItem('aci_last_page');
                     const lastRole = localStorage.getItem('aci_last_role');
@@ -1289,28 +1294,42 @@
                 localStorage.setItem('aci_last_page', target);
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 // Clear active states
-                ['nav-dashboard', 'nav-map', 'nav-ai', 'nav-emi', 'nav-notices'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.classList.remove('nav-tab-active', 'text-aci-blue');
-                });
+                const bottomNav = document.getElementById('mobile-bottom-nav');
+                if (bottomNav) {
+                    bottomNav.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('nav-tab-active', 'text-aci-blue');
+                        btn.classList.add('text-slate-400');
+                    });
+                }
 
                 // Set active
                 const activeEl = document.getElementById(`nav-${target}`);
-                if (activeEl) activeEl.classList.add('nav-tab-active', 'text-aci-blue');
+                if (activeEl) {
+                    activeEl.classList.add('nav-tab-active', 'text-aci-blue');
+                    activeEl.classList.remove('text-slate-400');
+                }
 
-                // Route
-                switch (target) {
-                    case 'dashboard': app.renderAdminDashboard(); break;
-                    case 'map': app.renderAdminSalesMap(); break;
-                    case 'ai':
-                        if (app.currentUser.role === 'admin') app.renderAdminAIInsights();
-                        else app.renderAdminDashboard();
-                        break;
-                    case 'emi': app.renderAdminEMI(); break;
-                    case 'notices':
-                        if (app.currentUser.role === 'admin') app.renderAdminNotices();
-                        else app.renderAdminDashboard();
-                        break;
+                // Route based on role
+                if (app.currentUser.role === 'so') {
+                    app.navigateSO(target);
+                } else if (app.currentUser.role === 'am') {
+                    switch (target) {
+                        case 'dashboard': app.renderAdminDashboard(); break;
+                        case 'pulse': app.renderAMPulseMatrix(); break;
+                        case 'emi': app.renderAdminEMI(); break;
+                        case 'profile': app.renderSOProfile(); break;
+                        default: app.renderAdminDashboard();
+                    }
+                } else {
+                    switch (target) {
+                        case 'dashboard': app.renderAdminDashboard(); break;
+                        case 'map': app.renderAdminSalesMap(); break;
+                        case 'ai': app.renderAdminAIInsights(); break;
+                        case 'emi': app.renderAdminEMI(); break;
+                        case 'notices': app.renderAdminNotices(); break;
+                        case 'profile': app.renderSOProfile(); break;
+                        default: app.renderAdminDashboard();
+                    }
                 }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             },
@@ -1383,11 +1402,6 @@
                         renderSidebarBtn('emi', 'Area EMI Summary', 'banknote', 'text-slate-400', 'app.renderAdminEMI()')
                     ].join('');
                     
-                    // Hide restricted buttons from mobile bottom nav for AM
-                    ['nav-ai', 'nav-notices'].forEach(id => {
-                        const btn = document.getElementById(id);
-                        if (btn) btn.parentElement.style.display = 'none';
-                    });
                 } else if (app.currentUser.role === 'so') {
                     links = [
                         renderSidebarBtn('dashboard', 'Sales Dashboard', 'layout-dashboard', 'text-slate-400', "app.navigateSO('dashboard')"),
@@ -1396,15 +1410,76 @@
                         renderSidebarBtn('tiv', 'TIV Reporting', 'bar-chart-3', 'text-slate-400', "app.navigateSO('tiv')"),
                         renderSidebarBtn('profile', 'Profile', 'user', 'text-slate-400', "app.navigateSO('profile')")
                     ].join('');
-
-                    // Hide restricted buttons from mobile bottom nav for SO
-                    ['nav-ai', 'nav-notices'].forEach(id => {
-                        const btn = document.getElementById(id);
-                        if (btn) btn.parentElement.style.display = 'none';
-                    });
                 }
                 nav.innerHTML = links;
                 app.refreshIcons();
+            },
+
+            setupMobileBottomNav: () => {
+                const bottomNav = document.getElementById('mobile-bottom-nav');
+                if (!bottomNav) return;
+
+                const activePage = localStorage.getItem('aci_last_page') || 'dashboard';
+
+                const renderBottomBtn = (page, label, iconName, badgeHtml = '', isCenter = false) => {
+                    const isActive = activePage === page;
+                    const activeColor = 'text-aci-blue font-bold';
+                    const inactiveColor = 'text-slate-400';
+
+                    if (isCenter) {
+                        return `
+                            <div class="relative -top-4">
+                                <button onclick="app.navigateMobile('${page}')"
+                                    class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-xl shadow-indigo-500/30 flex items-center justify-center text-white border-2 border-white/50 active:scale-90 transition-all">
+                                    <i data-lucide="${iconName}" class="w-7 h-7"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <button onclick="app.navigateMobile('${page}')" id="nav-${page}"
+                            class="flex flex-col items-center gap-1 ${isActive ? activeColor : inactiveColor} transition-all active:scale-95 px-4 relative">
+                            <div class="p-2 rounded-xl transition-all relative">
+                                <i data-lucide="${iconName}" class="w-6 h-6"></i>
+                                ${badgeHtml}
+                            </div>
+                            <span class="text-[9px] font-bold uppercase tracking-tighter">${label}</span>
+                        </button>
+                    `;
+                };
+
+                let html = '';
+                if (app.currentUser.role === 'admin') {
+                    html = [
+                        renderBottomBtn('dashboard', 'Portal', 'layout-grid'),
+                        renderBottomBtn('map', 'GeoMap', 'map-pin'),
+                        renderBottomBtn('ai', 'AI', 'sparkles', '', true),
+                        renderBottomBtn('emi', 'EMI', 'wallet'),
+                        renderBottomBtn('notices', 'Notice', 'megaphone')
+                    ].join('');
+                } else if (app.currentUser.role === 'am') {
+                    html = [
+                        renderBottomBtn('dashboard', 'Portal', 'layout-grid'),
+                        renderBottomBtn('pulse', 'Matrix', 'calendar-range'),
+                        renderBottomBtn('emi', 'EMI', 'wallet'),
+                        renderBottomBtn('profile', 'Profile', 'user')
+                    ].join('');
+                } else if (app.currentUser.role === 'so') {
+                    html = [
+                        renderBottomBtn('dashboard', 'Portal', 'layout-grid'),
+                        renderBottomBtn('pulse', 'Matrix', 'calendar-range'),
+                        renderBottomBtn('emi', 'EMI', 'wallet', '<span id="so-overdue-badge-mobile" class="hidden absolute top-0 right-0 transform translate-x-1 -translate-y-1 bg-red-500 text-white text-[8px] font-bold px-1 py-0.2 rounded-full min-w-[12px] text-center">0</span>'),
+                        renderBottomBtn('tiv', 'TIV', 'bar-chart-3'),
+                        renderBottomBtn('profile', 'Profile', 'user')
+                    ].join('');
+                }
+
+                bottomNav.innerHTML = html;
+                app.refreshIcons();
+                if (app.currentUser.role === 'so') {
+                    app.updateSOBadge();
+                }
             },
 
             // ==========================================
@@ -9149,10 +9224,17 @@
                 if (app.currentUser.role !== 'so') return;
                 const soEmi = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
                 const overdueCount = soEmi.filter(e => e.installment > 0 && e.collected < e.installment).length;
+                
                 const badge = document.getElementById('so-overdue-badge');
                 if (badge) {
                     badge.innerText = overdueCount;
                     badge.style.display = overdueCount > 0 ? 'block' : 'none';
+                }
+                
+                const badgeMobile = document.getElementById('so-overdue-badge-mobile');
+                if (badgeMobile) {
+                    badgeMobile.innerText = overdueCount;
+                    badgeMobile.style.display = overdueCount > 0 ? 'block' : 'none';
                 }
             },
 
