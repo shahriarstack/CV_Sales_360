@@ -539,76 +539,96 @@
     <!-- LOGIN VIEW (Hidden by default to prevent flash) -->
     <!-- ========================================== -->
     <div id="login-view"
-        class="h-full w-full hidden items-center justify-center bg-cover bg-center absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden"
-        style="background-image: url('https://images.unsplash.com/photo-1557682224-5b8590cd9ec5?q=80&w=2564&auto=format&fit=crop');">
-
-        <!-- Animated Liquid Layer Backdrop -->
-        <div class="absolute inset-0 bg-white/30 backdrop-blur-xl"></div>
-        <div class="liquid-container !filter-none opacity-40">
-            <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-20"></div>
-            <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-20"
-                style="--blob-color-1: #E5223E; --blob-color-2: #fb7185;"></div>
+        class="h-full w-full hidden items-center justify-center absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden bg-slate-950 font-sans">
+        
+        <!-- Premium Aurora Background -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-indigo-600/20 mix-blend-screen filter blur-[100px] animate-blob"></div>
+            <div class="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-cyan-500/20 mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] rounded-full bg-purple-600/20 mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 mix-blend-overlay"></div> <!-- Subtle Noise -->
         </div>
 
         <div
-            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/70 sm:bg-white/40 backdrop-blur-3xl p-8 sm:rounded-[1.25rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative z-10 sm:mx-4 border-none sm:border border-white/60 glass-shine flex flex-col justify-center sm:block">
-            <div class="text-center mb-8">
-                <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors"
-                    class="h-10 mx-auto object-contain mb-8">
-                <div class="flex items-center justify-center gap-3 mb-2">
-                    <div
-                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-900 shadow-xl shadow-aci-blue/30 border-2 border-white/40 shrink-0 overflow-hidden">
-                        <div class="absolute inset-0 bg-white/10 animate-pulse"></div>
-                        <span class="text-white text-lg font-black tracking-tight z-10 drop-shadow-md">CV</span>
-                    </div>
-                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-900"><span
-                            class="font-light text-slate-500">Sales</span>360<span
-                            class="text-aci-blue font-black text-xl ml-0.5 mt-0.5">°</span></h1>
+            class="h-full w-full sm:h-auto sm:max-w-[420px] bg-white/[0.03] backdrop-blur-3xl p-10 sm:rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] relative z-10 sm:mx-4 border-t border-l border-white/[0.08] border-b border-r border-white/[0.02] flex flex-col justify-center sm:block ring-1 ring-white/[0.05]">
+            
+            <div class="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent rounded-[2.5rem] pointer-events-none hidden sm:block"></div>
+
+            <div class="text-center mb-10 relative z-20">
+                <div class="inline-flex p-3 rounded-2xl bg-white/[0.05] border border-white/[0.05] shadow-inner mb-6 backdrop-blur-md">
+                   <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors" class="h-8 object-contain filter drop-shadow-lg brightness-0 invert opacity-90">
                 </div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Commercial Vehicle
-                    Portfolio</p>
+                
+                <div class="flex items-center justify-center gap-4 mb-3">
+                    <div
+                        class="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 shadow-[0_0_30px_rgba(6,182,212,0.4)] border border-white/20 shrink-0 overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent translate-y-full group-hover:animate-shimmer transition-transform"></div>
+                        <span class="text-white text-xl font-black tracking-tight z-10 drop-shadow-md">CV</span>
+                    </div>
+                    <div class="text-left">
+                        <h1 class="text-4xl tracking-tighter leading-none font-bold text-white flex items-start"><span
+                                class="font-light text-slate-300">Sales</span>360<span
+                                class="text-cyan-400 font-black text-xl ml-0.5 mt-0.5">°</span></h1>
+                         <p class="text-[9px] font-bold text-cyan-400/80 uppercase tracking-[0.3em] mt-1.5 ml-1">Commercial Vehicle</p>
+                    </div>
+                </div>
             </div>
 
-            <form id="login-form" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Select Area / Territory</label>
+            <form id="login-form" class="space-y-6 relative z-20">
+                <div class="group">
+                    <label class="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider ml-1 group-focus-within:text-cyan-400 transition-colors">Select Area / Territory</label>
                     <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
                         <i data-lucide="map-pin"
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-cyan-400 transition-colors z-10"></i>
                         <select id="login-user-select"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors appearance-none bg-white/50"
+                            class="w-full rounded-2xl pl-12 pr-4 py-4 focus:outline-none transition-all appearance-none bg-slate-900/50 border border-white/10 text-white focus:border-cyan-400/50 focus:bg-slate-900/80 shadow-inner relative z-10 [&>option]:text-slate-900"
                             required>
                             <!-- options injected via JS -->
                         </select>
                         <i data-lucide="chevron-down"
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none"></i>
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none z-10 group-focus-within:text-cyan-400 transition-colors"></i>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Employee ID (Password)</label>
+                
+                <div class="group">
+                    <label class="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider ml-1 group-focus-within:text-cyan-400 transition-colors">Employee ID (Password)</label>
                     <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
                         <i data-lucide="lock"
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-cyan-400 transition-colors z-10"></i>
                         <input type="password" id="password"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors bg-white/50"
+                            class="w-full rounded-2xl pl-12 pr-4 py-4 focus:outline-none transition-all bg-slate-900/50 border border-white/10 text-white placeholder-slate-500 focus:border-cyan-400/50 focus:bg-slate-900/80 shadow-inner relative z-10"
                             placeholder="Enter your Employee ID" required>
                     </div>
                 </div>
-                <div class="flex items-center justify-between text-sm mt-2">
-                    <label class="flex items-center text-slate-600 font-medium">
-                        <input type="checkbox" class="rounded border-slate-300 text-aci-blue focus:ring-aci-blue mr-2">
+                
+                <div class="flex items-center justify-between text-sm mt-2 px-1">
+                    <label class="flex items-center text-slate-400 font-medium cursor-pointer hover:text-slate-300 transition-colors group">
+                        <div class="relative flex items-center justify-center w-5 h-5 mr-3">
+                            <input type="checkbox" class="peer appearance-none w-5 h-5 border border-white/20 rounded bg-slate-900/50 checked:bg-cyan-500 checked:border-cyan-500 transition-all cursor-pointer">
+                            <i data-lucide="check" class="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
+                        </div>
                         Remember me
                     </label>
                 </div>
+                
                 <button type="submit"
-                    class="w-full mt-4 btn-liquid text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98]">
-                    Sign In
+                    class="w-full mt-8 relative group overflow-hidden rounded-2xl p-[1px]">
+                    <span class="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-500"></span>
+                    <div class="relative flex items-center justify-center gap-2 bg-slate-950/50 backdrop-blur-sm px-8 py-4 rounded-2xl transition-all duration-300 group-hover:bg-transparent">
+                        <span class="text-white font-bold tracking-wide">Sign In to Portal</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-white transform group-hover:translate-x-1 transition-transform"></i>
+                    </div>
                 </button>
             </form>
-            <div class="mt-8 text-center text-xs text-slate-500 font-medium">
-                <div class="flex items-center justify-center opacity-80">
-                    <span class="text-[10px] font-medium">crafted by <span
-                            class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-extrabold text-[12px] tracking-wide">Shahriar</span></span>
+            
+            <div class="mt-10 text-center text-xs relative z-20">
+                <div class="flex items-center justify-center">
+                    <div class="h-[1px] w-8 bg-gradient-to-r from-transparent to-white/20"></div>
+                    <span class="px-3 text-[10px] font-medium text-slate-500 uppercase tracking-widest">crafted by <span
+                            class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent font-black tracking-widest">Shahriar</span></span>
+                    <div class="h-[1px] w-8 bg-gradient-to-l from-transparent to-white/20"></div>
                 </div>
             </div>
         </div>
