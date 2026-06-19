@@ -1004,23 +1004,12 @@
                     }
 
                     console.log("Data successfully loaded from Neon DB.");
-                    
-                    // Re-render dashboard if user is already logged in and dashboard is visible
-                    if (app.currentUser && document.getElementById('dashboard-view') && !document.getElementById('dashboard-view').classList.contains('hidden')) {
-                         if (app.currentUser.role === 'so') {
-                             if(typeof app.renderSODashboard === 'function') app.renderSODashboard();
-                         } else {
-                             if(typeof app.renderAdminDashboard === 'function') app.renderAdminDashboard();
-                         }
-                    }
                 } catch (e) {
                     console.error("Failed to connect to Neon DB:", e);
                 }
             },
 
-            init: () => {
-                app.initNeonDB();
-                
+            init: async () => {
                 // Intercept localStorage.setItem to auto-update sidebar highlighted active states
                 const originalSetItem = localStorage.setItem;
                 localStorage.setItem = function(key, value) {
@@ -1030,7 +1019,7 @@
                     }
                 };
 
-                app.initNeonDB(); // Connect to Neon DB and fetch data
+                await app.initNeonDB(); // Connect to Neon DB and fetch data
                 app.populateLoginDropdown(); // Setup Login Select Options
                 app.refreshIcons();
                 document.getElementById('login-form').addEventListener('submit', app.handleLogin);
