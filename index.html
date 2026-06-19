@@ -946,24 +946,7 @@
             },
 
             saveDBState: () => {
-                const lightDB = {
-                    users: DB.users,
-                    territories: DB.territories,
-                    models: DB.models,
-                    tiv_brands: DB.tiv_brands,
-                    notices: DB.notices,
-                    links: DB.links,
-                    settings: DB.settings
-                };
-                localStorage.setItem('sales360_light_db', JSON.stringify(lightDB));
-            },
-
-            loadDBState: () => {
-                const saved = localStorage.getItem('sales360_light_db');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    Object.assign(DB, parsed);
-                }
+                // Deprecated: All data is now persisted directly to Neon DB.
             },
 
             initNeonDB: async () => {
@@ -973,13 +956,31 @@
                     app.neonSQL = sql;
                     console.log("Successfully initialized Neon Database connection");
 
+                    // Ensure app_settings exists
+                    await sql`CREATE TABLE IF NOT EXISTS app_settings (id VARCHAR(50) PRIMARY KEY, settings_json JSONB NOT NULL)`;
+                    await sql`INSERT INTO app_settings (id, settings_json) VALUES ('1', '{"currentMonth": "April", "lastMonth": "March"}') ON CONFLICT (id) DO NOTHING`;
+
+                    // Ensure users has employee_id to match UI logic
+                    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS employee_id VARCHAR(100)`;
+                    await sql`UPDATE users SET employee_id = 'ADMIN001' WHERE id = 'u1' AND employee_id IS NULL`;
+                    await sql`UPDATE users SET employee_id = 'AM001' WHERE id = 'u2' AND employee_id IS NULL`;
+                    await sql`UPDATE users SET employee_id = 'SO001' WHERE id = 'u3' AND employee_id IS NULL`;
+                    await sql`UPDATE users SET employee_id = 'SO002' WHERE id = 'u4' AND employee_id IS NULL`;
+
                     // Fetch data concurrently to speed up loading
-                    const [targets, projections, emi, sales, recovery_od] = await Promise.all([
+                    const [targets, projections, emi, sales, recovery_od, users, territories, models, notices, links, tiv_brands, app_settings] = await Promise.all([
                         sql`SELECT * FROM targets`,
                         sql`SELECT * FROM projections`,
                         sql`SELECT * FROM emi`,
                         sql`SELECT * FROM sales`,
-                        sql`SELECT * FROM recovery_od`
+                        sql`SELECT * FROM recovery_od`,
+                        sql`SELECT * FROM users`,
+                        sql`SELECT * FROM territories`,
+                        sql`SELECT * FROM models`,
+                        sql`SELECT * FROM notices`,
+                        sql`SELECT * FROM links`,
+                        sql`SELECT * FROM tiv_brands`,
+                        sql`SELECT * FROM app_settings`
                     ]);
                     
                     DB.targets = targets;
@@ -987,6 +988,21 @@
                     DB.emi = emi;
                     DB.sales = sales;
                     DB.recovery_od = recovery_od;
+                    
+                    // Parse JSON fields where necessary
+                    DB.users = users.map(u => ({ ...u, territories: typeof u.territories === 'string' ? JSON.parse(u.territories) : u.territories }));
+                    DB.territories = territories.map(t => ({ ...t, upazilas: typeof t.upazilas === 'string' ? JSON.parse(t.upazilas) : t.upazilas }));
+                    DB.models = models;
+                    DB.notices = notices;
+                    DB.links = links;
+                    DB.tiv_brands = tiv_brands.map(b => ({ ...b, models: typeof b.models === 'string' ? JSON.parse(b.models) : b.models }));
+                    
+                    if (app_settings.length > 0) {
+                        DB.settings = typeof app_settings[0].settings_json === 'string' ? JSON.parse(app_settings[0].settings_json) : app_settings[0].settings_json;
+                        app.currentMonth = DB.settings.currentMonth || 'April';
+                        app.lastMonth = DB.settings.lastMonth || 'March';
+                    }
+
                     console.log("Data successfully loaded from Neon DB.");
                     
                     // Re-render dashboard if user is already logged in and dashboard is visible
@@ -1003,15 +1019,7 @@
             },
 
             init: () => {
-                app.loadDBState();
                 app.initNeonDB();
-                
-                // Auto-save lightweight DB periodically to persist admin settings (Users, Territories, Notices, etc.)
-                setInterval(() => {
-                    if (typeof app.saveDBState === 'function') {
-                        app.saveDBState();
-                    }
-                }, 3000);
                 
                 // Intercept localStorage.setItem to auto-update sidebar highlighted active states
                 const originalSetItem = localStorage.setItem;
@@ -1501,7 +1509,7 @@
                 if (modal) modal.classList.add('hidden');
             },
 
-            handleAddEditModel: (e, modelId = null) => {
+            handleAddEditModel: async (e, modelId = null) => {
                 e.preventDefault();
                 const brand = document.getElementById('model-brand').value;
                 const name = document.getElementById('model-name').value.trim();
@@ -1511,34 +1519,60 @@
                     return;
                 }
 
-                if (modelId) {
-                    const model = DB.models.find(m => m.id === modelId);
-                    if (model) {
-                        model.brand = brand;
-                        model.name = name;
-                        app.showToast('Model updated successfully.', 'success');
+                app.showLoader('Saving model...');
+                try {
+                    if (modelId) {
+                        const model = DB.models.find(m => m.id === modelId);
+                        if (model) {
+                            model.brand = brand;
+                            model.name = name;
+                            if (app.neonSQL) {
+                                await app.neonSQL`UPDATE models SET brand = ${brand}, name = ${name} WHERE id = ${modelId}`;
+                            }
+                            app.showToast('Model updated successfully.', 'success');
+                        }
+                    } else {
+                        const newId = 'm' + (DB.models.length > 0 ? Math.max(...DB.models.map(m => parseInt(m.id.substring(1)))) + 1 : 1);
+                        const newModel = {
+                            id: newId,
+                            brand: brand,
+                            name: name
+                        };
+                        DB.models.push(newModel);
+                        if (app.neonSQL) {
+                            await app.neonSQL`INSERT INTO models (id, brand, name) VALUES (${newId}, ${brand}, ${name})`;
+                        }
+                        app.showToast('Model added successfully.', 'success');
                     }
-                } else {
-                    const newId = 'm' + (DB.models.length > 0 ? Math.max(...DB.models.map(m => parseInt(m.id.substring(1)))) + 1 : 1);
-                    DB.models.push({
-                        id: newId,
-                        brand: brand,
-                        name: name
-                    });
-                    app.showToast('Model added successfully.', 'success');
-                }
 
-                app.closeAddEditModelModal();
-                app.renderModelManagement();
+                    app.closeAddEditModelModal();
+                    app.renderModelManagement();
+                } catch (err) {
+                    console.error('Failed to save model:', err);
+                    app.showToast('Failed to save model to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
             },
 
-            deleteModel: (modelId) => {
+            deleteModel: async (modelId) => {
                 if (confirm('Are you sure you want to delete this vehicle model?')) {
-                    const index = DB.models.findIndex(m => m.id === modelId);
-                    if (index !== -1) {
-                        DB.models.splice(index, 1);
-                        app.showToast('Model deleted successfully.', 'success');
-                        app.renderModelManagement();
+                    app.showLoader('Deleting model...');
+                    try {
+                        const index = DB.models.findIndex(m => m.id === modelId);
+                        if (index !== -1) {
+                            DB.models.splice(index, 1);
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM models WHERE id = ${modelId}`;
+                            }
+                            app.showToast('Model deleted successfully.', 'success');
+                            app.renderModelManagement();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete model:', err);
+                        app.showToast('Failed to delete model from database.', 'error');
+                    } finally {
+                        app.hideLoader();
                     }
                 }
             },
@@ -1835,7 +1869,7 @@
                 }
             },
 
-            handleAddUser: (e, userId = null) => {
+            handleAddUser: async (e, userId = null) => {
                 e.preventDefault();
                 const name = document.getElementById('new-user-name').value;
                 const empId = document.getElementById('new-user-empid').value;
@@ -1859,42 +1893,75 @@
 
                 const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (SO)' : '');
 
-                if (userId) {
-                    const user = DB.users.find(u => u.id === userId);
-                    if (user) {
-                        user.name = appendedName;
-                        user.employee_id = empId;
-                        user.role = role;
-                        user.territories = territories;
-                        user.area_name = areaName;
-                        app.showToast('User updated successfully.', 'success');
-                    }
-                } else {
-                    const newUser = {
-                        id: 'u' + (DB.users.length + 1),
-                        name: appendedName,
-                        role: role,
-                        employee_id: empId,
-                        territories: territories,
-                        area_name: areaName
-                    };
-                    DB.users.push(newUser);
-                    app.showToast('User provisioned successfully.', 'success');
-                }
+                app.showLoader('Saving user...');
 
-                app.closeAddUserModal();
-                app.renderUserManagement();
-                app.populateLoginDropdown(); // Update the login screen dropdown
+                try {
+                    if (userId) {
+                        const user = DB.users.find(u => u.id === userId);
+                        if (user) {
+                            user.name = appendedName;
+                            user.employee_id = empId;
+                            user.role = role;
+                            user.territories = territories;
+                            user.area_name = areaName;
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`UPDATE users SET name = ${appendedName}, role = ${role}, employee_id = ${empId}, territories = ${JSON.stringify(territories)}, area_name = ${areaName} WHERE id = ${userId}`;
+                            }
+                            app.showToast('User updated successfully.', 'success');
+                        }
+                    } else {
+                        const newId = 'u' + (DB.users.length + 1) + Date.now();
+                        const newUser = {
+                            id: newId,
+                            name: appendedName,
+                            role: role,
+                            employee_id: empId,
+                            territories: territories,
+                            area_name: areaName,
+                            email: `${empId}@acimotors.com`, // dummy email for constraint
+                            password: 'password' // dummy password
+                        };
+                        DB.users.push(newUser);
+                        
+                        if (app.neonSQL) {
+                            await app.neonSQL`INSERT INTO users (id, name, role, email, password, employee_id, territories, area_name) VALUES (${newUser.id}, ${newUser.name}, ${newUser.role}, ${newUser.email}, ${newUser.password}, ${newUser.employee_id}, ${JSON.stringify(newUser.territories)}, ${newUser.area_name})`;
+                        }
+                        app.showToast('User provisioned successfully.', 'success');
+                    }
+
+                    app.closeAddUserModal();
+                    app.renderUserManagement();
+                    app.populateLoginDropdown(); // Update the login screen dropdown
+                } catch (err) {
+                    console.error('Failed to save user:', err);
+                    app.showToast('Failed to save user to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
             },
 
-            deleteUser: (userId) => {
+            deleteUser: async (userId) => {
                 if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-                    const index = DB.users.findIndex(u => u.id === userId);
-                    if (index !== -1) {
-                        DB.users.splice(index, 1);
-                        app.showToast('User deleted successfully.', 'success');
-                        app.renderUserManagement();
-                        app.populateLoginDropdown();
+                    app.showLoader('Deleting user...');
+                    try {
+                        const index = DB.users.findIndex(u => u.id === userId);
+                        if (index !== -1) {
+                            DB.users.splice(index, 1);
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM users WHERE id = ${userId}`;
+                            }
+                            
+                            app.showToast('User deleted successfully.', 'success');
+                            app.renderUserManagement();
+                            app.populateLoginDropdown();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete user:', err);
+                        app.showToast('Failed to delete user from database.', 'error');
+                    } finally {
+                        app.hideLoader();
                     }
                 }
             },
@@ -1943,23 +2010,35 @@
                 if (modal) modal.classList.add('hidden');
             },
 
-            handleAddTerritory: (e) => {
+            handleAddTerritory: async (e) => {
                 e.preventDefault();
                 const name = document.getElementById('new-territory-name').value.trim();
                 if (!name) return;
 
-                const newId = 't' + (DB.territories.length > 0 ? Math.max(...DB.territories.map(t => parseInt(t.id.substring(1)))) + 1 : 1);
+                app.showLoader('Adding territory...');
+                try {
+                    const newId = 't' + (DB.territories.length > 0 ? Math.max(...DB.territories.map(t => parseInt(t.id.substring(1)))) + 1 : 1);
+                    const newTerritory = {
+                        id: newId,
+                        name: name,
+                        district: name,
+                        upazilas: []
+                    };
+                    DB.territories.push(newTerritory);
 
-                DB.territories.push({
-                    id: newId,
-                    name: name,
-                    district: name,
-                    upazilas: []
-                });
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO territories (id, name, district, upazilas) VALUES (${newId}, ${name}, ${name}, ${JSON.stringify(newTerritory.upazilas)})`;
+                    }
 
-                app.showToast('Territory added successfully.', 'success');
-                app.closeAddTerritoryModal();
-                app.renderUserManagement();
+                    app.showToast('Territory added successfully.', 'success');
+                    app.closeAddTerritoryModal();
+                    app.renderUserManagement();
+                } catch (err) {
+                    console.error('Failed to add territory:', err);
+                    app.showToast('Failed to save territory to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
             },
 
             // Pulse Table Sorting Utilities
@@ -1978,7 +2057,7 @@
                 app.renderAdminDashboard();
             },
 
-            deleteTerritory: (territoryId) => {
+            deleteTerritory: async (territoryId) => {
                 const soAssigned = DB.users.some(u => u.role === 'so' && u.territories.includes(territoryId));
                 if (soAssigned) {
                     app.showToast('Cannot delete territory. Unassign the active Sales Officer first.', 'error');
@@ -1986,16 +2065,34 @@
                 }
 
                 if (confirm('Are you sure you want to delete this territory? This action cannot be undone.')) {
-                    const index = DB.territories.findIndex(t => t.id === territoryId);
-                    if (index !== -1) {
-                        DB.territories.splice(index, 1);
-                        DB.users.forEach(u => {
-                            if (u.role === 'am' && u.territories.includes(territoryId)) {
-                                u.territories = u.territories.filter(id => id !== territoryId);
+                    app.showLoader('Deleting territory...');
+                    try {
+                        const index = DB.territories.findIndex(t => t.id === territoryId);
+                        if (index !== -1) {
+                            DB.territories.splice(index, 1);
+                            
+                            // We must await AM territory removal logic in SQL since AM's territory list is a JSON column.
+                            for (let u of DB.users) {
+                                if (u.role === 'am' && u.territories.includes(territoryId)) {
+                                    u.territories = u.territories.filter(id => id !== territoryId);
+                                    if (app.neonSQL) {
+                                        await app.neonSQL`UPDATE users SET territories = ${JSON.stringify(u.territories)} WHERE id = ${u.id}`;
+                                    }
+                                }
                             }
-                        });
-                        app.showToast('Territory deleted successfully.', 'success');
-                        app.renderUserManagement();
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM territories WHERE id = ${territoryId}`;
+                            }
+                            
+                            app.showToast('Territory deleted successfully.', 'success');
+                            app.renderUserManagement();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete territory:', err);
+                        app.showToast('Failed to delete territory from database. Please check if sales exist for this territory.', 'error');
+                    } finally {
+                        app.hideLoader();
                     }
                 }
             },
@@ -6728,7 +6825,7 @@
                 }, 300);
             },
 
-            saveNotice: (e) => {
+            saveNotice: async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('not-title').value;
                 const msg = document.getElementById('not-msg').value;
@@ -6742,40 +6839,64 @@
                     fileType = fileName.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
                 }
 
-                DB.notices.push({
-                    id: 'n_' + Math.floor(Math.random() * 10000),
-                    title: title,
-                    message: msg,
-                    fileName: fileName,
-                    fileType: fileType,
-                    timestamp: new Date().toLocaleDateString('en-GB')
-                });
+                app.showLoader('Circulating notice...');
+                try {
+                    const newNotice = {
+                        id: 'n_' + Math.floor(Math.random() * 1000000),
+                        title: title,
+                        message: msg,
+                        fileName: fileName,
+                        fileType: fileType,
+                        timestamp: new Date().toLocaleDateString('en-GB')
+                    };
+                    DB.notices.push(newNotice);
 
-                const badge = document.getElementById('global-notice-badge');
-                const ping = document.getElementById('global-notice-ping');
-                const bellIcon = document.getElementById('global-notice-icon');
-                const msgPopup = document.getElementById('global-notice-message');
-                if (badge) badge.style.display = 'block';
-                if (ping) ping.style.display = 'block';
-                if (msgPopup) {
-                    msgPopup.classList.remove('hidden');
-                    msgPopup.classList.add('block');
-                }
-                if (bellIcon) {
-                    bellIcon.classList.remove('text-slate-500');
-                    bellIcon.classList.add('animate-ring-shake', 'text-amber-500');
-                }
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO notices (id, title, message, timestamp, filetype, filename) VALUES (${newNotice.id}, ${newNotice.title}, ${newNotice.message}, ${newNotice.timestamp}, ${newNotice.fileType}, ${newNotice.fileName})`;
+                    }
 
-                app.closeAddNoticeModal();
-                app.showToast('Critical Notice circulated successfully!', 'success');
-                app.renderAdminNotices();
+                    const badge = document.getElementById('global-notice-badge');
+                    const ping = document.getElementById('global-notice-ping');
+                    const bellIcon = document.getElementById('global-notice-icon');
+                    const msgPopup = document.getElementById('global-notice-message');
+                    if (badge) badge.style.display = 'block';
+                    if (ping) ping.style.display = 'block';
+                    if (msgPopup) {
+                        msgPopup.classList.remove('hidden');
+                        msgPopup.classList.add('block');
+                    }
+                    if (bellIcon) {
+                        bellIcon.classList.remove('text-slate-500');
+                        bellIcon.classList.add('animate-ring-shake', 'text-amber-500');
+                    }
+
+                    app.closeAddNoticeModal();
+                    app.showToast('Critical Notice circulated successfully!', 'success');
+                    app.renderAdminNotices();
+                } catch (err) {
+                    console.error('Failed to circulate notice:', err);
+                    app.showToast('Failed to save notice to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
             },
 
-            deleteNotice: (id) => {
+            deleteNotice: async (id) => {
                 if (confirm('Revoke and delete this notice permanently?')) {
-                    DB.notices = DB.notices.filter(n => n.id !== id);
-                    app.showToast('Notice has been deleted.', 'success');
-                    app.renderAdminNotices();
+                    app.showLoader('Deleting notice...');
+                    try {
+                        DB.notices = DB.notices.filter(n => n.id !== id);
+                        if (app.neonSQL) {
+                            await app.neonSQL`DELETE FROM notices WHERE id = ${id}`;
+                        }
+                        app.showToast('Notice has been deleted.', 'success');
+                        app.renderAdminNotices();
+                    } catch (err) {
+                        console.error('Failed to delete notice:', err);
+                        app.showToast('Failed to delete notice from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
                 }
             },
 
@@ -6903,28 +7024,52 @@
                 }, 300);
             },
 
-            saveLink: (e) => {
+            saveLink: async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('lnk-title').value;
                 const url = document.getElementById('lnk-url').value;
                 const type = document.getElementById('lnk-type').value;
                 const icon = type === 'app' ? 'smartphone' : 'globe';
 
-                DB.links.push({
-                    id: 'lnk_' + Math.floor(Math.random() * 10000),
-                    title, url, type, icon
-                });
+                app.showLoader('Saving link...');
+                try {
+                    const newLink = {
+                        id: 'lnk_' + Math.floor(Math.random() * 1000000),
+                        title, url, type, icon
+                    };
+                    DB.links.push(newLink);
 
-                app.closeAddLinkModal();
-                app.showToast('Link added successfully.', 'success');
-                app.renderAdminNotices();
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO links (id, title, url, type, icon) VALUES (${newLink.id}, ${newLink.title}, ${newLink.url}, ${newLink.type}, ${newLink.icon})`;
+                    }
+
+                    app.closeAddLinkModal();
+                    app.showToast('Link added successfully.', 'success');
+                    app.renderAdminNotices();
+                } catch (err) {
+                    console.error('Failed to save link:', err);
+                    app.showToast('Failed to save link to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
             },
 
-            deleteLink: (id) => {
+            deleteLink: async (id) => {
                 if (confirm('Remove this link permanently?')) {
-                    DB.links = DB.links.filter(l => l.id !== id);
-                    app.showToast('Link removed.', 'success');
-                    app.renderAdminNotices();
+                    app.showLoader('Removing link...');
+                    try {
+                        DB.links = DB.links.filter(l => l.id !== id);
+                        if (app.neonSQL) {
+                            await app.neonSQL`DELETE FROM links WHERE id = ${id}`;
+                        }
+                        app.showToast('Link removed.', 'success');
+                        app.renderAdminNotices();
+                    } catch (err) {
+                        console.error('Failed to delete link:', err);
+                        app.showToast('Failed to delete link from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
                 }
             },
 
@@ -7359,7 +7504,7 @@
                 app.refreshIcons();
             },
 
-            addTIVBrand: (e) => {
+            addTIVBrand: async (e) => {
                 e.preventDefault();
                 const brandName = document.getElementById('tiv-new-brand').value.trim();
                 if (!brandName) return;
@@ -7367,12 +7512,23 @@
                     app.showToast('Brand already exists.', 'error');
                     return;
                 }
-                DB.tiv_brands.push({ name: brandName, models: [] });
-                app.showToast(`Brand '${brandName}' added.`, 'success');
-                app.renderTIVManagement();
+                app.showLoader('Adding brand...');
+                try {
+                    DB.tiv_brands.push({ name: brandName, models: [] });
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO tiv_brands (name, models) VALUES (${brandName}, '[]')`;
+                    }
+                    app.showToast(`Brand '${brandName}' added.`, 'success');
+                    app.renderTIVManagement();
+                } catch (err) {
+                    console.error('Failed to add brand:', err);
+                    app.showToast('Failed to save brand to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
             },
 
-            addTIVModel: (e) => {
+            addTIVModel: async (e) => {
                 e.preventDefault();
                 const brandName = document.getElementById('tiv-model-brand-select').value;
                 const modelName = document.getElementById('tiv-new-model').value.trim();
@@ -7383,25 +7539,59 @@
                     app.showToast('Model already exists in this brand.', 'error');
                     return;
                 }
-                brandObj.models.push(modelName);
-                app.showToast(`Model '${modelName}' added to ${brandName}.`, 'success');
-                app.renderTIVManagement();
-            },
-
-            deleteTIVBrand: (brandName) => {
-                if (confirm(`Are you sure you want to delete the brand '${brandName}' and all its models?`)) {
-                    DB.tiv_brands = DB.tiv_brands.filter(b => b.name !== brandName);
-                    app.showToast(`Brand '${brandName}' deleted.`, 'success');
+                
+                app.showLoader('Adding model...');
+                try {
+                    brandObj.models.push(modelName);
+                    if (app.neonSQL) {
+                        await app.neonSQL`UPDATE tiv_brands SET models = ${JSON.stringify(brandObj.models)} WHERE name = ${brandName}`;
+                    }
+                    app.showToast(`Model '${modelName}' added to ${brandName}.`, 'success');
                     app.renderTIVManagement();
+                } catch (err) {
+                    console.error('Failed to add model:', err);
+                    app.showToast('Failed to save model to database.', 'error');
+                } finally {
+                    app.hideLoader();
                 }
             },
 
-            deleteTIVModel: (brandName, modelName) => {
+            deleteTIVBrand: async (brandName) => {
+                if (confirm(`Are you sure you want to delete the brand '${brandName}' and all its models?`)) {
+                    app.showLoader('Deleting brand...');
+                    try {
+                        DB.tiv_brands = DB.tiv_brands.filter(b => b.name !== brandName);
+                        if (app.neonSQL) {
+                            await app.neonSQL`DELETE FROM tiv_brands WHERE name = ${brandName}`;
+                        }
+                        app.showToast(`Brand '${brandName}' deleted.`, 'success');
+                        app.renderTIVManagement();
+                    } catch (err) {
+                        console.error('Failed to delete brand:', err);
+                        app.showToast('Failed to delete brand from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            deleteTIVModel: async (brandName, modelName) => {
                 const brandObj = DB.tiv_brands.find(b => b.name === brandName);
                 if (brandObj) {
-                    brandObj.models = brandObj.models.filter(m => m !== modelName);
-                    app.showToast(`Model '${modelName}' deleted.`, 'success');
-                    app.renderTIVManagement();
+                    app.showLoader('Deleting model...');
+                    try {
+                        brandObj.models = brandObj.models.filter(m => m !== modelName);
+                        if (app.neonSQL) {
+                            await app.neonSQL`UPDATE tiv_brands SET models = ${JSON.stringify(brandObj.models)} WHERE name = ${brandName}`;
+                        }
+                        app.showToast(`Model '${modelName}' deleted.`, 'success');
+                        app.renderTIVManagement();
+                    } catch (err) {
+                        console.error('Failed to delete model:', err);
+                        app.showToast('Failed to delete model from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
                 }
             },
 
@@ -7816,7 +8006,7 @@
                 app.lastMonth = origLast;
             },
 
-            saveSystemSettings: () => {
+            saveSystemSettings: async () => {
                 const currentMonth = document.getElementById('settings-current-month')?.value;
                 const lastMonth = document.getElementById('settings-last-month')?.value;
 
@@ -7824,20 +8014,25 @@
 
                 app.showLoader("Saving system month configurations...");
 
-                setTimeout(() => {
+                try {
                     app.currentMonth = currentMonth;
                     app.lastMonth = lastMonth;
+                    DB.settings = { currentMonth, lastMonth };
 
-                    localStorage.setItem('aci_current_month', currentMonth);
-                    localStorage.setItem('aci_last_month', lastMonth);
-
+                    if (app.neonSQL) {
+                        const settingsJson = JSON.stringify(DB.settings);
+                        await app.neonSQL`UPDATE app_settings SET settings_json = ${settingsJson} WHERE id = '1'`;
+                    }
+                    
                     app.soMonthTab = null;
-
                     app.hideLoader();
                     app.showToast(`System Settings Saved: ${currentMonth} / ${lastMonth}`, "success");
-                    
                     app.renderSystemSettings();
-                }, 800);
+                } catch (err) {
+                    app.hideLoader();
+                    console.error("Failed to save settings:", err);
+                    app.showToast("Failed to save settings to database.", "error");
+                }
             },
 
             resetSystemSettingsToDefaults: () => {
