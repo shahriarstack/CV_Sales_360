@@ -1018,9 +1018,9 @@
                 const numParticles = Math.min(Math.floor(width / 11), width < 640 ? 38 : 95);
                 
                 const colors = [
-                    'rgba(15, 41, 66, 0.88)',   // Dark ACI Blue
-                    'rgba(24, 76, 120, 0.78)',  // Medium ACI Blue
-                    'rgba(244, 169, 21, 0.92)'  // Bright ACI Gold
+                    'rgba(16, 185, 129, 0.88)',  // Emerald Green
+                    'rgba(52, 211, 153, 0.78)',  // Translucent Mint Green
+                    'rgba(34, 197, 94, 0.90)'    // Bright Green
                 ];
                 
                 for (let i = 0; i < numParticles; i++) {
@@ -1085,28 +1085,23 @@
                         if (p.y < 0) { p.y = 0; p.vy *= -1; }
                         else if (p.y > height) { p.y = height; p.vy *= -1; }
                         
-                        // Draw dot with high-tech glow
+                        // Draw dot with high-tech green glow
                         ctx.beginPath();
                         ctx.fillStyle = p.color;
-                        if (p.color.includes('244')) {
-                            ctx.shadowBlur = 6;
-                            ctx.shadowColor = 'rgba(244, 169, 21, 0.6)';
-                        } else {
-                            ctx.shadowBlur = 4;
-                            ctx.shadowColor = 'rgba(15, 41, 66, 0.35)';
-                        }
+                        ctx.shadowBlur = 5;
+                        ctx.shadowColor = p.color;
                         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                         ctx.fill();
                         ctx.shadowBlur = 0; // Reset shadow so it doesn't affect connection lines
                         
-                        // Connect to mouse cursor with distinct thicker line
+                        // Connect to mouse cursor with distinct thicker green line
                         if (mouse.x !== null && mouse.y !== null) {
                             const dx = p.x - mouse.x;
                             const dy = p.y - mouse.y;
                             const dist = Math.hypot(dx, dy);
                             if (dist < 150) {
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(15, 41, 66, ${0.35 * (1 - dist / 150)})`;
+                                ctx.strokeStyle = `rgba(16, 185, 129, ${0.35 * (1 - dist / 150)})`;
                                 ctx.lineWidth = 1.0;
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(mouse.x, mouse.y);
@@ -1114,17 +1109,13 @@
                             }
                         }
                         
-                        // Connect to other dots (interconnected web)
+                        // Connect to other dots (interconnected green web)
                         for (let j = i + 1; j < particles.length; j++) {
                             let p2 = particles[j];
                             let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
                             if (dist < 125) { // Increased connection distance
                                 ctx.beginPath();
-                                if (p.color.includes('244') || p2.color.includes('244')) {
-                                    ctx.strokeStyle = `rgba(244, 169, 21, ${0.3 * (1 - dist / 125)})`;
-                                } else {
-                                    ctx.strokeStyle = `rgba(15, 41, 66, ${0.32 * (1 - dist / 125)})`;
-                                }
+                                ctx.strokeStyle = `rgba(16, 185, 129, ${0.32 * (1 - dist / 125)})`;
                                 ctx.lineWidth = 0.75; // Thicker lines
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(p2.x, p2.y);
