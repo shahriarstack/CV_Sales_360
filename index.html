@@ -1012,7 +1012,7 @@
             updateViewport: () => {
                 const meta = document.querySelector('meta[name="viewport"]');
                 if (meta) {
-                    if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'am')) {
+                    if (app.currentUser && app.currentUser.role === 'admin') {
                         // Desktop mode viewport width 1280px with scale control and zoom enabled
                         meta.setAttribute('content', 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
                     } else {
