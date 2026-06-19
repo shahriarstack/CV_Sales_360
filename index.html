@@ -1009,7 +1009,21 @@
                 }
             },
 
+            updateViewport: () => {
+                const meta = document.querySelector('meta[name="viewport"]');
+                if (meta) {
+                    if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'am')) {
+                        // Desktop mode viewport width 1280px with scale control and zoom enabled
+                        meta.setAttribute('content', 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
+                    } else {
+                        // Standard mobile responsive viewport
+                        meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                    }
+                }
+            },
+
             init: async () => {
+                app.updateViewport();
                 // Intercept localStorage.setItem to auto-update sidebar highlighted active states
                 const originalSetItem = localStorage.setItem;
                 localStorage.setItem = function(key, value) {
@@ -1198,6 +1212,7 @@
             // --- Routing & Layout ---
             loadAppLayout: () => {
                 document.getElementById('login-view').classList.add('opacity-0', 'pointer-events-none');
+                app.updateViewport();
                 setTimeout(() => {
                     document.getElementById('app-container').classList.remove('hidden');
                     app.setupSidebar();
