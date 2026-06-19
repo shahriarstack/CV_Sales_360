@@ -551,65 +551,64 @@
         </div>
 
         <div
-            class="h-full w-full sm:h-auto sm:max-w-[420px] bg-white/30 sm:bg-white/20 backdrop-blur-[30px] p-10 sm:rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.08)] relative z-10 sm:mx-4 border border-white/50 flex flex-col justify-center sm:block transition-all duration-500">
-            <div class="text-center mb-10">
+            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/70 sm:bg-white/40 backdrop-blur-3xl p-8 sm:rounded-[1.25rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative z-10 sm:mx-4 border-none sm:border border-white/60 glass-shine flex flex-col justify-center sm:block">
+            <div class="text-center mb-8">
                 <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors"
-                    class="h-8 mx-auto object-contain mb-8 opacity-80 hover:opacity-100 transition-opacity">
+                    class="h-10 mx-auto object-contain mb-8">
                 <div class="flex items-center justify-center gap-3 mb-2">
                     <div
-                        class="relative flex items-center justify-center w-12 h-12 rounded-[1.2rem] bg-gradient-to-br from-slate-800 to-black shadow-lg shadow-black/20 border border-white/20 shrink-0 overflow-hidden">
-                        <div class="absolute inset-0 bg-white/5 animate-pulse"></div>
+                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-900 shadow-xl shadow-aci-blue/30 border-2 border-white/40 shrink-0 overflow-hidden">
+                        <div class="absolute inset-0 bg-white/10 animate-pulse"></div>
                         <span class="text-white text-lg font-black tracking-tight z-10 drop-shadow-md">CV</span>
                     </div>
-                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-800"><span
+                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-900"><span
                             class="font-light text-slate-500">Sales</span>360<span
-                            class="text-blue-600 font-black text-xl ml-0.5 mt-0.5">°</span></h1>
+                            class="text-aci-blue font-black text-xl ml-0.5 mt-0.5">°</span></h1>
                 </div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.35em] mt-3">Commercial Vehicle
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Commercial Vehicle
                     Portfolio</p>
             </div>
 
-            <form id="login-form" class="space-y-6">
-                <div class="group">
-                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Select Area / Territory</label>
-                    <div class="relative flex items-center">
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Select Area / Territory</label>
+                    <div class="relative">
                         <i data-lucide="map-pin"
-                            class="absolute left-4 text-slate-400 w-4 h-4 transition-colors group-focus-within:text-blue-600 z-10"></i>
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                         <select id="login-user-select"
-                            class="w-full rounded-[1.2rem] pl-11 pr-4 py-4 bg-white/50 border border-white/60 focus:bg-white/80 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none text-sm font-medium text-slate-700 outline-none shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] backdrop-blur-md cursor-pointer"
+                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors appearance-none bg-white/50"
                             required>
                             <!-- options injected via JS -->
                         </select>
-                        <div class="absolute right-4 w-7 h-7 rounded-full bg-white/60 flex items-center justify-center pointer-events-none group-hover:bg-white/90 transition-colors shadow-sm">
-                            <i data-lucide="chevron-down" class="text-slate-500 w-3.5 h-3.5"></i>
-                        </div>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none"></i>
                     </div>
                 </div>
-                <div class="group">
-                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Employee ID (Password)</label>
-                    <div class="relative flex items-center">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Employee ID (Password)</label>
+                    <div class="relative">
                         <i data-lucide="lock"
-                            class="absolute left-4 text-slate-400 w-4 h-4 transition-colors group-focus-within:text-blue-600 z-10"></i>
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                         <input type="password" id="password"
-                            class="w-full rounded-[1.2rem] pl-11 pr-4 py-4 bg-white/50 border border-white/60 focus:bg-white/80 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm font-medium text-slate-700 outline-none shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] backdrop-blur-md placeholder-slate-400"
+                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors bg-white/50"
                             placeholder="Enter your Employee ID" required>
                     </div>
                 </div>
-                <div class="flex items-center justify-between text-sm mt-4 px-1">
-                    <label class="flex items-center text-slate-500 font-medium cursor-pointer group hover:text-slate-700 transition-colors">
-                        <input type="checkbox" class="w-4 h-4 rounded-[0.4rem] border-slate-300 text-blue-600 focus:ring-blue-600 focus:ring-offset-0 mr-3 bg-white/50 cursor-pointer transition-all">
+                <div class="flex items-center justify-between text-sm mt-2">
+                    <label class="flex items-center text-slate-600 font-medium">
+                        <input type="checkbox" class="rounded border-slate-300 text-aci-blue focus:ring-aci-blue mr-2">
                         Remember me
                     </label>
                 </div>
                 <button type="submit"
-                    class="w-full mt-8 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-[1.2rem] shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_25px_rgba(0,0,0,0.2)] transition-all active:scale-[0.98] flex items-center justify-center relative overflow-hidden group border border-slate-700">
-                    <span class="relative z-10 tracking-wide text-sm uppercase">Sign In</span>
+                    class="w-full mt-4 btn-liquid text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98]">
+                    Sign In
                 </button>
             </form>
-            <div class="mt-10 text-center">
-                <div class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-white/40 border border-white/50 shadow-sm backdrop-blur-sm">
-                    <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">crafted by <span
-                            class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent font-black text-[11px] ml-1">Shahriar</span></span>
+            <div class="mt-8 text-center text-xs text-slate-500 font-medium">
+                <div class="flex items-center justify-center opacity-80">
+                    <span class="text-[10px] font-medium">crafted by <span
+                            class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-extrabold text-[12px] tracking-wide">Shahriar</span></span>
                 </div>
             </div>
         </div>
@@ -760,7 +759,7 @@
 
             <!-- COPYRIGHT FOOTER -->
             <div
-                class="w-full text-center pb-24 md:pb-6 pt-4 text-[10px] font-medium text-slate-400 shrink-0">
+                class="w-full text-center pb-4 pt-4 text-[10px] font-medium text-slate-400 shrink-0">
                 ACI MOTORS @ 2026<br>
                 crafted by <span
                     class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-extrabold text-[12px] tracking-wide">Shahriar</span>
