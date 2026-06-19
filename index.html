@@ -450,8 +450,15 @@
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 -10px 40px rgba(15, 41, 66, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(15, 41, 66, 0.08);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+        }
+
+        .mobile-bottom-nav.nav-hidden {
+            transform: translateY(100px) scale(0.9) !important;
+            opacity: 0 !important;
+            pointer-events: none;
         }
 
         .nav-tab-active {
@@ -773,7 +780,7 @@
 
             <!-- PREMIUM MOBILE BOTTOM NAVIGATION -->
             <div id="mobile-bottom-nav"
-                class="fixed bottom-0 left-0 right-0 h-20 md:hidden z-50 flex items-center justify-around px-2 mobile-bottom-nav">
+                class="fixed bottom-4 left-4 right-4 h-14 md:hidden z-50 flex items-center justify-around px-2 mobile-bottom-nav rounded-2xl border border-white/30 shadow-lg">
                 <button onclick="app.navigateMobile('dashboard')"
                     class="flex flex-col items-center gap-1 text-slate-400 transition-all active:scale-95 px-4"
                     id="nav-dashboard">
@@ -1032,6 +1039,23 @@
 
             init: async () => {
                 app.updateViewport();
+
+                // Smart auto-hide bottom navigation on scroll
+                const mainEl = document.querySelector('main');
+                const bottomNav = document.getElementById('mobile-bottom-nav');
+                if (mainEl && bottomNav) {
+                    let lastScrollTop = 0;
+                    mainEl.addEventListener('scroll', () => {
+                        const scrollTop = mainEl.scrollTop;
+                        if (scrollTop > lastScrollTop && scrollTop > 60) {
+                            bottomNav.classList.add('nav-hidden');
+                        } else {
+                            bottomNav.classList.remove('nav-hidden');
+                        }
+                        lastScrollTop = scrollTop;
+                    }, { passive: true });
+                }
+
                 // Intercept localStorage.setItem to auto-update sidebar highlighted active states
                 const originalSetItem = localStorage.setItem;
                 localStorage.setItem = function(key, value) {
@@ -1331,7 +1355,10 @@
                         default: app.renderAdminDashboard();
                     }
                 }
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const mainEl = document.querySelector('main');
+                if (mainEl) {
+                    mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             },
 
             setupSidebar: () => {
@@ -1423,15 +1450,15 @@
 
                 const renderBottomBtn = (page, label, iconName, badgeHtml = '', isCenter = false) => {
                     const isActive = activePage === page;
-                    const activeColor = 'text-aci-blue font-bold';
-                    const inactiveColor = 'text-slate-400';
+                    const activeColor = 'text-aci-blue font-bold scale-110';
+                    const inactiveColor = 'text-slate-400 hover:text-slate-600';
 
                     if (isCenter) {
                         return `
-                            <div class="relative -top-4">
+                            <div class="relative -top-3">
                                 <button onclick="app.navigateMobile('${page}')"
-                                    class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-xl shadow-indigo-500/30 flex items-center justify-center text-white border-2 border-white/50 active:scale-90 transition-all">
-                                    <i data-lucide="${iconName}" class="w-7 h-7"></i>
+                                    class="w-11 h-11 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl shadow-lg shadow-indigo-500/20 flex items-center justify-center text-white border border-white/20 active:scale-90 transition-all">
+                                    <i data-lucide="${iconName}" class="w-5 h-5"></i>
                                 </button>
                             </div>
                         `;
@@ -1439,12 +1466,12 @@
 
                     return `
                         <button onclick="app.navigateMobile('${page}')" id="nav-${page}"
-                            class="flex flex-col items-center gap-1 ${isActive ? activeColor : inactiveColor} transition-all active:scale-95 px-4 relative">
-                            <div class="p-2 rounded-xl transition-all relative">
-                                <i data-lucide="${iconName}" class="w-6 h-6"></i>
+                            class="flex flex-col items-center justify-center gap-0.5 ${isActive ? activeColor : inactiveColor} transition-all active:scale-95 px-3 relative h-full">
+                            <div class="relative">
+                                <i data-lucide="${iconName}" class="w-5 h-5 transition-transform ${isActive ? 'scale-110' : ''}"></i>
                                 ${badgeHtml}
                             </div>
-                            <span class="text-[9px] font-bold uppercase tracking-tighter">${label}</span>
+                            <span class="text-[7.5px] font-black uppercase tracking-tighter">${label}</span>
                         </button>
                     `;
                 };
