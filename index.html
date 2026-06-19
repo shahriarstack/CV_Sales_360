@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>CV Sales360 | ACI Motors</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/spTwjwwJ/Chat-GPT-Image-May-14-2026-02-59-10-PM.png">
 
@@ -436,6 +436,10 @@
             .mobile-hide {
                 display: none !important;
             }
+
+            #app-header {
+                padding-top: calc(env(safe-area-inset-top, 24px) + 8px) !important;
+            }
         }
 
         .mobile-bottom-nav {
@@ -683,7 +687,7 @@
         <main class="flex-1 h-full overflow-y-auto relative flex flex-col">
 
             <!-- UNIVERSAL TOP HEADER (All roles, All screens) -->
-            <header
+            <header id="app-header"
                 class="bg-transparent sm:glass backdrop-blur-lg sm:backdrop-blur-xl sticky top-0 z-30 px-3 md:px-4 py-2 md:py-3 border-b border-white/5 flex justify-between items-center transition-all">
                 <div class="flex items-center gap-2 md:gap-3">
                     <button onclick="app.toggleSidebar()"
@@ -1017,7 +1021,7 @@
                         meta.setAttribute('content', 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
                     } else {
                         // Standard mobile responsive viewport
-                        meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                        meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
                     }
                 }
             },
