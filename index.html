@@ -1320,7 +1320,8 @@
                     links = [
                         renderSidebarBtn('dashboard', 'My Territories', 'layout-dashboard', 'text-aci-gold', 'app.renderAdminDashboard()'),
                         renderSidebarBtn('pulse', 'Performance Matrix', 'calendar-range', 'text-violet-400', 'app.renderAMPulseMatrix()'),
-                        renderSidebarBtn('emi', 'Area EMI Summary', 'banknote', 'text-slate-400', 'app.renderAdminEMI()')
+                        renderSidebarBtn('emi', 'Area EMI Summary', 'banknote', 'text-slate-400', 'app.renderAdminEMI()'),
+                        renderSidebarBtn('profile', 'Profile', 'user', 'text-slate-400', 'app.renderUserProfile()')
                     ].join('');
                     
                 } else if (app.currentUser.role === 'so') {
@@ -8049,7 +8050,7 @@
                 if (view === 'dashboard') app.renderSODashboard();
                 else if (view === 'pulse') app.renderSOPulseMatrix();
                 else if (view === 'emi') app.renderSOEMI();
-                else if (view === 'profile') app.renderSOProfile();
+                else if (view === 'profile') app.renderUserProfile();
                 else if (view === 'tiv') app.renderTIVReporting();
             },
 
@@ -9346,24 +9347,142 @@
                 }
             },
 
-            renderSOProfile: () => {
+            renderUserProfile: () => {
+                const roleName = app.currentUser.role === 'am' ? 'Area Manager' : (app.currentUser.role === 'admin' ? 'System Admin' : 'Sales Officer');
+                const territoriesText = app.currentUser.territories && app.currentUser.territories.length > 0 ? app.currentUser.territories.map(tId => { const t = DB.territories.find(ter => ter.id === tId); return t ? t.name : tId; }).join(', ') : 'All Territories';
+                
+                if (!document.getElementById('user-manual-modal')) {
+                    const modalHtml = `
+                        <div id="user-manual-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+                            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="user-manual-content">
+                                <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                                        <i data-lucide="book-open" class="w-5 h-5 text-aci-blue"></i>
+                                        ব্যবহার নির্দেশিকা (User Manual)
+                                    </h3>
+                                    <button onclick="document.getElementById('user-manual-modal').classList.add('hidden'); document.getElementById('user-manual-modal').classList.remove('opacity-100'); document.getElementById('user-manual-content').classList.remove('scale-100'); document.getElementById('user-manual-content').classList.add('scale-95');" class="text-slate-400 hover:text-red-500 transition-colors">
+                                        <i data-lucide="x" class="w-6 h-6"></i>
+                                    </button>
+                                </div>
+                                <div class="p-6 overflow-y-auto">
+                                    <div class="space-y-6">
+                                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                            <h4 class="text-blue-800 font-bold mb-2">Sales360 অ্যাপে স্বাগতম!</h4>
+                                            <p class="text-slate-600 text-sm leading-relaxed">এই অ্যাপটি বিশেষভাবে আমাদের সেলস অফিসার (SO) এবং এরিয়া ম্যানেজার (AM) ভাইদের জন্য তৈরি করা হয়েছে। এর মাধ্যমে আপনারা আপনাদের দৈনন্দিন কাজ, সেলস টার্গেট, এচিভমেন্ট এবং কালেকশন খুব সহজেই একটি জায়গা থেকে পরিচালনা করতে পারবেন।</p>
+                                        </div>
+
+                                        <div class="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                                            <div class="bg-slate-50 px-4 py-3 border-b border-slate-100">
+                                                <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                                                    <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i>
+                                                    সেলস অফিসার (Sales Officer) - ব্যবহার ও সুবিধা
+                                                </h4>
+                                            </div>
+                                            <div class="p-4 space-y-4">
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">সহজ ড্যাশবোর্ড</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">আপনার নিজস্ব টেরিটরির টার্গেট এবং বর্তমান সেলস এর আপডেট এক নজরে দেখতে পারবেন। কোথায় আরও ফোকাস করতে হবে তা দ্রুত সিদ্ধান্ত নিতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">পারফরম্যান্স পালস (Pulse)</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">গত বছরের (SPLY) এবং এই বছরের সেলস এর তুলনা দেখতে পারবেন। গ্রোথ এবং এচিভমেন্টের বিস্তারিত ডাটা পাবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">ইএমআই (EMI) কালেকশন</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">যাদের কিস্তি বাকি আছে তাদের নামের তালিকা এবং বকেয়া এমাউন্ট দেখতে পারবেন। কালেকশন এন্ট্রি করা এখন আরও সহজ।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">TIV রিপোর্টিং</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">লোকাল মার্কেটের টোটাল ইন্ডাস্ট্রি ভলিউম বা মার্কেট সাইজ রিপোর্ট সাবমিট করা যায়।</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                                            <div class="bg-slate-50 px-4 py-3 border-b border-slate-100">
+                                                <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                                                    <i data-lucide="users" class="w-4 h-4 text-aci-gold"></i>
+                                                    এরিয়া ম্যানেজার (Area Manager) - ব্যবহার ও সুবিধা
+                                                </h4>
+                                            </div>
+                                            <div class="p-4 space-y-4">
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-aci-gold shadow-[0_0_8px_rgba(244,169,21,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">এরিয়া মনিটরিং</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">আপনার আন্ডারে থাকা সকল টেরিটরির সার্বিক সেলস পরিস্থিতি একটি ড্যাশবোর্ডে দেখতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-aci-gold shadow-[0_0_8px_rgba(244,169,21,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">ম্যাট্রিক্স এনালাইসিস</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">ব্র্যান্ড এবং সেলস টাইপ অনুযায়ী প্রতিটি টেরিটরির গ্রোথ এবং এচিভমেন্ট চেক করতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-aci-gold shadow-[0_0_8px_rgba(244,169,21,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">কালেকশন ট্র্যাকিং</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">পুরো এরিয়ার টোটাল ইএমআই এবং রিকভারি স্ট্যাটাস ট্র্যাক করতে পারবেন এবং অফিসারদের পারফরম্যান্স ইভ্যালুয়েট করতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-slate-800 rounded-xl p-4 text-center shadow-lg relative overflow-hidden">
+                                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                                            <p class="text-white font-bold text-sm tracking-wide relative z-10">"সঠিক তথ্য, দ্রুত সিদ্ধান্ত - সফলতার মূলমন্ত্র"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+                    app.refreshIcons();
+                }
+
                 const html = `
                     <div class="text-center pt-8 pb-4">
                         <div class="w-24 h-24 bg-aci-blue rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-white mb-4 relative">
                             ${app.currentUser.name.charAt(0)}
-                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
+                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-2 border-white rounded-full shadow-sm"></div>
                         </div>
                         <h2 class="text-xl font-bold text-slate-800">${app.currentUser.name}</h2>
-                        <p class="text-sm text-slate-500">${app.currentUser.email}</p>
-                        <span class="inline-block mt-2 bg-slate-100 text-slate-600 text-xs px-3 py-1 rounded-full font-medium border border-slate-200">Sales Officer</span>
+                        <span class="inline-block mt-2 bg-slate-100 text-slate-600 text-xs px-3 py-1 rounded-full font-medium border border-slate-200">${roleName}</span>
                     </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mt-6">
+                        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors" onclick="const m = document.getElementById('user-manual-modal'); const c = document.getElementById('user-manual-content'); m.classList.remove('hidden'); setTimeout(() => { m.classList.add('opacity-100'); c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+                                    <i data-lucide="book-open" class="w-4 h-4 text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-indigo-900">User Manual</p>
+                                    <p class="text-xs text-indigo-600/70">Click to view complete guide</p>
+                                </div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-300"></i>
+                        </div>
                         <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
                             <i data-lucide="map" class="w-5 h-5 text-aci-blue"></i>
                             <div>
                                 <p class="text-sm font-semibold text-slate-800">Assigned Territories</p>
-                                <p class="text-xs text-slate-500">${app.currentUser.territories.map(tId => DB.territories.find(t => t.id === tId).name).join(', ')}</p>
+                                <p class="text-xs text-slate-500">${territoriesText}</p>
                             </div>
                         </div>
                         <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
@@ -9382,7 +9501,7 @@
                         </div>
                     </div>
 
-                    <button onclick="app.logout()" class="w-full mt-8 bg-red-50 text-red-600 font-bold py-3 rounded-xl border border-red-100 flex items-center justify-center gap-2 active:bg-red-100 transition-colors">
+                    <button onclick="app.logout()" class="w-full mt-8 bg-red-50 text-red-600 font-bold py-3 rounded-xl border border-red-100 flex items-center justify-center gap-2 hover:bg-red-100 active:bg-red-200 transition-colors">
                         <i data-lucide="log-out" class="w-5 h-5"></i> Sign Out
                     </button>
                 `;
