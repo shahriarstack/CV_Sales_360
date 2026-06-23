@@ -84,11 +84,10 @@
             outline: none !important;
         }
 
-        /* Bright glass login form inputs override */
         #login-form input,
         #login-form select {
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
+            background: rgba(255, 255, 255, 0.72) !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
             color: #0f172a !important;
             border-radius: 9999px !important;
             height: 48px !important;
@@ -96,6 +95,7 @@
             padding-bottom: 0 !important;
             padding-left: 2.75rem !important;
             padding-right: 2.5rem !important;
+            backdrop-filter: blur(8px) !important;
         }
         #login-form input:focus,
         #login-form select:focus {
@@ -603,9 +603,10 @@
             <!-- Slogan Title & Slogan -->
             <div class="relative z-20 max-w-[450px] my-auto space-y-8">
                 <div class="space-y-4">
-                    <h2 class="text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
-                        Manage your <br>
-                        <span class="bg-gradient-to-r from-aci-gold via-yellow-400 to-amber-500 bg-clip-text text-transparent font-light italic">performance</span>
+                    <h2 class="text-5xl lg:text-6xl font-black tracking-tighter text-white leading-none flex flex-wrap items-baseline gap-x-2">
+                        <span class="font-bold text-slate-300">CV</span>
+                        <span class="bg-gradient-to-r from-aci-gold via-yellow-400 to-amber-500 bg-clip-text text-transparent font-light italic font-serif">Sales</span>
+                        <span class="font-extrabold text-white">360<span class="text-aci-gold text-2xl font-black align-super">°</span></span>
                     </h2>
                     <p class="text-sm text-slate-400 font-medium leading-relaxed">
                         Real-time Commercial Vehicle portfolio tracking, target monitoring, and market intelligence at your fingertips.
@@ -613,9 +614,9 @@
                 </div>
 
                 <!-- Floating Mobile Phone Mockup -->
-                <div class="relative w-[250px] h-[420px] mx-auto md:mx-0 border-[6px] border-slate-800 bg-[#0a0f1d] rounded-[36px] shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col p-4 animate-[float_6s_ease-in-out_infinite]">
+                <div class="relative w-[250px] h-[420px] mx-auto md:mx-0 border-2 border-white/20 bg-white/[0.04] backdrop-blur-xl rounded-[36px] shadow-[0_30px_70px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col p-4 animate-[float_6s_ease-in-out_infinite]">
                     <!-- Notch -->
-                    <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-slate-800 rounded-full z-30"></div>
+                    <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-white/10 backdrop-blur-md rounded-full z-30"></div>
                     
                     <!-- App Interface -->
                     <div class="flex-1 flex flex-col justify-between text-slate-300 relative z-20">
@@ -635,29 +636,29 @@
                         </div>
 
                         <!-- Mock Graph Bars -->
-                        <div class="flex-1 flex items-end justify-between gap-3 bg-slate-950/40 border border-slate-800/40 rounded-xl p-3 mb-3 h-[120px]">
+                        <div class="flex-1 flex items-end justify-between gap-3 bg-white/[0.03] border border-white/10 backdrop-blur-md rounded-xl p-3 mb-3 h-[120px]">
                             <div class="flex flex-col items-center flex-1 h-full justify-end">
                                 <div class="w-full bg-gradient-to-t from-blue-600 to-indigo-500 rounded-t-md animate-[pulse_2s_infinite]" style="height: 75%"></div>
-                                <span class="text-[7px] font-bold text-slate-500 mt-1">Foton</span>
+                                <span class="text-[7px] font-bold text-slate-400 mt-1">Foton</span>
                             </div>
                             <div class="flex flex-col items-center flex-1 h-full justify-end">
                                 <div class="w-full bg-gradient-to-t from-red-600 to-rose-500 rounded-t-md animate-[pulse_2.5s_infinite]" style="height: 50%"></div>
-                                <span class="text-[7px] font-bold text-slate-500 mt-1">Mahindra</span>
+                                <span class="text-[7px] font-bold text-slate-400 mt-1">Mahindra</span>
                             </div>
                             <div class="flex flex-col items-center flex-1 h-full justify-end">
                                 <div class="w-full bg-gradient-to-t from-emerald-600 to-teal-500 rounded-t-md animate-[pulse_3s_infinite]" style="height: 35%"></div>
-                                <span class="text-[7px] font-bold text-slate-500 mt-1">Others</span>
+                                <span class="text-[7px] font-bold text-slate-400 mt-1">Others</span>
                             </div>
                         </div>
 
                         <!-- KPI mini cards -->
                         <div class="grid grid-cols-2 gap-2 mb-1">
-                            <div class="bg-slate-900/80 border border-slate-800/50 rounded-xl p-2">
-                                <span class="text-[7px] text-slate-500 uppercase font-black">YTD Sales</span>
+                            <div class="bg-white/[0.06] border border-white/10 backdrop-blur-md rounded-xl p-2">
+                                <span class="text-[7px] text-slate-400 uppercase font-black">YTD Sales</span>
                                 <h5 class="text-[10px] font-black text-white mt-0.5">1,788 Unit</h5>
                             </div>
-                            <div class="bg-slate-900/80 border border-slate-800/50 rounded-xl p-2">
-                                <span class="text-[7px] text-slate-500 uppercase font-black">Achieved</span>
+                            <div class="bg-white/[0.06] border border-white/10 backdrop-blur-md rounded-xl p-2">
+                                <span class="text-[7px] text-slate-400 uppercase font-black">Achieved</span>
                                 <h5 class="text-[10px] font-black text-emerald-400 mt-0.5">94.3%</h5>
                             </div>
                         </div>
@@ -672,7 +673,7 @@
         </div>
 
         <!-- RIGHT SIDE: Form Section (Full width on Mobile, 50-55% on Desktop) -->
-        <div class="w-full md:w-[55%] lg:w-[50%] bg-[#f8fafc] md:bg-white flex flex-col justify-center items-center p-8 sm:p-16 relative min-h-screen">
+        <div class="w-full md:w-[55%] lg:w-[50%] bg-gradient-to-tr from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] flex flex-col justify-center items-center p-6 sm:p-16 relative min-h-screen">
             <!-- Header bar with logo and info -->
             <div class="absolute top-8 left-8 right-8 flex items-center justify-between">
                 <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors" class="h-8 object-contain">
@@ -682,8 +683,8 @@
                 </div>
             </div>
 
-            <!-- Login form wrapper -->
-            <div class="w-full max-w-[350px] flex flex-col justify-center py-12">
+            <!-- Login form wrapper inside floating frosted white glass card -->
+            <div class="w-full max-w-[380px] bg-white/70 backdrop-blur-xl border border-white/80 rounded-[2rem] p-8 sm:p-10 shadow-[0_20px_50px_rgba(15,23,42,0.05)] relative z-20 flex flex-col justify-center">
                 <div class="mb-8">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xs font-black uppercase text-aci-blue tracking-[0.2em]">Sales360 Portal</span>
