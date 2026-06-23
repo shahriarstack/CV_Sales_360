@@ -929,37 +929,83 @@
             },
 
             initNeonDB: async () => {
+                // Keep the app.neonSQL reference name to avoid changing 50+ database calls in the code
+                app.neonSQL = async (strings, ...values) => {
+                    let query = '';
+                    let params = [];
+                    
+                    for (let i = 0; i < strings.length; i++) {
+                        query += strings[i];
+                        if (i < values.length) {
+                            const val = values[i];
+                            
+                            // Translate PostgreSQL array-based deletes (e.g. id = ANY(${selected}))
+                            // to standard SQL IN (?, ?, ...) syntax
+                            const currentQueryState = query.trim();
+                            const match = currentQueryState.match(/(id\s*=\s*ANY\s*\()$/i);
+                            if (match) {
+                                if (Array.isArray(val)) {
+                                    if (val.length === 0) {
+                                        query = query.substring(0, query.length - match[0].length) + 'id IN (NULL';
+                                    } else {
+                                        const placeholders = val.map(() => '?').join(',');
+                                        query = query.substring(0, query.length - match[0].length) + `id IN (${placeholders}`;
+                                        params.push(...val);
+                                    }
+                                } else {
+                                    query += '?';
+                                    params.push(val);
+                                }
+                            } else {
+                                query += '?';
+                                params.push(val);
+                            }
+                        }
+                    }
+                    
+                    // Translate PG SQL features to MySQL syntax
+                    query = query.replace(/\bJSONB\b/gi, 'JSON');
+                    query = query.replace(/ON CONFLICT\s*\(\s*\w+\s*\)\s*DO NOTHING/gi, 'ON DUPLICATE KEY UPDATE id=id');
+                    
+                    // Send to cPanel local PHP bridge
+                    const response = await fetch('api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ query, params })
+                    });
+                    
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(errText || 'Database query error');
+                    }
+                    
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    return result.data;
+                };
+
                 try {
-                    const module = await import("https://esm.sh/@neondatabase/serverless");
-                    const sql = module.neon("postgresql://neondb_owner:npg_5XUZLavKxk9T@ep-solitary-resonance-aoh7grwd-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
-                    app.neonSQL = sql;
-                    console.log("Successfully initialized Neon Database connection");
-
-                    // Ensure app_settings exists
-                    await sql`CREATE TABLE IF NOT EXISTS app_settings (id VARCHAR(50) PRIMARY KEY, settings_json JSONB NOT NULL)`;
-                    await sql`INSERT INTO app_settings (id, settings_json) VALUES ('1', '{"currentMonth": "April", "lastMonth": "March"}') ON CONFLICT (id) DO NOTHING`;
-
-                    // Ensure users has employee_id to match UI logic
-                    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS employee_id VARCHAR(100)`;
-                    await sql`UPDATE users SET employee_id = 'ADMIN001' WHERE id = 'u1' AND employee_id IS NULL`;
-                    await sql`UPDATE users SET employee_id = 'AM001' WHERE id = 'u2' AND employee_id IS NULL`;
-                    await sql`UPDATE users SET employee_id = 'SO001' WHERE id = 'u3' AND employee_id IS NULL`;
-                    await sql`UPDATE users SET employee_id = 'SO002' WHERE id = 'u4' AND employee_id IS NULL`;
-
-                    // Fetch data concurrently to speed up loading
+                    console.log("Connecting to cPanel MySQL database via api.php...");
+                    
+                    // Load all data tables concurrently
                     const [targets, projections, emi, sales, recovery_od, users, territories, models, notices, links, tiv_brands, app_settings] = await Promise.all([
-                        sql`SELECT * FROM targets`,
-                        sql`SELECT * FROM projections`,
-                        sql`SELECT * FROM emi`,
-                        sql`SELECT * FROM sales`,
-                        sql`SELECT * FROM recovery_od`,
-                        sql`SELECT * FROM users`,
-                        sql`SELECT * FROM territories`,
-                        sql`SELECT * FROM models`,
-                        sql`SELECT * FROM notices`,
-                        sql`SELECT * FROM links`,
-                        sql`SELECT * FROM tiv_brands`,
-                        sql`SELECT * FROM app_settings`
+                        app.neonSQL`SELECT * FROM targets`,
+                        app.neonSQL`SELECT * FROM projections`,
+                        app.neonSQL`SELECT * FROM emi`,
+                        app.neonSQL`SELECT * FROM sales`,
+                        app.neonSQL`SELECT * FROM recovery_od`,
+                        app.neonSQL`SELECT * FROM users`,
+                        app.neonSQL`SELECT * FROM territories`,
+                        app.neonSQL`SELECT * FROM models`,
+                        app.neonSQL`SELECT * FROM notices`,
+                        app.neonSQL`SELECT * FROM links`,
+                        app.neonSQL`SELECT * FROM tiv_brands`,
+                        app.neonSQL`SELECT * FROM app_settings`
                     ]);
                     
                     DB.targets = targets;
@@ -982,9 +1028,9 @@
                         app.lastMonth = DB.settings.lastMonth || 'March';
                     }
 
-                    console.log("Data successfully loaded from Neon DB.");
+                    console.log("Data successfully loaded from cPanel MySQL Database.");
                 } catch (e) {
-                    console.error("Failed to connect to Neon DB:", e);
+                    console.error("Failed to connect to MySQL DB via api.php:", e);
                 }
             },
 
