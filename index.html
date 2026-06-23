@@ -87,25 +87,40 @@
         /* Bright glass login form inputs override */
         #login-form input,
         #login-form select {
-            background: rgba(255, 255, 255, 0.8) !important;
-            border: 1px solid rgba(226, 232, 240, 0.8) !important;
-            color: #1e293b !important;
-            backdrop-filter: blur(4px) !important;
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #0f172a !important;
+            border-radius: 9999px !important;
+            height: 48px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            padding-left: 2.75rem !important;
+            padding-right: 2.5rem !important;
         }
         #login-form input:focus,
         #login-form select:focus {
-            background: rgba(255, 255, 255, 1) !important;
+            background: #ffffff !important;
             border-color: #0F2942 !important;
-            box-shadow: 0 0 0 4px rgba(15, 41, 66, 0.06) !important;
+            box-shadow: 0 0 0 4px rgba(15, 41, 66, 0.05) !important;
         }
         #login-form select option {
             background-color: #ffffff !important;
             color: #1e293b !important;
         }
         #login-form input[type="checkbox"] {
-            background: rgba(255, 255, 255, 0.8) !important;
-            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 0.25rem !important;
+            width: 1rem !important;
+            height: 1rem !important;
+            padding: 0 !important;
         }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
 
 
 
@@ -566,87 +581,167 @@
 
     <!-- ========================================== -->
     <!-- LOGIN VIEW (Hidden by default to prevent flash) -->
-    <!-- ========================================== -->
-    <div id="login-view"
-        class="h-full w-full hidden items-center justify-center bg-cover bg-center absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden"
-        style="background: radial-gradient(circle at center, #ffffff 0%, #f8fafc 60%, #e2e8f0 100%);">
+    <!-- ========================================== -->    <div id="login-view"
+        class="h-full w-full hidden flex flex-col md:flex-row absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden bg-white">
 
-        <!-- Animated Liquid Layer Backdrop -->
-        <div class="absolute inset-0 bg-white/20 backdrop-blur-xl"></div>
-        <div class="liquid-container !filter-none opacity-30">
-            <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-15"
-                style="--blob-color-1: #e0f2fe; --blob-color-2: #e0e7ff;"></div>
-            <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-15"
-                style="--blob-color-1: #ccfbf1; --blob-color-2: #f3e8ff;"></div>
-        </div>
-        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-80"></canvas>
+        <!-- LEFT SIDE: Branding, Animations & Mockup (Hidden on Mobile) -->
+        <div class="hidden md:flex md:w-[45%] lg:w-[50%] bg-[#08101a] relative flex-col justify-between p-12 overflow-hidden border-r border-slate-800">
+            <!-- Orbital concentric circles background -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-25">
+                <div class="w-[300px] h-[300px] border border-slate-700/50 rounded-full animate-[spin_60s_linear_infinite]"></div>
+                <div class="w-[450px] h-[450px] border border-slate-700/30 rounded-full absolute animate-[spin_80s_linear_infinite_reverse]"></div>
+                <div class="w-[600px] h-[600px] border border-slate-700/15 rounded-full absolute"></div>
+            </div>
+            
+            <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-80"></canvas>
 
-        <div
-            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/50 sm:bg-white/60 backdrop-blur-md sm:backdrop-blur-2xl p-8 sm:rounded-[2rem] shadow-[0_20px_50px_rgba(15,23,42,0.06)] relative z-20 sm:mx-4 border-none sm:border border-white/80 flex flex-col justify-center sm:block">
-            <div class="text-center mb-8">
-                <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors"
-                    class="h-10 mx-auto object-contain mb-8">
-                <div class="flex items-center justify-center gap-3 mb-2">
-                    <div
-                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-900 shadow-lg border-2 border-white/80 shrink-0 overflow-hidden">
-                        <div class="absolute inset-0 bg-white/10 animate-pulse"></div>
-                        <span class="text-white text-lg font-black tracking-tight z-10 drop-shadow-sm">CV</span>
-                    </div>
-                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-800"><span
-                            class="font-light text-slate-400">Sales</span>360<span
-                            class="text-aci-gold font-black text-xl ml-0.5 mt-0.5">°</span></h1>
-                </div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Commercial Vehicle
-                    Portfolio</p>
+            <!-- Top slogan -->
+            <div class="relative z-20">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.25em]">ACI Motors Commercial Vehicles</span>
             </div>
 
-            <form id="login-form" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Select Area / Territory</label>
-                    <div class="relative">
-                        <i data-lucide="map-pin"
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
-                        <select id="login-user-select"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors appearance-none bg-white/60 text-slate-800"
-                            required>
-                            <!-- options injected via JS -->
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none"></i>
+            <!-- Slogan Title & Slogan -->
+            <div class="relative z-20 max-w-[450px] my-auto space-y-8">
+                <div class="space-y-4">
+                    <h2 class="text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+                        Manage your <br>
+                        <span class="bg-gradient-to-r from-aci-gold via-yellow-400 to-amber-500 bg-clip-text text-transparent font-light italic">performance</span>
+                    </h2>
+                    <p class="text-sm text-slate-400 font-medium leading-relaxed">
+                        Real-time Commercial Vehicle portfolio tracking, target monitoring, and market intelligence at your fingertips.
+                    </p>
+                </div>
+
+                <!-- Floating Mobile Phone Mockup -->
+                <div class="relative w-[250px] h-[420px] mx-auto md:mx-0 border-[6px] border-slate-800 bg-[#0a0f1d] rounded-[36px] shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col p-4 animate-[float_6s_ease-in-out_infinite]">
+                    <!-- Notch -->
+                    <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-slate-800 rounded-full z-30"></div>
+                    
+                    <!-- App Interface -->
+                    <div class="flex-1 flex flex-col justify-between text-slate-300 relative z-20">
+                        <!-- Top status bar mockup -->
+                        <div class="flex justify-between items-center text-[8px] font-bold tracking-wider text-slate-500 mb-4 px-1 mt-1">
+                            <span>9:41</span>
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="wifi" class="w-2.5 h-2.5"></i>
+                                <i data-lucide="battery" class="w-3 h-3"></i>
+                            </div>
+                        </div>
+
+                        <!-- Mini title -->
+                        <div class="px-1 mb-2">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Dashboard Preview</span>
+                            <h4 class="text-xs font-bold text-white mt-0.5">Monthly Brand Sales</h4>
+                        </div>
+
+                        <!-- Mock Graph Bars -->
+                        <div class="flex-1 flex items-end justify-between gap-3 bg-slate-950/40 border border-slate-800/40 rounded-xl p-3 mb-3 h-[120px]">
+                            <div class="flex flex-col items-center flex-1 h-full justify-end">
+                                <div class="w-full bg-gradient-to-t from-blue-600 to-indigo-500 rounded-t-md animate-[pulse_2s_infinite]" style="height: 75%"></div>
+                                <span class="text-[7px] font-bold text-slate-500 mt-1">Foton</span>
+                            </div>
+                            <div class="flex flex-col items-center flex-1 h-full justify-end">
+                                <div class="w-full bg-gradient-to-t from-red-600 to-rose-500 rounded-t-md animate-[pulse_2.5s_infinite]" style="height: 50%"></div>
+                                <span class="text-[7px] font-bold text-slate-500 mt-1">Mahindra</span>
+                            </div>
+                            <div class="flex flex-col items-center flex-1 h-full justify-end">
+                                <div class="w-full bg-gradient-to-t from-emerald-600 to-teal-500 rounded-t-md animate-[pulse_3s_infinite]" style="height: 35%"></div>
+                                <span class="text-[7px] font-bold text-slate-500 mt-1">Others</span>
+                            </div>
+                        </div>
+
+                        <!-- KPI mini cards -->
+                        <div class="grid grid-cols-2 gap-2 mb-1">
+                            <div class="bg-slate-900/80 border border-slate-800/50 rounded-xl p-2">
+                                <span class="text-[7px] text-slate-500 uppercase font-black">YTD Sales</span>
+                                <h5 class="text-[10px] font-black text-white mt-0.5">1,788 Unit</h5>
+                            </div>
+                            <div class="bg-slate-900/80 border border-slate-800/50 rounded-xl p-2">
+                                <span class="text-[7px] text-slate-500 uppercase font-black">Achieved</span>
+                                <h5 class="text-[10px] font-black text-emerald-400 mt-0.5">94.3%</h5>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Employee ID (Password)</label>
-                    <div class="relative">
-                        <i data-lucide="lock"
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
-                        <input type="password" id="password"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors bg-white/60 text-slate-800"
-                            placeholder="Enter your password" required>
+            </div>
+
+            <!-- Footer copyright signature -->
+            <div class="relative z-20 mt-auto">
+                <p class="text-[10px] text-slate-600 font-medium">© 2026 ACI Motors CV. All rights reserved.</p>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE: Form Section (Full width on Mobile, 50-55% on Desktop) -->
+        <div class="w-full md:w-[55%] lg:w-[50%] bg-[#f8fafc] md:bg-white flex flex-col justify-center items-center p-8 sm:p-16 relative min-h-screen">
+            <!-- Header bar with logo and info -->
+            <div class="absolute top-8 left-8 right-8 flex items-center justify-between">
+                <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors" class="h-8 object-contain">
+                <div class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-slate-400"></i>
+                    <span>Support Desk</span>
+                </div>
+            </div>
+
+            <!-- Login form wrapper -->
+            <div class="w-full max-w-[350px] flex flex-col justify-center py-12">
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-black uppercase text-aci-blue tracking-[0.2em]">Sales360 Portal</span>
                     </div>
+                    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">Sign In</h2>
+                    <p class="text-sm text-slate-500 mt-2">Access your territory dashboard & performance reports.</p>
                 </div>
-                <div class="flex items-center justify-between text-sm mt-2">
-                    <label class="flex items-center text-slate-500 font-medium">
-                        <input type="checkbox" class="rounded border-slate-300 bg-white/80 text-aci-blue focus:ring-aci-blue mr-2">
-                        Remember me
-                    </label>
-                </div>
-                <button type="submit"
-                    class="group relative w-full mt-4 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_20px_rgba(15,41,66,0.15)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-aci-blue to-[#1e3a5f]">
-                    <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-[150%] animate-[shimmer_2s_infinite]"></div>
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)]"></div>
-                    <span class="relative z-10 flex items-center justify-center gap-2">
-                        Sign In
-                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
-                    </span>
-                </button>
 
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Select Area / Territory</label>
+                        <div class="relative">
+                            <i data-lucide="map-pin"
+                                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 z-20"></i>
+                            <select id="login-user-select"
+                                class="w-full focus:outline-none appearance-none bg-white text-slate-800 relative z-10"
+                                required>
+                                <!-- options injected via JS -->
+                            </select>
+                            <i data-lucide="chevron-down"
+                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none z-20"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Employee ID (Password)</label>
+                        <div class="relative">
+                            <i data-lucide="lock"
+                                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 z-20"></i>
+                            <input type="password" id="password"
+                                class="w-full focus:outline-none bg-white text-slate-800 relative z-10"
+                                placeholder="Enter your password" required>
+                            <button type="button" id="password-toggle" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none z-20">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm mt-3 px-1">
+                        <label class="flex items-center text-slate-500 font-medium cursor-pointer">
+                            <input type="checkbox" class="rounded border-slate-300 text-aci-blue focus:ring-aci-blue mr-2 cursor-pointer">
+                            Remember me
+                        </label>
+                    </div>
+                    <button type="submit"
+                        class="group relative w-full mt-4 text-white font-bold rounded-full h-[48px] shadow-[0_8px_20px_rgba(15,41,66,0.15)] hover:shadow-[0_12px_24px_rgba(15,41,66,0.22)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-aci-blue to-[#1e3a5f]">
+                        <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-[150%] animate-[shimmer_2s_infinite]"></div>
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)]"></div>
+                        <span class="relative z-10 flex items-center justify-center gap-2">
+                            Sign In
+                            <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </button>
+                </form>
 
-            </form>
-            <div class="mt-8 text-center text-xs text-slate-500 font-medium">
-                <div class="flex items-center justify-center opacity-80">
-                    <span class="text-[10px] font-medium">crafted by <span
-                            class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-extrabold text-[12px] tracking-wide">Shahriar</span></span>
+                <div class="mt-8 text-center text-xs text-slate-400 font-medium">
+                    <div class="flex items-center justify-center opacity-80">
+                        <span class="text-[10px] font-medium">crafted by <span
+                                class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-extrabold text-[12px] tracking-wide">Shahriar</span></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1084,8 +1179,8 @@
                     canvas.cleanupParticles();
                 }
                 
-                let width = canvas.width = window.innerWidth;
-                let height = canvas.height = window.innerHeight;
+                let width = canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+                let height = canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
                 
                 const particles = [];
                 // Adaptive count: fewer particles for premium minimal aesthetic
@@ -1207,8 +1302,8 @@
                 app.loginParticleAnimFrame = animFrame;
                 
                 const handleResize = () => {
-                    width = canvas.width = window.innerWidth;
-                    height = canvas.height = window.innerHeight;
+                    width = canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+                    height = canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
                 };
                 
                 window.addEventListener('resize', handleResize);
@@ -1244,8 +1339,24 @@
                 await app.initNeonDB(); // Connect to Neon DB and fetch data
                 app.populateLoginDropdown(); // Setup Login Select Options
                 app.initLoginParticles(); // Initialize background web animation
-                app.refreshIcons();
                 document.getElementById('login-form').addEventListener('submit', app.handleLogin);
+
+                // Password visibility toggle handler
+                const pwToggle = document.getElementById('password-toggle');
+                if (pwToggle) {
+                    pwToggle.addEventListener('click', () => {
+                        const pwInput = document.getElementById('password');
+                        if (pwInput.type === 'password') {
+                            pwInput.type = 'text';
+                            pwToggle.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i>';
+                        } else {
+                            pwInput.type = 'password';
+                            pwToggle.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i>';
+                        }
+                        app.refreshIcons();
+                    });
+                }
+
 
                 // Check session with Pre-render Guard
                 const storedUser = localStorage.getItem('aci_user');
