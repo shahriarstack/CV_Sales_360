@@ -84,27 +84,27 @@
             outline: none !important;
         }
 
-        /* White glass login form inputs override */
+        /* Bright glass login form inputs override */
         #login-form input,
         #login-form select {
-            background: rgba(255, 255, 255, 0.72) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-            color: #0f172a !important;
-            backdrop-filter: blur(8px) !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            color: #1e293b !important;
+            backdrop-filter: blur(4px) !important;
         }
         #login-form input:focus,
         #login-form select:focus {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: rgba(255, 255, 255, 1) !important;
             border-color: #0F2942 !important;
-            box-shadow: 0 0 0 4px rgba(15, 41, 66, 0.1) !important;
+            box-shadow: 0 0 0 4px rgba(15, 41, 66, 0.06) !important;
         }
         #login-form select option {
             background-color: #ffffff !important;
-            color: #0f172a !important;
+            color: #1e293b !important;
         }
         #login-form input[type="checkbox"] {
             background: rgba(255, 255, 255, 0.8) !important;
-            border: 1px solid rgba(203, 213, 225, 0.8) !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
         }
 
 
@@ -569,45 +569,45 @@
     <!-- ========================================== -->
     <div id="login-view"
         class="h-full w-full hidden items-center justify-center bg-cover bg-center absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden"
-        style="background: radial-gradient(circle at center, #0F2942 0%, #060b13 100%);">
+        style="background: radial-gradient(circle at center, #ffffff 0%, #f8fafc 60%, #e2e8f0 100%);">
 
         <!-- Animated Liquid Layer Backdrop -->
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-xl"></div>
-        <div class="liquid-container !filter-none opacity-20">
-            <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-10"
-                style="--blob-color-1: #0F2942; --blob-color-2: #1e3a5f;"></div>
-            <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-10"
-                style="--blob-color-1: #1e1b4b; --blob-color-2: #0F2942;"></div>
+        <div class="absolute inset-0 bg-white/20 backdrop-blur-xl"></div>
+        <div class="liquid-container !filter-none opacity-30">
+            <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-15"
+                style="--blob-color-1: #e0f2fe; --blob-color-2: #e0e7ff;"></div>
+            <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-15"
+                style="--blob-color-1: #ccfbf1; --blob-color-2: #f3e8ff;"></div>
         </div>
-        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-90"></canvas>
+        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-80"></canvas>
 
         <div
-            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/10 sm:bg-white/20 backdrop-blur-md sm:backdrop-blur-2xl p-8 sm:rounded-[2rem] shadow-[0_25px_60px_rgba(0,0,0,0.35)] relative z-20 sm:mx-4 border-none sm:border border-white/25 flex flex-col justify-center sm:block">
+            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/50 sm:bg-white/60 backdrop-blur-md sm:backdrop-blur-2xl p-8 sm:rounded-[2rem] shadow-[0_20px_50px_rgba(15,23,42,0.06)] relative z-20 sm:mx-4 border-none sm:border border-white/80 flex flex-col justify-center sm:block">
             <div class="text-center mb-8">
                 <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors"
                     class="h-10 mx-auto object-contain mb-8">
                 <div class="flex items-center justify-center gap-3 mb-2">
                     <div
-                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-950 shadow-xl shadow-aci-blue/20 border-2 border-white/10 shrink-0 overflow-hidden">
+                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-900 shadow-lg border-2 border-white/80 shrink-0 overflow-hidden">
                         <div class="absolute inset-0 bg-white/10 animate-pulse"></div>
-                        <span class="text-white text-lg font-black tracking-tight z-10 drop-shadow-md">CV</span>
+                        <span class="text-white text-lg font-black tracking-tight z-10 drop-shadow-sm">CV</span>
                     </div>
-                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-900"><span
-                            class="font-light text-slate-500">Sales</span>360<span
-                            class="text-aci-blue font-black text-xl ml-0.5 mt-0.5">°</span></h1>
+                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-800"><span
+                            class="font-light text-slate-400">Sales</span>360<span
+                            class="text-aci-gold font-black text-xl ml-0.5 mt-0.5">°</span></h1>
                 </div>
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-3">Commercial Vehicle
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Commercial Vehicle
                     Portfolio</p>
             </div>
 
             <form id="login-form" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Select Area / Territory</label>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Select Area / Territory</label>
                     <div class="relative">
                         <i data-lucide="map-pin"
                             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                         <select id="login-user-select"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors appearance-none bg-white/50 text-slate-900"
+                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors appearance-none bg-white/60 text-slate-800"
                             required>
                             <!-- options injected via JS -->
                         </select>
@@ -616,31 +616,31 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Employee ID (Password)</label>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Employee ID (Password)</label>
                     <div class="relative">
                         <i data-lucide="lock"
                             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                         <input type="password" id="password"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors bg-white/50 text-slate-900"
+                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors bg-white/60 text-slate-800"
                             placeholder="Enter your password" required>
                     </div>
                 </div>
                 <div class="flex items-center justify-between text-sm mt-2">
-                    <label class="flex items-center text-slate-700 font-medium">
-                        <input type="checkbox" class="rounded border-slate-300 text-aci-blue focus:ring-aci-blue mr-2">
+                    <label class="flex items-center text-slate-500 font-medium">
+                        <input type="checkbox" class="rounded border-slate-300 bg-white/80 text-aci-blue focus:ring-aci-blue mr-2">
                         Remember me
                     </label>
                 </div>
-
                 <button type="submit"
-                    class="group relative w-full mt-4 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]">
-                    <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-[150%] animate-[shimmer_2.5s_infinite]"></div>
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,transparent_70%)]"></div>
+                    class="group relative w-full mt-4 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_20px_rgba(15,41,66,0.15)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-aci-blue to-[#1e3a5f]">
+                    <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-[150%] animate-[shimmer_2s_infinite]"></div>
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)]"></div>
                     <span class="relative z-10 flex items-center justify-center gap-2">
                         Sign In
                         <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
                     </span>
                 </button>
+
 
             </form>
             <div class="mt-8 text-center text-xs text-slate-500 font-medium">
@@ -1092,9 +1092,9 @@
                 const numParticles = Math.min(Math.floor(width / 18), width < 640 ? 25 : 60);
                 
                 const colors = [
-                    'rgba(241, 245, 249, 0.80)',  // Slate 50 (Soft Silver)
-                    'rgba(147, 197, 253, 0.70)',  // Blue 300 (Ice Blue)
-                    'rgba(191, 219, 254, 0.60)'   // Blue 200 (Soft Blue)
+                    'rgba(71, 85, 105, 0.45)',    // Slate 600
+                    'rgba(99, 102, 241, 0.50)',   // Indigo 500
+                    'rgba(14, 165, 233, 0.40)'    // Sky 500
                 ];
                 
                 for (let i = 0; i < numParticles; i++) {
@@ -1176,7 +1176,7 @@
                             const dist = Math.hypot(dx, dy);
                             if (dist < 150) {
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(147, 197, 253, ${0.18 * (1 - dist / 150)})`;
+                                ctx.strokeStyle = `rgba(14, 165, 233, ${0.18 * (1 - dist / 150)})`;
                                 ctx.lineWidth = 0.6;
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(mouse.x, mouse.y);
@@ -1190,7 +1190,7 @@
                             let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
                             if (dist < 110) { // Minimal connection distance
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(241, 245, 249, ${0.12 * (1 - dist / 110)})`;
+                                ctx.strokeStyle = `rgba(99, 102, 241, ${0.08 * (1 - dist / 110)})`;
                                 ctx.lineWidth = 0.5;
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(p2.x, p2.y);
@@ -1200,6 +1200,7 @@
                     }
                     animFrame = requestAnimationFrame(draw);
                 }
+
                 draw();
 
                 
