@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS users (
 INSERT INTO users (id, name, role, email, password, territories, area_name) VALUES
 ('u1', 'System Administrator', 'admin', 'admin@acimotors.com', 'password', '[]', NULL),
 ('u2', 'Md. Shafiqul (AM)', 'am', 'am@acimotors.com', 'password', '["t1", "t2"]', 'Dhaka Area'),
-('u3', 'Rahim Uddin (SO)', 'so', 'so@acimotors.com', 'password', '["t1"]', NULL),
-('u4', 'Karim Hasan (SO)', 'so', 'so2@acimotors.com', 'password', '["t2"]', NULL);
+('u3', 'Rahim Uddin (MO)', 'so', 'so@acimotors.com', 'password', '["t1"]', NULL),
+('u4', 'Karim Hasan (MO)', 'so', 'so2@acimotors.com', 'password', '["t2"]', NULL);
 
 -- 2. Territories Table
 CREATE TABLE IF NOT EXISTS territories (
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS notices (
 );
 
 INSERT INTO notices (id, title, message, timestamp, fileType, fileName) VALUES
-('n1', 'Q2 Performance Target Updates', 'All Area Managers must submit Q2 performance targets by the 25th of this month. Please refer to the attached guideline for instructions.', '14/04/2026', 'pdf', 'Q2_Guidelines.pdf'),
+('n1', 'Q2 Performance Target Updates', 'All AMs must submit Q2 performance targets by the 25th of this month. Please refer to the attached guideline for instructions.', '14/04/2026', 'pdf', 'Q2_Guidelines.pdf'),
 ('n2', 'New Sales Scheme: Monsoon Bonus', 'A special bonus scheme for selling Foton TM3 models during this monsoon season. The details of the incentive structure are attached in the image.', '10/04/2026', 'image', 'Monsoon_Offer.jpg');
 
 -- 6. Links Table

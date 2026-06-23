@@ -788,8 +788,8 @@
             users: [
                 { id: 'u1', name: 'System Administrator', role: 'admin', employee_id: 'ADMIN001', territories: [] },
                 { id: 'u2', name: 'Md. Shafiqul (AM)', role: 'am', employee_id: 'AM001', territories: ['t1', 't2'], area_name: 'Dhaka Area' },
-                { id: 'u3', name: 'Rahim Uddin (SO)', role: 'so', employee_id: 'SO001', territories: ['t1'] },
-                { id: 'u4', name: 'Karim Hasan (SO)', role: 'so', employee_id: 'SO002', territories: ['t2'] }
+                { id: 'u3', name: 'Rahim Uddin (MO)', role: 'so', employee_id: 'SO001', territories: ['t1'] },
+                { id: 'u4', name: 'Karim Hasan (MO)', role: 'so', employee_id: 'SO002', territories: ['t2'] }
             ],
             territories: [
                 { id: 't1', name: 'Cox\'s Bazar', district: 'Cox\'s Bazar', upazilas: [] },
@@ -1321,7 +1321,7 @@
 
                 const ams = DB.users.filter(u => u.role === 'am');
                 if (ams.length > 0) {
-                    optionsHtml += `<optgroup label="Area Managers">`;
+                    optionsHtml += `<optgroup label="AMs">`;
                     ams.forEach(u => {
                         const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || 'No Area';
                         optionsHtml += `<option value="${u.id}">${areaNames} - ${u.name}</option>`;
@@ -1331,7 +1331,7 @@
 
                 const sos = DB.users.filter(u => u.role === 'so');
                 if (sos.length > 0) {
-                    optionsHtml += `<optgroup label="Sales Officers">`;
+                    optionsHtml += `<optgroup label="MOs">`;
                     sos.forEach(u => {
                         const areaName = DB.territories.find(t => t.id === u.territories[0])?.name || 'Unknown';
                         optionsHtml += `<option value="${u.id}">${areaName} - ${u.name}</option>`;
@@ -1560,7 +1560,7 @@
                         <div class="mb-6 flex justify-between items-center">
                             <div>
                                 <h1 class="text-2xl font-bold text-slate-800">Vehicle Models</h1>
-                                <p class="text-sm text-slate-500">Manage brands and model names for SO delivery entry</p>
+                                <p class="text-sm text-slate-500">Manage brands and model names for MO delivery entry</p>
                             </div>
                             <button onclick="app.showAddEditModelModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
                                 <i data-lucide="plus" class="w-4 h-4"></i> Add Model
@@ -1738,7 +1738,7 @@
                         <div class="mb-6 flex justify-between items-center">
                             <div>
                                 <h1 class="text-2xl font-bold text-slate-800">User Management</h1>
-                                <p class="text-sm text-slate-500">Manage System Administrators, Area Managers, and Sales Officers</p>
+                                <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
                             </div>
                             <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
                                 <i data-lucide="plus" class="w-4 h-4"></i> Add User
@@ -1791,11 +1791,11 @@
                             </div>
                         </div>
 
-                        <!-- Area Manager Section -->
+                        <!-- AM Section -->
                         <div class="mb-8">
                             <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
-                                Area Manager Management
+                                AM Management
                             </h2>
                             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
                                 <table class="w-full text-left text-sm whitespace-nowrap">
@@ -1838,12 +1838,12 @@
                             </div>
                         </div>
 
-                        <!-- Sales Officer / Territory Section -->
+                        <!-- MO / Territory Section -->
                         <div>
                             <div class="mb-3 flex justify-between items-center">
                                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                     <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
-                                    Sales Officer Management
+                                    MO Management
                                 </h2>
                                 <button onclick="app.showAddTerritoryModal()" class="btn-liquid text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors">
                                     <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Territory
@@ -1879,11 +1879,11 @@
                                                     <td class="px-6 py-4">
                                                         <div class="flex items-center justify-end gap-1">
                                                             ${so ? `
-                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:text-aci-blue p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit SO"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                                                <button onclick="app.deleteUser('${so.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete SO"><i data-lucide="user-x" class="w-4 h-4"></i></button>
+                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:text-aci-blue p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit MO"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                                <button onclick="app.deleteUser('${so.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete MO"><i data-lucide="user-x" class="w-4 h-4"></i></button>
                                                             ` : `
                                                                 <button onclick="app.showAddUserModal(null, '${t.id}')" class="text-aci-blue hover:text-indigo-600 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md hover:bg-indigo-50 transition-colors">
-                                                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign SO
+                                                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign MO
                                                                 </button>
                                                             `}
                                                             <div class="w-px h-5 bg-slate-200 mx-1.5"></div>
@@ -1935,7 +1935,7 @@
                         <form id="add-user-form" onsubmit="app.handleAddUser(event, ${user ? `'${user.id}'` : 'null'})" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
-                                <input type="text" id="new-user-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. Shakil Ahmed" value="${user ? user.name.replace(/\s\((AM|SO)\)$/, '') : ''}">
+                                <input type="text" id="new-user-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. Shakil Ahmed" value="${user ? user.name.replace(/\s\((AM|MO)\)$/, '') : ''}">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -1945,8 +1945,8 @@
                                 <div>
                                     <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">System Role</label>
                                     <select id="new-user-role" onchange="app.handleRoleChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all appearance-none" required>
-                                        <option value="so" ${(user && user.role === 'so') || defaultTerritoryId ? 'selected' : ''}>Sales Officer (SO)</option>
-                                        <option value="am" ${user && user.role === 'am' ? 'selected' : ''}>Area Manager (AM)</option>
+                                        <option value="so" ${(user && user.role === 'so') || defaultTerritoryId ? 'selected' : ''}>MO</option>
+                                        <option value="am" ${user && user.role === 'am' ? 'selected' : ''}>AM</option>
                                         <option value="admin" ${user && user.role === 'admin' && !defaultTerritoryId ? 'selected' : ''}>System Admin</option>
                                     </select>
                                 </div>
@@ -2041,7 +2041,7 @@
                     }
                 }
 
-                const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (SO)' : '');
+                const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (MO)' : '');
 
                 app.showLoader('Saving user...');
 
@@ -2210,7 +2210,7 @@
             deleteTerritory: async (territoryId) => {
                 const soAssigned = DB.users.some(u => u.role === 'so' && u.territories.includes(territoryId));
                 if (soAssigned) {
-                    app.showToast('Cannot delete territory. Unassign the active Sales Officer first.', 'error');
+                    app.showToast('Cannot delete territory. Unassign the active MO first.', 'error');
                     return;
                 }
 
@@ -3058,7 +3058,7 @@
 
                 const html = `
                     <div class="fade-in pb-12">
-                        <!-- Area Manager / Executive Header -->
+                        <!-- AM / Executive Header -->
                         <div class="mb-4">
                             ${isAM ? `
                             <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-lg border border-white/10 relative overflow-hidden mb-4">
@@ -3129,7 +3129,7 @@
                             </div>
 
 
-                            <!-- AM Style SO-Dashboard Blocks -->
+                            <!-- AM Style MO-Dashboard Blocks -->
                             ${(() => {
                              const ytdMonths = app.getYtdMonths(app.currentMonth);
                              const passedMonths = ytdMonths.length;
@@ -3269,7 +3269,7 @@
                                 `;
                         })()}
 
-                            <!-- Area Manager: Current Month Performance Dashboard (Creative pacing) -->
+                            <!-- AM: Current Month Performance Dashboard (Creative pacing) -->
                             ${(() => {
                             const currMonthSalesPacing = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                             const currMonthBudget = monthlyBudget;
@@ -3607,7 +3607,7 @@
                         </div>
                     </div>
 
-                    <!-- Area Manager: Territory Performance Analytics Table (Admin Parity) -->
+                    <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
                     ${isAM ? `
                     <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8 relative">
                         <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
@@ -4446,7 +4446,7 @@
                                     <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-100">
                                         <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
                                     </div>
-                                    Area Manager Sync
+                                    AM Sync
                                 </h3>
                                 <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Insights</p>
                             </div>
@@ -4457,7 +4457,7 @@
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
-                                        <th class="px-6 py-4 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Manager</th>
+                                        <th class="px-6 py-4 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">AM</th>
                                         <th class="px-6 py-4 font-black bg-indigo-50/50 border-r border-indigo-100">Area Name</th>
                                         ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="3">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
                                         ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="2">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
@@ -8241,7 +8241,7 @@
             },
 
             // ==========================================
-            // SO (MOBILE-FIRST) VIEWS
+            // MO (MOBILE-FIRST) VIEWS
             // ==========================================
             navigateSO: (view) => {
                 localStorage.setItem('aci_last_page', view);
@@ -8317,7 +8317,7 @@
                     }
                 });
 
-                // Pending Manual Deliveries specifically for this SO and selected brand/type
+                // Pending Manual Deliveries specifically for this MO and selected brand/type
                 const myManualDeliveries = brandSales.filter(s => s.is_manual);
 
                 // --- 5. Selected Month Performance (For new dynamic table) ---
@@ -8639,7 +8639,7 @@
                             </div>
                         </div>
 
-                        <!-- SO ACTIONABLE INTELLIGENCE SECTION -->
+                        <!-- MO ACTIONABLE INTELLIGENCE SECTION -->
                         ${(() => {
                         // Practical Data Crunching for Field Officer
                         const zeroSalesUpazilas = [];
@@ -9558,7 +9558,7 @@
             },
 
             renderUserProfile: () => {
-                const roleName = app.currentUser.role === 'am' ? 'Area Manager' : (app.currentUser.role === 'admin' ? 'System Admin' : 'Sales Officer');
+                const roleName = app.currentUser.role === 'am' ? 'AM' : (app.currentUser.role === 'admin' ? 'System Admin' : 'MO');
                 const territoriesText = app.currentUser.territories && app.currentUser.territories.length > 0 ? app.currentUser.territories.map(tId => { const t = DB.territories.find(ter => ter.id === tId); return t ? t.name : tId; }).join(', ') : 'All Territories';
                 
                 if (!document.getElementById('user-manual-modal')) {
@@ -9578,14 +9578,14 @@
                                     <div class="space-y-6">
                                         <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
                                             <h4 class="text-blue-800 font-bold mb-2">Sales360 অ্যাপে স্বাগতম!</h4>
-                                            <p class="text-slate-600 text-sm leading-relaxed">এই অ্যাপটি বিশেষভাবে আমাদের সেলস অফিসার (SO) এবং এরিয়া ম্যানেজার (AM) ভাইদের জন্য তৈরি করা হয়েছে। এর মাধ্যমে আপনারা আপনাদের দৈনন্দিন কাজ, সেলস টার্গেট, এচিভমেন্ট এবং কালেকশন খুব সহজেই একটি জায়গা থেকে পরিচালনা করতে পারবেন।</p>
+                                            <p class="text-slate-600 text-sm leading-relaxed">এই অ্যাপটি বিশেষভাবে আমাদের এমও (MO) এবং এএম (AM) ভাইদের জন্য তৈরি করা হয়েছে। এর মাধ্যমে আপনারা আপনাদের দৈনন্দিন কাজ, সেলস টার্গেট, এচিভমেন্ট এবং কালেকশন খুব সহজেই একটি জায়গা থেকে পরিচালনা করতে পারবেন।</p>
                                         </div>
 
                                         <div class="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
                                             <div class="bg-slate-50 px-4 py-3 border-b border-slate-100">
                                                 <h4 class="font-bold text-slate-800 flex items-center gap-2">
                                                     <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i>
-                                                    সেলস অফিসার (Sales Officer) - ব্যবহার ও সুবিধা
+                                                    এমও (MO) - ব্যবহার ও সুবিধা
                                                 </h4>
                                             </div>
                                             <div class="p-4 space-y-4">
@@ -9624,7 +9624,7 @@
                                             <div class="bg-slate-50 px-4 py-3 border-b border-slate-100">
                                                 <h4 class="font-bold text-slate-800 flex items-center gap-2">
                                                     <i data-lucide="users" class="w-4 h-4 text-aci-gold"></i>
-                                                    এরিয়া ম্যানেজার (Area Manager) - ব্যবহার ও সুবিধা
+                                                    এএম (AM) - ব্যবহার ও সুবিধা
                                                 </h4>
                                             </div>
                                             <div class="p-4 space-y-4">
@@ -9721,7 +9721,7 @@
 
             // ==========================================
             // SHARED HELPER: Render the 12-month Detailed Performance Matrix
-            // Used by both SO and AM portals (scoped to assigned territories).
+            // Used by both MO and AM portals (scoped to assigned territories).
             // ==========================================
             _renderPulseMatrixHTML: (assignedTerritoryIds) => {
                 const currentFY = '2025-26';
@@ -10052,7 +10052,7 @@
             },
 
             // ==========================================
-            // SO: Performance Matrix (assigned territories only)
+            // MO: Performance Matrix (assigned territories only)
             // ==========================================
             renderSOPulseMatrix: () => {
                 localStorage.setItem('aci_last_page', 'pulse');
