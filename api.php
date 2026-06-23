@@ -6,8 +6,8 @@ header("Content-Type: application/json");
 // Define cPanel MySQL database connection settings
 define('DB_HOST', 'localhost');
 define('DB_USER', 'cvacimot_dbuser');
-define('DB_PASS', 'Password360!@#');
-define('DB_NAME', 'cvacimot_sales360');
+define('DB_PASS', 'Shahriar@0123');
+define('DB_NAME', 'cvacimot_sales');
 
 // Only allow POST requests for execution
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

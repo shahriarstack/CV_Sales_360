@@ -11,12 +11,12 @@ const config = {
     cpanelPort: 2083,
     username: 'cvacimot',
     password: '9J9q]91tYYyzB)',
-    subdomain: 'sales360',
+    subdomain: 'sales',
     rootDomain: 'cv-acimotors.com',
-    dbName: 'cvacimot_sales360',
+    dbName: 'cvacimot_sales',
     dbUser: 'cvacimot_dbuser',
-    dbPass: 'Password360!@#',
-    docRoot: 'public_html/sales360'
+    dbPass: 'Shahriar@0123',
+    docRoot: 'public_html/sales'
 };
 
 // Basic Auth header
