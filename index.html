@@ -84,6 +84,30 @@
             outline: none !important;
         }
 
+        /* Dark glass login form inputs override */
+        #login-form input,
+        #login-form select {
+            background: rgba(15, 23, 42, 0.55) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: #f8fafc !important;
+            backdrop-filter: blur(8px) !important;
+        }
+        #login-form input:focus,
+        #login-form select:focus {
+            background: rgba(15, 23, 42, 0.75) !important;
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2) !important;
+        }
+        #login-form select option {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        #login-form input[type="checkbox"] {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+
         /* White Buttons preserve their structure but adapt to glass */
         button.bg-white {
             background: rgba(255, 255, 255, 0.8) !important;
@@ -544,31 +568,32 @@
     <!-- ========================================== -->
     <div id="login-view"
         class="h-full w-full hidden items-center justify-center bg-cover bg-center absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden"
-        style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);">
+        style="background: radial-gradient(circle at center, #0F2942 0%, #060b13 100%);">
 
         <!-- Animated Liquid Layer Backdrop -->
-        <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
-        <div class="liquid-container !filter-none opacity-30">
-            <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-15"></div>
-            <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-15"
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-xl"></div>
+        <div class="liquid-container !filter-none opacity-20">
+            <div class="liquid-blob w-[800px] h-[800px] -top-[10%] -left-[10%] !opacity-10"
                 style="--blob-color-1: #0F2942; --blob-color-2: #1e3a5f;"></div>
+            <div class="liquid-blob w-[600px] h-[600px] -bottom-[10%] -right-[10%] !opacity-10"
+                style="--blob-color-1: #1e1b4b; --blob-color-2: #0F2942;"></div>
         </div>
-        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-95"></canvas>
+        <canvas id="login-particles" class="absolute inset-0 z-10 pointer-events-none opacity-90"></canvas>
 
         <div
-            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-white/10 sm:bg-white/25 backdrop-blur-sm sm:backdrop-blur-xl p-8 sm:rounded-[1.25rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative z-20 sm:mx-4 border-none sm:border border-white/50 glass-shine flex flex-col justify-center sm:block">
+            class="h-full w-full sm:h-auto sm:max-w-[380px] bg-slate-900/50 sm:bg-slate-950/40 backdrop-blur-md sm:backdrop-blur-2xl p-8 sm:rounded-[2rem] shadow-[0_25px_60px_rgba(0,0,0,0.55)] relative z-20 sm:mx-4 border-none sm:border border-white/10 flex flex-col justify-center sm:block">
             <div class="text-center mb-8">
                 <img src="https://i.ibb.co.com/Lsd5bc2/aci-motors-seeklogo.png" alt="ACI Motors"
                     class="h-10 mx-auto object-contain mb-8">
                 <div class="flex items-center justify-center gap-3 mb-2">
                     <div
-                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-900 shadow-xl shadow-aci-blue/30 border-2 border-white/40 shrink-0 overflow-hidden">
+                        class="relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-aci-blue to-indigo-950 shadow-xl shadow-aci-blue/20 border-2 border-white/10 shrink-0 overflow-hidden">
                         <div class="absolute inset-0 bg-white/10 animate-pulse"></div>
                         <span class="text-white text-lg font-black tracking-tight z-10 drop-shadow-md">CV</span>
                     </div>
-                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-slate-900"><span
-                            class="font-light text-slate-500">Sales</span>360<span
-                            class="text-aci-blue font-black text-xl ml-0.5 mt-0.5">°</span></h1>
+                    <h1 class="text-4xl tracking-tighter flex items-start leading-none font-bold text-white"><span
+                            class="font-light text-slate-400">Sales</span>360<span
+                            class="text-aci-gold font-black text-xl ml-0.5 mt-0.5">°</span></h1>
                 </div>
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Commercial Vehicle
                     Portfolio</p>
@@ -576,12 +601,12 @@
 
             <form id="login-form" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Select Area / Territory</label>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Select Area / Territory</label>
                     <div class="relative">
                         <i data-lucide="map-pin"
                             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                         <select id="login-user-select"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors appearance-none bg-white/50"
+                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors appearance-none bg-slate-950/40 text-slate-100"
                             required>
                             <!-- options injected via JS -->
                         </select>
@@ -590,30 +615,31 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Employee ID (Password)</label>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Employee ID (Password)</label>
                     <div class="relative">
                         <i data-lucide="lock"
                             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                         <input type="password" id="password"
-                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-colors bg-white/50"
+                            class="w-full rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-slate-950/40 text-slate-100"
                             placeholder="Enter your password" required>
                     </div>
                 </div>
                 <div class="flex items-center justify-between text-sm mt-2">
-                    <label class="flex items-center text-slate-600 font-medium">
-                        <input type="checkbox" class="rounded border-slate-300 text-aci-blue focus:ring-aci-blue mr-2">
+                    <label class="flex items-center text-slate-400 font-medium">
+                        <input type="checkbox" class="rounded border-slate-700 bg-slate-950/40 text-blue-500 focus:ring-blue-500 mr-2">
                         Remember me
                     </label>
                 </div>
                 <button type="submit"
-                    class="group relative w-full mt-4 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(15,41,66,0.3)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-[#0F2942] to-[#1e3a5f]">
-                    <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)] -translate-x-[150%] animate-[shimmer_2s_infinite]"></div>
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)]"></div>
+                    class="group relative w-full mt-4 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all active:scale-[0.98] overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]">
+                    <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)] -translate-x-[150%] animate-[shimmer_2.5s_infinite]"></div>
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,transparent_70%)]"></div>
                     <span class="relative z-10 flex items-center justify-center gap-2">
                         Sign In
                         <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
                     </span>
                 </button>
+
             </form>
             <div class="mt-8 text-center text-xs text-slate-500 font-medium">
                 <div class="flex items-center justify-center opacity-80">
@@ -1060,27 +1086,27 @@
                 let height = canvas.height = window.innerHeight;
                 
                 const particles = [];
-                // Adaptive count: fewer particles on mobile (<640px) for cleanliness and performance
-                const numParticles = Math.min(Math.floor(width / 11), width < 640 ? 38 : 95);
+                // Adaptive count: fewer particles for premium minimal aesthetic
+                const numParticles = Math.min(Math.floor(width / 18), width < 640 ? 25 : 60);
                 
                 const colors = [
-                    'rgba(16, 185, 129, 0.88)',  // Emerald Green
-                    'rgba(52, 211, 153, 0.78)',  // Translucent Mint Green
-                    'rgba(34, 197, 94, 0.90)'    // Bright Green
+                    'rgba(241, 245, 249, 0.80)',  // Slate 50 (Soft Silver)
+                    'rgba(147, 197, 253, 0.70)',  // Blue 300 (Ice Blue)
+                    'rgba(191, 219, 254, 0.60)'   // Blue 200 (Soft Blue)
                 ];
                 
                 for (let i = 0; i < numParticles; i++) {
                     particles.push({
                         x: Math.random() * width,
                         y: Math.random() * height,
-                        vx: (Math.random() - 0.5) * 0.55,
-                        vy: (Math.random() - 0.5) * 0.55,
-                        radius: Math.random() * 2.2 + 1.2, // Larger dots (1.2px to 3.4px)
+                        vx: (Math.random() - 0.5) * 0.22, // Slower drifting speed
+                        vy: (Math.random() - 0.5) * 0.22,
+                        radius: Math.random() * 1.4 + 0.6, // Smaller elegant dots (0.6px to 2.0px)
                         color: colors[Math.floor(Math.random() * colors.length)]
                     });
                 }
                 
-                const mouse = { x: null, y: null, radius: 160 }; // Increased interaction range
+                const mouse = { x: null, y: null, radius: 140 }; // Refined interaction range
                 const loginView = document.getElementById('login-view');
                 
                 const handleMouseMove = (e) => {
@@ -1119,8 +1145,8 @@
                                 const force = (mouse.radius - dist) / mouse.radius;
                                 const angle = Math.atan2(dy, dx);
                                 // Push away smoothly
-                                p.x += Math.cos(angle) * force * 2.4;
-                                p.y += Math.sin(angle) * force * 2.4;
+                                p.x += Math.cos(angle) * force * 1.8;
+                                p.y += Math.sin(angle) * force * 1.8;
                             }
                         }
                         
@@ -1128,41 +1154,42 @@
                         if (p.x < 0) { p.x = 0; p.vx *= -1; }
                         else if (p.x > width) { p.x = width; p.vx *= -1; }
                         
+                        // Height bound bounce
                         if (p.y < 0) { p.y = 0; p.vy *= -1; }
                         else if (p.y > height) { p.y = height; p.vy *= -1; }
                         
-                        // Draw dot with high-tech green glow
+                        // Draw dot with premium glow
                         ctx.beginPath();
                         ctx.fillStyle = p.color;
-                        ctx.shadowBlur = 5;
+                        ctx.shadowBlur = 4;
                         ctx.shadowColor = p.color;
                         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                         ctx.fill();
-                        ctx.shadowBlur = 0; // Reset shadow so it doesn't affect connection lines
+                        ctx.shadowBlur = 0; // Reset shadow
                         
-                        // Connect to mouse cursor with distinct thicker green line
+                        // Connect to mouse cursor
                         if (mouse.x !== null && mouse.y !== null) {
                             const dx = p.x - mouse.x;
                             const dy = p.y - mouse.y;
                             const dist = Math.hypot(dx, dy);
                             if (dist < 150) {
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(16, 185, 129, ${0.35 * (1 - dist / 150)})`;
-                                ctx.lineWidth = 1.0;
+                                ctx.strokeStyle = `rgba(147, 197, 253, ${0.18 * (1 - dist / 150)})`;
+                                ctx.lineWidth = 0.6;
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(mouse.x, mouse.y);
                                 ctx.stroke();
                             }
                         }
                         
-                        // Connect to other dots (interconnected green web)
+                        // Connect to other dots (interconnected silver web)
                         for (let j = i + 1; j < particles.length; j++) {
                             let p2 = particles[j];
                             let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                            if (dist < 125) { // Increased connection distance
+                            if (dist < 110) { // Minimal connection distance
                                 ctx.beginPath();
-                                ctx.strokeStyle = `rgba(16, 185, 129, ${0.32 * (1 - dist / 125)})`;
-                                ctx.lineWidth = 0.75; // Thicker lines
+                                ctx.strokeStyle = `rgba(241, 245, 249, ${0.12 * (1 - dist / 110)})`;
+                                ctx.lineWidth = 0.5;
                                 ctx.moveTo(p.x, p.y);
                                 ctx.lineTo(p2.x, p2.y);
                                 ctx.stroke();
@@ -1172,6 +1199,7 @@
                     animFrame = requestAnimationFrame(draw);
                 }
                 draw();
+
                 
                 app.loginParticleAnimFrame = animFrame;
                 
