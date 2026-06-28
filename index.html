@@ -9958,6 +9958,14 @@
                     };
                     const h = hues[idx % hues.length];
 
+                    // Calculate Year Total / YTD performance
+                    const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
+                    const ytdBudget = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].budget, 0);
+                    const ytdSales  = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sales, 0);
+                    const ytdSply   = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sply, 0);
+                    const ytdAch    = ach(ytdSales, ytdBudget);
+                    const ytdGrowth = calcGrw(ytdSales, ytdSply);
+
                     // --- Desktop Table Row Cells ---
                     let cellsHTML = '';
                     Object.entries(quarters).forEach(([qName, qMs]) => {
@@ -9968,6 +9976,13 @@
                         const q = quarterPerf[qName]; const c = colors[qName];
                         cellsHTML += `<td class="px-2 py-1.5 font-bold ${c.bg} ${c.tx} border-l-2 border-slate-200">${q.budget}</td><td class="px-2 py-1.5 font-black ${c.bg} ${c.tx}">${q.sales}</td><td class="px-2 py-1.5 ${c.bg}"><span class="px-1.5 py-0.5 rounded-lg ${c.pill} font-black">${q.ach}%</span></td><td class="px-2 py-1.5 font-bold ${c.bg} ${c.tx}">${q.sply}</td><td class="px-2 py-1.5 font-black ${c.bg} text-[10px] border-r border-slate-200">${fmtGrw(q.growth)}</td>`;
                     });
+
+                    // Append YTD columns creatively (with premium highlight)
+                    cellsHTML += `<td class="px-2 py-1.5 font-bold bg-slate-900/5 text-slate-900 border-l-4 border-slate-400/80">${ytdBudget}</td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 font-black bg-slate-900/5 text-slate-900">${ytdSales}</td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 bg-slate-900/5"><span class="px-1.5 py-0.5 rounded-lg bg-slate-900 text-white font-black">${ytdAch}%</span></td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 font-bold bg-slate-900/5 text-slate-900">${ytdSply}</td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 font-black bg-slate-900/5 text-[10px] border-r border-slate-300">${fmtGrw(ytdGrowth)}</td>`;
 
                     // --- Mobile Card ---
                     let mQuartersHTML = '';
@@ -10097,6 +10112,21 @@
                     `;
                 });
 
+                // Calculate overall YTD / Year Total at Grand Total level
+                const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
+                const gYtdBudget = activeYtdMonths.reduce((s, m) => s + grandMonth[m].budget, 0);
+                const gYtdSales  = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sales, 0);
+                const gYtdSply   = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sply, 0);
+                const gYtdAch    = ach(gYtdSales, gYtdBudget);
+                const gYtdGrowth = calcGrw(gYtdSales, gYtdSply);
+
+                // Append Grand Total YTD columns for Desktop Table
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-white border-l-4 border-slate-900">${gYtdBudget}</td>`;
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-white">${gYtdSales}</td>`;
+                grandCellsHTML += `<td class="px-2 py-2 bg-slate-800"><span class="px-1.5 py-0.5 rounded-lg bg-white text-slate-900 font-black">${gYtdAch}%</span></td>`;
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-white">${gYtdSply}</td>`;
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-[10px] border-r border-slate-900">${fmtGrw(gYtdGrowth)}</td>`;
+
                 const grandTotalRowHTML = `<tr class="bg-indigo-50/20 font-black text-slate-800 text-center border-t-2 border-indigo-200">
                     <td class="px-6 py-2 text-left sticky left-0 z-10 bg-indigo-50 border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                         <div class="flex items-center gap-2"><span class="w-4"></span><div class="w-1.5 h-4 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div><span class="font-extrabold text-slate-800 text-[10px]">GRAND TOTAL</span></div>
@@ -10105,6 +10135,7 @@
                     ${grandCellsHTML}
                 </tr>`;
 
+                // Mobile Grand Total card with YTD summary block
                 const mobileGrandTotalHTML = `
                     <div class="bg-indigo-500 rounded-2xl shadow-lg border border-indigo-400 overflow-hidden relative mt-6 mb-8">
                         <div class="bg-indigo-600 p-4 border-b border-indigo-400/50 flex justify-between items-center text-white">
@@ -10117,6 +10148,16 @@
                         <div class="p-2 bg-indigo-50/90">
                             <div class="bg-white rounded-xl border border-indigo-100 overflow-hidden shadow-sm">
                                 ${mGrandQuartersHTML}
+                                <!-- YTD Year Total summary row for Mobile -->
+                                <div class="flex justify-between items-center p-3 bg-slate-900 text-white rounded-b-xl border-t-2 border-slate-950">
+                                    <div class="font-black text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1"><i data-lucide="globe" class="w-3.5 h-3.5"></i> YTD Total</div>
+                                    <div class="flex gap-1.5 text-[10px] font-bold">
+                                        <div><span class="opacity-70 text-[8px]">B:</span> ${gYtdBudget}</div>
+                                        <div><span class="opacity-70 text-[8px]">S:</span> ${gYtdSales}</div>
+                                        <div><span class="opacity-70 text-[8px]">LY:</span> ${gYtdSply}</div>
+                                        <div class="bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded font-black">${gYtdAch}%</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -10166,15 +10207,22 @@
                                         <th class="px-3 py-2 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October &ndash; December)</th>
                                         <th class="px-3 py-2 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January &ndash; March)</th>
                                         <th class="px-3 py-2 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r-2 border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April &ndash; June)</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-r from-slate-700/20 via-slate-600/10 to-slate-500/5 text-slate-800 border-l-4 border-r-2 border-t border-slate-700/30 font-black shadow-md" colspan="5">YTD Total (Year Total)</th>
                                     </tr>
                                     <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
                                         <th class="px-2 py-1.5 border-l-2 border-violet-200/60" colspan="5">July</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">August</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">September</th><th class="px-2 py-1.5 bg-violet-500/10 text-violet-800 font-extrabold border-l-2 border-violet-300" colspan="5">Q1 Total</th>
                                         <th class="px-2 py-1.5 border-l-2 border-amber-200/60" colspan="5">October</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">November</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">December</th><th class="px-2 py-1.5 bg-amber-500/10 text-amber-800 font-extrabold border-l-2 border-amber-300" colspan="5">Q2 Total</th>
                                         <th class="px-2 py-1.5 border-l-2 border-emerald-200/60" colspan="5">January</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">February</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">March</th><th class="px-2 py-1.5 bg-emerald-500/10 text-emerald-800 font-extrabold border-l-2 border-emerald-300" colspan="5">Q3 Total</th>
                                         <th class="px-2 py-1.5 border-l-2 border-cyan-200/60" colspan="5">April</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">May</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">June</th><th class="px-2 py-1.5 bg-cyan-500/10 text-cyan-800 font-extrabold border-l-2 border-cyan-300" colspan="5">Q4 Total</th>
+                                        <th class="px-2 py-1.5 bg-slate-700/10 text-slate-800 font-black border-l-4 border-slate-400" colspan="5">YTD Total</th>
                                     </tr>
                                     <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/80 text-center font-bold">
                                         ${metricHeadersHTML}
+                                        <th class="px-1.5 py-1 border-l-4 border-slate-400 bg-slate-100 font-black text-slate-800 text-center">Bgt</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">Sal</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">Ach%</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">SPLY</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">Gr%</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
