@@ -8450,14 +8450,25 @@
                 const formatGrw = (g) => g > 0 ? `<span class="text-green-500 font-bold">+${g}%</span>` : (g < 0 ? `<span class="text-red-500 font-bold">${g}%</span>` : `<span class="text-slate-500 font-bold">0%</span>`);
 
                 // --- 4. Upazila Wise Aggregation (YTD / This FY) ---
+                const upaSelectedMonth = app.soUpazilaMonthFilter || 'All'; 
                 const upaStats = {};
                 territory.upazilas.forEach(u => {
-                    upaStats[u] = { ytdSales: 0 };
+                    upaStats[u] = { ytdSales: 0, filteredMonthSales: 0 };
                 });
 
+                // Calculate cumulative YTD sales
                 ytdSalesRecords.forEach(s => {
                     if (upaStats[s.upazila]) {
                         upaStats[s.upazila].ytdSales += Number(s.unit_qty || 0);
+                    }
+                });
+
+                // Calculate filtered month sales (Either 'All' YTD or specific Month)
+                ytdSalesRecords.forEach(s => {
+                    if (upaStats[s.upazila]) {
+                        if (upaSelectedMonth === 'All' || s.sales_month === upaSelectedMonth) {
+                            upaStats[s.upazila].filteredMonthSales += Number(s.unit_qty || 0);
+                        }
                     }
                 });
 
@@ -8753,33 +8764,78 @@
                             </div>
                         </div>
 
-                        <!-- Upazila Wise Summary (YTD / This FY) -->
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-100 mb-2 overflow-hidden">
-                            <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <!-- Upazila Wise Breakdown (Filterable, Interactive Table) -->
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-100 mb-4 overflow-hidden">
+                            <div class="p-3 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2 items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="map" class="w-4 h-4 text-aci-blue"></i>
-                                    <h3 class="font-bold text-slate-800 text-sm">Upazila Wise Breakdown (This FY)</h3>
+                                    <i data-lucide="map" class="w-4 h-4 text-aci-blue animate-pulse"></i>
+                                    <h3 class="font-bold text-slate-800 text-sm">Upazila Wise Performance</h3>
                                 </div>
-                                <span class="bg-aci-blue/10 text-aci-blue text-[9px] font-bold px-2 py-0.5 rounded tracking-wider uppercase">Till Now</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Month Filter:</span>
+                                    <select onchange="app.soUpazilaMonthFilter=this.value; app.renderSODashboard()" class="bg-white border border-slate-200 text-[10px] font-bold rounded px-1.5 py-0.5 text-slate-600 shadow-sm focus:outline-none focus:border-aci-blue">
+                                        <option value="All" ${upaSelectedMonth === 'All' ? 'selected' : ''}>YTD (All Months)</option>
+                                        <option value="July" ${upaSelectedMonth === 'July' ? 'selected' : ''}>July</option>
+                                        <option value="August" ${upaSelectedMonth === 'August' ? 'selected' : ''}>August</option>
+                                        <option value="September" ${upaSelectedMonth === 'September' ? 'selected' : ''}>September</option>
+                                        <option value="October" ${upaSelectedMonth === 'October' ? 'selected' : ''}>October</option>
+                                        <option value="November" ${upaSelectedMonth === 'November' ? 'selected' : ''}>November</option>
+                                        <option value="December" ${upaSelectedMonth === 'December' ? 'selected' : ''}>December</option>
+                                        <option value="January" ${upaSelectedMonth === 'January' ? 'selected' : ''}>January</option>
+                                        <option value="February" ${upaSelectedMonth === 'February' ? 'selected' : ''}>February</option>
+                                        <option value="March" ${upaSelectedMonth === 'March' ? 'selected' : ''}>March</option>
+                                        <option value="April" ${upaSelectedMonth === 'April' ? 'selected' : ''}>April</option>
+                                        <option value="May" ${upaSelectedMonth === 'May' ? 'selected' : ''}>May</option>
+                                        <option value="June" ${upaSelectedMonth === 'June' ? 'selected' : ''}>June</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="divide-y divide-slate-100">
-                                ${Object.keys(upaStats).map(k => ({ name: k, sales: upaStats[k].ytdSales }))
-                        .sort((a, b) => b.sales - a.sales)
-                        .map(u => {
-                            const isZero = u.sales === 0;
-                            return `
-                                    <div class="py-2.5 px-3 transition-colors flex justify-between items-center ${isZero ? 'bg-rose-50/50 hover:bg-rose-50' : 'hover:bg-slate-50'}">
-                                        <div class="flex items-center gap-2.5">
-                                            ${isZero ? '<i data-lucide="alert-circle" class="w-3.5 h-3.5 text-red-500 animate-pulse"></i>' : '<div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>'}
-                                            <h4 class="font-bold text-[13px] ${isZero ? 'text-red-600' : 'text-slate-600'}">${u.name}</h4>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            ${isZero ? '<span class="bg-red-100 text-red-600 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-red-200 tracking-widest hidden sm:inline-block">Zero</span>' : ''}
-                                            <p class="text-sm font-black w-6 text-right ${isZero ? 'text-red-500' : 'text-slate-800'}">${u.sales}</p>
-                                        </div>
-                                    </div>
-                                    `;
-                        }).join('')}
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-50/65 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100 font-black">
+                                            <th class="px-4 py-2.5">Upazila Name</th>
+                                            <th class="px-4 py-2.5 text-center">Month Sales (${upaSelectedMonth})</th>
+                                            <th class="px-4 py-2.5 text-center">YTD Sales (FY)</th>
+                                            <th class="px-4 py-2.5 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${Object.keys(upaStats).map(k => ({ name: k, mSales: upaStats[k].filteredMonthSales, ySales: upaStats[k].ytdSales }))
+                                            .sort((a, b) => b.ySales - a.ySales)
+                                            .map(u => {
+                                                const isZeroMonth = u.mSales === 0;
+                                                const isZeroYtd = u.ySales === 0;
+                                                
+                                                // Highlight rules: Red border alerts for zero sales
+                                                return `
+                                                <tr class="transition-colors hover:bg-slate-50/50 ${isZeroMonth ? 'bg-rose-50/20' : ''}">
+                                                    <td class="px-4 py-2.5 font-bold ${isZeroYtd ? 'text-red-500 font-extrabold' : 'text-slate-700'}">
+                                                        <div class="flex items-center gap-1.5">
+                                                            <div class="w-1.5 h-1.5 rounded-full ${isZeroYtd ? 'bg-red-500 animate-ping' : 'bg-slate-300'}"></div>
+                                                            ${u.name}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-black ${isZeroMonth ? 'text-rose-500 bg-rose-500/5' : 'text-slate-800'}">
+                                                        ${u.mSales}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-black ${isZeroYtd ? 'text-red-600 bg-red-500/5' : 'text-slate-800'}">
+                                                        ${u.ySales}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-right">
+                                                        ${isZeroYtd 
+                                                            ? '<span class="bg-red-100 text-red-600 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-red-200 tracking-wider">Zero YTD</span>' 
+                                                            : (isZeroMonth 
+                                                                ? '<span class="bg-amber-100 text-amber-700 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-amber-200 tracking-wider">Zero Month</span>' 
+                                                                : '<span class="bg-emerald-100 text-emerald-700 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-emerald-200 tracking-wider">Active</span>'
+                                                            )
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                `;
+                                            }).join('')}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
