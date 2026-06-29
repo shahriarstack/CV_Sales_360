@@ -8566,7 +8566,7 @@
                         <div class="flex justify-between items-center mb-6">
                             <div class="flex items-baseline gap-1.5">
                                 <p class="text-[11px] text-slate-400 font-medium uppercase tracking-tight">Hi,</p>
-                                <h2 class="text-base font-bold text-slate-800 tracking-tight">${app.currentUser.name.replace(/\s*\([^)]*\)\s*$/g, '')}</h2>
+                                <h2 class="text-base font-bold text-slate-800 tracking-tight">${app.currentUser.name.replace(/\s*\(.*?\)\s*$/, '')}</h2>
                             </div>
                             <div class="bg-white/40 backdrop-blur-md border border-white/60 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                                 <div class="w-1.5 h-1.5 rounded-full bg-aci-blue animate-pulse"></div>
