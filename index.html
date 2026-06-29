@@ -1018,6 +1018,7 @@
         // --- 2. CORE APPLICATION LOGIC ---
         const app = {
             currentUser: null,
+            isSystemSettingsAuthorized: false,
             currentMonth: localStorage.getItem('aci_current_month') || 'April',
             lastMonth: localStorage.getItem('aci_last_month') || 'March',
             getYtdMonths: (currentMonth) => {
@@ -8114,7 +8115,97 @@
                 app.showToast('Exporting CSV...', 'success');
             },
 
+            showSystemConfigPasswordModal: () => {
+                let modal = document.getElementById('sys-config-pass-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'sys-config-pass-modal';
+                    modal.className = 'fixed inset-0 z-[300] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="app.closeSystemConfigPasswordModal()"></div>
+                    <div class="bg-white rounded-2xl p-6 w-full max-w-sm m-4 relative z-10 shadow-2xl border border-slate-100 transform transition-all scale-100">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <div>
+                                <h3 class="font-extrabold text-slate-800 text-sm">System Access Required</h3>
+                                <p class="text-[10px] text-slate-400 font-bold mt-0.5">Please enter the security password to proceed</p>
+                            </div>
+                            <button onclick="app.closeSystemConfigPasswordModal()" class="text-slate-400 hover:text-red-500 p-1.5 transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Password</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"><i data-lucide="lock" class="w-4 h-4"></i></span>
+                                    <input type="password" id="sys-config-password" class="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-aci-blue text-sm font-extrabold text-slate-800 rounded-xl pl-9 pr-4 py-2.5 focus:outline-none transition-all shadow-sm" placeholder="••••••••">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="app.closeSystemConfigPasswordModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs transition-colors">Cancel</button>
+                                <button onclick="app.submitSystemConfigPassword()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs transition-colors shadow-md">Verify Access</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+
+                setTimeout(() => {
+                    const input = document.getElementById('sys-config-password');
+                    if (input) {
+                        input.focus();
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                app.submitSystemConfigPassword();
+                            }
+                        });
+                    }
+                }, 100);
+            },
+
+            closeSystemConfigPasswordModal: () => {
+                const modal = document.getElementById('sys-config-pass-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+                app.renderAdminDashboard();
+            },
+
+            submitSystemConfigPassword: () => {
+                const passwordInput = document.getElementById('sys-config-password');
+                const password = passwordInput ? passwordInput.value : '';
+
+                if (password === 'Imon@0123') {
+                    app.isSystemSettingsAuthorized = true;
+                    const modal = document.getElementById('sys-config-pass-modal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                    app.showToast('Access granted.', 'success');
+                    app.renderSystemSettings();
+                } else {
+                    app.showToast('Invalid security password.', 'error');
+                    if (passwordInput) {
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                    }
+                }
+            },
+
             renderSystemSettings: () => {
+                if (!app.isSystemSettingsAuthorized) {
+                    app.showSystemConfigPasswordModal();
+                    return;
+                }
                 localStorage.setItem('aci_last_page', 'settings');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
 
