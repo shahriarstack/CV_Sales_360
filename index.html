@@ -2223,8 +2223,9 @@
                 const terrSelect = document.getElementById('new-user-territories');
                 const areaName = role === 'am' ? document.getElementById('new-user-areaname').value : '';
 
-                if (!userId && DB.users.some(u => u.employee_id === empId)) {
-                    app.showToast('Employee ID already exists in the system.', 'error');
+                const exists = DB.users.some(u => u.employee_id === empId && u.role === role && u.id !== userId);
+                if (exists) {
+                    app.showToast(`Employee ID already exists for the role '${role === 'am' ? 'Area Manager' : 'Sales Officer'}' in the system.`, 'error');
                     return;
                 }
 
@@ -2248,11 +2249,12 @@
                             user.name = appendedName;
                             user.employee_id = empId;
                             user.role = role;
+                            user.email = `${empId}.${role}@acimotors.com`;
                             user.territories = territories;
                             user.area_name = areaName;
                             
                             if (app.neonSQL) {
-                                await app.neonSQL`UPDATE users SET name = ${appendedName}, role = ${role}, employee_id = ${empId}, territories = ${JSON.stringify(territories)}, area_name = ${areaName} WHERE id = ${userId}`;
+                                await app.neonSQL`UPDATE users SET name = ${appendedName}, role = ${role}, employee_id = ${empId}, email = ${user.email}, territories = ${JSON.stringify(territories)}, area_name = ${areaName} WHERE id = ${userId}`;
                             }
                             app.showToast('User updated successfully.', 'success');
                         }
@@ -2265,7 +2267,7 @@
                             employee_id: empId,
                             territories: territories,
                             area_name: areaName,
-                            email: `${empId}@acimotors.com`, // dummy email for constraint
+                            email: `${empId}.${role}@acimotors.com`, // dummy email for constraint
                             password: 'password' // dummy password
                         };
                         DB.users.push(newUser);
