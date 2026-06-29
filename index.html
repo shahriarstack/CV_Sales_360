@@ -8966,107 +8966,112 @@
 
                         return `
                             <div class="mt-8 mb-6 fade-in">
-                                <div class="flex items-center gap-3 mb-4 pl-1">
-                                    <div class="p-2 bg-blue-100 rounded-xl border border-blue-200 shadow-inner"><i data-lucide="bar-chart-3" class="w-5 h-5 text-blue-700"></i></div>
-                                    <div>
-                                        <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-800 tracking-tight">Actionable Territory Intelligence</h3>
-                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Shortfall & Practical Recovery Data</p>
+                                <div class="flex items-center justify-between mb-4 pl-1">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-gradient-to-tr from-purple-500 to-indigo-600 rounded-xl border border-indigo-400 shadow-md animate-pulse">
+                                            <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-700 to-blue-800 tracking-tight">AI Field Sales Copilot</h3>
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Real-time Field Analytics & Prediction</p>
+                                        </div>
                                     </div>
+                                    <span class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-[8px] font-black uppercase px-2 py-0.5 rounded tracking-widest">Active Copilot</span>
                                 </div>
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    
-                                    <!-- Left Column: Critical Issues & Recovery -->
-                                    <div class="flex flex-col gap-4">
-                                        <!-- Zero Sales Zones (FY) -->
-                                        <div class="bg-gradient-to-br from-rose-50 to-red-50 rounded-2xl p-5 shadow-sm border border-red-100 relative overflow-hidden">
-                                            <div class="absolute -right-4 -top-4 opacity-5"><i data-lucide="alert-octagon" class="w-32 h-32 text-red-600"></i></div>
-                                            <div class="flex items-center gap-2 mb-3 relative z-10">
-                                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                                <h4 class="text-red-800 text-xs font-extrabold uppercase tracking-wider">Critical: Zero Sales Zones</h4>
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                    <!-- Card 1: AI Smart Pacing & Recovery Planner -->
+                                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 shadow-lg border border-slate-750 text-white relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -top-6 opacity-10"><i data-lucide="trending-up" class="w-24 h-24 text-indigo-400"></i></div>
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3 relative z-10">
+                                                <h4 class="text-amber-400 text-xs font-black uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="target" class="w-3.5 h-3.5"></i> Sales Pacing Planner</h4>
+                                                <span class="text-[9px] bg-slate-700 text-slate-300 font-bold px-1.5 py-0.2 rounded">${daysLeft} Days Left</span>
                                             </div>
-                                            <p class="text-slate-700 text-sm leading-relaxed relative z-10 mb-4">
-                                                The following areas have <strong class="text-red-600 font-bold">0 units</strong> sold <strong class="underline decoration-red-300">this entire fiscal year</strong> against active budgets. Immediate pipeline reviews required:
-                                            </p>
-                                            <div class="flex flex-wrap gap-2 relative z-10">
-                                                ${zeroSalesUpazilas.length > 0
-                                ? zeroSalesUpazilas.map(u => `<span class="bg-white text-red-600 border border-red-200 px-2.5 py-1 rounded-md text-xs font-bold shadow-sm">${u}</span>`).join('')
-                                : `<span class="text-green-700 bg-green-100 border border-green-200 px-3 py-1 rounded-md text-xs font-bold flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-4 h-4"></i> All areas successfully activated this FY!</span>`}
+                                            <p class="text-slate-300 text-xs mb-4">Target: <strong class="text-white">${monthlyBudget}</strong> | Sold: <strong class="text-white">${currentSalesUnits}</strong> | Gap: <strong class="text-amber-400 font-bold">${remainingTarget}</strong></p>
+                                            
+                                            <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 mb-3 relative z-10">
+                                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Required Field Run-Rate</p>
+                                                <p class="text-xl font-black text-amber-400 mt-1">${requiredRunRate} <span class="text-xs text-slate-300 font-medium">units / week</span></p>
+                                                <p class="text-[8.5px] text-slate-400 mt-1">* Trajectory is currently tracking ${splyGrowth >= 0 ? '+' : ''}${splyGrowth}% vs SPLY.</p>
                                             </div>
                                         </div>
-
-                                        <!-- Shortfall Target Plan -->
-                                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-center">
-                                            <h4 class="text-slate-800 text-sm font-bold flex items-center gap-2 mb-4 relative z-10"><i data-lucide="target" class="w-4 h-4 text-indigo-500"></i> Target Plan</h4>
-                                            
-                                            <div class="grid grid-cols-3 gap-2 text-center divide-x divide-slate-100 mb-4 relative z-10">
-                                                <div>
-                                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Budget</p>
-                                                    <p class="text-xl font-black text-slate-800">${monthlyBudget}</p>
-                                                </div>
-                                                <div>
-                                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Sold</p>
-                                                    <p class="text-xl font-black text-aci-blue">${currentSalesUnits}</p>
-                                                </div>
-                                                <div>
-                                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Shortfall</p>
-                                                    <p class="text-xl font-black text-amber-600">${remainingTarget}</p>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 relative z-10 flex items-center justify-between">
-                                                <div>
-                                                    <p class="text-xs text-slate-800 font-bold">Required Weekly Run-Rate</p>
-                                                    <p class="text-[10px] text-slate-500 font-medium mt-0.5">To close gap in remaining ${daysLeft} days</p>
-                                                </div>
-                                                <div class="text-right">
-                                                    <span class="text-xl font-black text-indigo-600">${requiredRunRate}</span>
-                                                    <span class="text-xs text-indigo-400 font-bold"> units/wk</span>
-                                                </div>
-                                            </div>
-                                            <p class="text-[10px] text-center font-semibold mt-3 ${splyGrowth >= 0 ? 'text-green-600' : 'text-red-500'}">
-                                                * Currently tracking ${splyGrowth >= 0 ? '+' : ''}${splyGrowth}% vs SPLY trajectory.
+                                        
+                                        <div class="mt-2 border-t border-slate-700/50 pt-3">
+                                            <span class="text-[9px] text-indigo-300 font-black uppercase tracking-wider block mb-1">Copilot Strategy:</span>
+                                            <p class="text-[11px] text-slate-300 leading-relaxed">
+                                                ${topGapUpazila 
+                                                    ? `Focus dealer network drives in <strong class="text-white">${topGapUpazila}</strong>. This Upazila holds the largest unfulfilled gap of <strong class="text-amber-400">${maxMonthGap} units</strong>.`
+                                                    : `Pacing is fully optimized across all Upazilas. Keep maintaining active customer connections!`
+                                                }
                                             </p>
                                         </div>
                                     </div>
 
-                                    <!-- Right Column: AI Analytics -->
-                                    <div class="flex flex-col gap-4">
-                                        <!-- AI Month-End Predictor -->
-                                        <div class="glass p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-center">
-                                            <div class="absolute -right-10 -bottom-10 bg-purple-500/10 w-32 h-32 rounded-full blur-xl pointer-events-none"></div>
-                                            <h4 class="text-slate-800 text-sm font-bold flex items-center gap-2 mb-4 relative z-10"><i data-lucide="brain-circuit" class="w-4 h-4 text-purple-500"></i> AI Month-End Predictor</h4>
+                                    <!-- Card 2: AI Month-End Close Forecast -->
+                                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -bottom-6 opacity-5"><i data-lucide="brain-circuit" class="w-24 h-24 text-purple-600"></i></div>
+                                        <div>
+                                            <h4 class="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 mb-3"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-purple-500"></i> Month-End Forecast</h4>
+                                            <p class="text-slate-500 text-xs mb-4">Copilot projections based on current velocity of <strong class="text-slate-800 font-bold">${currentRunRateDaily.toFixed(2)} units/day</strong>:</p>
                                             
-                                            <p class="text-xs text-slate-600 mb-4 relative z-10">Based on your current daily velocity (Day ${currentDay} of ${daysInMonth}), the system forecasts your final closing:</p>
-                                            
-                                            <div class="flex items-center justify-between mb-2 relative z-10">
-                                                <div class="text-center bg-slate-50 p-2 rounded-lg border border-slate-100 flex-1 mr-2">
-                                                    <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Projected Closing</p>
-                                                    <p class="text-2xl font-black ${isPacingWell ? 'text-green-600' : 'text-slate-800'}">${predictedClose}</p>
+                                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                                <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-center">
+                                                    <span class="text-[9px] text-slate-400 uppercase font-black">Projected Close</span>
+                                                    <p class="text-2xl font-black text-slate-800 mt-1">${predictedClose}</p>
                                                 </div>
-                                                <div class="text-center ${isPacingWell ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'} p-2 rounded-lg border flex-1 ml-2">
-                                                    <p class="text-[10px] ${isPacingWell ? 'text-green-600' : 'text-red-500'} uppercase font-bold tracking-wider">${isPacingWell ? 'Surplus' : 'Predicted Miss'}</p>
-                                                    <p class="text-2xl font-black ${isPacingWell ? 'text-green-700' : 'text-red-600'}">${isPacingWell ? '+' + (predictedClose - monthlyBudget) : predictedShortfall}</p>
+                                                <div class="rounded-xl p-3 text-center ${isPacingWell ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'}">
+                                                    <span class="text-[9px] ${isPacingWell ? 'text-green-600' : 'text-red-500'} uppercase font-black">${isPacingWell ? 'Surplus' : 'Est. Shortfall'}</span>
+                                                    <p class="text-2xl font-black ${isPacingWell ? 'text-green-700' : 'text-red-600'} mt-1">${isPacingWell ? '+' + (predictedClose - monthlyBudget) : predictedShortfall}</p>
                                                 </div>
-                                            </div>
-                                            
-                                            <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden relative z-10">
-                                                <div class="${isPacingWell ? 'bg-green-500' : 'bg-amber-500'} h-1.5 rounded-full" style="width: ${Math.min(100, (predictedClose / monthlyBudget) * 100)}%"></div>
                                             </div>
                                         </div>
 
-                                        <!-- AI Next Best Action -->
-                                        <div class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-5 shadow-sm border border-indigo-100 relative overflow-hidden flex-1 flex flex-col justify-center">
-                                            <h4 class="text-indigo-800 text-sm font-bold flex items-center gap-2 mb-3 relative z-10"><i data-lucide="lightbulb" class="w-4 h-4 text-amber-500 fill-amber-500"></i> Next Best Action</h4>
-                                            <p class="text-slate-700 text-sm leading-relaxed relative z-10">
-                                                ${topGapUpazila
-                                ? `To correct the predicted shortfall, divert primary field efforts to <strong class="text-indigo-700 font-black uppercase text-base">${topGapUpazila}</strong>. It holds the highest localized gap (<span class="font-bold text-red-500">${maxMonthGap} unfulfilled units</span>) against the micro-budget.`
-                                : `<span class="text-green-700 font-medium">Your territory is fully optimized across all micro-budgets. Continue current trajectory.</span>`
-                            }
-                                            </p>
+                                        <div>
+                                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                                                <div class="h-1.5 rounded-full ${isPacingWell ? 'bg-green-500' : 'bg-amber-500'}" style="width: ${Math.min(100, (predictedClose / Math.max(1, monthlyBudget)) * 100)}%"></div>
+                                            </div>
+                                            <div class="flex justify-between text-[9px] font-bold">
+                                                <span class="text-slate-400">${Math.round((predictedClose / Math.max(1, monthlyBudget)) * 100)}% of target</span>
+                                                <span class="${isPacingWell ? 'text-green-600' : 'text-amber-600'}">${isPacingWell ? 'Pacing Ahead' : 'Pacing Behind'}</span>
+                                            </div>
                                         </div>
                                     </div>
 
+                                    <!-- Card 3: Collection Risk Radar (Early EMI Protection) -->
+                                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -top-6 opacity-5"><i data-lucide="shield-alert" class="w-24 h-24 text-red-500"></i></div>
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h4 class="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500"></i> Collection Risk Radar</h4>
+                                                <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded ${unpaidFirstTwoCust > 0 ? 'bg-rose-100 text-rose-700 border border-rose-200 animate-pulse' : 'bg-green-100 text-green-700'}">
+                                                    ${unpaidFirstTwoCust > 0 ? 'Risk Alert' : 'Healthy'}
+                                                </span>
+                                            </div>
+                                            <p class="text-slate-500 text-xs mb-3">Installment collections monitoring (Early 1st & 2nd EMIs):</p>
+                                            
+                                            <div class="grid grid-cols-2 gap-2 text-center mb-4">
+                                                <div class="bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100/50">
+                                                    <span class="text-[9px] text-indigo-400 font-bold block">Active EMI Accounts</span>
+                                                    <span class="text-lg font-black text-indigo-950">${totalFirstTwoCust}</span>
+                                                </div>
+                                                <div class="bg-rose-50/50 p-2.5 rounded-xl border border-rose-100/50">
+                                                    <span class="text-[9px] text-rose-400 font-bold block">Uncollected EMIs</span>
+                                                    <span class="text-lg font-black text-rose-600">${unpaidFirstTwoCust}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="border-t border-slate-100 pt-3">
+                                            <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider block mb-1">Risk Recovery Tip:</span>
+                                            <p class="text-[11px] text-slate-600 leading-normal">
+                                                ${unpaidFirstTwoCust > 0 
+                                                    ? `Prioritize field collection visits to the <strong class="text-rose-600">${unpaidFirstTwoCust} uncollected EMI accounts</strong> this week to prevent early defaults.` 
+                                                    : `100% early EMI collections achieved. Excellent work maintaining portfolio hygiene!`
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             `;
