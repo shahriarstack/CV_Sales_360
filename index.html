@@ -8499,7 +8499,7 @@
                 const upaSelectedMonth = app.soUpazilaMonthFilter || 'All'; 
                 const upaStats = {};
                 territory.upazilas.forEach(u => {
-                    upaStats[u] = { ytdSales: 0, filteredMonthSales: 0 };
+                    upaStats[u] = { ytdSales: 0, filteredMonthSales: 0, lastFYSales: 0 };
                 });
 
                 // Calculate cumulative YTD sales
@@ -8509,10 +8509,18 @@
                     }
                 });
 
-                // Calculate filtered month sales (Either 'All' YTD or specific Month)
+                // Calculate last fiscal year sales (FY 2024-25)
+                const lastFYSalesRecords = brandSales.filter(s => s.fy === '2024-25');
+                lastFYSalesRecords.forEach(s => {
+                    if (upaStats[s.upazila]) {
+                        upaStats[s.upazila].lastFYSales += Number(s.unit_qty || 0);
+                    }
+                });
+
+                // Calculate filtered month sales (Only for specific months)
                 ytdSalesRecords.forEach(s => {
                     if (upaStats[s.upazila]) {
-                        if (upaSelectedMonth === 'All' || s.sales_month === upaSelectedMonth) {
+                        if (s.sales_month === upaSelectedMonth) {
                             upaStats[s.upazila].filteredMonthSales += Number(s.unit_qty || 0);
                         }
                     }
@@ -8841,13 +8849,19 @@
                                     <thead>
                                         <tr class="bg-slate-50/65 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100 font-black">
                                             <th class="px-4 py-2.5">Upazila Name</th>
-                                            <th class="px-4 py-2.5 text-center">Month Sales (${upaSelectedMonth})</th>
+                                            <th class="px-4 py-2.5 text-center">
+                                                ${upaSelectedMonth === 'All' ? 'SPLY Sales (Last FY)' : `Month Sales (${upaSelectedMonth})`}
+                                            </th>
                                             <th class="px-4 py-2.5 text-center">YTD Sales (FY)</th>
                                             <th class="px-4 py-2.5 text-right">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
-                                        ${Object.keys(upaStats).map(k => ({ name: k, mSales: upaStats[k].filteredMonthSales, ySales: upaStats[k].ytdSales }))
+                                        ${Object.keys(upaStats).map(k => ({ 
+                                            name: k, 
+                                            mSales: upaSelectedMonth === 'All' ? upaStats[k].lastFYSales : upaStats[k].filteredMonthSales, 
+                                            ySales: upaStats[k].ytdSales 
+                                        }))
                                             .sort((a, b) => b.ySales - a.ySales)
                                             .map(u => {
                                                 const isZeroMonth = u.mSales === 0;
