@@ -2227,12 +2227,6 @@
                 const terrSelect = document.getElementById('new-user-territories');
                 const areaName = role === 'am' ? document.getElementById('new-user-areaname').value : '';
 
-                const exists = DB.users.some(u => u.employee_id === empId && u.role === role && u.id !== userId);
-                if (exists) {
-                    app.showToast(`Employee ID already exists for the role '${role === 'am' ? 'Area Manager' : 'Sales Officer'}' in the system.`, 'error');
-                    return;
-                }
-
                 let territories = [];
                 if (role !== 'admin') {
                     territories = Array.from(terrSelect.selectedOptions).map(opt => opt.value);
@@ -2253,7 +2247,7 @@
                             user.name = appendedName;
                             user.employee_id = empId;
                             user.role = role;
-                            user.email = `${empId}.${role}@acimotors.com`;
+                            user.email = `${empId}.${role}.${userId}@acimotors.com`;
                             user.territories = territories;
                             user.area_name = areaName;
                             
@@ -2271,7 +2265,7 @@
                             employee_id: empId,
                             territories: territories,
                             area_name: areaName,
-                            email: `${empId}.${role}@acimotors.com`, // dummy email for constraint
+                            email: `${empId}.${role}.${newId}@acimotors.com`, // unique email structure
                             password: 'password' // dummy password
                         };
                         DB.users.push(newUser);
