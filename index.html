@@ -8499,7 +8499,7 @@
                 const upaSelectedMonth = app.soUpazilaMonthFilter || 'All'; 
                 const upaStats = {};
                 territory.upazilas.forEach(u => {
-                    upaStats[u] = { ytdSales: 0, filteredMonthSales: 0, lastFYSales: 0 };
+                    upaStats[u] = { ytdSales: 0, filteredMonthSales: 0, lastFYSales: 0, lastFYSameMonthSales: 0 };
                 });
 
                 // Calculate cumulative YTD sales
@@ -8514,6 +8514,9 @@
                 lastFYSalesRecords.forEach(s => {
                     if (upaStats[s.upazila]) {
                         upaStats[s.upazila].lastFYSales += Number(s.unit_qty || 0);
+                        if (s.sales_month === upaSelectedMonth) {
+                            upaStats[s.upazila].lastFYSameMonthSales += Number(s.unit_qty || 0);
+                        }
                     }
                 });
 
@@ -8853,15 +8856,27 @@
                                                 ${upaSelectedMonth === 'All' ? 'SPLY Sales (Last FY)' : `Month Sales (${upaSelectedMonth})`}
                                             </th>
                                             <th class="px-4 py-2.5 text-center">YTD Sales (FY)</th>
+                                            <th class="px-4 py-2.5 text-center">Growth %</th>
                                             <th class="px-4 py-2.5 text-right">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
-                                        ${Object.keys(upaStats).map(k => ({ 
-                                            name: k, 
-                                            mSales: upaSelectedMonth === 'All' ? upaStats[k].lastFYSales : upaStats[k].filteredMonthSales, 
-                                            ySales: upaStats[k].ytdSales 
-                                        }))
+                                        ${Object.keys(upaStats).map(k => {
+                                            const ySales = upaStats[k].ytdSales;
+                                            const mSales = upaSelectedMonth === 'All' ? upaStats[k].lastFYSales : upaStats[k].filteredMonthSales;
+                                            
+                                            // Dynamic Growth Comparison logic
+                                            const currentVal = upaSelectedMonth === 'All' ? ySales : mSales;
+                                            const priorVal = upaSelectedMonth === 'All' ? upaStats[k].lastFYSales : upaStats[k].lastFYSameMonthSales;
+                                            const growthVal = grw(currentVal, priorVal);
+
+                                            return {
+                                                name: k,
+                                                mSales: mSales,
+                                                ySales: ySales,
+                                                growth: growthVal
+                                            };
+                                        })
                                             .sort((a, b) => b.ySales - a.ySales)
                                             .map(u => {
                                                 const isZeroMonth = u.mSales === 0;
@@ -8881,6 +8896,9 @@
                                                     </td>
                                                     <td class="px-4 py-2.5 text-center font-black ${isZeroYtd ? 'text-red-600 bg-red-500/5' : 'text-slate-800'}">
                                                         ${u.ySales}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-black">
+                                                        ${formatGrw(u.growth)}
                                                     </td>
                                                     <td class="px-4 py-2.5 text-right">
                                                         ${isZeroYtd 
