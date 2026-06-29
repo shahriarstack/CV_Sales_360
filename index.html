@@ -1152,6 +1152,39 @@
                     // Parse JSON fields where necessary
                     DB.users = users.map(u => ({ ...u, territories: typeof u.territories === 'string' ? JSON.parse(u.territories) : u.territories }));
                     DB.territories = territories.map(t => ({ ...t, upazilas: typeof t.upazilas === 'string' ? JSON.parse(t.upazilas) : t.upazilas }));
+                    
+                    // Dynamic construction of Upazilas from active transaction records (Sales and Targets)
+                    DB.territories.forEach(t => {
+                        const upazilaSet = new Set();
+                        
+                        // 1. Scan targets table
+                        DB.targets.forEach(tg => {
+                            if (tg.territory_id === t.id && tg.upazila) {
+                                const cleanUpa = tg.upazila.trim();
+                                if (cleanUpa && cleanUpa.toLowerCase() !== 'null' && cleanUpa.toLowerCase() !== 'undefined') {
+                                    upazilaSet.add(cleanUpa);
+                                }
+                            }
+                        });
+                        
+                        // 2. Scan sales table
+                        DB.sales.forEach(s => {
+                            if (s.territory_id === t.id && s.upazila) {
+                                const cleanUpa = s.upazila.trim();
+                                if (cleanUpa && cleanUpa.toLowerCase() !== 'null' && cleanUpa.toLowerCase() !== 'undefined') {
+                                    upazilaSet.add(cleanUpa);
+                                }
+                            }
+                        });
+
+                        // If upazilas found in active data, override the empty seeded array
+                        if (upazilaSet.size > 0) {
+                            t.upazilas = Array.from(upazilaSet).sort();
+                        } else if (!t.upazilas || t.upazilas.length === 0) {
+                            t.upazilas = [];
+                        }
+                    });
+
                     DB.models = models;
                     DB.notices = notices;
                     DB.links = links;
