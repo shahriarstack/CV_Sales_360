@@ -1137,7 +1137,7 @@
                     console.log("Connecting to cPanel MySQL database via api.php...");
                     
                     // Load all data tables concurrently
-                    const [targets, projections, emi, sales, recovery_od, users, territories, models, notices, links, tiv_brands, app_settings] = await Promise.all([
+                    const [targets, projections, emi, sales, recovery_od, users, territories, models, notices, links, tiv_brands, app_settings, tiv_submissions] = await Promise.all([
                         app.neonSQL`SELECT * FROM targets`,
                         app.neonSQL`SELECT * FROM projections`,
                         app.neonSQL`SELECT * FROM emi`,
@@ -1149,7 +1149,8 @@
                         app.neonSQL`SELECT * FROM notices`,
                         app.neonSQL`SELECT * FROM links`,
                         app.neonSQL`SELECT * FROM tiv_brands`,
-                        app.neonSQL`SELECT * FROM app_settings`
+                        app.neonSQL`SELECT * FROM app_settings`,
+                        app.neonSQL`SELECT * FROM tiv_submissions`
                     ]);
                     
                     DB.targets = targets;
@@ -1198,6 +1199,9 @@
                     DB.notices = notices;
                     DB.links = links;
                     DB.tiv_brands = tiv_brands.map(b => ({ ...b, models: typeof b.models === 'string' ? JSON.parse(b.models) : b.models }));
+                    DB.tiv_submissions = (tiv_submissions || []).map(s => {
+                        return typeof s.submission_data === 'string' ? JSON.parse(s.submission_data) : s.submission_data;
+                    });
                     
                     if (app_settings.length > 0) {
                         DB.settings = typeof app_settings[0].settings_json === 'string' ? JSON.parse(app_settings[0].settings_json) : app_settings[0].settings_json;
@@ -7465,10 +7469,10 @@
                 }
                 const territory = DB.territories.find(t => t.id === terrId);
 
-                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                const months = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 const currentMonth = app.tivSelectedMonth || app.currentMonth;
                 const currentMonthIdx = months.indexOf(currentMonth);
-                const prevMonth = currentMonthIdx > 0 ? months[currentMonthIdx - 1] : 'December';
+                const prevMonth = currentMonthIdx > 0 ? months[currentMonthIdx - 1] : 'June';
 
                 const submission = DB.tiv_submissions.find(s => s.territory === terrId && s.month === currentMonth);
                 const prevSubmission = DB.tiv_submissions.find(s => s.territory === terrId && s.month === prevMonth);
@@ -7702,7 +7706,7 @@
                 app.renderTIVReporting();
             },
 
-            submitTIVData: (e) => {
+            submitTIVData: async (e) => {
                 e.preventDefault();
                 const terrId = app.currentUser.territories[0];
                 const currentMonth = app.tivSelectedMonth || app.currentMonth;
@@ -7717,14 +7721,24 @@
                     });
                 });
 
-                DB.tiv_submissions.push({
+                const submissionObj = {
                     territory: terrId,
                     userId: app.currentUser.id,
                     month: currentMonth,
                     timestamp: new Date().toISOString(),
                     data: fullData,
                     total: total
-                });
+                };
+
+                DB.tiv_submissions.push(submissionObj);
+
+                if (app.neonSQL) {
+                    try {
+                        await app.neonSQL`INSERT INTO tiv_submissions (submission_data) VALUES (${JSON.stringify(submissionObj)})`;
+                    } catch (dbErr) {
+                        console.error('Failed to save TIV submission to database:', dbErr);
+                    }
+                }
 
                 app.showToast('TIV Data submitted successfully!', 'success');
                 app.renderTIVReporting();
@@ -7979,21 +7993,35 @@
                 }
             },
 
-            unlockTIVSubmission: (terrId) => {
+            unlockTIVSubmission: async (terrId) => {
                 const currentMonth = app.currentMonth;
                 const idx = DB.tiv_submissions.findIndex(s => s.territory === terrId && s.month === currentMonth);
                 if (idx !== -1) {
                     DB.tiv_submissions.splice(idx, 1);
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM tiv_submissions WHERE JSON_UNQUOTE(JSON_EXTRACT(submission_data, '$.territory')) = ${terrId} AND JSON_UNQUOTE(JSON_EXTRACT(submission_data, '$.month')) = ${currentMonth}`;
+                        } catch (err) {
+                            console.error('Failed to unlock submission from database:', err);
+                        }
+                    }
                     app.showToast('Entry unlocked.', 'success');
                     app.renderTIVManagement();
                 }
             },
 
-            unlockAllTIV: () => {
+            unlockAllTIV: async () => {
                 const currentMonth = app.currentMonth;
                 const originalLen = DB.tiv_submissions.length;
                 DB.tiv_submissions = DB.tiv_submissions.filter(s => s.month !== currentMonth);
                 if (DB.tiv_submissions.length < originalLen) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM tiv_submissions WHERE JSON_UNQUOTE(JSON_EXTRACT(submission_data, '$.month')) = ${currentMonth}`;
+                        } catch (err) {
+                            console.error('Failed to unlock all submissions from database:', err);
+                        }
+                    }
                     app.showToast('All entries for this month unlocked.', 'success');
                 } else {
                     app.showToast('No entries to unlock.', 'info');
