@@ -10075,10 +10075,20 @@
                     const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
                     grandFYBudget += totalFYBudget;
 
+                    const hasMonthlyTargets = tTargets.some(tg => tg.month && fiscalMonths.includes(tg.month));
+
                     const monthlyPerf = {};
                     fiscalMonths.forEach(m => {
                         const mTgts   = tTargets.filter(tg => tg.month === m);
-                        const mBudget = mTgts.length > 0 ? mTgts.reduce((s, tg) => s + tg.target_qty, 0) : Math.round(totalFYBudget / 12);
+                        let mBudget = 0;
+                        if (mTgts.length > 0) {
+                            mBudget = mTgts.reduce((s, tg) => s + Number(tg.target_qty || 0), 0);
+                        } else if (!hasMonthlyTargets && totalFYBudget > 0) {
+                            const base = Math.floor(totalFYBudget / 12);
+                            const remainder = totalFYBudget % 12;
+                            const mIdx = fiscalMonths.indexOf(m);
+                            mBudget = base + (mIdx < remainder ? 1 : 0);
+                        }
                         const mSales  = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === currentFY && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
                         const mSply   = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === lastFY  && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
                         monthlyPerf[m] = { budget:mBudget, sales:mSales, sply:mSply, ach:ach(mSales,mBudget), growth:calcGrw(mSales,mSply) };
