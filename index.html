@@ -4075,7 +4075,8 @@
                                             <th class="px-3 py-2 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July - September)</th>
                                             <th class="px-3 py-2 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October - December)</th>
                                             <th class="px-3 py-2 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January - March)</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r-2 border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
                                         <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
@@ -4099,29 +4100,34 @@
                                             <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">May</th>
                                             <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">June</th>
                                             <th class="px-2 py-1.5 bg-cyan-500/10 text-cyan-800 font-extrabold border-l-2 border-cyan-300" colspan="5">Q4 Total</th>
+                                            <!-- FY Total -->
+                                            <th class="px-2 py-1.5 bg-slate-800/20 text-slate-900 font-black border-l-2 border-slate-400" colspan="5">FY Total</th>
                                         </tr>
                                         <!-- Row 3: Metrics -->
                                         <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/80 text-center font-bold">
                                             ${(() => {
                                                 let result = '';
-                                                for (let i = 0; i < 16; i++) {
-                                                    const isQuarterTotal = (i + 1) % 4 === 0;
+                                                for (let i = 0; i < 17; i++) {
+                                                    const isQuarterTotal = i < 16 ? (i + 1) % 4 === 0 : false;
+                                                    const isFYTotal = i === 16;
                                                     const quarterName = i < 4 ? 'Q1' : i < 8 ? 'Q2' : i < 12 ? 'Q3' : 'Q4';
                                                     let qBorder = 'border-l border-slate-100';
-                                                    if (i % 4 === 0) {
-                                                        if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-200';
-                                                        else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-200';
-                                                        else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-200';
-                                                        else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-200';
+                                                    if (i % 4 === 0 && i < 16) {
+                                                         if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-200';
+                                                         else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-200';
+                                                         else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-200';
+                                                         else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-200';
                                                     } else if (isQuarterTotal) {
-                                                        if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-300 bg-violet-500/5';
-                                                        else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-300 bg-amber-500/5';
-                                                        else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-300 bg-emerald-500/5';
-                                                        else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-300 bg-cyan-500/5';
+                                                         if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-300 bg-violet-500/5';
+                                                         else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-300 bg-amber-500/5';
+                                                         else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-300 bg-emerald-500/5';
+                                                         else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-300 bg-cyan-500/5';
+                                                    } else if (isFYTotal) {
+                                                         qBorder = 'border-l-2 border-slate-400 bg-slate-800/10';
                                                     }
                                                     const metrics = ['Bgt', 'Sal', 'Ach%', 'SPLY', 'Gr%'];
                                                     result += metrics.map((m, mIdx) => `
-                                                        <th class="px-1.5 py-1 ${mIdx === 0 ? qBorder : ''} ${isQuarterTotal ? 'bg-slate-100/30 font-extrabold' : ''} text-center">${m}</th>
+                                                         <th class="px-1.5 py-1 ${mIdx === 0 ? qBorder : ''} ${(isQuarterTotal || isFYTotal) ? 'bg-slate-100/30 font-extrabold' : ''} text-center">${m}</th>
                                                     `).join('');
                                                 }
                                                 return result;
@@ -4204,6 +4210,21 @@
                                                         <td class="px-2 py-1.5 font-black ${qBg} text-[10px] border-r border-slate-200">${formatDetailedGrw(q.growth)}</td>
                                                     `;
                                                 });
+
+                                                // Append Fiscal Year Total cells for this row
+                                                const fyBudget = Object.values(quarterPerf).reduce((sum, q) => sum + q.budget, 0);
+                                                const fySales = Object.values(quarterPerf).reduce((sum, q) => sum + q.sales, 0);
+                                                const fySply = Object.values(quarterPerf).reduce((sum, q) => sum + q.sply, 0);
+                                                const fyAch = ach(fySales, fyBudget);
+                                                const fyGrowth = calcGrw(fySales, fySply);
+
+                                                cellsHTML += `
+                                                    <td class="px-2 py-1.5 font-extrabold bg-slate-800/10 text-slate-900 border-l-2 border-slate-400 shadow-inner">${fyBudget}</td>
+                                                    <td class="px-2 py-1.5 font-black bg-slate-800/10 text-slate-900 shadow-inner">${fySales}</td>
+                                                    <td class="px-2 py-1.5 bg-slate-800/10 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-800 text-white font-black">${fyAch}%</span></td>
+                                                    <td class="px-2 py-1.5 font-extrabold bg-slate-800/10 text-slate-900 shadow-inner">${fySply}</td>
+                                                    <td class="px-2 py-1.5 font-black bg-slate-800/10 text-[10px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(fyGrowth)}</td>
+                                                `;
 
                                                 return `
                                                     <tr class="pulse-tr-premium text-center border-b border-slate-100 group">
@@ -4290,6 +4311,26 @@
                                                     <td class="px-2 py-2 font-black ${qBg} text-[10px] border-r border-slate-300 shadow-inner">${formatDetailedGrw(gqGrw)}</td>
                                                 `;
                                             });
+
+                                            // Append Fiscal Year Grand Total cells
+                                            let grandFYTotalBudget = 0;
+                                            let grandFYTotalSales = 0;
+                                            let grandFYTotalSply = 0;
+                                            Object.keys(quarters).forEach(qName => {
+                                                grandFYTotalBudget += grandQuarter[qName].budget;
+                                                grandFYTotalSales += grandQuarter[qName].sales;
+                                                grandFYTotalSply += grandQuarter[qName].sply;
+                                            });
+                                            const grandFYAch = ach(grandFYTotalSales, grandFYTotalBudget);
+                                            const grandFYGrowth = calcGrw(grandFYTotalSales, grandFYTotalSply);
+
+                                            grandCellsHTML += `
+                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-slate-950 border-l-2 border-slate-400 shadow-inner">${grandFYTotalBudget}</td>
+                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-slate-950 shadow-inner">${grandFYTotalSales}</td>
+                                                <td class="px-2 py-2 bg-slate-800/20 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-900 text-white font-black">${grandFYAch}%</span></td>
+                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-slate-950 shadow-inner">${grandFYTotalSply}</td>
+                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-[10px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(grandFYGrowth)}</td>
+                                            `;
 
                                             const grandTotalRowHTML = `
                                                 <tr class="bg-indigo-50/20 font-black text-slate-800 text-center border-t-2 border-indigo-200">
