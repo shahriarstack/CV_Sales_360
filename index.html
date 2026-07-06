@@ -66,29 +66,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        /* Robot Chatbot Animations */
-        @keyframes spin-slow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes reverse-spin {
-            0% { transform: rotate(360deg); }
-            100% { transform: rotate(0deg); }
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-        .animate-spin-slow {
-            animation: spin-slow 12s linear infinite;
-        }
-        .animate-reverse-spin {
-            animation: reverse-spin 8s linear infinite;
-        }
-        .animate-float {
-            animation: float 4s ease-in-out infinite;
-        }
-
         /* Ensure Inputs and Selects stay solid & highly readable but with a glass touch */
         input,
         select,
@@ -965,83 +942,70 @@
     <!-- ========================================== -->
     <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-[100] group">
         <!-- Tooltip -->
-        <div class="absolute right-0 bottom-24 bg-slate-900/95 text-white text-[10px] font-extrabold px-3.5 py-2 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none border border-slate-700/50 flex items-center gap-2">
+        <div class="absolute right-0 bottom-20 bg-slate-900/95 text-white text-[10px] font-extrabold px-3.5 py-2 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none border border-slate-700/50 flex items-center gap-2">
             <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            Chat with RoboVolt ⚡
+            Ask Spark360 ⚡
         </div>
 
-        <!-- FAB Button Container (Playful Float) -->
-        <div class="relative w-16 h-16 flex items-center justify-center animate-float">
-            <!-- Spinning outer cyber rings -->
-            <div class="absolute inset-0 rounded-full border border-dashed border-cyan-400/40 animate-spin-slow"></div>
-            <div class="absolute inset-2 rounded-full border border-dotted border-fuchsia-500/30 animate-reverse-spin"></div>
+        <!-- FAB Button -->
+        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative w-16 h-16 bg-slate-950 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-indigo-500/40">
+            <!-- Pulsing Rings -->
+            <span class="absolute inset-0 rounded-full bg-indigo-500/20 animate-ping opacity-60"></span>
+            <span class="absolute -inset-1 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300"></span>
             
-            <!-- Outer Glow -->
-            <div class="absolute inset-2 rounded-full bg-gradient-to-tr from-cyan-500 to-fuchsia-500 blur-md opacity-35 group-hover:opacity-60 transition-opacity duration-300"></div>
-            
-            <!-- FAB Main Button -->
-            <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative w-13 h-13 bg-slate-950 rounded-full flex items-center justify-center border-2 border-cyan-400/80 shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all duration-300 hover:scale-105 active:scale-95 hover:border-fuchsia-400 hover:shadow-[0_0_20px_rgba(240,70,188,0.5)]">
-                <!-- Active Energy Pulse -->
-                <span class="absolute inset-0 rounded-full bg-cyan-500/10 animate-pulse"></span>
-                
-                <!-- Custom SVG Robot Face (Playful/Active/Futuristic) -->
-                <svg class="w-8 h-8 relative z-10 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Antennas / Ears -->
-                    <path d="M22 45 L12 35 M78 45 L88 35" stroke="#00f0ff" stroke-width="5" stroke-linecap="round" class="animate-pulse" />
-                    <circle cx="12" cy="35" r="4" fill="#ff007f" />
-                    <circle cx="88" cy="35" r="4" fill="#ff007f" />
+            <!-- Animated Robot Face SVG -->
+            <div class="relative z-10 w-11 h-11 flex items-center justify-center transition-all duration-300 group-hover:rotate-6 group-hover:-translate-y-1">
+                <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-lg">
+                    <!-- Antenna -->
+                    <rect x="47" y="12" width="6" height="13" rx="2" fill="#a5b4fc" />
+                    <circle cx="50" cy="9" r="6" fill="#f43f5e" class="animate-pulse" />
                     
-                    <!-- Antennas Top -->
-                    <path d="M50 30 L50 17" stroke="#00f0ff" stroke-width="5" stroke-linecap="round" />
-                    <circle cx="50" cy="17" r="4" fill="#ff007f" />
-                    <circle cx="50" cy="17" r="6" fill="#00f0ff" class="animate-ping opacity-40" style="animation-duration: 2s" />
-
-                    <!-- Robot Head / Helmet -->
-                    <rect x="22" y="30" width="56" height="48" rx="16" fill="#0f172a" stroke="#00f0ff" stroke-width="4.5" />
+                    <!-- Ears/Bolts -->
+                    <circle cx="15" cy="55" r="6" fill="#818cf8" />
+                    <circle cx="85" cy="55" r="6" fill="#818cf8" />
                     
-                    <!-- Glowing Visor -->
-                    <rect x="29" y="39" width="42" height="18" rx="9" fill="#020617" stroke="#ff007f" stroke-width="2.5" />
+                    <!-- Head Outer Glow / Border -->
+                    <rect x="18" y="22" width="64" height="64" rx="20" fill="url(#botGrad)" stroke="white" stroke-width="2.5" />
                     
-                    <!-- Playful Glowing Eyes (Active bouncing) -->
-                    <circle cx="41" cy="48" r="4" fill="#00f0ff" class="animate-bounce" style="animation-delay: 0ms; animation-duration: 1.2s" />
-                    <circle cx="59" cy="48" r="4" fill="#00f0ff" class="animate-bounce" style="animation-delay: 200ms; animation-duration: 1.2s" />
+                    <!-- Screen Face -->
+                    <rect x="26" y="32" width="48" height="28" rx="8" fill="#0f172a" />
                     
-                    <!-- Cheek blushes -->
-                    <circle cx="34" cy="62" r="3" fill="#ff007f" opacity="0.5" />
-                    <circle cx="66" cy="62" r="3" fill="#ff007f" opacity="0.5" />
+                    <!-- Glow Eyes -->
+                    <circle cx="38" cy="46" r="4.5" fill="#22d3ee" class="animate-pulse" />
+                    <circle cx="62" cy="46" r="4.5" fill="#22d3ee" class="animate-pulse" />
                     
-                    <!-- Friendly led wave mouth -->
-                    <path d="M43 60 Q50 65 57 60" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <!-- Playful Smile Mouth -->
+                    <path d="M44 68 Q50 74 56 68" stroke="white" stroke-width="3" stroke-linecap="round" fill="none" />
+                    
+                    <defs>
+                        <linearGradient id="botGrad" x1="18" y1="22" x2="82" y2="86" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#8b5cf6" />
+                            <stop offset="50%" stop-color="#ec4899" />
+                            <stop offset="100%" stop-color="#6366f1" />
+                        </linearGradient>
+                    </defs>
                 </svg>
-            </button>
-        </div>
+            </div>
+        </button>
 
         <!-- Chat Panel -->
-        <div id="ai-chat-panel" class="absolute bottom-24 right-0 w-[340px] h-[500px] max-h-[80vh] glass rounded-2xl border border-white/40 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 pointer-events-none">
+        <div id="ai-chat-panel" class="absolute bottom-20 right-0 w-[340px] h-[500px] max-h-[80vh] glass rounded-2xl border border-white/40 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 pointer-events-none">
             
             <!-- Header -->
-            <div class="bg-gradient-to-r from-slate-900 to-slate-950 p-4 flex justify-between items-center shrink-0 border-b border-cyan-500/20">
+            <div class="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-600 p-4 flex justify-between items-center shrink-0 border-b border-white/10">
                 <div class="flex items-center gap-3">
-                    <!-- Robot Avatar Header Icon -->
-                    <div class="relative w-8 h-8 rounded-xl bg-slate-900 border border-cyan-500/30 flex items-center justify-center shadow-inner overflow-hidden">
-                        <span class="absolute inset-0 bg-cyan-500/5 animate-pulse"></span>
-                        <svg class="w-6 h-6 relative z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="25" y="32" width="50" height="42" rx="12" fill="#020617" stroke="#00f0ff" stroke-width="5" />
-                            <rect x="32" y="41" width="36" height="15" rx="7.5" fill="#0f172a" stroke="#ff007f" stroke-width="2.5" />
-                            <circle cx="43" cy="48" r="3" fill="#00f0ff" />
-                            <circle cx="57" cy="48" r="3" fill="#00f0ff" />
-                            <path d="M45 61 Q50 64 55 61" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" fill="none" />
-                        </svg>
+                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-white animate-spin-slow"></i>
                     </div>
                     <div>
-                        <h3 class="text-white font-black text-[13px] leading-tight flex items-center gap-1.5">RoboVolt <span class="text-[10px] text-cyan-400 animate-pulse">● LIVE</span></h3>
-                        <p class="text-cyan-400/80 text-[8px] font-black tracking-wider uppercase leading-tight mt-0.5">Your Sales Robot Coach</p>
+                        <h3 class="text-white font-black text-[13px] leading-tight flex items-center gap-1">Spark360 ⚡</h3>
+                        <p class="text-indigo-100 text-[8px] font-black tracking-wider uppercase leading-tight mt-0.5">Your Sales Coach & Assistant</p>
                     </div>
                 </div>
-                <button onclick="app.aiAssistant.toggleChat()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                <button onclick="app.aiAssistant.toggleChat()" class="text-white/70 hover:text-white p-1.5 rounded-lg hover:bg-white/20 transition-colors">
                     <i data-lucide="chevron-down" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -1050,15 +1014,11 @@
             <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 custom-scrollbar flex flex-col scroll-smooth">
                 <!-- Welcome Message -->
                 <div class="flex gap-2 w-full">
-                    <div class="w-7 h-7 rounded-full bg-slate-950 border border-cyan-500/40 flex items-center justify-center shrink-0 shadow-md">
-                        <svg class="w-5 h-5" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="25" y="32" width="50" height="42" rx="12" fill="#020617" stroke="#00f0ff" stroke-width="5" />
-                            <circle cx="43" cy="48" r="3.5" fill="#00f0ff" />
-                            <circle cx="57" cy="48" r="3.5" fill="#00f0ff" />
-                        </svg>
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-md">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i>
                     </div>
                     <div class="bg-white border border-slate-100 shadow-sm rounded-2xl rounded-tl-none px-3.5 py-2.5 text-[11px] text-slate-700 leading-relaxed font-medium">
-                        Bzzzt! ⚡ Hi there! I am **RoboVolt**, your active AI Sales Robot! I am ready to charge up your commercial vehicle deals, pitch ACI products, or optimize your EMI collections! Let's get to work! 🤖🚀
+                        Hi there! 👋 I'm **Spark360** ⚡, your virtual sales coach. Need help closing deals, pitching ACI vehicles, or finding EMI insights? Ask me anything!
                     </div>
                 </div>
             </div>
@@ -10923,7 +10883,7 @@
                 try {
                     const context = `The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: ${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: ${localStorage.getItem('aci_last_page') || 'Unknown'}.`;
                     
-                    const systemPrompt = "You are RoboVolt, a friendly, witty, and proactive AI sales robot and coach for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and energetic answers. Keep answers brief (max 3 sentences usually), use emojis, and occasionally include playful robotic sounds like 'Bzzzt!' or 'Beep boop!'. Context: " + context;
+                    const systemPrompt = "You are Spark360, a friendly, witty, and proactive AI sales coach and assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis. Context: " + context;
 
                     // Building conversation history for Gemini API format
                     const contents = app.aiAssistant.history.map(msg => ({
