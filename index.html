@@ -10835,7 +10835,7 @@
                 const loadingId = app.aiAssistant.showLoading();
                 
                 try {
-                    const context = \`The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: \${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: \${localStorage.getItem('aci_last_page') || 'Unknown'}.\`;
+                    const context = `The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: ${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: ${localStorage.getItem('aci_last_page') || 'Unknown'}.`;
                     
                     const systemPrompt = "You are a friendly, witty, and proactive AI assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis. Context: " + context;
 
@@ -10849,7 +10849,7 @@
                     contents.unshift({ role: 'model', parts: [{ text: "Got it! I am ready to help." }] });
                     contents.push({ role: 'user', parts: [{ text }] });
                     
-                    const res = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${app.aiAssistant.apiKey}\`, {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${app.aiAssistant.apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents })
