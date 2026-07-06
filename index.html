@@ -5813,10 +5813,12 @@
                 const maxSales = Math.max(...Object.values(dataAgg), 1);
                 const totalPlotted = Object.values(dataAgg).reduce((a, b) => a + b, 0);
 
-                // Robust Name Normalization for Map Polygons (Handles Old vs New English spellings)
+                // Robust Name Normalization for Map Polygons (Handles Old vs New English spellings and Sadar suffixes)
                 const aliases = { 'chittagong': 'chattogram', 'barisal': 'barishal', 'jessore': 'jashore', 'bogra': 'bogura', 'comilla': 'cumilla' };
                 const getNormalizedKey = (name) => {
-                    let clean = name.toLowerCase().replace(/[^a-z]/g, '');
+                    if (!name) return '';
+                    let clean = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    clean = clean.replace(/sadar$/, '');
                     return aliases[clean] || clean;
                 };
 
@@ -6013,8 +6015,8 @@
                     app.showLoader(`Loading ${viewMode} Map Boundaries...`);
                     try {
                         const geoUrl = viewMode === 'district'
-                            ? 'https://cdn.jsdelivr.net/gh/fahimreza-pro/bangladesh-geojson@master/bd-districts.json'
-                            : 'https://cdn.jsdelivr.net/gh/fahimreza-pro/bangladesh-geojson@master/bd-upazilas.json';
+                            ? 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json'
+                            : 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm3_492_upozila.json';
 
                         if (!app.geoJsonCache[viewMode]) {
                             const res = await fetch(geoUrl);
@@ -6028,9 +6030,7 @@
                         if (districtTab !== 'All') {
                             const normSelectedDist = getNormalizedKey(districtTab);
                             const filteredFeatures = geoData.features.filter(f => {
-                                const fDist = viewMode === 'district'
-                                    ? (f.properties.name || f.properties.NAME_2 || f.properties.ADM2_EN || '')
-                                    : (f.properties.NAME_2 || f.properties.district || f.properties.ADM2_EN || '');
+                                const fDist = f.properties.ADM2_EN || f.properties.NAME_2 || f.properties.district || '';
                                 return getNormalizedKey(fDist) === normSelectedDist;
                             });
 
@@ -6050,7 +6050,9 @@
                         };
 
                         const style = (feature) => {
-                            const propName = feature.properties.name || feature.properties.NAME_2 || feature.properties.NAME_3 || '';
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || '');
                             const normProp = getNormalizedKey(propName);
                             const sales = normalizedAgg[normProp] || 0;
                             return {
@@ -6078,7 +6080,9 @@
                                 mouseout: resetHighlight
                             });
 
-                            const propName = feature.properties.name || feature.properties.NAME_2 || feature.properties.NAME_3 || 'Unknown Area';
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || 'Unknown District')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || 'Unknown Upazila');
                             const normProp = getNormalizedKey(propName);
                             const sales = normalizedAgg[normProp] || 0;
 
