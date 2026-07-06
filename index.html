@@ -951,14 +951,11 @@
         </div>
 
         <!-- FAB Button -->
-        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative w-16 h-16 bg-slate-950 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-indigo-500/40">
-            <!-- Pulsing Rings -->
-            <span class="absolute inset-0 rounded-full bg-indigo-500/20 animate-ping opacity-60"></span>
-            <span class="absolute -inset-1 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300"></span>
-            
+        <!-- FAB Button -->
+        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative bg-transparent hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none cursor-pointer group">
             <!-- Animated Robot Face SVG -->
-            <div class="relative z-10 w-11 h-11 flex items-center justify-center transition-all duration-300 group-hover:rotate-6 group-hover:-translate-y-1">
-                <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-lg">
+            <div class="relative z-10 w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:rotate-6 group-hover:-translate-y-1">
+                <svg width="56" height="56" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-[0_6px_16px_rgba(139,92,246,0.45)]">
                     <!-- Antenna -->
                     <rect x="47" y="12" width="6" height="13" rx="2" fill="#a5b4fc" />
                     <circle cx="50" cy="9" r="6" fill="#f43f5e" class="animate-pulse" />
