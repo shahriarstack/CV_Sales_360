@@ -10953,7 +10953,29 @@
                 try {
                     const context = `The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: ${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: ${localStorage.getItem('aci_last_page') || 'Unknown'}.`;
                     
-                    const systemPrompt = "You are Spark360 ⚡, a friendly, witty, and proactive AI sales assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis. Context: " + context;
+                    let systemDataDump = "Real-Time System Database Summary:\n";
+                    if (app.currentUser) {
+                        const userTerrs = app.currentUser.territories || [];
+                        const role = app.currentUser.role;
+                        
+                        // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
+                        const isGlobal = role === 'admin' || userTerrs.length === 0;
+                        const myTargets = DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === 'FY25-26');
+                        const mySales = DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === 'FY25-26');
+                        const myCollections = DB.emi_collections.filter(c => isGlobal || userTerrs.includes(c.territory_id));
+                        const unpaidEMIs = DB.emi_schedules.filter(s => s.status !== 'Paid' && (isGlobal || userTerrs.includes(s.territory_id))).length;
+                        
+                        let totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
+                        let totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
+                        let totalCollectedAmt = myCollections.reduce((sum, c) => sum + (c.collected_amount || 0), 0);
+                        
+                        systemDataDump += `- My YTD Sales (FY25-26): ${totalSales} units\n`;
+                        systemDataDump += `- My YTD Target (FY25-26): ${totalTarget} units\n`;
+                        systemDataDump += `- Total EMI Amount Collected: ৳${totalCollectedAmt.toLocaleString()}\n`;
+                        systemDataDump += `- Unpaid/Pending EMI Installments: ${unpaidEMIs}\n`;
+                    }
+                    
+                    const systemPrompt = "You are Spark360 ⚡, a friendly, witty, and proactive AI sales assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis.\nContext: " + context + "\n\nWhen asked about user performance, targets, sales, or collections, ALWAYS use the following real-time data to answer accurately:\n" + systemDataDump;
 
                     // Building conversation history for Gemini API format
                     const contents = app.aiAssistant.history.map(msg => ({
