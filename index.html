@@ -5758,7 +5758,9 @@
                 });
 
                 const activeModels = brandTab === 'All' ? DB.models : DB.models.filter(m => m.brand === brandTab);
-                const allDistricts = [...new Set(DB.territories.map(t => t.district))].sort();
+                
+                // Get unique districts from actual imported sales data instead of the territory mapping
+                const allDistricts = [...new Set(DB.sales.map(s => s.district).filter(Boolean))].sort();
 
                 // Rank areas for side panel
                 const rankedAreas = Object.entries(dataAgg).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty);
