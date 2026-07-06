@@ -5197,6 +5197,50 @@
                 app.renderAdminAIInsights(true);
             },
 
+            getNormalizedKey: (name) => {
+                if (!name) return '';
+                const aliases = { 'chittagong': 'chattogram', 'barisal': 'barishal', 'jessore': 'jashore', 'bogra': 'bogura', 'comilla': 'cumilla' };
+                let clean = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                clean = clean.replace(/sadar$/, '');
+                return aliases[clean] || clean;
+            },
+
+            selectMapArea: (name) => {
+                if (app.mapViewMode === 'district') {
+                    app.mapDistrictTab = name;
+                    app.mapViewMode = 'upazila';
+                    app.renderAdminSalesMap();
+                } else {
+                    if (app.geoLayer) {
+                        let found = false;
+                        app.geoLayer.eachLayer(layer => {
+                            const propName = layer.feature.properties.ADM3_EN || layer.feature.properties.name || '';
+                            if (app.getNormalizedKey(propName) === app.getNormalizedKey(name)) {
+                                found = true;
+                                layer.fire('mouseover');
+                                app.salesMap.fitBounds(layer.getBounds(), { padding: [40, 40] });
+                            }
+                        });
+                        if (!found) {
+                            app.showToast(`Upazila boundary for ${name} not found on map.`, 'info');
+                        }
+                    }
+                }
+            },
+
+            filterMapList: (val) => {
+                const query = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const items = document.querySelectorAll('#map-area-list > div');
+                items.forEach(item => {
+                    const name = item.getAttribute('data-name');
+                    if (name.includes(query)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            },
+
             renderAdminAIInsights: (keepDropdownOpen = false) => {
                 localStorage.setItem('aci_last_page', 'ai');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
@@ -5813,24 +5857,16 @@
                 const maxSales = Math.max(...Object.values(dataAgg), 1);
                 const totalPlotted = Object.values(dataAgg).reduce((a, b) => a + b, 0);
 
-                // Robust Name Normalization for Map Polygons (Handles Old vs New English spellings and Sadar suffixes)
-                const aliases = { 'chittagong': 'chattogram', 'barisal': 'barishal', 'jessore': 'jashore', 'bogra': 'bogura', 'comilla': 'cumilla' };
-                const getNormalizedKey = (name) => {
-                    if (!name) return '';
-                    let clean = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    clean = clean.replace(/sadar$/, '');
-                    return aliases[clean] || clean;
-                };
-
                 const normalizedAgg = {};
                 Object.entries(dataAgg).forEach(([k, v]) => {
-                    normalizedAgg[getNormalizedKey(k)] = v;
+                    normalizedAgg[app.getNormalizedKey(k)] = v;
                 });
 
                 const activeModels = brandTab === 'All' ? DB.models : DB.models.filter(m => m.brand === brandTab);
                 
                 // Get unique districts from actual imported sales data instead of the territory mapping
                 const allDistricts = [...new Set(DB.sales.map(s => s.district).filter(Boolean))].sort();
+                const allUpazilas = [...new Set(DB.sales.filter(s => s.fy === currentFY && (districtTab === 'All' || s.district === districtTab)).map(s => s.upazila).filter(Boolean))].sort();
 
                 // Rank areas for side panel
                 const rankedAreas = Object.entries(dataAgg).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty);
@@ -5923,11 +5959,58 @@
                             </div>
                         </div>
 
-                        <!-- Map & Insights Layout (Stacked, Centered, Top-aligned) -->
-                        <div class="flex flex-col gap-6 flex-1 relative z-10 w-full max-w-4xl mx-auto">
+                        <!-- Map & Insights Layout (Fits screen by default) -->
+                        <div class="flex flex-col lg:flex-row gap-6 h-[950px] lg:h-[530px] relative z-10">
                             
-                            <!-- Leaflet Map Container (Centered at the top) -->
-                            <div class="w-full glass rounded-2xl relative overflow-hidden bg-slate-50 border border-slate-200 shadow-inner flex flex-col min-h-[500px]">
+                            <!-- Left Sidebar List (Scrollable Districts/Upazilas) -->
+                            <div class="w-full lg:w-72 shrink-0 h-[400px] lg:h-full">
+                                <div class="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                                    <!-- Sidebar Header & KPI -->
+                                    <div class="p-4 bg-slate-50 border-b border-slate-100 space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Sales</span>
+                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">${totalPlotted} Units</span>
+                                        </div>
+                                        
+                                        <!-- Search Bar -->
+                                        <div class="relative">
+                                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                        </div>
+                                    </div>
+
+                                    <!-- Scrollable List of Areas -->
+                                    <div id="map-area-list" class="flex-1 overflow-y-auto p-2 space-y-1">
+                                        ${(() => {
+                                            const listItems = (viewMode === 'district' ? allDistricts : allUpazilas).map(name => {
+                                                const norm = app.getNormalizedKey(name);
+                                                const sales = normalizedAgg[norm] || 0;
+                                                return { name, sales };
+                                            }).sort((a, b) => b.sales - a.sales);
+
+                                            if (listItems.length === 0) {
+                                                return `<p class="text-center text-slate-400 text-xs py-8 font-medium">No areas matching filters</p>`;
+                                            }
+
+                                            return listItems.map((item, idx) => {
+                                                const isActive = (viewMode === 'district' && districtTab === item.name);
+                                                return `
+                                                    <div onclick="app.selectMapArea('${item.name}')" data-name="${item.name.toLowerCase()}" class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${isActive ? 'bg-emerald-50 border-emerald-200 text-emerald-950 font-bold shadow-sm' : 'border-transparent hover:bg-slate-50 text-slate-700'}">
+                                                        <div class="flex items-center gap-2.5 min-w-0">
+                                                            <span class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0">${idx + 1}</span>
+                                                            <span class="truncate text-xs font-semibold">${item.name}</span>
+                                                        </div>
+                                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${item.sales > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400'}">${item.sales}</span>
+                                                    </div>
+                                                `;
+                                            }).join('');
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Leaflet Map Container (Fits remaining height) -->
+                            <div class="flex-1 glass rounded-2xl relative overflow-hidden bg-slate-50 border border-slate-200 shadow-inner flex flex-col h-[500px] lg:h-full">
                                 
                                 <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200 shadow-sm z-20">
                                     <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Sales Density (${viewMode})</p>
@@ -5939,51 +6022,14 @@
                                 </div>
 
                                 <!-- Real Interactive BD Map -->
-                                <div id="real-bd-map" class="w-full h-full z-10 flex-1 min-h-[500px]"></div>
+                                <div id="real-bd-map" class="w-full h-full z-10 flex-1"></div>
                             </div>
-
-                            <!-- Bottom Insights Panel (Stacked below the map) -->
-                            <div class="w-full flex flex-col md:flex-row gap-6 shrink-0 items-stretch">
-                                <!-- High Level KPI (Left Box) -->
-                                <div class="flex-1 bg-gradient-to-br from-emerald-600 to-teal-700 p-6 rounded-2xl shadow-lg border border-emerald-500 relative overflow-hidden text-white flex flex-col justify-center min-h-[160px]">
-                                    <i data-lucide="bar-chart-2" class="absolute -right-4 -bottom-4 w-24 h-24 text-emerald-400 opacity-20"></i>
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-100 mb-1">Total Plotted Units</p>
-                                    <h3 class="text-4xl font-black mb-1">${totalPlotted}</h3>
-                                    <p class="text-xs text-emerald-100 font-medium">Visible in ${districtTab === 'All' ? 'Bangladesh' : districtTab}</p>
-                                </div>
-
-                                <!-- Leaderboard (Right Box) -->
-                                <div class="flex-1 glass rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden max-h-[300px]">
-                                    <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between gap-2">
-                                        <div class="flex items-center gap-2">
-                                            <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
-                                            <h3 class="font-bold text-slate-800 text-sm">Top Performing Areas</h3>
-                                        </div>
-                                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">${viewMode}</span>
-                                    </div>
-                                    <div class="flex-1 overflow-y-auto p-2">
-                                        <div class="space-y-1">
-                                            ${rankedAreas.length > 0 ? rankedAreas.map((u, idx) => `
-                                                <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors group">
-                                                    <div class="flex items-center gap-3">
-                                                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${idx === 0 ? 'bg-amber-100 text-amber-600 shadow-sm border border-amber-200' : (idx === 1 ? 'bg-slate-200 text-slate-600 border border-slate-300' : (idx === 2 ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-slate-100 text-slate-400 border border-slate-200'))}">${idx + 1}</div>
-                                                        <span class="font-bold text-sm text-slate-700 group-hover:text-emerald-600 transition-colors">${u.name}</span>
-                                                    </div>
-                                                    <span class="font-black text-slate-800">${u.qty}</span>
-                                                </div>
-                                            `).join('') : '<p class="text-center text-slate-400 text-sm py-8 font-medium">No areas to display</p>'}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
                         </div>
                     </div>
                 `;
                 document.getElementById('view-port').innerHTML = html;
                 app.refreshIcons();
 
-                // Coordinates for fallback if GeoJSON fails
                 const mapCoords = {
                     // Upazilas
                     'Mirpur': [23.8223, 90.3654], 'Uttara': [23.8759, 90.3976], 'Savar': [23.8583, 90.2667], 'Ashulia': [23.8819, 90.3275],
@@ -6027,10 +6073,10 @@
 
                         // SMART ZOOM FILTER: If a specific district is selected, isolate only those polygons to fitBounds accurately
                         if (districtTab !== 'All') {
-                            const normSelectedDist = getNormalizedKey(districtTab);
+                            const normSelectedDist = app.getNormalizedKey(districtTab);
                             const filteredFeatures = geoData.features.filter(f => {
                                 const fDist = f.properties.ADM2_EN || f.properties.NAME_2 || f.properties.district || '';
-                                return getNormalizedKey(fDist) === normSelectedDist;
+                                return app.getNormalizedKey(fDist) === normSelectedDist;
                             });
 
                             // Safety check: if our name mapping failed, default back to whole map to prevent breaking
@@ -6052,7 +6098,7 @@
                             const propName = viewMode === 'district'
                                 ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '')
                                 : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || '');
-                            const normProp = getNormalizedKey(propName);
+                            const normProp = app.getNormalizedKey(propName);
                             const sales = normalizedAgg[normProp] || 0;
                             return {
                                 fillColor: getPolygonColor(sales),
@@ -6082,7 +6128,7 @@
                             const propName = viewMode === 'district'
                                 ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || 'Unknown District')
                                 : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || 'Unknown Upazila');
-                            const normProp = getNormalizedKey(propName);
+                            const normProp = app.getNormalizedKey(propName);
                             const sales = normalizedAgg[normProp] || 0;
 
                             let colorName = 'slate';
