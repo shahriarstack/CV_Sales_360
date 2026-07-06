@@ -6107,9 +6107,9 @@
 
                         app.geoLayer = L.geoJSON(geoData, { style: style, onEachFeature: onEachFeature }).addTo(app.salesMap);
 
-                        // Auto-focus map. If specific district is selected, it will zoom exactly to it due to filtered geoData.
-                        if (districtTab !== 'All' || totalPlotted > 0) {
-                            app.salesMap.fitBounds(app.geoLayer.getBounds(), { padding: [20, 20] });
+                        // Auto-focus map to center and scale Bangladesh to perfectly fit the screen container
+                        if (app.geoLayer) {
+                            app.salesMap.fitBounds(app.geoLayer.getBounds(), { padding: [10, 10] });
                         }
 
                     } catch (err) {
