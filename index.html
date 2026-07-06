@@ -1773,15 +1773,15 @@
                     let iconColorClass = defaultIconColorClass;
 
                     if (isActive) {
-                        btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-white bg-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/15 backdrop-blur-md font-bold relative pl-7 transition-all`;
+                        btnClass = `w-full flex items-center justify-between px-4 py-3 text-[13px] rounded-lg text-white bg-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/15 backdrop-blur-md font-bold relative pl-7 transition-all`;
                         indicator = `<div class="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-aci-gold shadow-[0_0_12px_#F4A915] transition-all duration-300"></div>`;
                         iconColorClass = 'text-aci-gold';
                     } else {
                         const hoverBg = isSO ? 'hover:bg-slate-800' : 'hover:bg-white/5';
                         if (specialClass) {
-                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5 ${specialClass}`;
+                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-[13px] rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5 ${specialClass}`;
                         } else {
-                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5`;
+                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-[13px] rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5`;
                         }
                     }
 
@@ -1803,7 +1803,7 @@
                     links = [
                         renderSidebarBtn('dashboard', 'Dashboard', 'pie-chart', 'text-aci-gold', 'app.renderAdminDashboard()'),
                         renderSidebarBtn('map', 'Upazila Sales Map', 'map', 'text-emerald-400', 'app.renderAdminSalesMap()'),
-                        renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
+                        renderSidebarBtn('ai', 'AI Strategic Insights', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
                         renderSidebarBtn('users', 'User Management', 'users', 'text-slate-400', 'app.renderUserManagement()'),
                         renderSidebarBtn('models', 'Manage Models', 'box', 'text-slate-400', 'app.renderModelManagement()'),
                         renderSidebarBtn('upload', 'Data Upload (Bulk)', 'upload-cloud', 'text-slate-400', 'app.renderDataUpload()'),
@@ -5402,9 +5402,9 @@
                         <!-- AI Header Section -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
                             <div>
-                                <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-                                    <div class="p-2 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl shadow-lg shadow-purple-200">
-                                        <i data-lucide="brain-circuit" class="w-5 h-5 text-white"></i>
+                                <h1 class="text-sm md:text-base font-extrabold text-slate-800 tracking-tight flex items-center gap-2.5">
+                                    <div class="p-1.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-lg shadow shadow-purple-200">
+                                        <i data-lucide="brain-circuit" class="w-4 h-4 text-white"></i>
                                     </div>
                                     <span>AI Strategic Insights & Pacing</span>
                                 </h1>
