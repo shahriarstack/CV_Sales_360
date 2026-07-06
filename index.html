@@ -5238,9 +5238,12 @@
 
                 // --- NEW ADVANCED ANALYTICS ---
 
+                // Use YTD Sales for robust AI models rather than just the current month
+                const ytdSales = DB.sales.filter(s => s.fy === currentFY);
+
                 // 1. Model-Upazila Affinity (Champion Models)
                 const modelUpazilaMap = {};
-                currentSales.forEach(s => {
+                ytdSales.forEach(s => {
                     const key = `${s.model}|${s.upazila}`;
                     modelUpazilaMap[key] = (modelUpazilaMap[key] || 0) + Number(s.unit_qty || 0);
                 });
@@ -5260,19 +5263,19 @@
                 // 2. Underperforming Models (Bottom 3 by Volume)
                 const modelTotalSales = {};
                 DB.models.forEach(m => modelTotalSales[m.name] = 0);
-                currentSales.forEach(s => { modelTotalSales[s.model] += Number(s.unit_qty || 0); });
+                ytdSales.forEach(s => { modelTotalSales[s.model] += Number(s.unit_qty || 0); });
 
                 const modelInsights = DB.models.map(m => ({
                     ...m,
                     sales: modelTotalSales[m.name],
-                    performance: modelTotalSales[m.name] > 10 ? 'High' : (modelTotalSales[m.name] > 5 ? 'Medium' : 'Low')
+                    performance: modelTotalSales[m.name] > 20 ? 'High' : (modelTotalSales[m.name] > 10 ? 'Medium' : 'Low')
                 })).sort((a, b) => a.sales - b.sales);
 
                 const underperformers = modelInsights.filter(m => m.performance === 'Low').slice(0, 3);
 
                 // 3. Brand Dominance Battleground
                 const brandDominance = DB.territories.map(t => {
-                    const tSales = currentSales.filter(s => s.territory_id === t.id);
+                    const tSales = ytdSales.filter(s => s.territory_id === t.id);
                     const f = tSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const leader = f > m ? 'Foton' : (m > f ? 'Mahindra' : 'Contested');
@@ -10960,8 +10963,8 @@
                         
                         // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
                         const isGlobal = role === 'admin' || userTerrs.length === 0;
-                        const myTargets = DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === 'FY25-26');
-                        const mySales = DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === 'FY25-26');
+                        const myTargets = DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === '2025-26');
+                        const mySales = DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === '2025-26');
                         const myCollections = DB.emi_collections.filter(c => isGlobal || userTerrs.includes(c.territory_id));
                         const unpaidEMIs = DB.emi_schedules.filter(s => s.status !== 'Paid' && (isGlobal || userTerrs.includes(s.territory_id))).length;
                         
@@ -10969,8 +10972,8 @@
                         let totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
                         let totalCollectedAmt = myCollections.reduce((sum, c) => sum + (c.collected_amount || 0), 0);
                         
-                        systemDataDump += `- My YTD Sales (FY25-26): ${totalSales} units\n`;
-                        systemDataDump += `- My YTD Target (FY25-26): ${totalTarget} units\n`;
+                        systemDataDump += `- My YTD Sales (2025-26): ${totalSales} units\n`;
+                        systemDataDump += `- My YTD Target (2025-26): ${totalTarget} units\n`;
                         systemDataDump += `- Total EMI Amount Collected: ৳${totalCollectedAmt.toLocaleString()}\n`;
                         systemDataDump += `- Unpaid/Pending EMI Installments: ${unpaidEMIs}\n`;
                     }
