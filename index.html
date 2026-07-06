@@ -940,48 +940,28 @@
     <!-- ========================================== -->
     <!-- AI CHATBOT (GEMINI) UI -->
     <!-- ========================================== -->
-    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-[100] group">
-        <!-- Tooltip -->
-        <div class="absolute right-0 bottom-20 bg-slate-900/95 text-white text-[10px] font-extrabold px-3.5 py-2 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none border border-slate-700/50 flex items-center gap-2">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            Ask Spark360 ⚡
-        </div>
-
-        <!-- FAB Button -->
-        <!-- FAB Button -->
-        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative bg-transparent hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none cursor-pointer group">
-            <!-- Animated Robot Face SVG -->
-            <div class="relative z-10 w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:rotate-6 group-hover:-translate-y-1">
-                <svg width="56" height="56" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-[0_6px_16px_rgba(99,102,241,0.4)]">
-                    <!-- Minimalist Antenna Node -->
-                    <line x1="50" y1="12" x2="50" y2="24" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" />
-                    <circle cx="50" cy="9" r="4.5" fill="#22d3ee" class="animate-pulse" />
-                    
-                    <!-- Sleek Geometric Robot Head -->
-                    <rect x="20" y="24" width="60" height="56" rx="18" fill="url(#botGrad)" stroke="url(#borderGrad)" stroke-width="2.5" />
-                    
-                    <!-- Intelligent Visor / Eye -->
-                    <rect x="30" y="44" width="40" height="12" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
-                    <line x1="36" y1="50" x2="64" y2="50" stroke="#818cf8" stroke-width="2" stroke-linecap="round" opacity="0.6" />
-                    <circle cx="50" cy="50" r="4.5" fill="#22d3ee" class="animate-pulse" />
-                    
-                    <!-- Status Indicator (top right of head) -->
-                    <circle cx="70" cy="34" r="2.5" fill="#10b981" />
-                    
-                    <defs>
-                        <linearGradient id="botGrad" x1="20" y1="24" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#1e293b" />
-                            <stop offset="100%" stop-color="#0f172a" />
-                        </linearGradient>
-                        <linearGradient id="borderGrad" x1="20" y1="24" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#818cf8" />
-                            <stop offset="100%" stop-color="#6366f1" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-[100]">
+        <!-- FAB Button (Engaging, Playful, Spark360) -->
+        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative group bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 w-14 h-14 rounded-full shadow-[0_8px_30px_rgb(99,102,241,0.4)] hover:shadow-[0_8px_30px_rgb(236,72,153,0.5)] hover:scale-110 active:scale-95 transition-all duration-500 flex items-center justify-center border border-white/20">
+            <!-- Shimmer effect -->
+            <span class="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></span>
+            <!-- Double Pulse Rings -->
+            <span class="absolute -inset-1.5 rounded-full border-2 border-indigo-400/30 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-60"></span>
+            <span class="absolute -inset-3 rounded-full border border-purple-400/10 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite] opacity-40"></span>
+            
+            <!-- Engaging Icon (Sparkles + Bot) -->
+            <div class="relative w-8 h-8 flex items-center justify-center">
+                <i data-lucide="bot" class="w-6 h-6 text-white transition-transform duration-500 group-hover:scale-90 group-hover:rotate-6"></i>
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-yellow-300 absolute -top-1.5 -right-1.5 animate-bounce" style="animation-duration: 2s;"></i>
+            </div>
+            
+            <!-- Chat tooltip/badge (Playful & engaging) -->
+            <div class="absolute right-16 top-1/2 -translate-y-1/2 bg-slate-900/95 backdrop-blur text-white text-[10px] font-black py-1.5 px-3 rounded-xl border border-white/10 shadow-lg pointer-events-none opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 whitespace-nowrap flex items-center gap-1.5 origin-right">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Chat with Spark360! ⚡
             </div>
         </button>
 
@@ -989,14 +969,15 @@
         <div id="ai-chat-panel" class="absolute bottom-20 right-0 w-[340px] h-[500px] max-h-[80vh] glass rounded-2xl border border-white/40 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 pointer-events-none">
             
             <!-- Header -->
-            <div class="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-600 p-4 flex justify-between items-center shrink-0 border-b border-white/10">
+            <div class="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-4 flex justify-between items-center shrink-0 border-b border-white/10 shadow-md">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
-                        <i data-lucide="sparkles" class="w-4 h-4 text-white animate-spin-slow"></i>
+                    <div class="relative w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center shadow-inner border border-white/10 backdrop-blur-md">
+                        <i data-lucide="bot" class="w-4.5 h-4.5 text-white"></i>
+                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-indigo-600 rounded-full animate-pulse"></span>
                     </div>
                     <div>
-                        <h3 class="text-white font-black text-[13px] leading-tight flex items-center gap-1">Spark360 ⚡</h3>
-                        <p class="text-indigo-100 text-[8px] font-black tracking-wider uppercase leading-tight mt-0.5">Your Sales Coach & Assistant</p>
+                        <h3 class="text-white font-black text-[13px] leading-tight tracking-wide flex items-center gap-1">Spark360 <span class="text-yellow-300">⚡</span></h3>
+                        <p class="text-white/80 text-[8.5px] font-bold tracking-wider uppercase leading-tight mt-0.5">Intelligent Sales Copilot</p>
                     </div>
                 </div>
                 <button onclick="app.aiAssistant.toggleChat()" class="text-white/70 hover:text-white p-1.5 rounded-lg hover:bg-white/20 transition-colors">
@@ -1008,11 +989,11 @@
             <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 custom-scrollbar flex flex-col scroll-smooth">
                 <!-- Welcome Message -->
                 <div class="flex gap-2 w-full">
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-md">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i>
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
                     </div>
                     <div class="bg-white border border-slate-100 shadow-sm rounded-2xl rounded-tl-none px-3.5 py-2.5 text-[11px] text-slate-700 leading-relaxed font-medium">
-                        Hi there! 👋 I'm **Spark360** ⚡, your virtual sales coach. Need help closing deals, pitching ACI vehicles, or finding EMI insights? Ask me anything!
+                        Hey there! 👋 I'm **Spark360** ⚡, your intelligent Sales Copilot. Let's crush your targets today! Ask me anything about EMI collection, closing deals, or boosting your sales performance. 🚀
                     </div>
                 </div>
             </div>
@@ -10819,7 +10800,7 @@
                 let iconHtml = '';
                 if (role === 'bot') {
                     iconHtml = `
-                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 shadow-md">
+                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
                             <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
                         </div>
                     `;
@@ -10850,7 +10831,7 @@
                 div.id = id;
                 div.className = 'flex gap-2 w-full fade-in';
                 div.innerHTML = `
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 shadow-md">
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
                         <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
                     </div>
                     <div class="bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-none px-3.5 py-2.5 shadow-sm flex items-center gap-1.5 h-[34px]">
@@ -10877,7 +10858,7 @@
                 try {
                     const context = `The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: ${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: ${localStorage.getItem('aci_last_page') || 'Unknown'}.`;
                     
-                    const systemPrompt = "You are Spark360, a friendly, witty, and proactive AI sales coach and assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis. Context: " + context;
+                    const systemPrompt = "You are Spark360 ⚡, a friendly, witty, and proactive AI sales assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis. Context: " + context;
 
                     // Building conversation history for Gemini API format
                     const contents = app.aiAssistant.history.map(msg => ({
