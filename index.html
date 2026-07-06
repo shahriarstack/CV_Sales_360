@@ -6003,12 +6003,11 @@
 
                     app.salesMap = L.map('real-bd-map', {
                         zoomControl: false,
-                        attributionControl: false
+                        attributionControl: false,
+                        maxBounds: [[20.0, 87.5], [27.0, 93.0]],
+                        minZoom: 7,
+                        maxZoom: 11
                     }).setView([23.85, 90.25], 7);
-
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
-                        subdomains: 'abcd', maxZoom: 12, minZoom: 6
-                    }).addTo(app.salesMap);
 
                     L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
 
