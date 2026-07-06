@@ -5175,13 +5175,39 @@
                 app.charts.yoyTrendAnimFrame = requestAnimationFrame(animateLine);
             },
 
-            renderAdminAIInsights: () => {
+            toggleMapMonth: (month) => {
+                if (!app.mapMonths) app.mapMonths = [];
+                const idx = app.mapMonths.indexOf(month);
+                if (idx > -1) {
+                    app.mapMonths.splice(idx, 1);
+                } else {
+                    app.mapMonths.push(month);
+                }
+                app.renderAdminSalesMap(true);
+            },
+
+            toggleAIMonth: (month) => {
+                if (!app.aiMonths) app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const idx = app.aiMonths.indexOf(month);
+                if (idx > -1) {
+                    app.aiMonths.splice(idx, 1);
+                } else {
+                    app.aiMonths.push(month);
+                }
+                app.renderAdminAIInsights(true);
+            },
+
+            renderAdminAIInsights: (keepDropdownOpen = false) => {
                 localStorage.setItem('aci_last_page', 'ai');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const currentFY = '2025-26';
                 const currentMonth = app.currentMonth;
                 const currentDay = 14; // Mocking mid-month
-                const daysInMonth = 30;
+
+                if (typeof app.aiMonths === 'undefined') {
+                    app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                }
+                const activeMonthsInSelection = app.aiMonths;
 
                 // 1. National Aggregation
                 let totalActual = 0;
@@ -5193,7 +5219,7 @@
                     Mahindra: { actual: 0, target: 0, projection: 0, lyActual: 0 }
                 };
 
-                const currentSales = DB.sales.filter(s => s.fy === currentFY && s.sales_month === currentMonth);
+                const currentSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
 
                 currentSales.forEach(s => {
                     totalActual += Number(s.unit_qty || 0);
@@ -5201,24 +5227,39 @@
                 });
 
                 DB.targets.filter(t => t.fy === currentFY).forEach(t => {
-                    const monthlyTarget = t.month === currentMonth ? t.target_qty : (t.month ? 0 : Math.round(t.target_qty / 12));
+                    let monthlyTarget = 0;
+                    if (t.month) {
+                        if (activeMonthsInSelection.includes(t.month)) {
+                            monthlyTarget = t.target_qty;
+                        }
+                    } else {
+                        // Annual target: distribute proportionally to number of selected months
+                        monthlyTarget = Math.round((t.target_qty / 12) * activeMonthsInSelection.length);
+                    }
                     totalTarget += monthlyTarget;
                     if (brandStats[t.brand]) brandStats[t.brand].target += monthlyTarget;
                 });
 
-                DB.projections.filter(p => p.fy === currentFY && p.month === currentMonth).forEach(p => {
+                DB.projections.filter(p => p.fy === currentFY && activeMonthsInSelection.includes(p.month)).forEach(p => {
                     totalProjection += p.projection_qty;
                     if (brandStats[p.brand]) brandStats[p.brand].projection += p.projection_qty;
                 });
 
                 // LY Stats for Growth Analysis
-                DB.sales.filter(s => s.fy === '2024-25' && s.sales_month === currentMonth).forEach(s => {
+                DB.sales.filter(s => s.fy === '2024-25' && activeMonthsInSelection.includes(s.sales_month)).forEach(s => {
                     if (brandStats[s.brand]) brandStats[s.brand].lyActual += Number(s.unit_qty || 0);
                 });
 
+                // Calculate elapsed days for pacing calculations based on selected months
+                const hasCurrentMonth = activeMonthsInSelection.includes(currentMonth);
+                const elapsedDays = hasCurrentMonth 
+                    ? ((activeMonthsInSelection.length - 1) * 30 + currentDay) 
+                    : (activeMonthsInSelection.length * 30);
+                const totalDays = activeMonthsInSelection.length * 30;
+
                 // AI Predictions
-                const dailyRate = totalActual / currentDay;
-                const predictedClose = Math.round(dailyRate * daysInMonth);
+                const dailyRate = totalActual / Math.max(elapsedDays, 1);
+                const predictedClose = Math.round(dailyRate * totalDays);
                 const predictionConfidence = 85;
                 const isPacingWell = predictedClose >= totalTarget;
 
@@ -5226,7 +5267,14 @@
                 const terrPerformance = DB.territories.map(t => {
                     const tActual = currentSales.filter(s => s.territory_id === t.id).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const tTarget = DB.targets.filter(tg => tg.territory_id === t.id && tg.fy === currentFY).reduce((sum, tg) => {
-                        const mTarget = tg.month === currentMonth ? tg.target_qty : (tg.month ? 0 : Math.round(tg.target_qty / 12));
+                        let mTarget = 0;
+                        if (tg.month) {
+                            if (activeMonthsInSelection.includes(tg.month)) {
+                                mTarget = tg.target_qty;
+                            }
+                        } else {
+                            mTarget = Math.round((tg.target_qty / 12) * activeMonthsInSelection.length);
+                        }
                         return sum + mTarget;
                     }, 0);
                     const ach = tTarget > 0 ? Math.round((tActual / tTarget) * 100) : 0;
@@ -5238,8 +5286,8 @@
 
                 // --- NEW ADVANCED ANALYTICS ---
 
-                // Use YTD Sales for robust AI models rather than just the current month
-                const ytdSales = DB.sales.filter(s => s.fy === currentFY);
+                // Use filtered Sales based on selected months
+                const ytdSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
 
                 // 1. Model-Upazila Affinity (Champion Models)
                 const modelUpazilaMap = {};
@@ -5299,21 +5347,41 @@
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                         <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                     </span>
-                                    Autonomous Engine FY ${currentFY}
                                 </p>
                             </div>
-                            <div class="flex items-center gap-2 bg-white/80 backdrop-blur-md p-2 rounded-[1.5rem] shadow-xl border border-white w-full md:w-auto overflow-hidden">
+                            <div class="flex items-center gap-4 bg-white/80 backdrop-blur-md p-2 rounded-[1.5rem] shadow-xl border border-white w-full md:w-auto overflow-visible">
                                 <div class="px-3 py-1 flex-1 md:flex-none text-center">
                                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Confidence</p>
-                                    <p class="text-lg font-black text-purple-600">${predictionConfidence}%</p>
+                                    <p class="text-sm font-black text-purple-600">${predictionConfidence}%</p>
                                 </div>
                                 <div class="w-px h-8 bg-slate-200"></div>
-                                <div class="px-3 py-1 flex-1 md:flex-none text-center">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Analysis</p>
-                                    <p class="text-lg font-black text-slate-800">${currentMonth}</p>
-                                </div>
+                                
+                                <!-- Month Multi-Select for AI Insights -->
+                                <div class="flex items-center gap-2 relative">
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
+                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[110px]">
+                                        <span>${activeMonthsInSelection.length === 12 ? 'All FY (YTD)' : activeMonthsInSelection.length + ' Selected'}</span>
+                                        <i data-lucide="chevron-down" class="w-4 h-4 ml-2"></i>
+                                    </button>
+                                    <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-2 right-0 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-64 overflow-y-auto">
+                                        <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+                                            <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-bold text-slate-700 transition-colors">
+                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : []; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-4 h-4">
+                                                Select All FY (YTD)
+                                            </label>
+                                        </div>
+                                        <div class="p-2 space-y-0.5">
+                                            ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => `
+                                                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-medium text-slate-600 transition-colors">
+                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-4 h-4">
+                                                    ${m}
+                                                </label>
+                                            `).join('')}
+                                        </div>
+                                    </div>
                             </div>
                         </div>
+                    </div>
 
                         <!-- Top Level AI Summary Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
