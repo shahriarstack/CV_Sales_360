@@ -3149,6 +3149,7 @@
             renderAdminDashboard: () => {
                 localStorage.setItem('aci_last_page', 'dashboard');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
                 const isAM = app.currentUser.role === 'am';
                 const currentSaleType = app.adminSaleTypeTab || 'New Sale';
                 const currentFY = '2025-26';
@@ -5260,9 +5261,11 @@
             renderAdminAIInsights: (keepDropdownOpen = false) => {
                 localStorage.setItem('aci_last_page', 'ai');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
                 const currentFY = '2025-26';
                 const currentMonth = app.currentMonth;
                 const currentDay = 14; // Mocking mid-month
+                const daysInMonth = 30;
 
                 if (typeof app.aiMonths === 'undefined') {
                     app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
@@ -5846,6 +5849,7 @@
             renderAdminSalesMap: (keepDropdownOpen = false) => {
                 localStorage.setItem('aci_last_page', 'map');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
 
                 if (typeof app.mapMonths === 'undefined') app.mapMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 const brandTab = app.mapBrandTab || 'Foton';
