@@ -174,24 +174,7 @@
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03) !important;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(203, 213, 225, 0.8);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(148, 163, 184, 0.8);
-        }
 
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -204,25 +187,41 @@
 
         /* Performance-optimized Scrolling & Hardware Acceleration */
         html,
-        body {
-            scroll-behavior: smooth;
-        }
-        
+        body,
+        main,
         #view-port,
         .overflow-y-auto,
         .overflow-x-auto {
+            scroll-behavior: smooth !important;
             -webkit-overflow-scrolling: touch;
-            will-change: scroll-position;
-            transform: translateZ(0);
-            backface-visibility: hidden;
-            perspective: 1000px;
         }
 
-        /* Prevent layout thrashing on sticky columns/headers during scroll */
-        .sticky,
-        [class*="sticky"] {
-            will-change: transform;
-            transform: translateZ(0);
+        main,
+        .overflow-y-auto {
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+        }
+
+        /* Premium Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.4);
+            border-radius: 9999px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1, #3b82f6);
+            border-radius: 9999px;
+            border: 2px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #4f46e5, #2563eb);
         }
 
         /* Premium Tab & View Switch Animations */
@@ -2786,12 +2785,12 @@
 
                 // --- Dashboard KPI Calculations ---
                 const totalCust = emiData.length;
-                const paidCust = emiData.filter(e => e.collected >= e.installment).length;
+                const paidCust = emiData.filter(e => (parseFloat(e.collected) || 0) >= (parseFloat(e.installment) || 0)).length;
                 const unpaidCust = totalCust - paidCust;
                 const paidCustPercent = totalCust > 0 ? Math.round((paidCust / totalCust) * 100) : 0;
 
-                const totalInstallment = emiData.reduce((sum, e) => sum + e.installment, 0);
-                const totalCol = emiData.reduce((sum, e) => sum + e.collected, 0);
+                const totalInstallment = emiData.reduce((sum, e) => sum + (parseFloat(e.installment) || 0), 0);
+                const totalCol = emiData.reduce((sum, e) => sum + (parseFloat(e.collected) || 0), 0);
                 const collectionRate = totalInstallment > 0 ? Math.round((totalCol / totalInstallment) * 100) : 0;
 
                 // Aggregate Territory Summary Table
@@ -2799,10 +2798,10 @@
                     const tEmi = emiData.filter(e => e.territory_id === t.id);
                     if (tEmi.length === 0) return null;
                     const totalCust = tEmi.length;
-                    const payingCust = tEmi.filter(e => e.collected >= e.installment).length;
+                    const payingCust = tEmi.filter(e => (parseFloat(e.collected) || 0) >= (parseFloat(e.installment) || 0)).length;
                     const nonPayingCust = totalCust - payingCust;
-                    const tTotalDue = tEmi.reduce((sum, e) => sum + e.installment, 0); // Amount Due (inst)
-                    const tAmountCol = tEmi.reduce((sum, e) => sum + e.collected, 0);
+                    const tTotalDue = tEmi.reduce((sum, e) => sum + (parseFloat(e.installment) || 0), 0); // Amount Due (inst)
+                    const tAmountCol = tEmi.reduce((sum, e) => sum + (parseFloat(e.collected) || 0), 0);
                     const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
                 }).filter(Boolean);
@@ -2923,7 +2922,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     ${emiData.map(e => {
-                    const isCleared = e.collected >= e.overdue_total;
+                    const isCleared = (parseFloat(e.collected) || 0) >= (parseFloat(e.overdue_total) || 0);
                     return `
                                         <tr class="hover:bg-slate-50 transition-colors">
                                             <td class="px-6 py-4">
@@ -5391,343 +5390,356 @@
                     const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                     const leader = f > m ? 'Foton' : (m > f ? 'Mahindra' : 'Contested');
                     const leaderColor = leader === 'Foton' ? 'indigo' : (leader === 'Mahindra' ? 'rose' : 'slate');
-                    return { name: t.name, f, m, leader, leaderColor, total: f + m };
                 }).filter(t => t.total > 0).sort((a, b) => b.total - a.total).slice(0, 4);
+                const targetDailyRate = totalTarget / Math.max(totalDays, 1);
+                const actualDailyRate = dailyRate;
+                const remainingDays = Math.max(totalDays - elapsedDays, 1);
+                const remainingTarget = Math.max(totalTarget - totalActual, 0);
+                const requiredDailyRate = remainingTarget / remainingDays;
 
                 const html = `
                     <div class="max-w-7xl mx-auto fade-in pb-12">
                         <!-- AI Header Section -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 px-2 md:px-0">
-                            <div class="w-full md:w-auto">
-                                <h1 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight flex items-center gap-3 md:gap-4">
-                                    <div class="p-2.5 md:p-3.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl md:rounded-[2rem] shadow-xl shadow-purple-200 animate-pulse">
-                                        <i data-lucide="brain-circuit" class="w-6 h-6 md:w-10 md:h-10 text-white"></i>
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
+                            <div>
+                                <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+                                    <div class="p-2 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl shadow-lg shadow-purple-200">
+                                        <i data-lucide="brain-circuit" class="w-5 h-5 text-white"></i>
                                     </div>
-                                    <span class="leading-none">AI Strategic<br class="md:hidden"><span class="text-purple-600"> Insights</span></span>
+                                    <span>AI Strategic Insights & Pacing</span>
                                 </h1>
-                                <p class="text-slate-500 font-bold text-xs mt-3 flex items-center gap-2">
+                                <p class="text-slate-400 font-bold text-[10px] uppercase tracking-wider mt-1.5 flex items-center gap-2">
                                     <span class="flex h-2 w-2 relative">
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                         <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                     </span>
+                                    Real-time Predictive Analytics
                                 </p>
                             </div>
-                            <div class="flex items-center gap-4 bg-white/80 backdrop-blur-md p-2 rounded-[1.5rem] shadow-xl border border-white w-full md:w-auto overflow-visible">
+                            <div class="flex items-center gap-4 bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 w-full md:w-auto">
                                 <div class="px-3 py-1 flex-1 md:flex-none text-center">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Confidence</p>
-                                    <p class="text-sm font-black text-purple-600">${predictionConfidence}%</p>
+                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Confidence Index</p>
+                                    <p class="text-xs font-black text-purple-600">${predictionConfidence}%</p>
                                 </div>
-                                <div class="w-px h-8 bg-slate-200"></div>
+                                <div class="w-px h-6 bg-slate-200"></div>
                                 
                                 <!-- Month Multi-Select for AI Insights -->
                                 <div class="flex items-center gap-2 relative">
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
-                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[110px]">
+                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[110px]">
                                         <span>${activeMonthsInSelection.length === 12 ? 'All FY (YTD)' : activeMonthsInSelection.length + ' Selected'}</span>
-                                        <i data-lucide="chevron-down" class="w-4 h-4 ml-2"></i>
+                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-2"></i>
                                     </button>
-                                    <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-2 right-0 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-64 overflow-y-auto">
+                                    <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-2 right-0 w-48 bg-white border border-slate-200 rounded-lg shadow-xl z-[100] max-h-64 overflow-y-auto">
                                         <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
-                                            <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-bold text-slate-700 transition-colors">
-                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : []; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-4 h-4">
+                                            <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded cursor-pointer text-[10px] font-black text-slate-700 transition-colors">
+                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : []; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
                                                 Select All FY (YTD)
                                             </label>
                                         </div>
                                         <div class="p-2 space-y-0.5">
                                             ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => `
-                                                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-medium text-slate-600 transition-colors">
-                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-4 h-4">
+                                                <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded cursor-pointer text-[10px] font-medium text-slate-600 transition-colors">
+                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
                                                     ${m}
                                                 </label>
                                             `).join('')}
                                         </div>
                                     </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                         <!-- Top Level AI Summary Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <!-- Prediction Card -->
-                            <div class="glass p-6 rounded-[2.5rem] border border-white shadow-2xl relative overflow-hidden group">
-                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl transition-transform group-hover:scale-150 duration-700"></div>
-                                <h3 class="text-slate-500 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-purple-500"></i>
-                                    AI Forecast Closing
+                            <div class="glass p-5 rounded-2xl border border-white shadow-md relative overflow-hidden group">
+                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/5 rounded-full blur-3xl"></div>
+                                <h3 class="text-slate-500 text-[10px] font-black uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    AI Closing Forecast
                                 </h3>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-5xl font-black text-slate-900 tracking-tighter">${predictedClose}</span>
-                                    <span class="text-sm font-bold text-slate-400 uppercase">Units</span>
+                                <div class="flex items-baseline gap-1.5 mb-4">
+                                    <span class="text-2xl font-black text-slate-800 tracking-tight">${predictedClose}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase">Units Projected</span>
                                 </div>
-                                <div class="mt-6 flex items-center justify-between">
+                                <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-4 text-center">
+                                    <div>
+                                        <p class="text-[8px] font-bold text-slate-400 uppercase">Current Pace</p>
+                                        <p class="text-xs font-black text-slate-800">${actualDailyRate.toFixed(1)}/day</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[8px] font-bold text-slate-400 uppercase">Required Pace</p>
+                                        <p class="text-xs font-black ${requiredDailyRate > actualDailyRate ? 'text-rose-600' : 'text-emerald-600'}">${requiredDailyRate.toFixed(1)}/day</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[8px] font-bold text-slate-400 uppercase">Target</p>
+                                        <p class="text-xs font-black text-slate-800">${totalTarget}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
                                     <div class="flex flex-col">
-                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Pace vs Budget</span>
-                                        <span class="text-sm font-black ${isPacingWell ? 'text-green-600' : 'text-amber-600'}">
-                                            ${isPacingWell ? 'Ahead of Schedule' : 'Slightly Behind'}
+                                        <span class="text-[8px] font-black text-slate-400 uppercase">Pacing vs Target</span>
+                                        <span class="text-xs font-bold ${isPacingWell ? 'text-green-600' : 'text-rose-600'}">
+                                            ${isPacingWell ? 'On Track / Ahead' : 'Behind Budget Goal'}
                                         </span>
                                     </div>
-                                    <div class="h-12 w-12 rounded-full border-4 ${isPacingWell ? 'border-green-100' : 'border-amber-100'} flex items-center justify-center relative">
-                                        <svg class="w-full h-full transform -rotate-90">
-                                            <circle cx="24" cy="24" r="20" fill="transparent" stroke="currentColor" stroke-width="4" class="${isPacingWell ? 'text-green-500' : 'text-amber-500'}" stroke-dasharray="125.6" stroke-dashoffset="${125.6 * (1 - Math.min(predictedClose / totalTarget, 1))}"/>
-                                        </svg>
-                                        <i data-lucide="${isPacingWell ? 'check' : 'alert-triangle'}" class="absolute w-4 h-4 ${isPacingWell ? 'text-green-500' : 'text-amber-500'}"></i>
-                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isPacingWell ? 'bg-green-100 text-green-800' : 'bg-rose-100 text-rose-800'}">
+                                        ${isPacingWell ? 'Surplus Projected' : `Deficit: ${totalTarget - predictedClose} units`}
+                                    </span>
                                 </div>
                             </div>
 
                             <!-- Brand Momentum Card -->
-                            <div class="glass p-6 rounded-[2.5rem] border border-white shadow-2xl relative overflow-hidden group">
-                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl transition-transform group-hover:scale-150 duration-700"></div>
-                                <h3 class="text-slate-500 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <i data-lucide="zap" class="w-4 h-4 text-blue-500"></i>
+                            <div class="glass p-5 rounded-2xl border border-white shadow-md relative overflow-hidden group">
+                                <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl"></div>
+                                <h3 class="text-slate-500 text-[10px] font-black uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                    <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
                                     Strategic Brand Momentum
                                 </h3>
-                                <div class="space-y-4">
+                                <div class="space-y-3">
                                     <div>
-                                        <div class="flex justify-between text-[10px] font-black mb-1 uppercase tracking-tighter">
+                                        <div class="flex justify-between text-[9px] font-black mb-1 uppercase tracking-wider">
                                             <span class="text-indigo-600">Foton Velocity</span>
-                                            <span class="text-slate-500">${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}% of Goal</span>
+                                            <span class="text-slate-500">${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}% Achieved</span>
                                         </div>
-                                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
-                                            <div class="bg-indigo-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}%"></div>
+                                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-indigo-600 h-full rounded-full" style="width: ${Math.min(Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100), 100)}%"></div>
                                         </div>
+                                        <p class="text-[8px] text-slate-400 font-bold mt-0.5">Action: ${brandStats.Foton.actual < brandStats.Foton.target ? 'Incentivize bulk dealer buys' : 'Maintain inventory flow'}</p>
                                     </div>
                                     <div>
-                                        <div class="flex justify-between text-[10px] font-black mb-1 uppercase tracking-tighter">
+                                        <div class="flex justify-between text-[9px] font-black mb-1 uppercase tracking-wider">
                                             <span class="text-rose-600">Mahindra Velocity</span>
-                                            <span class="text-slate-500">${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}% of Goal</span>
+                                            <span class="text-slate-500">${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}% Achieved</span>
                                         </div>
-                                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
-                                            <div class="bg-rose-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}%"></div>
+                                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-rose-600 h-full rounded-full" style="width: ${Math.min(Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100), 100)}%"></div>
                                         </div>
+                                        <p class="text-[8px] text-slate-400 font-bold mt-0.5">Action: ${brandStats.Mahindra.actual < brandStats.Mahindra.target ? 'Deploy exchange campaign' : 'Stock level healthy'}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Quick Insight Card -->
-                            <div class="bg-slate-900 p-6 rounded-[2.5rem] border border-slate-800 shadow-2xl relative overflow-hidden group text-white">
-                                <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                                    <i data-lucide="cpu" class="w-32 h-32 text-purple-400"></i>
+                            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-md relative overflow-hidden group text-white">
+                                <div class="absolute -right-4 -bottom-4 opacity-5">
+                                    <i data-lucide="cpu" class="w-24 h-24 text-purple-400"></i>
                                 </div>
-                                <h3 class="text-slate-400 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
-                                    Deep Data Synthesis
+                                <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    Actionable Synthesis
                                 </h3>
-                                <p class="text-sm font-medium leading-relaxed text-slate-300 mb-4">
-                                    National growth is <strong>${Math.round(((totalActual - (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual)) / (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual || 1)) * 100)}%</strong> vs SPLY. ${predictedClose > totalTarget ? 'Target surplus projected.' : 'Daily volume gap identified: +' + Math.ceil((totalTarget - predictedClose) / (daysInMonth - currentDay)) + ' units/day needed.'}
+                                <p class="text-xs font-semibold leading-relaxed text-slate-300 mb-3">
+                                    National growth is <span class="text-emerald-400 font-bold">${Math.round(((totalActual - (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual)) / (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual || 1)) * 100)}%</span> vs Last Year.
+                                    ${predictedClose >= totalTarget 
+                                        ? 'Target surplus projected. Focus on retaining dealer loyalty and clearing stock inventory.' 
+                                        : `Velocity deficit found. Target requires an additional <strong class="text-rose-400">${Math.ceil(requiredDailyRate - actualDailyRate)} units/day</strong> acceleration.`}
                                 </p>
-                                <div class="flex items-center gap-4">
-                                    <div class="flex -space-x-2">
-                                        <div class="w-6 h-6 rounded-full bg-purple-500 border border-slate-900 flex items-center justify-center text-[8px] font-bold">AI</div>
-                                        <div class="w-6 h-6 rounded-full bg-indigo-500 border border-slate-900 flex items-center justify-center text-[8px] font-bold">BI</div>
-                                    </div>
-                                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Multi-Model Analysis</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-[8px] font-black uppercase tracking-widest">Multi-Model Analysis</span>
+                                    <span class="text-[8px] text-purple-400 font-black uppercase tracking-widest flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 bg-purple-500 rounded-full inline-block animate-ping"></span> Live Advisory
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- NEW: Advanced Model & Market Affinity Section -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                        <!-- Advanced Model & Market Affinity Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                             <!-- Column 1: Product-Market Fit (Upazila Wise) -->
-                            <div class="glass p-8 rounded-[2.5rem] border border-white shadow-xl flex flex-col">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-black text-slate-800 tracking-tight">Upazila Champion Models</h3>
-                                    <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl"><i data-lucide="map-pin" class="w-5 h-5"></i></div>
+                            <div class="glass p-5 rounded-2xl border border-white shadow-sm flex flex-col">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-black text-slate-800 tracking-tight">Upazila Champion Models</h3>
+                                    <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
                                 </div>
-                                <div class="space-y-4 flex-1">
+                                <div class="space-y-3 flex-1">
                                     ${upazilaAffinities.map(a => `
-                                        <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 group hover:border-indigo-300 transition-all">
+                                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-200 transition-colors">
                                             <div>
-                                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${a.upazila}</p>
-                                                <p class="font-black text-slate-800 text-sm">${a.model}</p>
+                                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">${a.upazila}</p>
+                                                <p class="font-extrabold text-slate-700 text-xs">${a.model}</p>
                                             </div>
                                             <div class="text-right">
-                                                <span class="px-2 py-1 bg-white rounded-lg border border-slate-200 text-xs font-black text-indigo-600 shadow-sm">${a.qty} Units</span>
+                                                <span class="px-2 py-0.5 bg-white rounded border border-slate-200 text-[10px] font-black text-indigo-600 shadow-sm">${a.qty} Units</span>
                                             </div>
                                         </div>
                                     `).join('')}
                                 </div>
-                                <p class="text-[9px] text-slate-400 font-bold mt-6 uppercase tracking-widest text-center italic">AI identified high-affinity clusters based on regional use-cases</p>
+                                <p class="text-[8px] text-slate-400 font-bold mt-4 uppercase tracking-widest text-center italic">Action: Reallocate stock configurations to match these champion clusters</p>
                             </div>
 
-                            <!-- Column 2: Brand Dominance Battleground -->
-                            <div class="glass p-8 rounded-[2.5rem] border border-white shadow-xl flex flex-col">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-black text-slate-800 tracking-tight">Regional Brand Dominance</h3>
-                                    <div class="p-2 bg-rose-50 text-rose-600 rounded-xl"><i data-lucide="swords" class="w-5 h-5"></i></div>
+                            <!-- Column 2: Regional Brand Dominance -->
+                            <div class="glass p-5 rounded-2xl border border-white shadow-sm flex flex-col">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-black text-slate-800 tracking-tight">Regional Brand Share</h3>
+                                    <div class="p-1.5 bg-rose-50 text-rose-600 rounded-lg"><i data-lucide="swords" class="w-4 h-4"></i></div>
                                 </div>
-                                <div class="space-y-6 flex-1">
+                                <div class="space-y-4 flex-1">
                                     ${brandDominance.map(t => `
                                         <div>
-                                            <div class="flex justify-between items-end mb-2">
-                                                <span class="text-xs font-black text-slate-700">${t.name}</span>
-                                                <span class="text-[10px] font-black text-${t.leaderColor}-600 uppercase tracking-widest">Leading: ${t.leader}</span>
+                                            <div class="flex justify-between items-end mb-1">
+                                                <span class="text-[11px] font-extrabold text-slate-700">${t.name}</span>
+                                                <span class="text-[8px] font-black text-${t.leaderColor}-600 uppercase tracking-widest">Lead: ${t.leader}</span>
                                             </div>
-                                            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex p-0.5 border border-slate-200">
+                                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex border border-slate-200">
                                                 <div class="bg-indigo-500 h-full transition-all duration-700" style="width: ${(t.f / t.total) * 100}%"></div>
                                                 <div class="bg-rose-500 h-full transition-all duration-700" style="width: ${(t.m / t.total) * 100}%"></div>
                                             </div>
                                         </div>
                                     `).join('')}
                                 </div>
-                                <div class="mt-8 flex items-center justify-center gap-6">
-                                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-500"></span><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Foton</span></div>
-                                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-500"></span><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mahindra</span></div>
+                                <div class="mt-4 flex items-center justify-center gap-4 text-[9px] font-black uppercase text-slate-500">
+                                    <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> Foton</div>
+                                    <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Mahindra</div>
                                 </div>
                             </div>
 
                             <!-- Column 3: Risk & Underperforming Assets -->
-                            <div class="glass p-8 rounded-[2.5rem] border border-white shadow-xl flex flex-col bg-slate-50/50">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-black text-slate-800 tracking-tight text-rose-700">Model Performance Risks</h3>
-                                    <div class="p-2 bg-rose-100 text-rose-600 rounded-xl shadow-inner"><i data-lucide="alert-octagon" class="w-5 h-5"></i></div>
+                            <div class="glass p-5 rounded-2xl border border-white shadow-sm flex flex-col bg-slate-50/30">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-sm font-black text-rose-700 tracking-tight">Model Volume Risks</h3>
+                                    <div class="p-1.5 bg-rose-100 text-rose-600 rounded-lg shadow-inner"><i data-lucide="alert-octagon" class="w-4 h-4"></i></div>
                                 </div>
-                                <div class="space-y-4 flex-1">
+                                <div class="space-y-3 flex-1">
                                     ${underperformers.map(m => `
-                                        <div class="p-4 rounded-2xl bg-white border border-rose-100 shadow-sm relative overflow-hidden group">
-                                            <div class="absolute right-0 top-0 w-12 h-full bg-rose-50 -skew-x-12 translate-x-4 opacity-0 group-hover:opacity-100 transition-all"></div>
-                                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${m.brand}</p>
-                                            <div class="flex justify-between items-center relative z-10">
-                                                <span class="font-black text-slate-800">${m.name}</span>
-                                                <div class="text-right">
-                                                    <span class="text-rose-600 font-black text-sm">${m.sales} Sales</span>
-                                                    <p class="text-[8px] font-black text-rose-400 uppercase tracking-tighter">Underperforming</p>
-                                                </div>
+                                        <div class="p-2.5 rounded-xl bg-white border border-rose-100 shadow-sm flex justify-between items-center">
+                                            <div>
+                                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-wider">${m.brand}</p>
+                                                <span class="font-extrabold text-slate-700 text-xs">${m.name}</span>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="text-rose-600 font-black text-xs">${m.sales} Sold</span>
+                                                <p class="text-[7px] font-black text-rose-400 uppercase">Deficit Risk</p>
                                             </div>
                                         </div>
                                     `).join('')}
-                                    ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-10">All models performing within threshold.</p>' : ''}
+                                    ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-10 text-xs">All models performing within threshold.</p>' : ''}
                                 </div>
-                                <div class="mt-6 p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                                    <p class="text-[10px] font-black text-amber-800 uppercase tracking-widest mb-1 flex items-center gap-2"><i data-lucide="info" class="w-3 h-3"></i> AI Recommendation</p>
-                                    <p class="text-[11px] leading-relaxed text-amber-700 font-medium italic">"Low velocity in specific models suggests stock-heavy territories or price-sensitivity in rural clusters. Consider model-specific exchange campaigns."</p>
+                                <div class="mt-4 p-2.5 bg-amber-50 rounded-xl border border-amber-100">
+                                    <p class="text-[9px] font-black text-amber-800 uppercase tracking-widest mb-0.5 flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Strategic Recommendation</p>
+                                    <p class="text-[10px] leading-relaxed text-amber-700 font-medium italic">"Low velocity models indicate pricing mismatch in rural clusters. Action: Launch targeted exchange schemes."</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- NEW: Quantum Market Intelligence & Predictive Forecasting -->
+                        <!-- Quantum Market Intelligence & Predictive Forecasting -->
                         <div class="mb-8">
-                            <div class="flex items-center gap-3 mb-6">
-                                <h2 class="text-2xl font-black text-slate-800 tracking-tight">Quantum Market Intelligence</h2>
-                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border border-purple-200">Experimental</span>
+                            <div class="flex items-center gap-2.5 mb-4">
+                                <h2 class="text-lg font-black text-slate-800 tracking-tight">Quantum Market Insights</h2>
+                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-purple-200">System Predictive</span>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <!-- Predictive Seasonal Shift -->
-                                <div class="bg-gradient-to-br from-indigo-900 to-slate-900 p-6 rounded-[2rem] text-white shadow-xl relative overflow-hidden group">
-                                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                                    <h4 class="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <i data-lucide="calendar-days" class="w-4 h-4"></i>
-                                        Next Month Forecast (May)
+                                <div class="bg-gradient-to-br from-indigo-900 to-slate-900 p-5 rounded-2xl text-white shadow-md relative overflow-hidden group">
+                                    <h4 class="text-[9px] font-black text-indigo-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                                        Next Month Forecast
                                     </h4>
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-xs font-medium text-slate-300">Projected Demand</span>
-                                            <span class="text-lg font-black text-indigo-400">+12.4%</span>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-slate-300">Projected Demand</span>
+                                            <span class="font-black text-indigo-400">+12.4%</span>
                                         </div>
-                                        <div class="p-3 bg-white/5 rounded-xl border border-white/10">
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Trending Model</p>
-                                            <p class="text-sm font-black text-white">Mahindra Bolero Pick-up</p>
+                                        <div class="p-2 bg-white/5 rounded-lg border border-white/10">
+                                            <p class="text-[8px] font-bold text-slate-400 uppercase">Key Model Driver</p>
+                                            <p class="text-xs font-black text-white">Mahindra Bolero Pickup</p>
                                         </div>
                                     </div>
-                                    <div class="mt-6 pt-4 border-t border-white/10">
-                                        <p class="text-[9px] text-slate-400 leading-relaxed italic">"Historical data suggests seasonal uptick in agricultural logistics demand starting May."</p>
+                                    <div class="mt-4 pt-3 border-t border-white/10">
+                                        <p class="text-[8px] text-slate-400 leading-relaxed italic">"Action: Preposition pickup stocks in agricultural logistics hubs."</p>
                                     </div>
                                 </div>
 
                                 <!-- Territory Growth Clustering -->
-                                <div class="glass p-6 rounded-[2rem] border border-white shadow-xl relative overflow-hidden flex flex-col">
-                                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <i data-lucide="layers" class="w-4 h-4 text-emerald-500"></i>
+                                <div class="glass p-5 rounded-2xl border border-white shadow-sm flex flex-col">
+                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-500"></i>
                                         Growth Clusters
                                     </h4>
-                                    <div class="space-y-3 flex-1">
-                                        <div class="flex items-center justify-between p-2 rounded-xl bg-emerald-50 border border-emerald-100">
-                                            <span class="text-[10px] font-black text-emerald-700 uppercase">Hyper-Growth</span>
-                                            <span class="text-xs font-black text-emerald-800">2 Regions</span>
+                                    <div class="space-y-2 flex-1 text-[10px]">
+                                        <div class="flex items-center justify-between p-1.5 rounded bg-emerald-50 border border-emerald-100 text-emerald-800 font-extrabold">
+                                            <span>HYPER-GROWTH ZONE</span>
+                                            <span>2 Regions</span>
                                         </div>
-                                        <div class="flex items-center justify-between p-2 rounded-xl bg-blue-50 border border-blue-100">
-                                            <span class="text-[10px] font-black text-blue-700 uppercase">Steady State</span>
-                                            <span class="text-xs font-black text-blue-800">5 Regions</span>
-                                        </div>
-                                        <div class="flex items-center justify-between p-2 rounded-xl bg-rose-50 border border-rose-100">
-                                            <span class="text-[10px] font-black text-rose-700 uppercase">Reactivation Needed</span>
-                                            <span class="text-xs font-black text-rose-800">1 Region</span>
+                                        <div class="flex items-center justify-between p-1.5 rounded bg-blue-50 border border-blue-100 text-blue-800 font-extrabold">
+                                            <span>STEADY STATE ZONE</span>
+                                            <span>5 Regions</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- AI Sales Probability Index -->
-                                <div class="glass p-6 rounded-[2rem] border border-white shadow-xl relative overflow-hidden flex flex-col">
-                                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <i data-lucide="target" class="w-4 h-4 text-purple-500"></i>
+                                <div class="glass p-5 rounded-2xl border border-white shadow-sm flex flex-col">
+                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="target" class="w-3.5 h-3.5 text-purple-500"></i>
                                         FY Target Probability
                                     </h4>
-                                    <div class="flex-1 flex flex-col items-center justify-center py-2">
-                                        <div class="relative w-20 h-20 flex items-center justify-center">
+                                    <div class="flex-1 flex flex-col items-center justify-center">
+                                        <div class="relative w-14 h-14 flex items-center justify-center">
                                             <svg class="w-full h-full transform -rotate-90">
-                                                <circle cx="40" cy="40" r="36" fill="transparent" stroke="#f1f5f9" stroke-width="8"/>
-                                                <circle cx="40" cy="40" r="36" fill="transparent" stroke="#8b5cf6" stroke-width="8" stroke-dasharray="226" stroke-dashoffset="${226 * (1 - 0.92)}"/>
+                                                <circle cx="28" cy="28" r="24" fill="transparent" stroke="#f1f5f9" stroke-width="6"/>
+                                                <circle cx="28" cy="28" r="24" fill="transparent" stroke="#8b5cf6" stroke-width="6" stroke-dasharray="150" stroke-dashoffset="${150 * (1 - 0.92)}"/>
                                             </svg>
-                                            <span class="absolute text-lg font-black text-slate-800">92%</span>
+                                            <span class="absolute text-sm font-black text-slate-800">92%</span>
                                         </div>
-                                        <p class="text-[10px] font-black text-purple-600 uppercase mt-3 tracking-tighter">Very High Confidence</p>
+                                        <p class="text-[8px] font-black text-purple-600 uppercase mt-2 tracking-wider">High Probability</p>
                                     </div>
                                 </div>
 
                                 <!-- Inventory Run-Rate Predictor -->
-                                <div class="glass p-6 rounded-[2rem] border border-white shadow-xl relative overflow-hidden flex flex-col">
-                                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <i data-lucide="box" class="w-4 h-4 text-amber-500"></i>
-                                        Stock Depletion Alert
+                                <div class="glass p-5 rounded-2xl border border-white shadow-sm flex flex-col">
+                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="box" class="w-3.5 h-3.5 text-amber-500"></i>
+                                        Critical Stock Alert
                                     </h4>
-                                    <div class="space-y-4 flex-1 justify-center flex flex-col">
-                                        <div class="flex justify-between text-xs font-bold">
-                                            <span class="text-slate-500">Critical Stock-out In:</span>
-                                            <span class="text-rose-600 font-black">18 Days</span>
+                                    <div class="space-y-2 flex-1 justify-center flex flex-col">
+                                        <div class="flex justify-between text-[10px] font-extrabold">
+                                            <span class="text-slate-500">Stock depletion:</span>
+                                            <span class="text-rose-600">18 Days</span>
                                         </div>
                                         <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-rose-500 h-full rounded-full" style="width: 75%"></div>
+                                            <div class="bg-rose-500 h-full" style="width: 75%"></div>
                                         </div>
-                                        <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-center">Based on current Daily Sales Velocity (DSV)</p>
+                                        <p class="text-[7px] text-slate-400 font-bold uppercase text-center">Action: Reorder low-stock models within 7 days</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Main AI Content Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <!-- Left: Recommendation Engine -->
                             <div class="lg:col-span-2 space-y-6">
-                                <div class="glass p-8 rounded-[2.5rem] border border-white shadow-xl relative overflow-hidden">
-                                    <div class="flex items-center justify-between mb-8">
-                                        <h2 class="text-2xl font-black text-slate-800 tracking-tight">Primary AI Interventions</h2>
-                                        <div class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">Strategic Priority</div>
+                                <div class="glass p-5 rounded-2xl border border-white shadow-sm relative overflow-hidden">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h2 class="text-sm font-black text-slate-800 tracking-tight">Primary AI Action Interventions</h2>
+                                        <div class="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border border-indigo-100">Strategic Priority</div>
                                     </div>
                                     
-                                    <div class="space-y-6">
+                                    <div class="space-y-4">
                                         <!-- Recommendation 1 -->
                                         ${atRiskTerritories.length > 0 ? `
-                                        <div class="flex gap-6 items-start group">
-                                            <div class="shrink-0 w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                                                <i data-lucide="crosshairs" class="w-6 h-6"></i>
+                                        <div class="flex gap-4 items-start p-3 bg-rose-50/50 rounded-xl border border-rose-100">
+                                            <div class="shrink-0 w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center text-rose-600">
+                                                <i data-lucide="crosshairs" class="w-4 h-4"></i>
                                             </div>
                                             <div>
-                                                <h4 class="font-black text-slate-800 text-lg mb-1">Focus on ${atRiskTerritories[0].name} Territory</h4>
-                                                <p class="text-sm text-slate-500 font-medium leading-relaxed">
-                                                    AI detects a critical conversion gap in <strong>${atRiskTerritories[0].name}</strong>. Current achievement is only ${atRiskTerritories[0].ach}%. Recommend immediate reallocation of 20% marketing budget to this zone for localized activations.
+                                                <h4 class="font-extrabold text-slate-800 text-xs mb-0.5">Focus: localized marketing in ${atRiskTerritories[0].name} Zone</h4>
+                                                <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                                                    Current achievement is only ${atRiskTerritories[0].ach}%. <strong class="text-slate-700">Immediate Action:</strong> Reallocate 20% marketing budget to this zone for local activation.
                                                 </p>
                                             </div>
                                         </div>
                                         ` : `
-                                        <div class="flex gap-6 items-start group">
-                                            <div class="shrink-0 w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                                                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                                        <div class="flex gap-4 items-start p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                                            <div class="shrink-0 w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
+                                                <i data-lucide="shield-check" class="w-4 h-4"></i>
                                             </div>
                                             <div>
-                                                <h4 class="font-black text-slate-800 text-lg mb-1">All Territories Healthy</h4>
-                                                <p class="text-sm text-slate-500 font-medium leading-relaxed">
-                                                    AI confirms no critical conversion gaps across regions. Maintain current operational velocity to secure the FY Target.
+                                                <h4 class="font-extrabold text-slate-800 text-xs mb-0.5">All Territories Healthy</h4>
+                                                <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                                                    AI confirms no critical conversion gaps across regions. Maintain current velocity to secure target.
                                                 </p>
                                             </div>
                                         </div>
@@ -5735,14 +5747,14 @@
 
                                         <!-- Recommendation 2 -->
                                         ${topTerritories.length > 0 ? `
-                                        <div class="flex gap-6 items-start group">
-                                            <div class="shrink-0 w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                                                <i data-lucide="trending-up" class="w-6 h-6"></i>
+                                        <div class="flex gap-4 items-start p-3 bg-indigo-50/50 rounded-xl border border-indigo-100">
+                                            <div class="shrink-0 w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                                                <i data-lucide="trending-up" class="w-4 h-4"></i>
                                             </div>
                                             <div>
-                                                <h4 class="font-black text-slate-800 text-lg mb-1">Leverage ${topTerritories[0].name} Success</h4>
-                                                <p class="text-sm text-slate-500 font-medium leading-relaxed">
-                                                    <strong>${topTerritories[0].name}</strong> has surpassed its monthly quota pace. Our analysis indicates their localized strategy is working. Push this directive to other territories via the Notice Board.
+                                                <h4 class="font-extrabold text-slate-800 text-xs mb-0.5">Leverage Strategy from ${topTerritories[0].name}</h4>
+                                                <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                                                    <strong>${topTerritories[0].name}</strong> is exceeding target pace. <strong class="text-slate-700">Action:</strong> Replicate their dealer campaign blueprint across other zones.
                                                 </p>
                                             </div>
                                         </div>
@@ -5750,14 +5762,14 @@
 
                                         <!-- Recommendation 3 -->
                                         ${upazilaAffinities.length > 0 ? `
-                                        <div class="flex gap-6 items-start group">
-                                            <div class="shrink-0 w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                                                <i data-lucide="zap" class="w-6 h-6"></i>
+                                        <div class="flex gap-4 items-start p-3 bg-amber-50/50 rounded-xl border border-amber-100">
+                                            <div class="shrink-0 w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600">
+                                                <i data-lucide="zap" class="w-4 h-4"></i>
                                             </div>
                                             <div>
-                                                <h4 class="font-black text-slate-800 text-lg mb-1">Stock Optimization Alert</h4>
-                                                <p class="text-sm text-slate-500 font-medium leading-relaxed">
-                                                    Demand for <strong>${upazilaAffinities[0].model}</strong> in <strong>${upazilaAffinities[0].upazila}</strong> is significantly higher than historical average. AI recommends prepositioning inventory in regional hubs to prevent "Stock-Out" scenarios.
+                                                <h4 class="font-extrabold text-slate-800 text-xs mb-0.5">Preposition Stock: ${upazilaAffinities[0].model} in ${upazilaAffinities[0].upazila}</h4>
+                                                <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                                                    Demand is significantly higher than historical average. <strong class="text-slate-700">Action:</strong> Preposition stocks in regional hub now to prevent stock-out.
                                                 </p>
                                             </div>
                                         </div>
@@ -5766,19 +5778,19 @@
                                 </div>
 
                                 <!-- Dynamic Market Heatmap Visualization -->
-                                <div class="glass p-8 rounded-[2.5rem] border border-white shadow-xl">
-                                    <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-6">Territory Health Matrix</h2>
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                <div class="glass p-5 rounded-2xl border border-white shadow-sm">
+                                    <h2 class="text-sm font-black text-slate-800 tracking-tight mb-4">Territory Performance Index</h2>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         ${terrPerformance.map(t => `
-                                            <div class="p-4 rounded-3xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-lg transition-all duration-300 group">
-                                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">${t.name}</p>
+                                            <div class="p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all duration-300">
+                                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-wider mb-0.5 truncate">${t.name}</p>
                                                 <div class="flex justify-between items-end">
-                                                    <span class="text-lg font-black text-slate-800">${t.ach}%</span>
-                                                    <div class="w-8 h-8 rounded-full flex items-center justify-center ${t.ach > 70 ? 'bg-green-100 text-green-600' : (t.ach > 40 ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600')}">
-                                                        <i data-lucide="${t.ach > 70 ? 'smile' : (t.ach > 40 ? 'neutral' : 'frown')}" class="w-4 h-4"></i>
+                                                    <span class="text-sm font-black text-slate-800">${t.ach}%</span>
+                                                    <div class="w-6 h-6 rounded-full flex items-center justify-center ${t.ach > 70 ? 'bg-green-100 text-green-600' : (t.ach > 40 ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600')}">
+                                                        <i data-lucide="${t.ach > 70 ? 'smile' : (t.ach > 40 ? 'meh' : 'frown')}" class="w-3.5 h-3.5"></i>
                                                     </div>
                                                 </div>
-                                                <div class="w-full bg-slate-200 h-1 rounded-full mt-3 overflow-hidden">
+                                                <div class="w-full bg-slate-200 h-1 rounded-full overflow-hidden mt-1.5">
                                                     <div class="${t.ach > 70 ? 'bg-green-500' : (t.ach > 40 ? 'bg-amber-500' : 'bg-red-500')} h-full rounded-full" style="width: ${Math.min(t.ach, 100)}%"></div>
                                                 </div>
                                             </div>
@@ -5788,26 +5800,26 @@
                             </div>
 
                             <!-- Right: Leaders & Risk Zones -->
-                            <div class="space-y-8">
+                            <div class="space-y-6">
                                 <!-- Top Performers -->
-                                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl">
-                                    <h3 class="text-lg font-black text-slate-800 flex items-center gap-2 mb-6">
-                                        <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
-                                        Top Performers
+                                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                                    <h3 class="text-xs font-black text-slate-800 flex items-center gap-1.5 mb-4">
+                                        <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                        Top Performing Territories
                                     </h3>
-                                    <div class="space-y-4">
+                                    <div class="space-y-2.5">
                                         ${topTerritories.map((t, idx) => `
-                                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                                <div class="flex items-center gap-3">
-                                                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black text-sm">${idx + 1}</div>
+                                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center font-black text-xs">${idx + 1}</div>
                                                     <div>
-                                                        <p class="font-black text-slate-800 text-sm">${t.name}</p>
-                                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${t.actual} Units Sold</p>
+                                                        <p class="font-extrabold text-slate-800 text-xs">${t.name}</p>
+                                                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${t.actual} Units Sold</p>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="text-sm font-black text-green-600">${t.ach}%</p>
-                                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Achieved</p>
+                                                    <p class="text-xs font-black text-green-600">${t.ach}%</p>
+                                                    <p class="text-[7px] font-bold text-slate-400 uppercase">Quota Achieved</p>
                                                 </div>
                                             </div>
                                         `).join('')}
@@ -5815,26 +5827,26 @@
                                 </div>
 
                                 <!-- Risk Monitor -->
-                                <div class="bg-rose-50 p-8 rounded-[2.5rem] border border-rose-100 shadow-xl">
-                                    <h3 class="text-lg font-black text-rose-800 flex items-center gap-2 mb-6">
-                                        <i data-lucide="activity" class="w-5 h-5 text-rose-600"></i>
-                                        Risk Monitor
+                                <div class="bg-rose-50 p-5 rounded-2xl border border-rose-100 shadow-sm">
+                                    <h3 class="text-xs font-black text-rose-800 flex items-center gap-1.5 mb-4">
+                                        <i data-lucide="activity" class="w-4 h-4 text-rose-600"></i>
+                                        Volume Risk Monitor
                                     </h3>
-                                    <div class="space-y-4">
+                                    <div class="space-y-2.5">
                                         ${atRiskTerritories.length > 0 ? atRiskTerritories.map(t => `
-                                            <div class="flex items-center justify-between p-4 bg-white/50 rounded-2xl border border-rose-100">
+                                            <div class="flex items-center justify-between p-3 bg-white/50 rounded-xl border border-rose-100">
                                                 <div>
-                                                    <p class="font-black text-rose-900 text-sm">${t.name}</p>
-                                                    <p class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Gap: ${t.target - t.actual} Units</p>
+                                                    <p class="font-extrabold text-rose-900 text-xs">${t.name}</p>
+                                                    <p class="text-[8px] font-bold text-rose-400 uppercase tracking-widest">Gap: ${t.target - t.actual} Units</p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="text-sm font-black text-rose-600">${t.ach}%</p>
-                                                    <p class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Critical</p>
+                                                    <p class="text-xs font-black text-rose-600">${t.ach}%</p>
+                                                    <p class="text-[7px] font-bold text-rose-400 uppercase">Critical Ach</p>
                                                 </div>
                                             </div>
-                                        `).join('') : '<p class="text-center text-xs font-bold text-slate-400 py-4">No territories under 40% achievement.</p>'}
+                                        `).join('') : '<p class="text-center text-[10px] font-bold text-slate-400 py-4">No territories under 40% achievement.</p>'}
                                     </div>
-                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-6 bg-rose-600 hover:bg-rose-700 text-white font-black py-3 rounded-2xl shadow-lg shadow-rose-200 transition-all active:scale-95 text-xs uppercase tracking-widest">
+                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-black py-2 rounded-xl transition-colors text-[9px] uppercase tracking-widest">
                                         Review All Regions
                                     </button>
                                 </div>
@@ -9004,7 +9016,7 @@
                 // Calculate 1st & 2nd EMI details
                 const soEmiFirstTwo = DB.emi.filter(e => e.territory_id === terrId && (e.installment_no === 1 || e.installment_no === 2));
                 const totalFirstTwoCust = soEmiFirstTwo.length;
-                const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => e.collected < e.installment).length;
+                const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => (parseFloat(e.collected) || 0) < (parseFloat(e.installment) || 0)).length;
 
                 const html = `
                     <div class="pb-4 fade-in">
@@ -10158,7 +10170,7 @@
             updateSOBadge: () => {
                 if (app.currentUser.role !== 'so') return;
                 const soEmi = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
-                const overdueCount = soEmi.filter(e => e.installment > 0 && e.collected < e.installment).length;
+                const overdueCount = soEmi.filter(e => (parseFloat(e.installment) || 0) > 0 && (parseFloat(e.collected) || 0) < (parseFloat(e.installment) || 0)).length;
                 
                 const badge = document.getElementById('so-overdue-badge');
                 if (badge) {
@@ -10171,14 +10183,14 @@
                 const soTerritories = app.currentUser.territories;
                 const soEmi = DB.emi.filter(e => soTerritories.includes(e.territory_id));
 
-                const totalInstallment = soEmi.reduce((sum, e) => sum + e.installment, 0);
-                const totalCollected = soEmi.reduce((sum, e) => sum + e.collected, 0);
+                const totalInstallment = soEmi.reduce((sum, e) => sum + (parseFloat(e.installment) || 0), 0);
+                const totalCollected = soEmi.reduce((sum, e) => sum + (parseFloat(e.collected) || 0), 0);
                 const remaining = Math.max(0, totalInstallment - totalCollected);
                 const advance = Math.max(0, totalCollected - totalInstallment);
                 const colPercent = totalInstallment > 0 ? Math.round((totalCollected / totalInstallment) * 100) : 0;
 
                 const totalCustomers = soEmi.length;
-                const paidCustomers = soEmi.filter(e => e.collected >= e.installment).length;
+                const paidCustomers = soEmi.filter(e => (parseFloat(e.collected) || 0) >= (parseFloat(e.installment) || 0)).length;
                 const unpaidCustomers = totalCustomers - paidCustomers;
 
                 // Preserve search and filter states
@@ -10381,8 +10393,8 @@
                     document.body.appendChild(modal);
                 }
 
-                const totalDue = emi.installment + emi.overdue_total;
-                const isFullyCleared = emi.collected >= totalDue && totalDue > 0;
+                const totalDue = (parseFloat(emi.installment) || 0) + (parseFloat(emi.overdue_total) || 0);
+                const isFullyCleared = (parseFloat(emi.collected) || 0) >= totalDue && totalDue > 0;
 
                 modal.innerHTML = `
                     <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeCollectEMIModal()"></div>
