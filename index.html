@@ -11524,14 +11524,14 @@
                         
                         // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
                         const isGlobal = role === 'admin' || userTerrs.length === 0;
-                        const myTargets = DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === '2025-26');
-                        const mySales = DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === '2025-26');
-                        const myCollections = DB.emi_collections.filter(c => isGlobal || userTerrs.includes(c.territory_id));
-                        const unpaidEMIs = DB.emi_schedules.filter(s => s.status !== 'Paid' && (isGlobal || userTerrs.includes(s.territory_id))).length;
+                        const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === '2025-26') : [];
+                        const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === '2025-26') : [];
+                        const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
+                        const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
                         
                         let totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
                         let totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
-                        let totalCollectedAmt = myCollections.reduce((sum, c) => sum + (c.collected_amount || 0), 0);
+                        let totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
                         
                         systemDataDump += `- My YTD Sales (2025-26): ${totalSales} units\n`;
                         systemDataDump += `- My YTD Target (2025-26): ${totalTarget} units\n`;
@@ -11547,14 +11547,17 @@
                         parts: [{ text: msg.text }]
                     }));
                     
-                    contents.unshift({ role: 'user', parts: [{ text: systemPrompt }] });
-                    contents.unshift({ role: 'model', parts: [{ text: "Got it! I am ready to help." }] });
                     contents.push({ role: 'user', parts: [{ text }] });
                     
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${app.aiAssistant.apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents })
+                        body: JSON.stringify({
+                            contents,
+                            systemInstruction: {
+                                parts: [{ text: systemPrompt }]
+                            }
+                        })
                     });
                     
                     const data = await res.json();
