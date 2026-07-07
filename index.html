@@ -5495,7 +5495,7 @@
                 const daysInMonth = 30;
 
                 // State Initialization
-                if (typeof app.aiMonths === 'undefined') {
+                if (typeof app.aiMonths === 'undefined' || (!keepDropdownOpen && app.aiMonths.length === 0)) {
                     app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 }
                 const activeMonthsInSelection = app.aiMonths;
@@ -5503,7 +5503,7 @@
                 if (typeof app.aiActionsState === 'undefined') {
                     app.aiActionsState = JSON.parse(localStorage.getItem('aci_ai_actions_state')) || {};
                 }
-                if (typeof app.aiTerrPerformanceFilter === 'undefined') {
+                if (typeof app.aiTerrPerformanceFilter === 'undefined' || !keepDropdownOpen) {
                     app.aiTerrPerformanceFilter = 'all';
                 }
 
@@ -5682,7 +5682,7 @@
                                     <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-1.5 right-0 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-64 overflow-y-auto">
                                         <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
                                             <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-black text-slate-700 transition-colors">
-                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : []; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : [app.currentMonth]; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
                                                 Select All FY (YTD)
                                             </label>
                                         </div>
