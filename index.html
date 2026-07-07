@@ -11564,13 +11564,19 @@
                     
                     document.getElementById(loadingId).remove();
                     
-                    if (data.candidates && data.candidates[0].content) {
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                         const reply = data.candidates[0].content.parts[0].text;
                         app.aiAssistant.appendMessage('bot', reply);
                         app.aiAssistant.history.push({ role: 'user', text });
                         app.aiAssistant.history.push({ role: 'bot', text: reply });
                     } else {
-                        app.aiAssistant.appendMessage('bot', "Oops, my circuits got tangled. Could you try asking again? 🤖");
+                        let errMsg = "Oops, my circuits got tangled. Could you try asking again? 🤖";
+                        if (data.error) {
+                            errMsg = `Oops! Gemini API Error: ${data.error.message} (${data.error.status}) 🤖`;
+                        } else if (data.candidates && data.candidates[0] && data.candidates[0].finishReason && data.candidates[0].finishReason !== 'STOP') {
+                            errMsg = `Oops! Response blocked by AI safety filters (Reason: ${data.candidates[0].finishReason}) 🤖`;
+                        }
+                        app.aiAssistant.appendMessage('bot', errMsg);
                         console.error(data);
                     }
                 } catch (e) {
