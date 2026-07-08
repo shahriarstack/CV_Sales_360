@@ -11504,6 +11504,63 @@
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 return id;
             },
+            getLocalFallbackResponse: (text) => {
+                const prompt = (text || '').toLowerCase();
+                const userName = app.currentUser ? app.currentUser.name.replace(/\s*\(.*?\)\s*$/, '') : 'Guest';
+                const role = app.currentUser ? app.currentUser.role : '';
+                
+                // Fetch local DB metrics
+                const userTerrs = app.currentUser ? app.currentUser.territories || [] : [];
+                const isGlobal = role === 'admin' || userTerrs.length === 0;
+                const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === '2025-26') : [];
+                const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === '2025-26') : [];
+                const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
+                const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
+                
+                const totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
+                const totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
+                const totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
+                const pacingPct = totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
+
+                // Brand details
+                const fotonSales = mySales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const mahindraSales = mySales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                
+                // Bangla translations for greeting / help
+                const isBangla = prompt.includes('kemon') || prompt.includes('ki obostha') || prompt.includes('hello') || prompt.includes('hi') || prompt.includes('assalamu') || prompt.includes('kemne');
+
+                // 1. Performance / Sales / Target queries
+                if (prompt.includes('sale') || prompt.includes('target') || prompt.includes('perform') || prompt.includes('achieve') || prompt.includes('kemon') || prompt.includes('obostha') || prompt.includes('kaj')) {
+                    if (isBangla) {
+                        return `কেমন আছেন, ${userName}! 👋 আপনার performance tracking ready: এ পর্যন্ত target-এর তুলনায় sales হয়েছে **${totalSales} units** (যা target ${totalTarget} units এর **${pacingPct}%**)। চলুন gap পূরণ করতে আরও focus করি! 🚀`;
+                    }
+                    return `Hey ${userName}! 👋 Here is your performance update: You have closed **${totalSales} units** out of your **${totalTarget} units** YTD target (${pacingPct}% achievement). Keep pushing to bridge the gap! 🚀`;
+                }
+                
+                // 2. EMI / Collection queries
+                if (prompt.includes('emi') || prompt.includes('collect') || prompt.includes('due') || prompt.includes('overdue') || prompt.includes('taka') || prompt.includes('money')) {
+                    if (isBangla) {
+                        return `EMI আপডেট, ${userName}: total collection দাঁড়িয়েছে **৳${totalCollectedAmt.toLocaleString()}**। বর্তমানে active portfolios-তে **${unpaidEMIs}** টি installment pending আছে। collection speedup করতে call দিন! 📞`;
+                    }
+                    return `EMI Status Update, ${userName}: We have collected **৳${totalCollectedAmt.toLocaleString()}** YTD. There are currently **${unpaidEMIs}** unpaid/pending installments in your assigned portfolios. Let's speed up collection actions! 📞`;
+                }
+
+                // 3. Brand comparisons
+                if (prompt.includes('foton') || prompt.includes('mahindra') || prompt.includes('brand') || prompt.includes('model')) {
+                    return `Brand Summary: Under your scope, **Foton** has sold **${fotonSales} units** and **Mahindra** has sold **${mahindraSales} units** for FY 2025-26. Foton leads by ${Math.abs(fotonSales - mahindraSales)} units! 🚚💨`;
+                }
+
+                // 4. Who am I / Role
+                if (prompt.includes('who') || prompt.includes('role') || prompt.includes('amar') || prompt.includes('naam') || prompt.includes('name')) {
+                    return `You are logged in as **${userName}** with the role of **${role.toUpperCase()}** in the ACI Sales360 platform. Let's make an impact today! ⚡`;
+                }
+
+                // Default friendly response using local context
+                if (isBangla) {
+                    return `আমি Spark360 ⚡, আপনার local assistant! আপনার YTD sales status: **${totalSales}/${totalTarget} units**। EMI সংগ্রহ: **৳${totalCollectedAmt.toLocaleString()}**। আপনার targeted queries করতে জিজ্ঞেস করুন "sales", "target" বা "EMI collection"! 😊`;
+                }
+                return `I'm Spark360 ⚡, your smart Sales Copilot! Currently running in active standby. Your local stats: YTD Sales is **${totalSales}/${totalTarget} units** (${pacingPct}%), and EMI collections stand at **৳${totalCollectedAmt.toLocaleString()}**. Ask me about 'sales targets', 'EMI due', or 'brand summary'! 😊`;
+            },
             sendPrompt: async (text) => {
                 if (!text.trim()) return;
                 
@@ -11570,19 +11627,22 @@
                         app.aiAssistant.history.push({ role: 'user', text });
                         app.aiAssistant.history.push({ role: 'bot', text: reply });
                     } else {
-                        let errMsg = "Oops, my circuits got tangled. Could you try asking again? 🤖";
-                        if (data.error) {
-                            errMsg = `Oops! Gemini API Error: ${data.error.message} (${data.error.status}) 🤖`;
-                        } else if (data.candidates && data.candidates[0] && data.candidates[0].finishReason && data.candidates[0].finishReason !== 'STOP') {
-                            errMsg = `Oops! Response blocked by AI safety filters (Reason: ${data.candidates[0].finishReason}) 🤖`;
-                        }
-                        app.aiAssistant.appendMessage('bot', errMsg);
-                        console.error(data);
+                        // Fall back to local active standby engine to keep Spark360 always active
+                        const reply = app.aiAssistant.getLocalFallbackResponse(text);
+                        app.aiAssistant.appendMessage('bot', reply);
+                        app.aiAssistant.history.push({ role: 'user', text });
+                        app.aiAssistant.history.push({ role: 'bot', text: reply });
+                        console.warn("Gemini API failed/blocked, using local fallback engine:", data);
                     }
                 } catch (e) {
-                    console.error(e);
+                    console.error("Gemini API fetch error, using local fallback engine:", e);
                     document.getElementById(loadingId).remove();
-                    app.aiAssistant.appendMessage('bot', "Whoops! The connection seems to be down. Can you check your internet? 🌐");
+                    
+                    // Fall back to local active standby engine to keep Spark360 always active
+                    const reply = app.aiAssistant.getLocalFallbackResponse(text);
+                    app.aiAssistant.appendMessage('bot', reply);
+                    app.aiAssistant.history.push({ role: 'user', text });
+                    app.aiAssistant.history.push({ role: 'bot', text: reply });
                 }
             },
             handleSubmit: (e) => {
