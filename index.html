@@ -1208,6 +1208,16 @@
                         body: JSON.stringify({ query, params })
                     });
                     
+                    if (response.status === 401) {
+                        console.warn("Session expired or unauthorized. Logging out...");
+                        app.currentUser = null;
+                        localStorage.removeItem('aci_user');
+                        localStorage.removeItem('aci_last_page');
+                        localStorage.removeItem('aci_last_role');
+                        location.reload();
+                        return [];
+                    }
+
                     if (!response.ok) {
                         const errText = await response.text();
                         throw new Error(errText || 'Database query error');
@@ -1224,22 +1234,48 @@
                 try {
                     console.log("Connecting to cPanel MySQL database via api.php...");
                     
-                    // Load all data tables concurrently
-                    const [targets, projections, emi, sales, recovery_od, users, territories, models, notices, links, tiv_brands, app_settings, tiv_submissions] = await Promise.all([
-                        app.neonSQL`SELECT * FROM targets`,
-                        app.neonSQL`SELECT * FROM projections`,
-                        app.neonSQL`SELECT * FROM emi`,
-                        app.neonSQL`SELECT * FROM sales`,
-                        app.neonSQL`SELECT * FROM recovery_od`,
-                        app.neonSQL`SELECT * FROM users`,
-                        app.neonSQL`SELECT * FROM territories`,
-                        app.neonSQL`SELECT * FROM models`,
-                        app.neonSQL`SELECT * FROM notices`,
-                        app.neonSQL`SELECT * FROM links`,
-                        app.neonSQL`SELECT * FROM tiv_brands`,
-                        app.neonSQL`SELECT * FROM app_settings`,
-                        app.neonSQL`SELECT * FROM tiv_submissions`
-                    ]);
+                    // Check authentication state to determine loading strategy
+                    let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [];
+
+                    if (app.currentUser) {
+                        // Load all data tables concurrently for authenticated users
+                        const results = await Promise.all([
+                            app.neonSQL`SELECT * FROM targets`,
+                            app.neonSQL`SELECT * FROM projections`,
+                            app.neonSQL`SELECT * FROM emi`,
+                            app.neonSQL`SELECT * FROM sales`,
+                            app.neonSQL`SELECT * FROM recovery_od`,
+                            app.neonSQL`SELECT * FROM users`,
+                            app.neonSQL`SELECT * FROM territories`,
+                            app.neonSQL`SELECT * FROM models`,
+                            app.neonSQL`SELECT * FROM notices`,
+                            app.neonSQL`SELECT * FROM links`,
+                            app.neonSQL`SELECT * FROM tiv_brands`,
+                            app.neonSQL`SELECT * FROM app_settings`,
+                            app.neonSQL`SELECT * FROM tiv_submissions`
+                        ]);
+                        targets = results[0];
+                        projections = results[1];
+                        emi = results[2];
+                        sales = results[3];
+                        recovery_od = results[4];
+                        users = results[5];
+                        territories = results[6];
+                        models = results[7];
+                        notices = results[8];
+                        links = results[9];
+                        tiv_brands = results[10];
+                        app_settings = results[11];
+                        tiv_submissions = results[12];
+                    } else {
+                        // Pre-authentication: Only load sanitized users and territories for login dropdown
+                        const results = await Promise.all([
+                            app.neonSQL`SELECT * FROM users`,
+                            app.neonSQL`SELECT * FROM territories`
+                        ]);
+                        users = results[0];
+                        territories = results[1];
+                    }
                     
                     DB.targets = targets;
                     DB.projections = projections;
@@ -1631,31 +1667,57 @@
             },
 
             // --- Authentication ---
-            handleLogin: (e) => {
+            handleLogin: async (e) => {
                 e.preventDefault();
                 const userId = document.getElementById('login-user-select').value;
                 const empId = document.getElementById('password').value;
 
                 app.showLoader('Authenticating...');
 
-                setTimeout(() => {
-                    const user = DB.users.find(u => u.id === userId && u.employee_id === empId);
-
+                try {
+                    const response = await fetch('api.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'login',
+                            userId: userId,
+                            employeeId: empId
+                        })
+                    });
+                    
+                    const result = await response.json();
                     app.hideLoader();
 
-                    if (user) {
-                        app.currentUser = user;
-                        localStorage.setItem('aci_user', JSON.stringify(user));
+                    if (result.success && result.user) {
+                        app.currentUser = result.user;
+                        localStorage.setItem('aci_user', JSON.stringify(result.user));
                         app.showToast('Login successful!');
+                        
+                        // Re-fetch data tables now that we are authenticated
+                        await app.init();
+                        
                         app.loadAppLayout();
                     } else {
-                        app.showToast('Invalid Employee ID for the selected Area/User.', 'error');
+                        app.showToast(result.error || 'Invalid Employee ID for the selected Area/User.', 'error');
                     }
-                }, 1000); // Simulated network request
+                } catch (err) {
+                    console.error("Login authentication error:", err);
+                    app.hideLoader();
+                    app.showToast('Failed to authenticate with security server.', 'error');
+                }
             },
 
-            logout: () => {
+            logout: async () => {
                 app.closeSidebar();
+                try {
+                    await fetch('api.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'logout' })
+                    });
+                } catch (err) {
+                    console.error("Logout API request error:", err);
+                }
                 app.currentUser = null;
                 localStorage.removeItem('aci_user');
                 localStorage.removeItem('aci_last_page');
