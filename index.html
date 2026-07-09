@@ -1507,7 +1507,15 @@
             init: async () => {
                 app.updateViewport();
 
-
+                // Restore session from localStorage before calling initNeonDB
+                const storedUser = localStorage.getItem('aci_user');
+                if (storedUser) {
+                    try {
+                        app.currentUser = JSON.parse(storedUser);
+                    } catch (e) {
+                        localStorage.removeItem('aci_user');
+                    }
+                }
 
                 // Intercept localStorage.setItem to auto-update sidebar highlighted active states
                 const originalSetItem = localStorage.setItem;
@@ -1541,7 +1549,6 @@
 
 
                 // Check session with Pre-render Guard
-                const storedUser = localStorage.getItem('aci_user');
                 const splash = document.getElementById('app-splash');
 
                 if (storedUser) {
