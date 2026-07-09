@@ -129,7 +129,7 @@ try {
             '/^INSERT\s+INTO\s+notices\s*\(id,\s*title,\s*message,\s*timestamp,\s*filetype,\s*filename\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|recovery_od|notices|links)$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|emi|recovery_od|notices|links)$/i',
             '/^DELETE\s+FROM\s+sales\s+WHERE\s+fy\s*=\s*\'2025-26\'$/i',
             '/^DELETE\s+FROM\s+sales\s+WHERE\s+fy\s*=\s*\'2024-25\'$/i',
             '/^INSERT\s+INTO\s+targets\s*\(id,\s*fy,\s*month,\s*territory_id,\s*upazila,\s*brand,\s*sale_type,\s*target_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
