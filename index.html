@@ -2855,12 +2855,12 @@
 
                 // --- Dashboard KPI Calculations ---
                 const totalCust = emiData.length;
-                const paidCust = emiData.filter(e => e.collected >= e.installment).length;
+                const paidCust = emiData.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
                 const unpaidCust = totalCust - paidCust;
                 const paidCustPercent = totalCust > 0 ? Math.round((paidCust / totalCust) * 100) : 0;
 
-                const totalInstallment = emiData.reduce((sum, e) => sum + e.installment, 0);
-                const totalCol = emiData.reduce((sum, e) => sum + e.collected, 0);
+                const totalInstallment = emiData.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalCol = emiData.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                 const collectionRate = totalInstallment > 0 ? Math.round((totalCol / totalInstallment) * 100) : 0;
 
                 // Aggregate Territory Summary Table
@@ -2868,10 +2868,10 @@
                     const tEmi = emiData.filter(e => e.territory_id === t.id);
                     if (tEmi.length === 0) return null;
                     const totalCust = tEmi.length;
-                    const payingCust = tEmi.filter(e => e.collected >= e.installment).length;
+                    const payingCust = tEmi.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
                     const nonPayingCust = totalCust - payingCust;
-                    const tTotalDue = tEmi.reduce((sum, e) => sum + e.installment, 0); // Amount Due (inst)
-                    const tAmountCol = tEmi.reduce((sum, e) => sum + e.collected, 0);
+                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0); // Amount Due (inst)
+                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                     const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
                 }).filter(Boolean);
@@ -10608,14 +10608,14 @@
                 const soTerritories = app.currentUser.territories;
                 const soEmi = DB.emi.filter(e => soTerritories.includes(e.territory_id));
 
-                const totalInstallment = soEmi.reduce((sum, e) => sum + e.installment, 0);
-                const totalCollected = soEmi.reduce((sum, e) => sum + e.collected, 0);
+                const totalInstallment = soEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalCollected = soEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                 const remaining = Math.max(0, totalInstallment - totalCollected);
                 const advance = Math.max(0, totalCollected - totalInstallment);
                 const colPercent = totalInstallment > 0 ? Math.round((totalCollected / totalInstallment) * 100) : 0;
 
                 const totalCustomers = soEmi.length;
-                const paidCustomers = soEmi.filter(e => e.collected >= e.installment).length;
+                const paidCustomers = soEmi.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
                 const unpaidCustomers = totalCustomers - paidCustomers;
 
                 // Preserve search and filter states
