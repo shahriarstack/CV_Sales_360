@@ -1664,7 +1664,7 @@
 
             normalizeDate: (dateInput) => {
                 if (!dateInput) return '';
-                const str = String(dateInput).trim();
+                let str = String(dateInput).trim();
                 if (str === '' || str === '0000-00-00') return '';
 
                 // Try checking if it's an Excel serial date
@@ -1676,7 +1676,39 @@
                     }
                 }
 
-                // Try parsing standard dates
+                // Clean separators
+                let cleanStr = str.replace(/[\.\/]/g, '-');
+
+                // Match DD-MM-YYYY or DD-MM-YY
+                const dmyMatch = cleanStr.match(/^(\d{1,2})-(\d{1,2})-(\d{2,4})$/);
+                if (dmyMatch) {
+                    let day = parseInt(dmyMatch[1], 10);
+                    let month = parseInt(dmyMatch[2], 10);
+                    let year = parseInt(dmyMatch[3], 10);
+                    if (year < 100) {
+                        year += (year < 50 ? 2000 : 1900);
+                    }
+                    const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const testDate = new Date(formattedDate);
+                    if (!isNaN(testDate.getTime())) {
+                        return formattedDate;
+                    }
+                }
+
+                // Match YYYY-MM-DD
+                const ymdMatch = cleanStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                if (ymdMatch) {
+                    let year = parseInt(ymdMatch[1], 10);
+                    let month = parseInt(ymdMatch[2], 10);
+                    let day = parseInt(ymdMatch[3], 10);
+                    const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const testDate = new Date(formattedDate);
+                    if (!isNaN(testDate.getTime())) {
+                        return formattedDate;
+                    }
+                }
+
+                // Try standard JS date parsing
                 const date = new Date(str);
                 if (!isNaN(date.getTime())) {
                     return date.toISOString().split('T')[0];
