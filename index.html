@@ -9564,7 +9564,7 @@
             },
 
             getTransitionBannerHtml: (currentFY) => {
-                if (app.currentMonth !== 'July') return '';
+                if (app.currentMonth !== 'July' || !app.fyReviewActive) return '';
                 const activeFY = app.currentFY;
                 const concludingFY = (() => {
                     const parts = activeFY.split('-');
