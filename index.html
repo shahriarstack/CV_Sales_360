@@ -1108,6 +1108,8 @@
             isSystemSettingsAuthorized: false,
             currentMonth: localStorage.getItem('aci_current_month') || 'April',
             lastMonth: localStorage.getItem('aci_last_month') || 'March',
+            currentFY: localStorage.getItem('aci_current_fy') || '2025-26',
+            selectedFY: null,
             getYtdMonths: (currentMonth) => {
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 const idx = monthsList.indexOf(currentMonth);
@@ -1331,6 +1333,10 @@
                         DB.settings = typeof app_settings[0].settings_json === 'string' ? JSON.parse(app_settings[0].settings_json) : app_settings[0].settings_json;
                         app.currentMonth = DB.settings.currentMonth || 'April';
                         app.lastMonth = DB.settings.lastMonth || 'March';
+                        app.currentFY = DB.settings.currentFY || '2025-26';
+                        app.fyReviewActive = DB.settings.fyReviewActive !== undefined ? DB.settings.fyReviewActive : true;
+                    } else {
+                        app.fyReviewActive = true;
                     }
 
                     console.log("Data successfully loaded from cPanel MySQL Database.");
@@ -1635,6 +1641,21 @@
 
             formatCurrency: (amount) => {
                 return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(amount).replace('BDT', '৳');
+            },
+
+            formatDateCreative: (dateStr) => {
+                if (!dateStr || dateStr === '0000-00-00' || dateStr.trim() === '') {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
+                }
+                try {
+                    const date = new Date(dateStr);
+                    if (isNaN(date.getTime())) {
+                        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
+                    }
+                    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); // e.g., "12 Apr 2025"
+                } catch (e) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
+                }
             },
 
             populateLoginDropdown: () => {
@@ -3221,8 +3242,27 @@
                 app.setupSidebar();
                 const isAM = app.currentUser.role === 'am';
                 const currentSaleType = app.adminSaleTypeTab || 'New Sale';
-                const currentFY = '2025-26';
-                const lastFY = '2024-25';
+                const currentFY = app.selectedFY || app.currentFY;
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                const concludingFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2025-26';
+                })();
+                const splyFY = (() => {
+                    const parts = concludingFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+                const lastFY = concludingFY;
 
                 // Filter data based on role AND Sale Type Tab
                 let salesData = DB.sales.filter(s => s.sale_type === currentSaleType);
@@ -3412,6 +3452,7 @@
 
                 const html = `
                     <div class="fade-in pb-12">
+                        ${app.getTransitionBannerHtml(currentFY)}
                         <!-- AM / Executive Header -->
                         <div class="mb-4">
                             ${isAM ? `
@@ -3485,13 +3526,14 @@
 
                             <!-- AM Style MO-Dashboard Blocks -->
                             ${(() => {
-                             const ytdMonths = app.getYtdMonths(app.currentMonth);
+                             const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                             const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(app.currentMonth);
                              const passedMonths = ytdMonths.length;
-                             const monthlyTargets = activeTgts.filter(tg => ytdMonths.includes(tg.month));
-                             const ytdTargetTillLastMonth = monthlyTargets.length > 0 ? monthlyTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round((totalYearlyTarget / 12) * passedMonths);
-                             const tillLastMonthSalesUnits = currFYSales.filter(s => s.brand === brandFilter && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                             const monthlyTargets = activeTgts.filter(tg => tg.fy === (isTransitionMode ? concludingFY : currentFY) && ytdMonths.includes(tg.month));
+                             const ytdTargetTillLastMonth = isTransitionMode ? monthlyTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : (monthlyTargets.length > 0 ? monthlyTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round((totalYearlyTarget / 12) * passedMonths));
+                             const tillLastMonthSalesUnits = salesData.filter(s => s.brand === brandFilter && s.fy === (isTransitionMode ? concludingFY : currentFY) && (isTransitionMode ? true : ytdMonths.includes(s.sales_month))).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
-                             const totalMonthlyProjection = DB.projections.filter(p => activeTerritories.some(t => t.id === p.territory_id) && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                             const totalMonthlyProjection = DB.projections.filter(p => activeTerritories.some(t => t.id === p.territory_id) && p.brand === brandFilter && p.month === app.currentMonth && p.fy === currentFY && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
                              const currMonthSalesTotal = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                              const amSplyYtd = activeTerritories.reduce((sum, t) => sum + app.getPerformance(t.id, brandFilter, currentSaleType).ytd.sply, 0);
@@ -3504,13 +3546,13 @@
                                      <div class="flex justify-between items-center mb-3">
                                          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                                              <i data-lucide="bar-chart-2" class="w-4 h-4 text-aci-blue/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
-                                             YTD Overall Area (2025-26)
+                                             ${isTransitionMode ? `Last Fiscal Year Overall Area (${concludingFY})` : `YTD Overall Area (${currentFY})`}
                                          </h3>
-                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Till ${app.lastMonth}</span>
+                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
                                      </div>
                                     <div class="grid grid-cols-6 text-center divide-x divide-slate-100 mb-4">
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">YTD Target</p>
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">${isTransitionMode ? 'FY Target' : 'YTD Target'}</p>
                                             <p class="font-bold text-slate-800 text-sm">${ytdTargetTillLastMonth}</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
@@ -3548,9 +3590,9 @@
                                         </div>
                                         <div class="space-y-1">
                                             ${activeTerritories.map(t => {
-                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
-                                const tBudgetYTD = Math.round((tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12) * passedMonths);
-                                const tSalesYTD = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === (isTransitionMode ? concludingFY : currentFY));
+                                const tBudgetYTD = isTransitionMode ? tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round((tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12) * passedMonths);
+                                const tSalesYTD = salesData.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.fy === (isTransitionMode ? concludingFY : currentFY) && (isTransitionMode ? true : ytdMonths.includes(s.sales_month))).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                 const tAch = ach(tSalesYTD, tBudgetYTD);
                                 const tSply = app.getPerformance(t.id, brandFilter, currentSaleType).ytd.sply;
                                 const tGrw = grw(tSalesYTD, tSply);
@@ -3721,6 +3763,17 @@
                                     <p class="text-sm font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
+                                    <!-- Dynamic Fiscal Year Selector -->
+                                    <div class="relative">
+                                        <select onchange="app.selectedFY = this.value; app.renderAdminDashboard()" 
+                                                class="appearance-none bg-white border border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-700 rounded-xl pl-3 pr-8 py-2.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[95px]">
+                                            ${[...new Set([...DB.sales.map(s => s.fy), ...DB.targets.map(t => t.fy), app.currentFY])].filter(Boolean).sort().reverse().map(fy => `<option value="${fy}" ${fy === currentFY ? 'selected' : ''}>FY ${fy}</option>`).join('')}
+                                        </select>
+                                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                    </div>
+
                                     <button onclick="app.renderSystemSettings()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="settings" class="w-3.5 h-3.5 transition-transform group-hover:rotate-90"></i>
@@ -4013,7 +4066,7 @@
                                   <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
                                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Performance Focus:</span>
-                                <span class="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-100/50">${app.performanceFilterMonth || app.currentMonth} 2025-26</span>
+                                <span class="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-100/50">${app.performanceFilterMonth || app.currentMonth} ${currentFY}</span>
                             </div>
                             
                             <!-- Scrollable Months container -->
@@ -5558,7 +5611,7 @@
                 localStorage.setItem('aci_last_page', 'ai');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 app.setupSidebar();
-                const currentFY = '2025-26';
+                const currentFY = app.selectedFY || app.currentFY;
                 const currentMonth = app.currentMonth;
                 const currentDay = 14; // Mocking mid-month
                 const daysInMonth = 30;
@@ -6295,7 +6348,7 @@
                 const viewMode = app.mapViewMode || 'district';
                 if (typeof app.mapSaleType === 'undefined') app.mapSaleType = 'New Sale';
                 const saleTypeTab = app.mapSaleType;
-                const currentFY = '2025-26';
+                const currentFY = app.selectedFY || app.currentFY;
 
                 // Filter Data (Actual Sales Only)
                 let filteredSales = DB.sales.filter(s => s.fy === currentFY && app.mapMonths.includes(s.sales_month));
@@ -7080,11 +7133,11 @@
                     data = DB.projections;
                     keyField = 'projection_qty';
                 } else if (type === 'sales') {
-                    title = 'System Sales (Current FY)';
+                    title = `System Sales (FY ${app.currentFY})`;
                     icon = 'shopping-cart';
                     themeColor = 'green';
                     headers = ['Customer_ID', 'District', 'Territory_Name', 'Upazila', 'Brand', 'Model', 'Unit_Qty', 'FY', 'Sales_Year', 'Sales_Month', 'Sale_Type'];
-                    data = DB.sales.filter(s => s.fy === '2025-26');
+                    data = DB.sales.filter(s => s.fy === app.currentFY);
                     keyField = 'unit_qty';
                 } else if (type === 'emi') {
                     title = 'Early EMI Customers';
@@ -7094,11 +7147,20 @@
                     data = DB.emi;
                     keyField = 'overdue_total';
                 } else if (type === 'last_year_sales') {
-                    title = 'Last Year Sales (FY 2024-25)';
+                    const lastFY = (() => {
+                        const parts = app.currentFY.split('-');
+                        if (parts.length === 2) {
+                            const y1 = parseInt(parts[0]);
+                            const y2 = parseInt(parts[1]);
+                            if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                        }
+                        return '2024-25';
+                    })();
+                    title = `Last Year Sales (FY ${lastFY})`;
                     icon = 'history';
                     themeColor = 'rose';
                     headers = ['Customer_ID', 'District', 'Territory_Name', 'Upazila', 'Brand', 'Model', 'Unit_Qty', 'FY', 'Sales_Year', 'Sales_Month', 'Sale_Type'];
-                    data = DB.sales.filter(s => s.fy === '2024-25');
+                    data = DB.sales.filter(s => s.fy === lastFY);
                     keyField = 'unit_qty';
                 } else if (type === 'recovery_od') {
                     title = 'Area Recovery OD Status';
@@ -7244,8 +7306,24 @@
 
                 if (type === 'targets') { DB.targets = []; if (app.neonSQL) await app.neonSQL`DELETE FROM targets`; }
                 else if (type === 'projections') { DB.projections = []; if (app.neonSQL) await app.neonSQL`DELETE FROM projections`; }
-                else if (type === 'sales') { DB.sales = DB.sales.filter(s => s.fy !== '2025-26'); if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = '2025-26'`; }
-                else if (type === 'last_year_sales') { DB.sales = DB.sales.filter(s => s.fy !== '2024-25'); if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = '2024-25'`; }
+                else if (type === 'sales') { 
+                    const fyVal = app.currentFY;
+                    DB.sales = DB.sales.filter(s => s.fy !== fyVal); 
+                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${fyVal}`; 
+                }
+                else if (type === 'last_year_sales') { 
+                    const lastFY = (() => {
+                        const parts = app.currentFY.split('-');
+                        if (parts.length === 2) {
+                            const y1 = parseInt(parts[0]);
+                            const y2 = parseInt(parts[1]);
+                            if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                        }
+                        return '2024-25';
+                    })();
+                    DB.sales = DB.sales.filter(s => s.fy !== lastFY); 
+                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`; 
+                }
                 else if (type === 'emi') { DB.emi = []; if (app.neonSQL) await app.neonSQL`DELETE FROM emi`; }
                 else if (type === 'recovery_od') { DB.recovery_od = []; if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`; }
 
@@ -7347,6 +7425,17 @@
                 }
                 const downloadCurrent = confirm("Do you want to download the template pre-populated with all current records from the database?\n\n- Click OK to export all current data.\n- Click Cancel to download a blank template with sample data.");
                 
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+
                 let csvContent = "";
                 let headers = "";
                 let filename = "";
@@ -7374,7 +7463,7 @@
                         filename = "ACI_Current_Month_Projection_Export.csv";
                     } else if (type === 'sales') {
                         headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
-                        const rows = DB.sales.filter(s => s.fy === '2025-26').map(s => {
+                        const rows = DB.sales.filter(s => s.fy === currentFY).map(s => {
                             const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
                             return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
                         }).join('\n');
@@ -7382,7 +7471,7 @@
                         filename = "ACI_System_Sales_Export.csv";
                     } else if (type === 'last_year_sales') {
                         headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
-                        const rows = DB.sales.filter(s => s.fy === '2024-25').map(s => {
+                        const rows = DB.sales.filter(s => s.fy === lastFY).map(s => {
                             const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
                             return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
                         }).join('\n');
@@ -7408,22 +7497,22 @@
                 } else {
                     if (type === 'target') {
                         headers = "FY,Month,Territory_Name,Upazila,Brand,Sale_Type,Target_Qty\n";
-                        headers += "2025-26,April,Dhaka North,Mirpur,Foton,New Sale,4\n";
+                        headers += `${currentFY},April,Dhaka North,Mirpur,Foton,New Sale,4\n`;
                         filename = "ACI_Monthly_Target_Template.csv";
                     } else if (type === 'projection') {
                         headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
-                        headers += "2025-26,April,Dhaka North,Foton,New Sale,15\n";
-                        headers += "2025-26,April,Dhaka North,Mahindra,Resale,10\n";
+                        headers += `${currentFY},April,Dhaka North,Foton,New Sale,15\n`;
+                        headers += `${currentFY},April,Dhaka North,Mahindra,Resale,10\n`;
                         filename = "ACI_Current_Month_Projection_Template.csv";
                     } else if (type === 'sales') {
                         headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
-                        headers += "C-1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,2025-26,2026,April,New Sale\n";
-                        headers += "C-1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,2025-26,2026,April,Resale\n";
+                        headers += `C-1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,${currentFY},2026,April,New Sale\n`;
+                        headers += `C-1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${currentFY},2026,April,Resale\n`;
                         filename = "ACI_System_Sales_Template.csv";
                     } else if (type === 'last_year_sales') {
                         headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
-                        headers += "C-LY1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,2024-25,2025,April,New Sale\n";
-                        headers += "C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,2024-25,2025,April,Resale\n";
+                        headers += `C-LY1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,${lastFY},2025,April,New Sale\n`;
+                        headers += `C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${lastFY},2025,April,Resale\n`;
                         filename = "ACI_Last_Year_Sales_Template.csv";
                     } else if (type === 'emi_early') {
                         headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
@@ -7431,7 +7520,7 @@
                         filename = "ACI_Early_EMI_Template.csv";
                     } else if (type === 'recovery_od') {
                         headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
-                        headers += "2025-26,April,Dhaka North,4500,1250000\n";
+                        headers += `${currentFY},April,Dhaka North,4500,1250000\n`;
                         filename = "ACI_Recovery_OD_Template.csv";
                     }
                     csvContent = headers;
@@ -7575,12 +7664,28 @@
             },
 
             getPerformance: (territoryId, brand, saleType) => {
-                const currentFY = '2025-26';
-                const lastFY = '2024-25';
+                let currentFY = (app.currentUser && app.currentUser.role === 'so') ? (app.soSelectedFY || app.currentFY) : (app.selectedFY || app.currentFY);
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                if (isTransitionMode) {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) currentFY = `${y1-1}-${y2-1}`;
+                    }
+                }
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
                 const currentMonth = app.currentMonth;
                 const lastMonth = app.lastMonth;
-                // Standard FY starts from July
-                const ytdMonths = app.getYtdMonths(currentMonth);
+                const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(currentMonth);
 
                 // Last Month Metrics
                 const lmSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
@@ -7613,6 +7718,16 @@
                     app.showToast("Critical Error: Upload privileges revoked.", "error");
                     return;
                 }
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
                 if (input.files.length > 0) {
                     const file = input.files[0];
                     const reader = new FileReader();
@@ -7647,18 +7762,20 @@
                                             DB.emi = [];
                                             if (app.neonSQL) await app.neonSQL`DELETE FROM emi`;
                                         } else if (dataKey === 'sales') {
-                                            DB.sales = DB.sales.filter(s => s.fy !== '2025-26');
-                                            if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = '2025-26'`;
-                                        } else if (dataKey === 'last_year_sales') {
-                                            DB.sales = DB.sales.filter(s => s.fy !== '2024-25');
-                                            if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = '2024-25'`;
-                                        } else if (dataKey === 'recovery_od') {
+                                             DB.sales = DB.sales.filter(s => s.fy !== currentFY);
+                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${currentFY}`;
+                                         } else if (dataKey === 'last_year_sales') {
+                                             DB.sales = DB.sales.filter(s => s.fy !== lastFY);
+                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`;
+                                         } else if (dataKey === 'recovery_od') {
                                             DB.recovery_od = [];
                                             if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`;
                                         }
 
                                         // 2. INSERT REAL DATA FROM CSV
                                         const newRecords = [];
+                                        const secondYear = currentFY.split('-').length === 2 ? currentFY.split('-')[0].substring(0, 2) + currentFY.split('-')[1] : '2026';
+
                                         parsedData.forEach((row, idx) => {
                                             const terr = app.findTerritory(row);
                                             const terrId = terr ? terr.id : 't1';
@@ -7667,7 +7784,7 @@
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
                                                 const record = {
                                                     id: `tg_u_${Date.now()}_${idx}`,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, '2025-26'),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, currentFY),
                                                     month: recordMonth,
                                                     territory_id: terrId,
                                                     upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
@@ -7681,7 +7798,7 @@
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
                                                 const record = {
                                                     id: `p_u_${Date.now()}_${idx}`,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, '2025-26'),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, currentFY),
                                                     month: recordMonth,
                                                     territory_id: terrId,
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
@@ -7697,8 +7814,8 @@
                                                     customer: app.getCSVValue(row, ['Customer_Name', 'CustomerName', 'Customer']) || 'Unknown Customer',
                                                     phone: app.getCSVValue(row, ['Phone', 'Mobile']) || '01700000000',
                                                     location: terr ? terr.name : (app.getCSVValue(row, ['Location', 'Sales_Territory', 'Territory']) || 'Dhaka'),
-                                                    delivery_date: app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery']) || '2026-04-01',
-                                                    first_inst_date: app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate']) || '2026-05-01',
+                                                    delivery_date: app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery']) || `${secondYear}-04-01`,
+                                                    first_inst_date: app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate']) || `${secondYear}-05-01`,
                                                     overdue_count: parseInt(app.getCSVValue(row, ['OverDue_Hash', 'OverdueHash', 'OverdueCount', 'Overdue_Count'])) || 0,
                                                     overdue_total: parseInt(app.getCSVValue(row, ['OverDue_Taka', 'OverdueTaka', 'OverdueTotal', 'Overdue_Total'])) || 0,
                                                     installment: parseInt(app.getCSVValue(row, ['Installment_Size', 'InstallmentSize', 'Installment'])) || 0,
@@ -7712,8 +7829,8 @@
                                                 newRecords.push(record);
                                             } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
-                                                const recordFY = app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? '2025-26' : '2024-25'));
-                                                const targetFY = dataKey === 'sales' ? '2025-26' : '2024-25';
+                                                const recordFY = app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? currentFY : lastFY));
+                                                const targetFY = dataKey === 'sales' ? currentFY : lastFY;
                                                 
                                                 // Skip rows that do not match the target fiscal year to prevent duplicates and cross-contamination
                                                 if (recordFY !== targetFY) {
@@ -7721,7 +7838,20 @@
                                                 }
 
                                                 const customerId = app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`;
-                                                const salesYear = parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year'])) || (dataKey === 'sales' ? 2026 : 2025);
+                                                let salesYear = parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year']));
+                                                if (!salesYear) {
+                                                    const parts = recordFY.split('-');
+                                                    if (parts.length === 2) {
+                                                        const y1 = parseInt(parts[0]);
+                                                        const y2_short = parts[1];
+                                                        const prefix = parts[0].substring(0, 2);
+                                                        const y2 = parseInt(prefix + y2_short);
+                                                        const h2Months = ['January', 'February', 'March', 'April', 'May', 'June'];
+                                                        salesYear = h2Months.includes(recordMonth) ? y2 : y1;
+                                                    } else {
+                                                        salesYear = (dataKey === 'sales' ? 2026 : 2025);
+                                                    }
+                                                }
                                                 const model = app.getCSVValue(row, ['Model']) || 'TM3';
                                                 
                                                 const record = {
@@ -7744,7 +7874,7 @@
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
                                                 const record = {
                                                     id: `rod_u_${Date.now()}_${idx}`,
-                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, '2025-26'),
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, currentFY),
                                                     month: recordMonth,
                                                     territory_id: terrId,
                                                     perfile_od: parseInt(app.getCSVValue(row, ['Perfile_OD', 'PerfileOD', 'PerFileOverdue'])) || 0,
@@ -9135,7 +9265,7 @@
                                     </div>
 
                                     <!-- Traditional Form Dropdowns -->
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                         <div class="space-y-1.5">
                                             <label class="text-xs font-black text-slate-600 uppercase tracking-wide flex items-center gap-1.5">
                                                 <div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> Current Month
@@ -9153,14 +9283,34 @@
                                                 ${monthsList.map(m => `<option value="${m}" ${m === lastMonth ? 'selected' : ''}>${m}</option>`).join('')}
                                             </select>
                                         </div>
+
+                                        <div class="space-y-1.5">
+                                            <label class="text-xs font-black text-slate-600 uppercase tracking-wide flex items-center gap-1.5">
+                                                <div class="w-1.5 h-1.5 rounded-full bg-cyan-500"></div> Active Fiscal Year
+                                            </label>
+                                            <select id="settings-current-fy" onchange="app.updateSettingsPreviewDynamic()" class="w-full bg-white border border-slate-200 text-xs font-extrabold text-slate-700 rounded-xl px-3.5 py-2.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                                                <option value="2024-25" ${app.currentFY === '2024-25' ? 'selected' : ''}>2024-25</option>
+                                                <option value="2025-26" ${app.currentFY === '2025-26' ? 'selected' : ''}>2025-26</option>
+                                                <option value="2026-27" ${app.currentFY === '2026-27' ? 'selected' : ''}>2026-27</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <!-- Auto Suggest Checkbox -->
-                                    <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-100 p-3.5 rounded-xl mb-6 shadow-inner">
+                                    <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-100 p-3.5 rounded-xl mb-4 shadow-inner">
                                         <input type="checkbox" id="settings-auto-suggest" checked class="w-4 h-4 text-cyan-600 border-slate-300 rounded focus:ring-cyan-500 cursor-pointer">
                                         <div class="flex flex-col">
                                             <span class="text-xs font-black text-slate-700">Auto-Suggest Preceding Month</span>
                                             <span class="text-[10px] text-slate-400">Shifting the active month automatically adjusts the completed month target.</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fiscal Year Transition Review Toggle -->
+                                    <div id="settings-fy-review-container" class="${currentMonth === 'July' ? 'flex' : 'hidden'} items-center gap-2.5 bg-indigo-50 border border-indigo-100 p-3.5 rounded-xl mb-6 shadow-sm">
+                                        <input type="checkbox" id="settings-fy-review" ${app.fyReviewActive ? 'checked' : ''} onchange="app.updateSettingsPreviewDynamic()" class="w-4 h-4 text-indigo-600 border-indigo-300 rounded focus:ring-indigo-500 cursor-pointer">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-black text-indigo-700">Active Fiscal Year Concluding Review Session</span>
+                                            <span class="text-[10px] text-indigo-400 font-medium">Keep concluding fiscal year's overall results visible across all dashboards until closed.</span>
                                         </div>
                                     </div>
 
@@ -9264,7 +9414,7 @@
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 const autoSuggest = document.getElementById('settings-auto-suggest')?.checked;
 
-                if (type === 'current') {
+                 if (type === 'current') {
                     const idx = monthsList.indexOf(month);
                     let recommendedLastMonth = 'March';
                     if (idx > 0) {
@@ -9290,6 +9440,17 @@
                             banner.classList.add('flex');
                         }
                     }
+
+                    const fyReviewContainer = document.getElementById('settings-fy-review-container');
+                    if (fyReviewContainer) {
+                        if (month === 'July') {
+                            fyReviewContainer.classList.remove('hidden');
+                            fyReviewContainer.classList.add('flex');
+                        } else {
+                            fyReviewContainer.classList.add('hidden');
+                            fyReviewContainer.classList.remove('flex');
+                        }
+                    }
                 }
                 
                 app.updateSettingsPreviewDynamic();
@@ -9308,33 +9469,46 @@
                 app.updateSettingsPreviewDynamic();
             },
 
-            updateSettingsPreviewDynamic: () => {
+             updateSettingsPreviewDynamic: () => {
                 const currentMonth = document.getElementById('settings-current-month')?.value || app.currentMonth;
                 const lastMonth = document.getElementById('settings-last-month')?.value || app.lastMonth;
+                const currentFY = document.getElementById('settings-current-fy')?.value || app.currentFY;
+                const fyReviewActive = document.getElementById('settings-fy-review')?.checked || false;
 
                 const origCurrent = app.currentMonth;
                 const origLast = app.lastMonth;
+                const origFY = app.currentFY;
+                const origReview = app.fyReviewActive;
                 app.currentMonth = currentMonth;
                 app.lastMonth = lastMonth;
+                app.currentFY = currentFY;
+                app.fyReviewActive = fyReviewActive;
 
                 app.renderSystemSettings();
 
                 app.currentMonth = origCurrent;
                 app.lastMonth = origLast;
+                app.currentFY = origFY;
+                app.fyReviewActive = origReview;
             },
 
             saveSystemSettings: async () => {
                 const currentMonth = document.getElementById('settings-current-month')?.value;
                 const lastMonth = document.getElementById('settings-last-month')?.value;
+                const currentFY = document.getElementById('settings-current-fy')?.value;
+                const fyReviewActive = document.getElementById('settings-fy-review')?.checked || false;
 
-                if (!currentMonth || !lastMonth) return;
+                if (!currentMonth || !lastMonth || !currentFY) return;
 
-                app.showLoader("Saving system month configurations...");
+                app.showLoader("Saving system configurations...");
 
                 try {
                     app.currentMonth = currentMonth;
                     app.lastMonth = lastMonth;
-                    DB.settings = { currentMonth, lastMonth };
+                    app.currentFY = currentFY;
+                    app.fyReviewActive = fyReviewActive;
+                    localStorage.setItem('aci_current_fy', currentFY);
+                    DB.settings = { currentMonth, lastMonth, currentFY, fyReviewActive };
 
                     if (app.neonSQL) {
                         const settingsJson = JSON.stringify(DB.settings);
@@ -9343,7 +9517,7 @@
                     
                     app.soMonthTab = null;
                     app.hideLoader();
-                    app.showToast(`System Settings Saved: ${currentMonth} / ${lastMonth}`, "success");
+                    app.showToast(`System Settings Saved: ${currentMonth} / ${lastMonth} (FY: ${currentFY})`, "success");
                     app.renderSystemSettings();
                 } catch (err) {
                     app.hideLoader();
@@ -9369,6 +9543,49 @@
                     app.hideLoader();
                     app.showToast("System cache synchronized successfully!", "success");
                 }, 1000);
+            },
+
+            setSessionFY: (fy) => {
+                if (app.currentUser.role === 'so') {
+                    app.soSelectedFY = fy;
+                    app.renderSODashboard();
+                } else {
+                    app.selectedFY = fy;
+                    app.renderAdminDashboard();
+                }
+                app.showToast(`Switched view context to FY ${fy}`, 'success');
+            },
+
+            getTransitionBannerHtml: (currentFY) => {
+                if (app.currentMonth !== 'July') return '';
+                const activeFY = app.currentFY;
+                const concludingFY = (() => {
+                    const parts = activeFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2025-26';
+                })();
+                return `
+                    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl p-4 mb-5 shadow-lg relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4 border border-indigo-400/30">
+                        <div class="absolute -right-10 -top-10 bg-white/10 w-32 h-32 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0 shadow-sm border border-white/20 animate-bounce">
+                                <i data-lucide="archive-restore" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase tracking-wider">FY ${concludingFY} Concluding Review Mode</h4>
+                                <p class="text-[11px] text-indigo-100/90 mt-0.5 font-medium">As we transition in July, toggle between last year's concluding results and the new FY ${activeFY} targets.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="app.setSessionFY('${concludingFY}')" class="px-3 py-1.5 ${currentFY === concludingFY ? 'bg-white text-indigo-700 font-black' : 'bg-white/15 text-white hover:bg-white/25'} text-[10px] rounded-xl transition-all shadow-sm uppercase tracking-wider">${concludingFY} Results</button>
+                            <button onclick="app.setSessionFY('${activeFY}')" class="px-3 py-1.5 ${currentFY === activeFY ? 'bg-white text-indigo-700 font-black' : 'bg-white/15 text-white hover:bg-white/25'} text-[10px] rounded-xl transition-all shadow-sm uppercase tracking-wider">${activeFY} Targets</button>
+                        </div>
+                    </div>
+                `;
             },
 
             // ==========================================
@@ -9398,7 +9615,27 @@
             renderSODashboard: () => {
                 const brand = app.soBrandTab || 'Foton';
                 const saleType = app.soSaleTypeTab || 'New Sale';
-                const currentFY = '2025-26'; // Fixed to current active FY
+                const currentFY = app.soSelectedFY || app.currentFY; // Use dynamic current active FY
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                const concludingFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2025-26';
+                })();
+                const splyFY = (() => {
+                    const parts = concludingFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+                const targetFY = isTransitionMode ? concludingFY : currentFY;
                 const terrId = app.currentUser.territories[0]; // Assuming 1 primary territory for demo
                 const territory = DB.territories.find(t => t.id === terrId);
 
@@ -9413,11 +9650,11 @@
                 const currentSalesUnits = currentSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // YTD Sales (Assuming YTD is all sales in FY)
-                const ytdSalesRecords = brandSales.filter(s => s.fy === currentFY);
+                const ytdSalesRecords = brandSales.filter(s => s.fy === targetFY);
                 const ytdSalesUnits = ytdSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // --- 2. Filter Targets (Yearly) & Projections (Monthly) ---
-                const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === currentFY && t.sale_type === saleType);
+                const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === targetFY && t.sale_type === saleType);
                 const totalYearlyTarget = yearlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
                 const monthlyBudgetTgts = yearlyTargets.filter(t => t.month === currentMonth);
                 const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) : Math.round(totalYearlyTarget / 12); // Use monthly or derived budget
@@ -9429,7 +9666,7 @@
                 const perf = app.getPerformance(terrId, brand, saleType);
                 const mockSply = perf.lastMonth; // Use real calculated last month data
                 const ytdSply = perf.ytd.sply;
-                const currentSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === currentMonth && s.fy === '2024-25').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const currentSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === currentMonth && s.fy === splyFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // Helpers
                 const ach = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
@@ -9450,8 +9687,8 @@
                     }
                 });
 
-                // Calculate last fiscal year sales (FY 2024-25)
-                const lastFYSalesRecords = brandSales.filter(s => s.fy === '2024-25');
+                // Calculate last fiscal year sales (FY 2024-25 / splyFY)
+                const lastFYSalesRecords = brandSales.filter(s => s.fy === splyFY);
                 lastFYSalesRecords.forEach(s => {
                     if (upaStats[s.upazila]) {
                         upaStats[s.upazila].lastFYSales += Number(s.unit_qty || 0);
@@ -9475,18 +9712,21 @@
 
                 // --- 5. Selected Month Performance (For new dynamic table) ---
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
-                const ytdMonths = app.getYtdMonths(currentMonth);
+                const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(currentMonth);
                 const passedMonths = ytdMonths.length;
 
                 let ytdTargetTillLastMonth = 0;
-                if (yearlyTargets.some(t => t.month)) {
-                    ytdTargetTillLastMonth = yearlyTargets.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                if (isTransitionMode) {
+                    ytdTargetTillLastMonth = totalYearlyTarget;
                 } else {
-                    ytdTargetTillLastMonth = Math.round((totalYearlyTarget / 12) * passedMonths);
+                    if (yearlyTargets.some(t => t.month)) {
+                        ytdTargetTillLastMonth = yearlyTargets.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                    } else {
+                        ytdTargetTillLastMonth = Math.round((totalYearlyTarget / 12) * passedMonths);
+                    }
                 }
 
-                const tillLastMonthSales = brandSales.filter(s => s.fy === currentFY && ytdMonths.includes(s.sales_month));
-                const tillLastMonthSalesUnits = tillLastMonthSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const tillLastMonthSalesUnits = isTransitionMode ? ytdSalesUnits : brandSales.filter(s => s.fy === currentFY && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 const selMonth = app.soMonthTab || app.lastMonth;
                 const selMonthSalesRecords = brandSales.filter(s => s.sales_month === selMonth && s.fy === currentFY);
@@ -9497,13 +9737,21 @@
                 // Fetch Recovery OD Data (Territory specific, applies to all brands)
                 const recoveryData = DB.recovery_od.find(r => r.territory_id === terrId && r.fy === currentFY && r.month === currentMonth) || { perfile_od: 0, total_overdue: 0 };
 
+                // Calculate EMI collections for SO's territory
+                const soEmi = DB.emi.filter(e => e.territory_id === terrId);
+                const totalEmiInstallment = soEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalEmiCollected = soEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+
                 // Calculate 1st & 2nd EMI details
-                const soEmiFirstTwo = DB.emi.filter(e => e.territory_id === terrId && (Number(e.installment_no) === 1 || Number(e.installment_no) === 2));
+                const soEmiFirstTwo = soEmi.filter(e => Number(e.installment_no) === 1 || Number(e.installment_no) === 2);
                 const totalFirstTwoCust = soEmiFirstTwo.length;
                 const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => Number(e.collected || 0) < Number(e.installment || 0)).length;
+                const totalFirstTwoInstallment = soEmiFirstTwo.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalFirstTwoCollected = soEmiFirstTwo.reduce((sum, e) => sum + Number(e.collected || 0), 0);
 
                 const html = `
                     <div class="pb-4 fade-in">
+                        ${app.getTransitionBannerHtml(currentFY)}
                         <div class="flex justify-between items-center mb-6">
                             <div class="flex items-baseline gap-1.5">
                                 <p class="text-[11px] text-slate-400 font-medium uppercase tracking-tight">Hi,</p>
@@ -9550,15 +9798,15 @@
                                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                                     <!-- Minimal Floating Icon -->
                                     <i data-lucide="bar-chart-2" class="w-4 h-4 text-aci-blue/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
-                                    YTD Overall (${currentFY})
+                                    ${isTransitionMode ? `Last Fiscal Year Overall (${concludingFY})` : `YTD Overall (${currentFY})`}
                                 </h3>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Till ${app.lastMonth}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
                             </div>
                             <div class="grid grid-cols-6 text-center divide-x divide-slate-100">
                                 <div class="px-1 flex flex-col justify-center">
-                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">YTD Target</p>
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">${isTransitionMode ? 'FY Target' : 'YTD Target'}</p>
                                     <p class="font-bold text-slate-800 text-sm">${ytdTargetTillLastMonth}</p>
-                                    <p class="text-[8px] text-slate-400 font-semibold mt-0.5">FY: ${totalYearlyTarget}</p>
+                                    <p class="text-[8px] text-slate-400 font-semibold mt-0.5">${isTransitionMode ? `FY: ${concludingFY}` : `FY: ${currentFY}`}</p>
                                 </div>
                                 <div class="px-1 flex flex-col justify-center">
                                     <p class="text-[9px] text-slate-400 uppercase font-semibold">Sales</p>
@@ -9622,24 +9870,31 @@
                                 </div>
                             </div>
 
-                            <!-- 1ST 2EMI SUMMARY -->
+                            <!-- EMI COLLECTION SUMMARY -->
                             <div class="mt-3 relative z-10 cursor-pointer group" onclick="app.renderSOEMI()">
-                                <div class="bg-gradient-to-r from-indigo-500/30 to-purple-500/30 border border-white/20 rounded-xl p-3 flex justify-between items-center hover:bg-white/20 transition-all backdrop-blur-sm shadow-inner group-hover:shadow-lg">
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="bg-white/10 p-2 rounded-lg text-indigo-200 group-hover:scale-110 group-hover:text-white transition-all shadow-sm">
-                                            <i data-lucide="calendar-clock" class="w-4 h-4"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-[9px] text-white/90 font-bold uppercase tracking-widest mb-0.5 flex items-center gap-1">1st & 2nd EMI <span class="bg-rose-500/80 text-white text-[7px] px-1 rounded animate-pulse">ACTION</span></p>
-                                            <div class="flex items-baseline gap-2">
-                                                <span class="text-sm font-black text-indigo-100">${totalFirstTwoCust} <span class="text-[9px] font-medium text-white/60">Total</span></span>
-                                                <span class="text-[10px] text-white/30">|</span>
-                                                <span class="text-sm font-black text-rose-300">${unpaidFirstTwoCust} <span class="text-[9px] font-medium text-white/60 uppercase">Unpaid</span></span>
+                                <div class="bg-gradient-to-r from-indigo-500/30 to-purple-500/30 border border-white/20 rounded-xl p-3 hover:bg-white/20 transition-all backdrop-blur-sm shadow-inner group-hover:shadow-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="bg-white/10 p-1.5 rounded-lg text-indigo-200">
+                                                <i data-lucide="wallet" class="w-4 h-4 text-indigo-300"></i>
                                             </div>
+                                            <span class="text-[9px] text-white/90 font-bold uppercase tracking-widest">EMI Collection Summary</span>
+                                        </div>
+                                        <span class="text-indigo-200 group-hover:translate-x-1.5 group-hover:text-white transition-all"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-center bg-black/20 rounded-lg p-2 border border-white/5">
+                                        <div class="text-left">
+                                            <p class="text-[8px] text-white/70 uppercase font-semibold">Total Installment</p>
+                                            <p class="font-black text-xs text-white">${app.formatCurrency(totalEmiInstallment)}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-[8px] text-white/70 uppercase font-semibold">Collected Amount</p>
+                                            <p class="font-black text-xs text-green-300">${app.formatCurrency(totalEmiCollected)}</p>
                                         </div>
                                     </div>
-                                    <div class="text-indigo-200 group-hover:translate-x-1.5 group-hover:text-white transition-all">
-                                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                    <div class="mt-2 flex items-center justify-between text-[9px] text-white/80 border-t border-white/10 pt-1.5">
+                                        <span>1st & 2nd EMI Action: <strong class="text-indigo-100">${totalFirstTwoCust} Accounts</strong></span>
+                                        <span class="text-rose-300 font-bold">${unpaidFirstTwoCust} Unpaid</span>
                                     </div>
                                 </div>
                             </div>
@@ -9995,10 +10250,12 @@
                                                 <div class="bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100/50">
                                                     <span class="text-[9px] text-indigo-400 font-bold block">Active EMI Accounts</span>
                                                     <span class="text-lg font-black text-indigo-950">${totalFirstTwoCust}</span>
+                                                    <span class="text-[9px] font-bold text-slate-500 block mt-1">Due: ${app.formatCurrency(totalFirstTwoInstallment)}</span>
                                                 </div>
                                                 <div class="bg-rose-50/50 p-2.5 rounded-xl border border-rose-100/50">
                                                     <span class="text-[9px] text-rose-400 font-bold block">Uncollected EMIs</span>
                                                     <span class="text-lg font-black text-rose-600">${unpaidFirstTwoCust}</span>
+                                                    <span class="text-[9px] font-bold text-slate-500 block mt-1">Col: ${app.formatCurrency(totalFirstTwoCollected)}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -10557,6 +10814,17 @@
                     const terrId = app.currentUser.territories[0];
                     const territory = DB.territories.find(t => t.id === terrId);
 
+                    const parts = app.currentFY.split('-');
+                    let currentYear = 2026;
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2_short = parts[1];
+                        const prefix = parts[0].substring(0, 2);
+                        const y2 = parseInt(prefix + y2_short);
+                        const h2Months = ['January', 'February', 'March', 'April', 'May', 'June'];
+                        currentYear = h2Months.includes(app.currentMonth) ? y2 : y1;
+                    }
+
                     // Push to simulated DB
                     DB.sales.push({
                         id: 's_man_' + Date.now(),
@@ -10569,9 +10837,9 @@
                         model: model,
                         purpose_of_use: purpose,
                         unit_qty: 1,
-                        fy: '2025-26',
-                        sales_year: 2026,
-                        sales_month: 'April',
+                        fy: app.currentFY,
+                        sales_year: currentYear,
+                        sales_month: app.currentMonth,
                         sale_type: type,
                         financials: { tp, dp, tenure },
                         discounts: { type: discType, amount: discAmt, gift: giftItem },
@@ -10632,6 +10900,23 @@
                                             <p class="text-[10px] text-slate-500 mt-1"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${e.phone} | ${e.location}</p>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Creative Dates Section -->
+                                    <div class="grid grid-cols-2 gap-3 my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-100 text-[10px]">
+                                        <div>
+                                            <p class="text-[8px] text-slate-400 uppercase font-bold flex items-center gap-1 mb-0.5">
+                                                <i data-lucide="truck" class="w-3 h-3 text-slate-400"></i> Delivery Date
+                                            </p>
+                                            <p class="font-semibold text-slate-700">${app.formatDateCreative(e.delivery_date)}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] text-slate-400 uppercase font-bold flex items-center gap-1 mb-0.5">
+                                                <i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i> 1st Installment
+                                            </p>
+                                            <p class="font-semibold text-slate-700">${app.formatDateCreative(e.first_inst_date)}</p>
+                                        </div>
+                                    </div>
+
                                     <div class="flex justify-between items-end mt-3 pt-3 border-t border-slate-100">
                                         <div>
                                             <p class="text-[10px] text-slate-400 uppercase">Amount Due</p>
@@ -10801,11 +11086,11 @@
                         <div class="grid grid-cols-4 gap-2 mb-2 pb-2 border-b border-slate-100 mt-2 relative z-10 text-[10px]">
                             <div>
                                 <p class="text-[8px] text-slate-400 uppercase font-bold">Delivery</p>
-                                <p class="font-medium text-slate-700">${e.delivery_date || 'N/A'}</p>
+                                <p class="font-medium text-slate-700">${app.formatDateCreative(e.delivery_date)}</p>
                             </div>
                             <div>
                                 <p class="text-[8px] text-slate-400 uppercase font-bold">1st Inst</p>
-                                <p class="font-medium text-slate-700">${e.first_inst_date || 'N/A'}</p>
+                                <p class="font-medium text-slate-700">${app.formatDateCreative(e.first_inst_date)}</p>
                             </div>
                             <div>
                                 <p class="text-[8px] text-slate-400 uppercase font-bold">Brand</p>
@@ -11151,8 +11436,16 @@
             // Used by both MO and AM portals (scoped to assigned territories).
             // ==========================================
             _renderPulseMatrixHTML: (assignedTerritoryIds) => {
-                const currentFY = '2025-26';
-                const lastFY    = '2024-25';
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
                 const brand     = app.pmBrandTab    || 'Foton';
                 const saleType  = app.pmSaleTypeTab || 'New Sale';
 
@@ -11475,7 +11768,7 @@
                                 <div class="p-1.5 bg-violet-100 rounded-xl"><i data-lucide="calendar-range" class="w-5 h-5 text-violet-600"></i></div>
                                 Performance Matrix
                             </h2>
-                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5 ml-10">12-Month Territory Breakdown &middot; FY 2025-26</p>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5 ml-10">12-Month Territory Breakdown &middot; FY ${app.currentFY}</p>
                         </div>
                     </div>
 
@@ -11640,8 +11933,8 @@
                 // Fetch local DB metrics
                 const userTerrs = app.currentUser ? app.currentUser.territories || [] : [];
                 const isGlobal = role === 'admin' || userTerrs.length === 0;
-                const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === '2025-26') : [];
-                const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === '2025-26') : [];
+                const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
+                const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
                 const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
                 const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
                 
@@ -11675,7 +11968,7 @@
 
                 // 3. Brand comparisons
                 if (prompt.includes('foton') || prompt.includes('mahindra') || prompt.includes('brand') || prompt.includes('model')) {
-                    return `Brand Summary: Under your scope, **Foton** has sold **${fotonSales} units** and **Mahindra** has sold **${mahindraSales} units** for FY 2025-26. Foton leads by ${Math.abs(fotonSales - mahindraSales)} units! 🚚💨`;
+                    return `Brand Summary: Under your scope, **Foton** has sold **${fotonSales} units** and **Mahindra** has sold **${mahindraSales} units** for FY ${app.currentFY}. Foton leads by ${Math.abs(fotonSales - mahindraSales)} units! 🚚💨`;
                 }
 
                 // 4. Who am I / Role
@@ -11709,8 +12002,8 @@
                         
                         // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
                         const isGlobal = role === 'admin' || userTerrs.length === 0;
-                        const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === '2025-26') : [];
-                        const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === '2025-26') : [];
+                        const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
+                        const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
                         const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
                         const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
                         
@@ -11718,8 +12011,8 @@
                         let totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
                         let totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
                         
-                        systemDataDump += `- My YTD Sales (2025-26): ${totalSales} units\n`;
-                        systemDataDump += `- My YTD Target (2025-26): ${totalTarget} units\n`;
+                        systemDataDump += `- My YTD Sales (${app.currentFY}): ${totalSales} units\n`;
+                        systemDataDump += `- My YTD Target (${app.currentFY}): ${totalTarget} units\n`;
                         systemDataDump += `- Total EMI Amount Collected: ৳${totalCollectedAmt.toLocaleString()}\n`;
                         systemDataDump += `- Unpaid/Pending EMI Installments: ${unpaidEMIs}\n`;
                     }
