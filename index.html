@@ -7881,7 +7881,7 @@
                                                     collected: 0,
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     model: app.getCSVValue(row, ['Model']) || 'TM3',
-                                                    installment_no: 1
+                                                    installment_no: parseInt(app.getCSVValue(row, ['Installment_No', 'InstallmentNo', 'Inst_No', 'InstNo'])) || 1
                                                 };
                                                 DB.emi.push(record);
                                                 newRecords.push(record);
@@ -11093,6 +11093,28 @@
                 }
             },
 
+            getInstallmentNo: (firstInstDate) => {
+                if (!firstInstDate || firstInstDate === '0000-00-00') return 1;
+                try {
+                    const normalized = app.normalizeDate(firstInstDate);
+                    const firstDate = new Date(normalized);
+                    if (isNaN(firstDate.getTime())) return 1;
+
+                    const now = new Date();
+                    // Calculate months elapsed since first installment date
+                    const monthsElapsed =
+                        (now.getFullYear() - firstDate.getFullYear()) * 12 +
+                        (now.getMonth() - firstDate.getMonth());
+
+                    // Installment number = how many months have passed + 1
+                    // But if first_inst_date is in current month or future, it's still #1
+                    const instNo = monthsElapsed >= 1 ? monthsElapsed + 1 : 1;
+                    return Math.max(1, instNo);
+                } catch(err) {
+                    return 1;
+                }
+            },
+
             generateEMICardHTML: (e, serial) => {
                 const collected = parseFloat(e.collected) || 0;
                 const installment = parseFloat(e.installment) || 0;
@@ -11106,14 +11128,16 @@
                 // Base cleared status for standard filtering
                 const cardCleared = isInstCleared;
 
-                let instBadge = '';
-                if (e.installment_no === 1) {
-                    instBadge = `<span class="bg-indigo-100 text-indigo-700 text-[8px] font-bold px-1 py-0.5 rounded ml-1.5 border border-indigo-200">Inst. #1</span>`;
-                } else if (e.installment_no === 2) {
-                    instBadge = `<span class="bg-purple-100 text-purple-700 text-[8px] font-bold px-1 py-0.5 rounded ml-1.5 border border-purple-200">Inst. #2</span>`;
-                } else if (e.installment_no) {
-                    instBadge = `<span class="bg-slate-100 text-slate-600 text-[8px] font-bold px-1 py-0.5 rounded ml-1.5 border border-slate-200">Inst. #${e.installment_no}</span>`;
-                }
+                // Dynamically compute installment number based on first_inst_date
+                const instNo = app.getInstallmentNo(e.first_inst_date);
+
+                let instBadgeColor = '';
+                if (instNo === 1) instBadgeColor = 'bg-indigo-100 text-indigo-700 border-indigo-200';
+                else if (instNo === 2) instBadgeColor = 'bg-purple-100 text-purple-700 border-purple-200';
+                else if (instNo === 3) instBadgeColor = 'bg-amber-100 text-amber-700 border-amber-200';
+                else instBadgeColor = 'bg-red-100 text-red-700 border-red-200';
+
+                const instBadge = `<span class="${instBadgeColor} text-[8px] font-bold px-1 py-0.5 rounded ml-1.5 border">Inst. #${instNo}</span>`;
 
                 return `
                     <div class="emi-card relative bg-white p-3 rounded-lg shadow-sm border ${cardCleared ? 'border-green-200 bg-green-50/30' : 'border-slate-200/80'} transition-all overflow-hidden" data-customer="${e.customer.toLowerCase()}" data-code="${(e.customer_code || '').toLowerCase()}" data-status="${cardCleared ? 'paid' : 'unpaid'}">
