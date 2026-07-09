@@ -9439,9 +9439,9 @@
                 const recoveryData = DB.recovery_od.find(r => r.territory_id === terrId && r.fy === currentFY && r.month === currentMonth) || { perfile_od: 0, total_overdue: 0 };
 
                 // Calculate 1st & 2nd EMI details
-                const soEmiFirstTwo = DB.emi.filter(e => e.territory_id === terrId && (e.installment_no === 1 || e.installment_no === 2));
+                const soEmiFirstTwo = DB.emi.filter(e => e.territory_id === terrId && (Number(e.installment_no) === 1 || Number(e.installment_no) === 2));
                 const totalFirstTwoCust = soEmiFirstTwo.length;
-                const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => e.collected < e.installment).length;
+                const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => Number(e.collected || 0) < Number(e.installment || 0)).length;
 
                 const html = `
                     <div class="pb-4 fade-in">
