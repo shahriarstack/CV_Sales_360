@@ -1662,12 +1662,36 @@
                 return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(amount).replace('BDT', '৳');
             },
 
+            normalizeDate: (dateInput) => {
+                if (!dateInput) return '';
+                const str = String(dateInput).trim();
+                if (str === '' || str === '0000-00-00') return '';
+
+                // Try checking if it's an Excel serial date
+                const serial = parseFloat(str);
+                if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                    const date = new Date(Math.round((serial - 25569) * 86400 * 1000));
+                    if (!isNaN(date.getTime())) {
+                        return date.toISOString().split('T')[0];
+                    }
+                }
+
+                // Try parsing standard dates
+                const date = new Date(str);
+                if (!isNaN(date.getTime())) {
+                    return date.toISOString().split('T')[0];
+                }
+
+                return str;
+            },
+
             formatDateCreative: (dateStr) => {
-                if (!dateStr || dateStr === '0000-00-00' || dateStr.trim() === '') {
+                if (!dateStr || dateStr === '0000-00-00' || String(dateStr).trim() === '') {
                     return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
                 }
                 try {
-                    const date = new Date(dateStr);
+                    const normalized = app.normalizeDate(dateStr);
+                    const date = new Date(normalized);
                     if (isNaN(date.getTime())) {
                         return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
                     }
@@ -7816,8 +7840,8 @@
                                                     customer: app.getCSVValue(row, ['Customer_Name', 'CustomerName', 'Customer']) || 'Unknown Customer',
                                                     phone: app.getCSVValue(row, ['Phone', 'Mobile']) || '01700000000',
                                                     location: terr ? terr.name : (app.getCSVValue(row, ['Location', 'Sales_Territory', 'Territory']) || 'Dhaka'),
-                                                    delivery_date: app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery']) || `${secondYear}-04-01`,
-                                                    first_inst_date: app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate']) || `${secondYear}-05-01`,
+                                                    delivery_date: app.normalizeDate(app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery']) || `${secondYear}-04-01`),
+                                                    first_inst_date: app.normalizeDate(app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate']) || `${secondYear}-05-01`),
                                                     overdue_count: parseInt(app.getCSVValue(row, ['OverDue_Hash', 'OverdueHash', 'OverdueCount', 'Overdue_Count'])) || 0,
                                                     overdue_total: parseInt(app.getCSVValue(row, ['OverDue_Taka', 'OverdueTaka', 'OverdueTotal', 'Overdue_Total'])) || 0,
                                                     installment: parseInt(app.getCSVValue(row, ['Installment_Size', 'InstallmentSize', 'Installment'])) || 0,
