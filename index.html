@@ -1336,6 +1336,23 @@
                         app.currentFY = DB.settings.currentFY || '2025-26';
                         app.fyReviewActive = DB.settings.fyReviewActive !== undefined ? DB.settings.fyReviewActive : true;
                         app.showLastFYData = DB.settings.showLastFYData !== undefined ? DB.settings.showLastFYData : false;
+                        
+                        // Set default selected FY in transition review mode
+                        const activeFY = app.currentFY;
+                        const concludingFY = (() => {
+                            const parts = activeFY.split('-');
+                            if (parts.length === 2) {
+                                const y1 = parseInt(parts[0]);
+                                const y2 = parseInt(parts[1]);
+                                if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                            }
+                            return '2025-26';
+                        })();
+                        
+                        if (app.currentMonth === 'July' && app.fyReviewActive) {
+                            app.selectedFY = concludingFY;
+                            app.soSelectedFY = concludingFY;
+                        }
                     } else {
                         app.fyReviewActive = true;
                         app.showLastFYData = false;
@@ -3244,17 +3261,10 @@
                 app.setupSidebar();
                 const isAM = app.currentUser.role === 'am';
                 const currentSaleType = app.adminSaleTypeTab || 'New Sale';
-                const currentFY = app.selectedFY || app.currentFY;
-                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
-                const concludingFY = (() => {
-                    const parts = currentFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                    }
-                    return '2025-26';
-                })();
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : activeFY;
+                const currentFY = app.selectedFY || defaultFY;
                 const splyFY = (() => {
                     const parts = concludingFY.split('-');
                     if (parts.length === 2) {
@@ -3528,7 +3538,7 @@
 
                             <!-- AM Style MO-Dashboard Blocks -->
                             ${(() => {
-                             const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
+                             const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive && currentFY === concludingFY) || app.showLastFYData;
                              const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(app.currentMonth);
                              const passedMonths = ytdMonths.length;
                              const monthlyTargets = activeTgts.filter(tg => tg.fy === (isTransitionMode ? concludingFY : currentFY) && ytdMonths.includes(tg.month));
@@ -7666,25 +7676,15 @@
             },
 
             getPerformance: (territoryId, brand, saleType) => {
-                let currentFY = (app.currentUser && app.currentUser.role === 'so') ? (app.soSelectedFY || app.currentFY) : (app.selectedFY || app.currentFY);
-                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
-                if (isTransitionMode) {
-                    const parts = currentFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) currentFY = `${y1-1}-${y2-1}`;
-                    }
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : activeFY;
+                let currentFY = (app.currentUser && app.currentUser.role === 'so') ? (app.soSelectedFY || defaultFY) : (app.selectedFY || defaultFY);
+                if (app.showLastFYData) {
+                    currentFY = concludingFY;
                 }
-                const lastFY = (() => {
-                    const parts = currentFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                    }
-                    return '2024-25';
-                })();
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive && currentFY === concludingFY) || app.showLastFYData;
+                const lastFY = app.getPreviousFY(currentFY);
                 const currentMonth = app.currentMonth;
                 const lastMonth = app.lastMonth;
                 const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(currentMonth);
@@ -9563,33 +9563,36 @@
                 app.showToast(`Switched view context to FY ${fy}`, 'success');
             },
 
+            getPreviousFY: (fy) => {
+                if (!fy) return '';
+                const parts = fy.split('-');
+                if (parts.length === 2) {
+                    const y1 = parseInt(parts[0]);
+                    const y2 = parseInt(parts[1]);
+                    return `${y1-1}-${y2-1}`;
+                }
+                return fy;
+            },
+
             getTransitionBannerHtml: (currentFY) => {
                 if (app.currentMonth !== 'July' || !app.fyReviewActive) return '';
                 const activeFY = app.currentFY;
-                const concludingFY = (() => {
-                    const parts = activeFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                    }
-                    return '2025-26';
-                })();
+                const concludingFY = app.getPreviousFY(activeFY);
                 return `
-                    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl p-4 mb-5 shadow-lg relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4 border border-indigo-400/30">
-                        <div class="absolute -right-10 -top-10 bg-white/10 w-32 h-32 rounded-full blur-2xl pointer-events-none"></div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0 shadow-sm border border-white/20 animate-bounce">
-                                <i data-lucide="archive-restore" class="w-5 h-5 text-white"></i>
+                    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl py-2 px-3.5 mb-4 shadow-md relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-3 border border-indigo-400/20">
+                        <div class="absolute -right-10 -top-10 bg-white/10 w-24 h-24 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0 shadow-sm border border-white/20">
+                                <i data-lucide="archive-restore" class="w-3.5 h-3.5 text-white"></i>
                             </div>
                             <div>
-                                <h4 class="text-xs font-black uppercase tracking-wider">FY ${concludingFY} Concluding Review Mode</h4>
-                                <p class="text-[11px] text-indigo-100/90 mt-0.5 font-medium">As we transition in July, toggle between last year's concluding results and the new FY ${activeFY} targets.</p>
+                                <h4 class="text-[11px] font-black uppercase tracking-wider">FY ${concludingFY} Concluding Review Mode</h4>
+                                <p class="text-[9px] text-indigo-100/90 font-medium">Toggle between last year's overall results and the new FY ${activeFY} YTD targets.</p>
                             </div>
                         </div>
                         <div class="flex gap-2 shrink-0">
-                            <button onclick="app.setSessionFY('${concludingFY}')" class="px-3 py-1.5 ${currentFY === concludingFY ? 'bg-white text-indigo-700 font-black' : 'bg-white/15 text-white hover:bg-white/25'} text-[10px] rounded-xl transition-all shadow-sm uppercase tracking-wider">${concludingFY} Results</button>
-                            <button onclick="app.setSessionFY('${activeFY}')" class="px-3 py-1.5 ${currentFY === activeFY ? 'bg-white text-indigo-700 font-black' : 'bg-white/15 text-white hover:bg-white/25'} text-[10px] rounded-xl transition-all shadow-sm uppercase tracking-wider">${activeFY} Targets</button>
+                            <button onclick="app.setSessionFY('${concludingFY}')" class="px-2.5 py-1 ${currentFY === concludingFY ? 'bg-white text-indigo-700 font-black shadow-sm' : 'bg-white/15 text-white hover:bg-white/25'} text-[9px] rounded-lg transition-all uppercase tracking-wider">${concludingFY} Results</button>
+                            <button onclick="app.setSessionFY('${activeFY}')" class="px-2.5 py-1 ${currentFY === activeFY ? 'bg-white text-indigo-700 font-black shadow-sm' : 'bg-white/15 text-white hover:bg-white/25'} text-[9px] rounded-lg transition-all uppercase tracking-wider">${activeFY} Targets</button>
                         </div>
                     </div>
                 `;
@@ -9622,26 +9625,12 @@
             renderSODashboard: () => {
                 const brand = app.soBrandTab || 'Foton';
                 const saleType = app.soSaleTypeTab || 'New Sale';
-                const currentFY = app.soSelectedFY || app.currentFY; // Use dynamic current active FY
-                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
-                const concludingFY = (() => {
-                    const parts = currentFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                    }
-                    return '2025-26';
-                })();
-                const splyFY = (() => {
-                    const parts = concludingFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                    }
-                    return '2024-25';
-                })();
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : activeFY;
+                const currentFY = app.soSelectedFY || defaultFY; // Use dynamic current active FY
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive && currentFY === concludingFY) || app.showLastFYData;
+                const splyFY = app.getPreviousFY(currentFY);
                 const targetFY = isTransitionMode ? concludingFY : currentFY;
                 const terrId = app.currentUser.territories[0]; // Assuming 1 primary territory for demo
                 const territory = DB.territories.find(t => t.id === terrId);
