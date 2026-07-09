@@ -7345,43 +7345,102 @@
                     app.showToast("Permission Denied: Templates are for Admins only.", "error");
                     return;
                 }
-                let csvContent = "data:text/csv;charset=utf-8,";
+                const downloadCurrent = confirm("Do you want to download the template pre-populated with all current records from the database?\n\n- Click OK to export all current data.\n- Click Cancel to download a blank template with sample data.");
+                
+                let csvContent = "";
                 let headers = "";
                 let filename = "";
+                const csvCell = (val) => {
+                    const str = String(val === undefined || val === null ? '' : val);
+                    return '"' + str.replace(/"/g, '""') + '"';
+                };
 
-                if (type === 'target') {
-                    headers = "FY,Month,Territory_Name,Upazila,Brand,Sale_Type,Target_Qty\n";
-                    headers += "2025-26,April,Dhaka North,Mirpur,Foton,New Sale,4\n";
-                    filename = "ACI_Monthly_Target_Template.csv";
-                } else if (type === 'projection') {
-                    headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
-                    headers += "2025-26,April,Dhaka North,Foton,New Sale,15\n";
-                    headers += "2025-26,April,Dhaka North,Mahindra,Resale,10\n";
-                    filename = "ACI_Current_Month_Projection_Template.csv";
-                } else if (type === 'sales') {
-                    headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
-                    headers += "C-1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,2025-26,2026,April,New Sale\n";
-                    headers += "C-1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,2025-26,2026,April,Resale\n";
-                    filename = "ACI_System_Sales_Template.csv";
-                } else if (type === 'last_year_sales') {
-                    headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
-                    headers += "C-LY1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,2024-25,2025,April,New Sale\n";
-                    headers += "C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,2024-25,2025,April,Resale\n";
-                    filename = "ACI_Last_Year_Sales_Template.csv";
-                } else if (type === 'emi_early') {
-                    headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
-                    headers += "C-2001,Rahim Transport,Dhaka North,Foton,2026-03-10,2026-04-10,1,25000,25000\n";
-                    filename = "ACI_Early_EMI_Template.csv";
-                } else if (type === 'recovery_od') {
-                    headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
-                    headers += "2025-26,April,Dhaka North,4500,1250000\n";
-                    filename = "ACI_Recovery_OD_Template.csv";
+                if (downloadCurrent) {
+                    if (type === 'target') {
+                        headers = "FY,Month,Territory_Name,Upazila,Brand,Sale_Type,Target_Qty\n";
+                        const rows = DB.targets.map(t => {
+                            const tName = DB.territories.find(ter => ter.id === t.territory_id)?.name || '';
+                            return [t.fy, t.month, tName, t.upazila, t.brand, t.sale_type, t.target_qty].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Monthly_Target_Export.csv";
+                    } else if (type === 'projection') {
+                        headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
+                        const rows = DB.projections.map(p => {
+                            const tName = DB.territories.find(ter => ter.id === p.territory_id)?.name || '';
+                            return [p.fy, p.month, tName, p.brand, p.sale_type, p.projection_qty].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Current_Month_Projection_Export.csv";
+                    } else if (type === 'sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        const rows = DB.sales.filter(s => s.fy === '2025-26').map(s => {
+                            const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
+                            return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_System_Sales_Export.csv";
+                    } else if (type === 'last_year_sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        const rows = DB.sales.filter(s => s.fy === '2024-25').map(s => {
+                            const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
+                            return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Last_Year_Sales_Export.csv";
+                    } else if (type === 'emi_early') {
+                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
+                        const rows = DB.emi.map(e => {
+                            const tName = DB.territories.find(ter => ter.id === e.territory_id)?.name || '';
+                            return [e.customer_code, e.customer, tName, e.brand, e.delivery_date, e.first_inst_date, e.overdue_count, e.overdue_total, e.installment].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Early_EMI_Export.csv";
+                    } else if (type === 'recovery_od') {
+                        headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
+                        const rows = DB.recovery_od.map(r => {
+                            const tName = DB.territories.find(ter => ter.id === r.territory_id)?.name || '';
+                            return [r.fy, r.month, tName, r.perfile_od, r.total_overdue].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Recovery_OD_Export.csv";
+                    }
+                } else {
+                    if (type === 'target') {
+                        headers = "FY,Month,Territory_Name,Upazila,Brand,Sale_Type,Target_Qty\n";
+                        headers += "2025-26,April,Dhaka North,Mirpur,Foton,New Sale,4\n";
+                        filename = "ACI_Monthly_Target_Template.csv";
+                    } else if (type === 'projection') {
+                        headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
+                        headers += "2025-26,April,Dhaka North,Foton,New Sale,15\n";
+                        headers += "2025-26,April,Dhaka North,Mahindra,Resale,10\n";
+                        filename = "ACI_Current_Month_Projection_Template.csv";
+                    } else if (type === 'sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers += "C-1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,2025-26,2026,April,New Sale\n";
+                        headers += "C-1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,2025-26,2026,April,Resale\n";
+                        filename = "ACI_System_Sales_Template.csv";
+                    } else if (type === 'last_year_sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers += "C-LY1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,2024-25,2025,April,New Sale\n";
+                        headers += "C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,2024-25,2025,April,Resale\n";
+                        filename = "ACI_Last_Year_Sales_Template.csv";
+                    } else if (type === 'emi_early') {
+                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
+                        headers += "C-2001,Rahim Transport,Dhaka North,Foton,2026-03-10,2026-04-10,1,25000,25000\n";
+                        filename = "ACI_Early_EMI_Template.csv";
+                    } else if (type === 'recovery_od') {
+                        headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
+                        headers += "2025-26,April,Dhaka North,4500,1250000\n";
+                        filename = "ACI_Recovery_OD_Template.csv";
+                    }
+                    csvContent = headers;
                 }
 
-                csvContent += headers;
-                const encodedUri = encodeURI(csvContent);
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
                 link.setAttribute("download", filename);
                 document.body.appendChild(link);
                 link.click();
