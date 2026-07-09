@@ -1335,8 +1335,10 @@
                         app.lastMonth = DB.settings.lastMonth || 'March';
                         app.currentFY = DB.settings.currentFY || '2025-26';
                         app.fyReviewActive = DB.settings.fyReviewActive !== undefined ? DB.settings.fyReviewActive : true;
+                        app.showLastFYData = DB.settings.showLastFYData !== undefined ? DB.settings.showLastFYData : false;
                     } else {
                         app.fyReviewActive = true;
+                        app.showLastFYData = false;
                     }
 
                     console.log("Data successfully loaded from cPanel MySQL Database.");
@@ -3243,7 +3245,7 @@
                 const isAM = app.currentUser.role === 'am';
                 const currentSaleType = app.adminSaleTypeTab || 'New Sale';
                 const currentFY = app.selectedFY || app.currentFY;
-                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
                 const concludingFY = (() => {
                     const parts = currentFY.split('-');
                     if (parts.length === 2) {
@@ -3526,7 +3528,7 @@
 
                             <!-- AM Style MO-Dashboard Blocks -->
                             ${(() => {
-                             const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                             const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
                              const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(app.currentMonth);
                              const passedMonths = ytdMonths.length;
                              const monthlyTargets = activeTgts.filter(tg => tg.fy === (isTransitionMode ? concludingFY : currentFY) && ytdMonths.includes(tg.month));
@@ -7665,7 +7667,7 @@
 
             getPerformance: (territoryId, brand, saleType) => {
                 let currentFY = (app.currentUser && app.currentUser.role === 'so') ? (app.soSelectedFY || app.currentFY) : (app.selectedFY || app.currentFY);
-                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
                 if (isTransitionMode) {
                     const parts = currentFY.split('-');
                     if (parts.length === 2) {
@@ -9152,6 +9154,7 @@
             },
 
             renderSystemSettings: () => {
+                app.settingsActiveTab = app.settingsActiveTab || 'general';
                 if (!app.isSystemSettingsAuthorized) {
                     app.showSystemConfigPasswordModal();
                     return;
@@ -9474,15 +9477,18 @@
                 const lastMonth = document.getElementById('settings-last-month')?.value || app.lastMonth;
                 const currentFY = document.getElementById('settings-current-fy')?.value || app.currentFY;
                 const fyReviewActive = document.getElementById('settings-fy-review')?.checked || false;
+                const showLastFYData = document.getElementById('settings-show-last-fy')?.checked || false;
 
                 const origCurrent = app.currentMonth;
                 const origLast = app.lastMonth;
                 const origFY = app.currentFY;
                 const origReview = app.fyReviewActive;
+                const origShowLast = app.showLastFYData;
                 app.currentMonth = currentMonth;
                 app.lastMonth = lastMonth;
                 app.currentFY = currentFY;
                 app.fyReviewActive = fyReviewActive;
+                app.showLastFYData = showLastFYData;
 
                 app.renderSystemSettings();
 
@@ -9490,6 +9496,7 @@
                 app.lastMonth = origLast;
                 app.currentFY = origFY;
                 app.fyReviewActive = origReview;
+                app.showLastFYData = origShowLast;
             },
 
             saveSystemSettings: async () => {
@@ -9616,7 +9623,7 @@
                 const brand = app.soBrandTab || 'Foton';
                 const saleType = app.soSaleTypeTab || 'New Sale';
                 const currentFY = app.soSelectedFY || app.currentFY; // Use dynamic current active FY
-                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive);
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive) || app.showLastFYData;
                 const concludingFY = (() => {
                     const parts = currentFY.split('-');
                     if (parts.length === 2) {
