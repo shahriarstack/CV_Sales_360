@@ -11197,7 +11197,7 @@
                                     ${collected > totalDue ? `<span class="bg-green-100 text-green-700 border border-green-200 px-1 py-0.5 rounded text-[8px] font-bold mt-0.5">Adv: ${app.formatCurrency(collected - totalDue)}</span>` : ''}
                                 </div>
                                 <button onclick="app.openCollectEMIModal('${e.id}')"
-                                        class="${isFullyCleared ? 'bg-green-50 hover:bg-green-100 text-green-800 border border-green-200' : 'bg-aci-blue hover:bg-blue-800 text-white'} px-2.5 py-1.5 rounded-lg text-[10px] font-black tracking-wider uppercase transition-colors shadow-sm flex items-center gap-1 mt-1">
+                                        class="${isFullyCleared ? 'bg-green-50 hover:bg-green-100 text-green-800 border border-green-200' : ((e.brand || '').toString().toLowerCase().includes('mahindra') ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-aci-blue hover:bg-blue-800 text-white')} px-2.5 py-1.5 rounded-lg text-[10px] font-black tracking-wider uppercase transition-colors shadow-sm flex items-center gap-1 mt-1">
                                     <i data-lucide="wallet" class="w-3.5 h-3.5"></i> ${isFullyCleared ? 'Details' : 'Collect EMI'}
                                 </button>
                             </div>
