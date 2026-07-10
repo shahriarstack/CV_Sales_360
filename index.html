@@ -1751,7 +1751,8 @@
                     optionsHtml += `<optgroup label="Area">`;
                     ams.forEach(u => {
                         const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || 'No Area';
-                        optionsHtml += `<option value="${u.id}">${areaNames} - ${u.name}</option>`;
+                        const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
+                        optionsHtml += `<option value="${u.id}">${areaNames} - ${cleanName}</option>`;
                     });
                     optionsHtml += `</optgroup>`;
                 }
@@ -1761,7 +1762,8 @@
                     optionsHtml += `<optgroup label="Territory">`;
                     sos.forEach(u => {
                         const areaName = DB.territories.find(t => t.id === u.territories[0])?.name || 'Unknown';
-                        optionsHtml += `<option value="${u.id}">${areaName} - ${u.name}</option>`;
+                        const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
+                        optionsHtml += `<option value="${u.id}">${areaName} - ${cleanName}</option>`;
                     });
                     optionsHtml += `</optgroup>`;
                 }
