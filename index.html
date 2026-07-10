@@ -1748,7 +1748,7 @@
 
                 const ams = DB.users.filter(u => u.role === 'am');
                 if (ams.length > 0) {
-                    optionsHtml += `<optgroup label="AMs">`;
+                    optionsHtml += `<optgroup label="Area">`;
                     ams.forEach(u => {
                         const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || 'No Area';
                         optionsHtml += `<option value="${u.id}">${areaNames} - ${u.name}</option>`;
@@ -1758,7 +1758,7 @@
 
                 const sos = DB.users.filter(u => u.role === 'so');
                 if (sos.length > 0) {
-                    optionsHtml += `<optgroup label="MOs">`;
+                    optionsHtml += `<optgroup label="Territory">`;
                     sos.forEach(u => {
                         const areaName = DB.territories.find(t => t.id === u.territories[0])?.name || 'Unknown';
                         optionsHtml += `<option value="${u.id}">${areaName} - ${u.name}</option>`;
