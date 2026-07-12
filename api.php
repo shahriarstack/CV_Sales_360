@@ -57,6 +57,11 @@ try {
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['user_territories'] = $user['territories'];
 
+            // Set remember me cookie for 30 days
+            $salt = 'aci_sales360_secure_salt_2026';
+            $token = hash('sha256', $user['id'] . ':' . $employeeId . ':' . $salt);
+            setcookie('aci_remember_me', $user['id'] . ':' . $token, time() + 30 * 86400, '/', '', false, true);
+
             // Return user info (excluding credentials)
             unset($user['employee_id']);
             $user['territories'] = json_decode($user['territories']);
@@ -70,8 +75,33 @@ try {
 
     if ($action === 'logout') {
         session_destroy();
+        setcookie('aci_remember_me', '', time() - 3600, '/');
         echo json_encode(['success' => true]);
         exit;
+    }
+
+    // Check if user is authenticated via session or auto-login cookie
+    if (!isset($_SESSION['user_id']) && isset($_COOKIE['aci_remember_me'])) {
+        $parts = explode(':', $_COOKIE['aci_remember_me'], 2);
+        if (count($parts) === 2) {
+            $cookieUserId = $parts[0];
+            $cookieToken = $parts[1];
+            
+            $stmt = $pdo->prepare("SELECT id, role, territories, employee_id FROM users WHERE id = ?");
+            $stmt->execute([$cookieUserId]);
+            $cookieUser = $stmt->fetch();
+            
+            if ($cookieUser) {
+                $salt = 'aci_sales360_secure_salt_2026';
+                $expectedToken = hash('sha256', $cookieUser['id'] . ':' . $cookieUser['employee_id'] . ':' . $salt);
+                if (hash_equals($expectedToken, $cookieToken)) {
+                    // Re-authenticate session
+                    $_SESSION['user_id'] = $cookieUser['id'];
+                    $_SESSION['user_role'] = $cookieUser['role'];
+                    $_SESSION['user_territories'] = $cookieUser['territories'];
+                }
+            }
+        }
     }
 
     // Otherwise, check if user is authenticated
