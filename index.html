@@ -2966,7 +2966,7 @@
 
                 // --- Dashboard KPI Calculations ---
                 const totalCust = emiData.length;
-                const paidCust = emiData.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
+                const paidCust = emiData.filter(e => Number(e.collected || 0) > 0).length;
                 const unpaidCust = totalCust - paidCust;
                 const paidCustPercent = totalCust > 0 ? Math.round((paidCust / totalCust) * 100) : 0;
 
@@ -2979,7 +2979,7 @@
                 const overallTotalCollected = totalCol;
                 const collectionProgressPercent = overallTotalDue > 0 ? Math.round((overallTotalCollected / overallTotalDue) * 100) : 0;
 
-                const collectedCust = emiData.filter(e => Number(e.collected || 0) > 0).length;
+                const collectedCust = paidCust; // Since any payment counts as collected
                 const custProgressPercent = totalCust > 0 ? Math.round((collectedCust / totalCust) * 100) : 0;
                 const partialPaidCust = emiData.filter(e => Number(e.collected || 0) > 0 && Number(e.collected || 0) < Number(e.installment || 0)).length;
 
@@ -2988,7 +2988,7 @@
                     const tEmi = emiData.filter(e => e.territory_id === t.id);
                     if (tEmi.length === 0) return null;
                     const totalCust = tEmi.length;
-                    const payingCust = tEmi.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
+                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
                     const nonPayingCust = totalCust - payingCust;
                     const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0); // Amount Due (inst)
                     const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
