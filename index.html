@@ -3207,6 +3207,7 @@
                                                 <div class="font-bold text-slate-800 text-sm truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
                                                 <div class="flex flex-wrap items-center gap-2 mt-1">
                                                     <span class="text-[10px] font-bold text-aci-blue bg-blue-50 px-1.5 py-0.5 rounded">ID: ${s.customer_id}</span>
+                                                    ${s.chassis_no ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" title="Chassis No">Chassis: ${s.chassis_no}</span>` : ''}
                                                     ${s.old_customer_id ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded" title="Old Customer ID">Old: ${s.old_customer_id}</span>` : ''}
                                                     ${s.purpose_of_use ? `<span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded flex items-center gap-1" title="Purpose of Use"><i data-lucide="briefcase" class="w-3 h-3"></i> ${s.purpose_of_use}</span>` : ''}
                                                 </div>
@@ -3222,7 +3223,7 @@
                                             <td class="px-5 py-4 border-b border-slate-100 text-right">
                                                 <div class="text-sm font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
                                                 <div class="text-[11px] text-slate-600 font-medium mt-0.5">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
-                                                <div class="text-[10px] text-slate-400 font-medium mt-0.5">Tenure: ${s.financials?.tenure || 0} Months</div>
+                                                <div class="text-[10px] text-slate-400 font-medium mt-0.5">${s.financials?.sales_mode ? `Mode: ${s.financials.sales_mode} | ` : ''}Tenure: ${s.financials?.tenure || 0} Months</div>
                                             </td>
                                             <td class="px-5 py-4 border-b border-slate-100">
                                                 ${s.discounts?.amount > 0 ? `<div class="text-[11px] font-bold text-rose-600 flex items-center gap-1"><i data-lucide="tags" class="w-3 h-3"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[11px] text-slate-400 italic">No Discount</div>'}
@@ -3260,7 +3261,7 @@
                 const sales = app.currentManualSales || DB.sales.filter(s => s.is_manual);
                 if (sales.length === 0) return app.showToast('No data to export', 'error');
 
-                let csv = 'Territory,District,Upazila,Customer ID,Customer Name,Old Customer ID,Purpose of Use,Brand,Model,Sale Type,TP,DP,Tenure,Discount Type,Discount Amount,Gift Item,Logged On\n';
+                let csv = 'Territory,District,Upazila,Customer ID,Customer Name,Chassis Number,Old Customer ID,Purpose of Use,Brand,Model,Sale Type,Sales Mode,TP,DP,Tenure,Discount Type,Discount Amount,Gift Item,Logged On\n';
                 
                 sales.forEach(s => {
                     const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
@@ -3270,11 +3271,13 @@
                         `"${s.upazila || ''}"`,
                         `"${s.customer_id || ''}"`,
                         `"${s.customer_name || ''}"`,
+                        `"${s.chassis_no || ''}"`,
                         `"${s.old_customer_id || ''}"`,
                         `"${s.purpose_of_use || ''}"`,
                         `"${s.brand || ''}"`,
                         `"${s.model || ''}"`,
                         `"${s.sale_type || ''}"`,
+                        `"${s.financials?.sales_mode || ''}"`,
                         s.financials?.tp || 0,
                         s.financials?.dp || 0,
                         s.financials?.tenure || 0,
@@ -10616,6 +10619,10 @@
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Customer Name</label>
                                 <input type="text" id="del-customer-name" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="Full Name or Business Name">
                             </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-aci-blue/70">Vehicle Chassis Number</label>
+                                <input type="text" id="del-chassis" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="Enter Chassis Number (e.g. 17 characters)">
+                            </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
@@ -10672,7 +10679,21 @@
                             </div>
                             
                             <!-- Financial Details -->
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-4 gap-3">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Sales Mode</label>
+                                    <div class="relative group">
+                                        <select id="del-sales-mode" class="w-full border-2 border-slate-100 rounded-xl px-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10" required>
+                                            <option value="">Select</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Semi-cash">Semi-cash</option>
+                                            <option value="Credit">Credit</option>
+                                        </select>
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="space-y-1.5">
                                     <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trade Price</label>
                                     <div class="relative">
@@ -10787,7 +10808,7 @@
                 "Construction equipment carry", "Industrial material carry", "Grocery store item carry", 
                 "Egg carry", "Garments items", "Oil transport", "Industrial purpose", 
                 "Commercial transport", "Gas cylinder carry", "Scrap business purpose", 
-                "Water bottle", "Agriculture", "Personal Use", "Public Transport"
+                "Water bottle", "Agriculture", "Personal Use", "Public Transport", "Others"
             ],
 
             showPurposeSuggestions: () => {
@@ -10841,10 +10862,12 @@
                 const upazila = document.getElementById('del-upazila').value;
                 const customerName = document.getElementById('del-customer-name').value;
                 const customerCode = document.getElementById('del-customer-code').value;
+                const chassisNo = document.getElementById('del-chassis').value;
                 const purpose = document.getElementById('del-purpose')?.value || '';
                 const oldCustomerId = document.getElementById('del-old-customer-id')?.value || '';
                 const brand = document.getElementById('del-brand').value;
                 const model = document.getElementById('del-model').value;
+                const salesMode = document.getElementById('del-sales-mode').value;
                 const tp = document.getElementById('del-tp').value;
                 const dp = document.getElementById('del-dp').value;
                 const tenure = document.getElementById('del-tenure').value;
@@ -10874,6 +10897,7 @@
                         id: 's_man_' + Date.now(),
                         customer_id: customerCode || ('NEW_' + Math.floor(Math.random() * 1000)),
                         customer_name: customerName,
+                        chassis_no: chassisNo,
                         district: territory.district,
                         territory_id: terrId,
                         upazila: upazila,
@@ -10885,7 +10909,7 @@
                         sales_year: currentYear,
                         sales_month: app.currentMonth,
                         sale_type: type,
-                        financials: { tp, dp, tenure },
+                        financials: { tp, dp, tenure, sales_mode: salesMode },
                         discounts: { type: discType, amount: discAmt, gift: giftItem },
                         old_customer_id: oldCustomerId,
                         is_manual: true,
