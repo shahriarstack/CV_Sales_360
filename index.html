@@ -3039,41 +3039,43 @@
 
                         <!-- Progress Analytics Panel -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <!-- Card 1: Revenue Collection Progress -->
-                            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-slate-800 relative overflow-hidden">
-                                <div class="absolute -right-10 -top-10 bg-indigo-500/10 w-40 h-40 rounded-full blur-2xl pointer-events-none"></div>
-                                <div class="flex justify-between items-center mb-3 relative z-10">
+                            <!-- Card 1: Credit Collection Progress -->
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2.5">
                                     <div>
-                                        <h4 class="text-xs font-black uppercase text-indigo-200 tracking-wider">Revenue Collection</h4>
-                                        <p class="text-[10px] text-indigo-300/80 font-medium">Total Due vs Collection till now</p>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Due vs Collection till now</p>
                                     </div>
-                                    <span class="text-2xl font-black text-indigo-300">${collectionProgressPercent}%</span>
+                                    <span class="text-xl font-black text-indigo-600">${collectionProgressPercent}%</span>
                                 </div>
-                                <div class="w-full bg-white/10 rounded-full h-3 mb-4 overflow-hidden p-[2px] border border-white/5">
-                                    <div class="bg-gradient-to-r from-indigo-400 to-cyan-400 h-full rounded-full transition-all duration-550 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
                                 </div>
-                                <div class="flex justify-between items-center text-xs font-bold text-indigo-200 relative z-10">
-                                    <span>Collected: <span class="text-white font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
-                                    <span>Total Due: <span class="text-slate-200 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
+                                
+                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                    <span>Collected: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
+                                    <span>Total Due: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
                                 </div>
                             </div>
                             
                             <!-- Card 2: Account Coverage Progress -->
-                            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-slate-800 relative overflow-hidden">
-                                <div class="absolute -right-10 -top-10 bg-emerald-500/10 w-40 h-40 rounded-full blur-2xl pointer-events-none"></div>
-                                <div class="flex justify-between items-center mb-3 relative z-10">
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2.5">
                                     <div>
-                                        <h4 class="text-xs font-black uppercase text-emerald-250 tracking-wider">Account Coverage</h4>
-                                        <p class="text-[10px] text-emerald-350/85 font-medium">Total Customers vs Collected Customers</p>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Account Coverage</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Customers vs Collected Customers</p>
                                     </div>
-                                    <span class="text-2xl font-black text-emerald-300">${custProgressPercent}%</span>
+                                    <span class="text-xl font-black text-emerald-600">${custProgressPercent}%</span>
                                 </div>
-                                <div class="w-full bg-white/10 rounded-full h-3 mb-4 overflow-hidden p-[2px] border border-white/5">
-                                    <div class="bg-gradient-to-r from-emerald-400 to-teal-400 h-full rounded-full transition-all duration-550 ease-out" style="width: ${custProgressPercent}%"></div>
+                                
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
                                 </div>
-                                <div class="flex justify-between items-center text-xs font-bold text-emerald-200 relative z-10">
-                                    <span>Collected Accounts: <span class="text-white font-extrabold">${collectedCust}</span></span>
-                                    <span>Total Accounts: <span class="text-slate-200 font-extrabold">${totalCust}</span></span>
+                                
+                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                    <span>Collected Accounts: <span class="text-slate-800 font-extrabold">${collectedCust}</span></span>
+                                    <span>Total Accounts: <span class="text-slate-800 font-extrabold">${totalCust}</span></span>
                                 </div>
                             </div>
                         </div>
