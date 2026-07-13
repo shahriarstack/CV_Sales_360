@@ -1237,7 +1237,7 @@
                     console.log("Connecting to cPanel MySQL database via api.php...");
                     
                     // Check authentication state to determine loading strategy
-                    let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [], manual_deliveries = [];
+                    let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [];
 
                     if (app.currentUser) {
                         // Load all data tables concurrently for authenticated users
@@ -1254,8 +1254,7 @@
                             app.neonSQL`SELECT * FROM links`,
                             app.neonSQL`SELECT * FROM tiv_brands`,
                             app.neonSQL`SELECT * FROM app_settings`,
-                            app.neonSQL`SELECT * FROM tiv_submissions`,
-                            app.neonSQL`SELECT * FROM manual_deliveries`
+                            app.neonSQL`SELECT * FROM tiv_submissions`
                         ]);
                         targets = results[0];
                         projections = results[1];
@@ -1270,7 +1269,6 @@
                         tiv_brands = results[10];
                         app_settings = results[11];
                         tiv_submissions = results[12];
-                        manual_deliveries = results[13];
                     } else {
                         // Pre-authentication: Only load sanitized users and territories for login dropdown
                         const results = await Promise.all([
@@ -1286,35 +1284,6 @@
                     DB.emi = emi;
                     DB.sales = sales;
                     DB.recovery_od = recovery_od;
-                    DB.manual_deliveries = manual_deliveries;
-                    
-                    // Virtually merge Approved manual deliveries into DB.sales so they act as actual sales
-                    DB.manual_deliveries.forEach(m => {
-                        if (m.status === 'Approved') {
-                            DB.sales.push({
-                                id: m.id,
-                                customer_id: m.customer_id,
-                                customer_name: m.customer_name,
-                                district: m.district,
-                                territory_id: m.territory_id,
-                                upazila: m.upazila,
-                                brand: m.brand,
-                                model: m.model,
-                                unit_qty: m.unit_qty,
-                                fy: m.fy,
-                                sales_year: m.sales_year,
-                                sales_month: m.sales_month,
-                                sale_type: m.sale_type,
-                                is_manual: true,
-                                chassis_no: m.chassis_no,
-                                purpose_of_use: m.purpose_of_use,
-                                financials: { tp: m.tp, dp: m.dp, tenure: m.tenure },
-                                discounts: { type: m.discount_type, amount: m.discount_amount, gift: m.gift_item },
-                                old_customer_id: m.old_customer_id,
-                                timestamp: m.timestamp
-                            });
-                        }
-                    });
                     
                     // Parse JSON fields where necessary
                     DB.users = users.map(u => ({ ...u, territories: typeof u.territories === 'string' ? JSON.parse(u.territories) : u.territories }));
@@ -2963,13 +2932,25 @@
                 });
             },
 
+            setAdminEMIBrandFilter: (brand) => {
+                app.adminEMIBrandFilter = brand;
+                app.renderAdminEMI();
+            },
+
             renderAdminEMI: () => {
                 localStorage.setItem('aci_last_page', 'emi');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const isAM = app.currentUser.role === 'am';
+                app.adminEMIBrandFilter = app.adminEMIBrandFilter || 'Total';
+
                 let emiData = DB.emi;
                 if (isAM) {
                     emiData = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
+                }
+
+                // Apply Brand Filter
+                if (app.adminEMIBrandFilter !== 'Total') {
+                    emiData = emiData.filter(e => e.brand === app.adminEMIBrandFilter);
                 }
 
                 // --- Dashboard KPI Calculations ---
@@ -2995,11 +2976,27 @@
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
                 }).filter(Boolean);
 
+                const activeBrand = app.adminEMIBrandFilter || 'Total';
                 const html = `
                     <div class="max-w-6xl mx-auto fade-in">
-                        <div class="mb-6">
-                            <h1 class="text-2xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
-                            <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
+                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h1 class="text-2xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
+                            </div>
+                            
+                            <!-- Premium Brand Selection Pill -->
+                            <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/50 shadow-inner">
+                                <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-2 rounded-xl text-xs font-black transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-md scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
+                                    Total
+                                </button>
+                                <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
+                                    <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
+                                </button>
+                                <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
+                                    <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- Premium Compact KPI Row -->
@@ -3143,7 +3140,7 @@
                 localStorage.setItem('aci_last_page', 'manual');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 
-                let manualSales = DB.manual_deliveries;
+                let manualSales = DB.sales.filter(s => s.is_manual);
 
                 // Date filtering logic
                 if (startDate || endDate) {
@@ -3195,15 +3192,15 @@
                             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <h3 class="font-bold text-slate-800 text-sm">Pending Actuals Integration <span class="bg-aci-blue text-white px-2 py-0.5 rounded-full text-xs ml-2">${manualSales.length} Entries</span></h3>
                             </div>
-                            <table class="w-full text-left text-sm whitespace-nowrap min-w-[1100px]">
+                            <table class="w-full text-left text-sm whitespace-nowrap min-w-[1000px]">
                                 <thead class="border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider bg-white">
                                     <tr>
                                         <th class="px-5 py-3 font-semibold">Territory & Area</th>
                                         <th class="px-5 py-3 font-semibold">Customer Details</th>
                                         <th class="px-5 py-3 font-semibold">Product Info</th>
                                         <th class="px-5 py-3 font-semibold text-right">Financials (BDT)</th>
-                                        <th class="px-5 py-3 font-semibold">Logged On / Status</th>
-                                        <th class="px-5 py-3 font-semibold text-center">Actions</th>
+                                        <th class="px-5 py-3 font-semibold">Offers & Gifts</th>
+                                        <th class="px-5 py-3 font-semibold">Logged On</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
                                         <th class="px-5 py-2 border-b border-slate-200"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
@@ -3217,7 +3214,7 @@
                                         </th>
                                         <th class="px-5 py-2 border-b border-slate-200 text-right"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
                                         <th class="px-5 py-2 border-b border-slate-200"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
-                                        <th class="px-5 py-2 border-b border-slate-200"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-5 py-2 border-b border-slate-200"><span class="text-[10px] text-slate-400 font-normal">Use top filter</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -3252,46 +3249,18 @@
                                                 </div>
                                             </td>
                                             <td class="px-5 py-4 border-b border-slate-100 text-right">
-                                                <div class="text-sm font-bold text-slate-800">TP: ${app.formatCurrency(s.tp || 0)}</div>
-                                                <div class="text-[11px] text-slate-600 font-medium mt-0.5">DP: ${app.formatCurrency(s.dp || 0)}</div>
-                                                <div class="text-[10px] text-slate-400 font-medium mt-0.5">Tenure: ${s.tenure || 0} Months</div>
+                                                <div class="text-sm font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
+                                                <div class="text-[11px] text-slate-600 font-medium mt-0.5">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
+                                                <div class="text-[10px] text-slate-400 font-medium mt-0.5">Tenure: ${s.financials?.tenure || 0} Months</div>
                                             </td>
                                             <td class="px-5 py-4 border-b border-slate-100">
-                                                <div class="flex flex-col gap-1">
-                                                    <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded w-max text-xs text-slate-500 font-medium">
-                                                        <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-slate-400"></i>
-                                                        ${s.timestamp || 'Recent'}
-                                                    </div>
-                                                    <div>
-                                                        ${s.status === 'Pending' ? `
-                                                            <span class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full">Pending Approval</span>
-                                                        ` : s.status === 'Approved' ? `
-                                                            <span class="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full">Approved / Done</span>
-                                                        ` : `
-                                                            <span class="text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">Rejected</span>
-                                                        `}
-                                                        ${s.comments ? `<span class="block text-[10px] text-slate-500 italic mt-0.5" title="${s.comments}">Msg: ${s.comments}</span>` : ''}
-                                                    </div>
-                                                </div>
+                                                ${s.discounts?.amount > 0 ? `<div class="text-[11px] font-bold text-rose-600 flex items-center gap-1"><i data-lucide="tags" class="w-3 h-3"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[11px] text-slate-400 italic">No Discount</div>'}
+                                                ${s.discounts?.gift ? `<div class="text-[10px] text-indigo-600 font-bold mt-1 flex items-center gap-1"><i data-lucide="gift" class="w-3 h-3"></i> ${s.discounts.gift}</div>` : ''}
                                             </td>
-                                            <td class="px-5 py-4 border-b border-slate-100 text-center">
-                                                <div class="flex items-center justify-center gap-2">
-                                                    ${s.status !== 'Approved' ? `
-                                                        <button onclick="app.approveManualDelivery('${s.id}')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Approve Delivery">
-                                                            <i data-lucide="check" class="w-3.5 h-3.5"></i> Approve
-                                                        </button>
-                                                    ` : ''}
-                                                    ${s.status !== 'Rejected' ? `
-                                                        <button onclick="app.rejectManualDelivery('${s.id}')" class="bg-rose-500 hover:bg-rose-600 text-white px-2 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Reject / Comment">
-                                                            <i data-lucide="x" class="w-3.5 h-3.5"></i> Reject
-                                                        </button>
-                                                    ` : ''}
-                                                    <button onclick="app.showEditManualDeliveryModal('${s.id}')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Edit Delivery Info">
-                                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit
-                                                    </button>
-                                                    <button onclick="app.deleteManualDelivery('${s.id}')" class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-200 px-2 py-1.5 rounded text-xs font-bold transition-all flex items-center gap-1" title="Delete Entry">
-                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                                    </button>
+                                            <td class="px-5 py-4 border-b border-slate-100 text-xs text-slate-500 font-medium whitespace-nowrap">
+                                                <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded w-max">
+                                                    <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                                    ${s.timestamp || 'Recent'}
                                                 </div>
                                             </td>
                                         </tr>
@@ -3317,10 +3286,10 @@
             },
 
             downloadManualCSV: () => {
-                const sales = app.currentManualSales || DB.manual_deliveries;
+                const sales = app.currentManualSales || DB.sales.filter(s => s.is_manual);
                 if (sales.length === 0) return app.showToast('No data to export', 'error');
 
-                let csv = 'Territory,District,Upazila,Customer ID,Customer Name,Chassis Number,Old Customer ID,Purpose of Use,Brand,Model,Sale Type,TP,DP,Tenure,Discount Type,Discount Amount,Gift Item,Status,Comments,Logged On\n';
+                let csv = 'Territory,District,Upazila,Customer ID,Customer Name,Chassis Number,Old Customer ID,Purpose of Use,Brand,Model,Sale Type,TP,DP,Tenure,Discount Type,Discount Amount,Gift Item,Logged On\n';
                 
                 sales.forEach(s => {
                     const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
@@ -3336,14 +3305,12 @@
                         `"${s.brand || ''}"`,
                         `"${s.model || ''}"`,
                         `"${s.sale_type || ''}"`,
-                        s.tp || 0,
-                        s.dp || 0,
-                        s.tenure || 0,
-                        `"${s.discount_type || ''}"`,
-                        s.discount_amount || 0,
-                        `"${s.gift_item || ''}"`,
-                        `"${s.status || ''}"`,
-                        `"${s.comments || ''}"`,
+                        s.financials?.tp || 0,
+                        s.financials?.dp || 0,
+                        s.financials?.tenure || 0,
+                        `"${s.discounts?.type || ''}"`,
+                        s.discounts?.amount || 0,
+                        `"${s.discounts?.gift || ''}"`,
                         `"${s.timestamp || ''}"`
                     ];
                     csv += row.join(',') + '\n';
@@ -3360,245 +3327,10 @@
                 window.URL.revokeObjectURL(url);
             },
 
-            clearManualDeliveries: async () => {
-                if (!confirm("Are you sure you want to permanently clear ALL manual deliveries from the database? This cannot be undone.")) return;
-                app.showLoader('Clearing manual deliveries...');
-                try {
-                    await app.neonSQL`DELETE FROM manual_deliveries`;
-                    DB.manual_deliveries = [];
-                    app.hideLoader();
-                    app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
-                    await app.init();
-                    app.renderAdminManualDeliveries();
-                } catch (err) {
-                    console.error(err);
-                    app.hideLoader();
-                    app.showToast('Failed to clear manual deliveries.', 'error');
-                }
-            },
-
-            approveManualDelivery: async (id) => {
-                const s = DB.manual_deliveries.find(item => item.id === id);
-                if (!s) return;
-                const comment = prompt("Enter approval comments (optional):", s.comments || "");
-                if (comment === null) return;
-
-                app.showLoader('Approving delivery...');
-                try {
-                    await app.neonSQL`UPDATE manual_deliveries SET status = 'Approved', comments = ${comment} WHERE id = ${id}`;
-                    s.status = 'Approved';
-                    s.comments = comment;
-                    
-                    app.hideLoader();
-                    app.showToast('Delivery approved successfully!', 'success');
-                    
-                    await app.init(); 
-                    app.renderAdminManualDeliveries();
-                } catch (err) {
-                    console.error(err);
-                    app.hideLoader();
-                    app.showToast('Failed to approve delivery.', 'error');
-                }
-            },
-
-            rejectManualDelivery: async (id) => {
-                const s = DB.manual_deliveries.find(item => item.id === id);
-                if (!s) return;
-                const comment = prompt("Enter rejection reason / comments (mandatory):", s.comments || "");
-                if (!comment) {
-                    if (comment === "") app.showToast("Rejection comment is required.", "error");
-                    return;
-                }
-
-                app.showLoader('Rejecting delivery...');
-                try {
-                    await app.neonSQL`UPDATE manual_deliveries SET status = 'Rejected', comments = ${comment} WHERE id = ${id}`;
-                    s.status = 'Rejected';
-                    s.comments = comment;
-                    
-                    app.hideLoader();
-                    app.showToast('Delivery rejected.', 'success');
-                    
-                    await app.init();
-                    app.renderAdminManualDeliveries();
-                } catch (err) {
-                    console.error(err);
-                    app.hideLoader();
-                    app.showToast('Failed to reject delivery.', 'error');
-                }
-            },
-
-            deleteManualDelivery: async (id) => {
-                if (!confirm("Are you sure you want to permanently delete this manual delivery record? This cannot be undone.")) return;
-
-                app.showLoader('Deleting entry...');
-                try {
-                    await app.neonSQL`DELETE FROM manual_deliveries WHERE id = ${id}`;
-                    DB.manual_deliveries = DB.manual_deliveries.filter(item => item.id !== id);
-                    
-                    app.hideLoader();
-                    app.showToast('Entry deleted successfully.', 'success');
-                    
-                    await app.init();
-                    app.renderAdminManualDeliveries();
-                } catch (err) {
-                    console.error(err);
-                    app.hideLoader();
-                    app.showToast('Failed to delete entry.', 'error');
-                }
-            },
-
-            showEditManualDeliveryModal: (id) => {
-                const s = DB.manual_deliveries.find(item => item.id === id);
-                if (!s) return;
-
-                let modal = document.getElementById('edit-manual-modal');
-                if (!modal) {
-                    modal = document.createElement('div');
-                    modal.id = 'edit-manual-modal';
-                    modal.className = 'fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-300';
-                    document.body.appendChild(modal);
-                }
-
-                modal.innerHTML = `
-                    <div id="edit-manual-content" class="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-xl w-full p-6 relative overflow-hidden transition-all duration-300 transform scale-95 opacity-0">
-                        <div class="absolute -right-16 -top-16 bg-indigo-500/5 w-44 h-44 rounded-full blur-xl"></div>
-                        <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
-                            <div>
-                                <h3 class="text-lg font-black text-slate-800">Edit Manual Delivery Info</h3>
-                                <p class="text-xs text-slate-500">Edit fields recorded by officer</p>
-                            </div>
-                            <button onclick="app.closeEditManualModal()" class="p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
-                                <i data-lucide="x" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                        <form id="edit-manual-form" class="space-y-4" onsubmit="app.saveEditManualDelivery(event, '${id}')">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Customer Name</label>
-                                <input type="text" id="edit-del-name" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.customer_name || ''}">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Customer ID</label>
-                                    <input type="text" id="edit-del-code" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" value="${s.customer_id || ''}">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Vehicle Chassis No</label>
-                                    <input type="text" id="edit-del-chassis" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.chassis_no || ''}">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Brand</label>
-                                    <select id="edit-del-brand" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none bg-slate-50/50" required>
-                                        <option value="Foton" ${s.brand === 'Foton' ? 'selected' : ''}>Foton</option>
-                                        <option value="Mahindra" ${s.brand === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
-                                    </select>
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Model</label>
-                                    <input type="text" id="edit-del-model" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.model || ''}">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Trade Price</label>
-                                    <input type="number" id="edit-del-tp" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.tp || 0}">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Downpayment</label>
-                                    <input type="number" id="edit-del-dp" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.dp || 0}">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tenure</label>
-                                    <input type="text" id="edit-del-tenure" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.tenure || ''}">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Upazila</label>
-                                    <input type="text" id="edit-del-upazila" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.upazila || ''}">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Purpose of Use</label>
-                                    <input type="text" id="edit-del-purpose" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required value="${s.purpose_of_use || ''}">
-                                </div>
-                            </div>
-                            <div class="pt-3">
-                                <button type="submit" class="w-full bg-aci-blue text-white py-3 rounded-2xl text-sm font-black shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                                    <i data-lucide="save" class="w-4 h-4"></i> SAVE CHANGES
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                `;
-
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                app.refreshIcons();
-
-                setTimeout(() => {
-                    const content = document.getElementById('edit-manual-content');
-                    content.classList.remove('scale-95', 'opacity-0');
-                }, 50);
-            },
-
-            closeEditManualModal: () => {
-                const content = document.getElementById('edit-manual-content');
-                if (content) {
-                    content.classList.add('scale-95', 'opacity-0');
-                    setTimeout(() => {
-                        const modal = document.getElementById('edit-manual-modal');
-                        if (modal) {
-                            modal.classList.add('hidden');
-                            modal.classList.remove('flex');
-                        }
-                    }, 200);
-                }
-            },
-
-            saveEditManualDelivery: async (e, id) => {
-                e.preventDefault();
-                const s = DB.manual_deliveries.find(item => item.id === id);
-                if (!s) return;
-
-                const customerName = document.getElementById('edit-del-name').value;
-                const customerCode = document.getElementById('edit-del-code').value;
-                const chassisNo = document.getElementById('edit-del-chassis').value;
-                const brand = document.getElementById('edit-del-brand').value;
-                const model = document.getElementById('edit-del-model').value;
-                const tp = parseInt(document.getElementById('edit-del-tp').value) || 0;
-                const dp = parseInt(document.getElementById('edit-del-dp').value) || 0;
-                const tenure = document.getElementById('edit-del-tenure').value;
-                const upazila = document.getElementById('edit-del-upazila').value;
-                const purpose = document.getElementById('edit-del-purpose').value;
-
-                app.showLoader('Saving changes...');
-                try {
-                    await app.neonSQL`UPDATE manual_deliveries SET customer_name = ${customerName}, customer_id = ${customerCode}, chassis_no = ${chassisNo}, brand = ${brand}, model = ${model}, tp = ${tp}, dp = ${dp}, tenure = ${tenure}, upazila = ${upazila}, purpose_of_use = ${purpose} WHERE id = ${id}`;
-                    
-                    s.customer_name = customerName;
-                    s.customer_id = customerCode;
-                    s.chassis_no = chassisNo;
-                    s.brand = brand;
-                    s.model = model;
-                    s.tp = tp;
-                    s.dp = dp;
-                    s.tenure = tenure;
-                    s.upazila = upazila;
-                    s.purpose_of_use = purpose;
-
-                    app.hideLoader();
-                    app.closeEditManualModal();
-                    app.showToast('Changes saved successfully!', 'success');
-
-                    await app.init();
-                    app.renderAdminManualDeliveries();
-                } catch (err) {
-                    console.error(err);
-                    app.hideLoader();
-                    app.showToast('Failed to save changes.', 'error');
-                }
+            clearManualDeliveries: () => {
+                DB.sales = DB.sales.filter(s => !s.is_manual);
+                app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
+                app.renderAdminManualDeliveries();
             },
 
             renderAdminDashboard: () => {
@@ -10049,8 +9781,8 @@
                     }
                 });
 
-                // Pending and logged Manual Deliveries specifically for this MO and selected brand/type
-                const myManualDeliveries = DB.manual_deliveries.filter(m => m.territory_id === terrId && m.brand === brand && m.sale_type === saleType);
+                // Pending Manual Deliveries specifically for this MO and selected brand/type
+                const myManualDeliveries = brandSales.filter(s => s.is_manual);
 
                 // --- 5. Selected Month Performance (For new dynamic table) ---
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
@@ -10300,28 +10032,13 @@
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
-                                                         <div class="flex flex-col items-end justify-center gap-1">
-                                                             ${m.status === 'Pending' ? `
-                                                                 <div class="flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full">
-                                                                     <span class="relative flex h-1.5 w-1.5">
-                                                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                                                         <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
-                                                                     </span>
-                                                                     <span class="text-[9px] font-black uppercase tracking-tight">Pending Approval</span>
-                                                                 </div>
-                                                             ` : m.status === 'Approved' ? `
-                                                                 <div class="flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-full">
-                                                                     <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
-                                                                     <span class="text-[9px] font-black uppercase tracking-tight">Approved / Done</span>
-                                                                 </div>
-                                                             ` : `
-                                                                 <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-full">
-                                                                     <i data-lucide="x" class="w-3 h-3 text-rose-600"></i>
-                                                                     <span class="text-[9px] font-black uppercase tracking-tight">Rejected</span>
-                                                                 </div>
-                                                             `}
-                                                             ${m.comments ? `<span class="text-[9px] text-slate-500 font-medium italic mt-0.5 bg-slate-50 border border-slate-100 rounded px-1.5 py-0.5" title="${m.comments}">Msg: ${m.comments}</span>` : ''}
-                                                         </div>
+                                                        <div class="flex items-center justify-end gap-1.5">
+                                                            <span class="relative flex h-2 w-2">
+                                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                                                            </span>
+                                                            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-tight">Manual Sync Required</span>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             `).join('')}
@@ -11151,28 +10868,28 @@
                 app.refreshIcons();
             },
 
-            saveManualDelivery: async (e) => {
+            saveManualDelivery: (e) => {
                 e.preventDefault();
 
                 const type = document.getElementById('del-type').value;
                 const upazila = document.getElementById('del-upazila').value;
                 const customerName = document.getElementById('del-customer-name').value;
-                const customerCode = document.getElementById('del-customer-code').value || ('NEW_' + Math.floor(Math.random() * 10000));
+                const customerCode = document.getElementById('del-customer-code').value;
                 const chassisNo = document.getElementById('del-chassis').value;
                 const purpose = document.getElementById('del-purpose')?.value || '';
                 const oldCustomerId = document.getElementById('del-old-customer-id')?.value || '';
                 const brand = document.getElementById('del-brand').value;
                 const model = document.getElementById('del-model').value;
-                const tp = parseInt(document.getElementById('del-tp').value) || 0;
-                const dp = parseInt(document.getElementById('del-dp').value) || 0;
+                const tp = document.getElementById('del-tp').value;
+                const dp = document.getElementById('del-dp').value;
                 const tenure = document.getElementById('del-tenure').value;
                 const discType = document.getElementById('del-discount-type').value;
-                const discAmt = parseInt(document.getElementById('del-discount-amount')?.value) || 0;
+                const discAmt = document.getElementById('del-discount-amount')?.value || 0;
                 const giftItem = document.getElementById('del-gift-item')?.value || '';
 
                 app.showLoader('Logging delivery data...');
 
-                try {
+                setTimeout(() => {
                     const terrId = app.currentUser.territories[0];
                     const territory = DB.territories.find(t => t.id === terrId);
 
@@ -11187,19 +10904,10 @@
                         currentYear = h2Months.includes(app.currentMonth) ? y2 : y1;
                     }
 
-                    const recordId = 'man_' + Date.now();
-                    const timestampStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                    const status = 'Pending';
-                    const comments = '';
-                    const createdBy = app.currentUser.id;
-
-                    // Insert into manual_deliveries table
-                    await app.neonSQL`INSERT INTO manual_deliveries (id, customer_id, customer_name, chassis_no, district, territory_id, upazila, brand, model, purpose_of_use, unit_qty, fy, sales_year, sales_month, sale_type, tp, dp, tenure, discount_type, discount_amount, gift_item, old_customer_id, status, comments, timestamp, created_by) VALUES (${recordId}, ${customerCode}, ${customerName}, ${chassisNo}, ${territory.district}, ${terrId}, ${upazila}, ${brand}, ${model}, ${purpose}, 1, ${app.currentFY}, ${currentYear}, ${app.currentMonth}, ${type}, ${tp}, ${dp}, ${tenure}, ${discType}, ${discAmt}, ${giftItem}, ${oldCustomerId}, ${status}, ${comments}, ${timestampStr}, ${createdBy})`;
-
-                    // Add to memory manual deliveries list
-                    DB.manual_deliveries.push({
-                        id: recordId,
-                        customer_id: customerCode,
+                    // Push to simulated DB
+                    DB.sales.push({
+                        id: 's_man_' + Date.now(),
+                        customer_id: customerCode || ('NEW_' + Math.floor(Math.random() * 1000)),
                         customer_name: customerName,
                         chassis_no: chassisNo,
                         district: territory.district,
@@ -11213,30 +10921,20 @@
                         sales_year: currentYear,
                         sales_month: app.currentMonth,
                         sale_type: type,
-                        tp: tp,
-                        dp: dp,
-                        tenure: tenure,
-                        discount_type: discType,
-                        discount_amount: discAmt,
-                        gift_item: giftItem,
+                        financials: { tp, dp, tenure },
+                        discounts: { type: discType, amount: discAmt, gift: giftItem },
                         old_customer_id: oldCustomerId,
-                        status: status,
-                        comments: comments,
-                        timestamp: timestampStr,
-                        created_by: createdBy
+                        is_manual: true,
+                        timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     });
 
                     app.hideLoader();
                     app.closeDeliveryModal();
-                    app.showToast('Delivery logged! Sent to Admin for approval.');
+                    app.showToast('Delivery logged successfully! Field intelligence updated.');
 
                     // Re-render dashboard to show immediate reflection
                     app.renderSODashboard();
-                } catch (err) {
-                    console.error("Failed to log manual delivery:", err);
-                    app.hideLoader();
-                    app.showToast('Failed to save manual delivery to database.', 'error');
-                }
+                }, 800);
             },
 
             renderSOFirstTwoEMI: () => {
