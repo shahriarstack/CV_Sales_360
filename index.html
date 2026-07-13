@@ -1110,6 +1110,7 @@
             lastMonth: localStorage.getItem('aci_last_month') || 'March',
             currentFY: localStorage.getItem('aci_current_fy') || '2025-26',
             selectedFY: null,
+            selectedEMIBrand: null,
             getYtdMonths: (currentMonth) => {
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                 const idx = monthsList.indexOf(currentMonth);
@@ -2981,6 +2982,11 @@
                     emiData = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
                 }
 
+                // Brand Wise Filtering
+                if (app.selectedEMIBrand) {
+                    emiData = emiData.filter(e => e.brand === app.selectedEMIBrand);
+                }
+
                 // --- Dashboard KPI Calculations ---
                 const totalCust = emiData.length;
                 const paidCust = emiData.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
@@ -3006,9 +3012,31 @@
 
                 const html = `
                     <div class="max-w-6xl mx-auto fade-in">
-                        <div class="mb-6">
-                            <h1 class="text-2xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
-                            <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
+                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h1 class="text-2xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
+                            </div>
+                            <!-- Brand Selector Logos -->
+                            <div class="flex items-center gap-2 bg-white border border-slate-200 p-1 rounded-xl shadow-sm">
+                                <button onclick="app.selectedEMIBrand = null; app.renderAdminEMI();" 
+                                        class="px-3 py-1.5 rounded-lg text-xs font-black transition-all ${!app.selectedEMIBrand ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+                                        title="Show All Brands Combined">
+                                    ALL
+                                </button>
+                                <button onclick="app.selectedEMIBrand = 'Foton'; app.renderAdminEMI();" 
+                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${app.selectedEMIBrand === 'Foton' ? 'bg-[#041A54] text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+                                        title="Filter by Foton Brand">
+                                    <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-3.5 object-contain" alt="Foton Logo">
+                                    Foton
+                                </button>
+                                <button onclick="app.selectedEMIBrand = 'Mahindra'; app.renderAdminEMI();" 
+                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${app.selectedEMIBrand === 'Mahindra' ? 'bg-[#E5223E] text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'}"
+                                        title="Filter by Mahindra Brand">
+                                    <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-3.5 object-contain" alt="Mahindra Logo">
+                                    Mahindra
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- Premium Compact KPI Row -->
