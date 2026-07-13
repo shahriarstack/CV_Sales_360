@@ -2937,11 +2937,17 @@
                 app.renderAdminEMI();
             },
 
+            setAdminEMITerritoryFilter: (terrId) => {
+                app.adminEMITerritoryFilter = terrId;
+                app.renderAdminEMI();
+            },
+
             renderAdminEMI: () => {
                 localStorage.setItem('aci_last_page', 'emi');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const isAM = app.currentUser.role === 'am';
                 app.adminEMIBrandFilter = app.adminEMIBrandFilter || 'Total';
+                app.adminEMITerritoryFilter = app.adminEMITerritoryFilter || 'All';
 
                 let emiData = DB.emi;
                 if (isAM) {
@@ -2953,6 +2959,11 @@
                     emiData = emiData.filter(e => e.brand === app.adminEMIBrandFilter);
                 }
 
+                // Apply Territory Filter
+                if (app.adminEMITerritoryFilter !== 'All') {
+                    emiData = emiData.filter(e => e.territory_id === app.adminEMITerritoryFilter);
+                }
+
                 // --- Dashboard KPI Calculations ---
                 const totalCust = emiData.length;
                 const paidCust = emiData.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
@@ -2962,6 +2973,14 @@
                 const totalInstallment = emiData.reduce((sum, e) => sum + Number(e.installment || 0), 0);
                 const totalCol = emiData.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                 const collectionRate = totalInstallment > 0 ? Math.round((totalCol / totalInstallment) * 100) : 0;
+
+                // Progress Bar Calculations
+                const overallTotalDue = emiData.reduce((sum, e) => sum + (Number(e.installment || 0) + Number(e.overdue_total || 0)), 0);
+                const overallTotalCollected = totalCol;
+                const collectionProgressPercent = overallTotalDue > 0 ? Math.round((overallTotalCollected / overallTotalDue) * 100) : 0;
+
+                const collectedCust = emiData.filter(e => Number(e.collected || 0) > 0).length;
+                const custProgressPercent = totalCust > 0 ? Math.round((collectedCust / totalCust) * 100) : 0;
 
                 // Aggregate Territory Summary Table
                 const territorySummary = DB.territories.map(t => {
@@ -2976,6 +2995,12 @@
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
                 }).filter(Boolean);
 
+                // Populate active territories dropdown
+                const activeTerritories = DB.territories.filter(t => {
+                    if (isAM) return app.currentUser.territories.includes(t.id);
+                    return DB.emi.some(e => e.territory_id === t.id);
+                });
+
                 const activeBrand = app.adminEMIBrandFilter || 'Total';
                 const html = `
                     <div class="max-w-6xl mx-auto fade-in">
@@ -2985,17 +3010,71 @@
                                 <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
                             </div>
                             
-                            <!-- Premium Brand Selection Pill -->
-                            <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/50 shadow-inner">
-                                <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-2 rounded-xl text-xs font-black transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-md scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
-                                    Total
-                                </button>
-                                <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
-                                    <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
-                                </button>
-                                <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
-                                    <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
-                                </button>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Territory Dropdown Filter -->
+                                <div class="relative group">
+                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-xs font-black focus:outline-none focus:border-aci-blue appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
+                                        <option value="All" ${app.adminEMITerritoryFilter === 'All' ? 'selected' : ''}>All Territories</option>
+                                        ${activeTerritories.map(t => `<option value="${t.id}" ${app.adminEMITerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                    </select>
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Premium Brand Selection Pill -->
+                                <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/50 shadow-inner">
+                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-2 rounded-xl text-xs font-black transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-md scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
+                                        Total
+                                    </button>
+                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
+                                        <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
+                                    </button>
+                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
+                                        <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Analytics Panel -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <!-- Card 1: Revenue Collection Progress -->
+                            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-slate-800 relative overflow-hidden">
+                                <div class="absolute -right-10 -top-10 bg-indigo-500/10 w-40 h-40 rounded-full blur-2xl pointer-events-none"></div>
+                                <div class="flex justify-between items-center mb-3 relative z-10">
+                                    <div>
+                                        <h4 class="text-xs font-black uppercase text-indigo-200 tracking-wider">Revenue Collection</h4>
+                                        <p class="text-[10px] text-indigo-300/80 font-medium">Total Due vs Collection till now</p>
+                                    </div>
+                                    <span class="text-2xl font-black text-indigo-300">${collectionProgressPercent}%</span>
+                                </div>
+                                <div class="w-full bg-white/10 rounded-full h-3 mb-4 overflow-hidden p-[2px] border border-white/5">
+                                    <div class="bg-gradient-to-r from-indigo-400 to-cyan-400 h-full rounded-full transition-all duration-550 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-xs font-bold text-indigo-200 relative z-10">
+                                    <span>Collected: <span class="text-white font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
+                                    <span>Total Due: <span class="text-slate-200 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 2: Account Coverage Progress -->
+                            <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 rounded-2xl shadow-lg border border-slate-800 relative overflow-hidden">
+                                <div class="absolute -right-10 -top-10 bg-emerald-500/10 w-40 h-40 rounded-full blur-2xl pointer-events-none"></div>
+                                <div class="flex justify-between items-center mb-3 relative z-10">
+                                    <div>
+                                        <h4 class="text-xs font-black uppercase text-emerald-250 tracking-wider">Account Coverage</h4>
+                                        <p class="text-[10px] text-emerald-350/85 font-medium">Total Customers vs Collected Customers</p>
+                                    </div>
+                                    <span class="text-2xl font-black text-emerald-300">${custProgressPercent}%</span>
+                                </div>
+                                <div class="w-full bg-white/10 rounded-full h-3 mb-4 overflow-hidden p-[2px] border border-white/5">
+                                    <div class="bg-gradient-to-r from-emerald-400 to-teal-400 h-full rounded-full transition-all duration-550 ease-out" style="width: ${custProgressPercent}%"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-xs font-bold text-emerald-200 relative z-10">
+                                    <span>Collected Accounts: <span class="text-white font-extrabold">${collectedCust}</span></span>
+                                    <span>Total Accounts: <span class="text-slate-200 font-extrabold">${totalCust}</span></span>
+                                </div>
                             </div>
                         </div>
                         
