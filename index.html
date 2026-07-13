@@ -2981,6 +2981,7 @@
 
                 const collectedCust = emiData.filter(e => Number(e.collected || 0) > 0).length;
                 const custProgressPercent = totalCust > 0 ? Math.round((collectedCust / totalCust) * 100) : 0;
+                const partialPaidCust = emiData.filter(e => Number(e.collected || 0) > 0 && Number(e.collected || 0) < Number(e.installment || 0)).length;
 
                 // Aggregate Territory Summary Table
                 const territorySummary = DB.territories.map(t => {
@@ -3059,12 +3060,12 @@
                                 </div>
                             </div>
                             
-                            <!-- Card 2: Account Coverage Progress -->
+                            <!-- Card 2: File Coverage Progress -->
                             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
                                 <div class="flex justify-between items-center mb-2.5">
                                     <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Account Coverage</h4>
-                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Customers vs Collected Customers</p>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Files vs Collected Files</p>
                                     </div>
                                     <span class="text-xl font-black text-emerald-600">${custProgressPercent}%</span>
                                 </div>
@@ -3074,8 +3075,8 @@
                                 </div>
                                 
                                 <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
-                                    <span>Collected Accounts: <span class="text-slate-800 font-extrabold">${collectedCust}</span></span>
-                                    <span>Total Accounts: <span class="text-slate-800 font-extrabold">${totalCust}</span></span>
+                                    <span>Collected Files: <span class="text-slate-800 font-extrabold">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
+                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
                                 </div>
                             </div>
                         </div>
