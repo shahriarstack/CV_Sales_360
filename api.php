@@ -146,7 +146,6 @@ try {
 
         // Compile regex whitelist of allowed SQL statement structures
         $whitelist = [
-            '/^CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+manual_deliveries\s*\(.*?\)$/is',
             '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|manual_deliveries)$/i',
             '/^UPDATE\s+models\s+SET\s+brand\s*=\s*\?,\s*name\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+models\s*\(id,\s*brand,\s*name\)\s*VALUES\s*\(\?,\s*\?,\s*\?\)$/i',
@@ -167,14 +166,15 @@ try {
             '/^INSERT\s+INTO\s+projections\s*\(id,\s*fy,\s*month,\s*territory_id,\s*brand,\s*sale_type,\s*projection_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^INSERT\s+INTO\s+emi\s*\(id,\s*customer_code,\s*customer,\s*phone,\s*location,\s*delivery_date,\s*first_inst_date,\s*overdue_count,\s*overdue_total,\s*installment,\s*collected,\s*territory_id,\s*brand,\s*model,\s*installment_no\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
-            '/^INSERT\s+INTO\s+manual_deliveries\s*\(id,\s*customer_id,\s*customer_name,\s*chassis_no,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*purpose_of_use,\s*sale_type,\s*tp,\s*dp,\s*tenure,\s*discount_type,\s*discount_amount,\s*gift_item,\s*old_customer_id,\s*fy,\s*sales_year,\s*sales_month,\s*timestamp,\s*status,\s*comments\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*(?:ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id)?$/i',
             '/^INSERT\s+INTO\s+recovery_od\s*\(id,\s*fy,\s*month,\s*territory_id,\s*perfile_od,\s*total_overdue\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^UPDATE\s+emi\s+SET\s+collected\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^UPDATE\s+app_settings\s+SET\s+settings_json\s*=\s*\?(?:\s+WHERE\s+id\s*=\s*\'1\')?$/i',
             '/^INSERT\s+INTO\s+tiv_submissions\s*\(id,\s*territory,\s*month,\s*brand,\s*submission_data\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+links\s*\(id,\s*title,\s*url,\s*type,\s*icon\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+links\s+SET\s+title\s*=\s*\?,\s*url\s*=\s*\?,\s*type\s*=\s*\?,\s*icon\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od|manual_deliveries)\s+SET\s+.*?\s+WHERE\s+id\s*=\s*\?$/i'
+            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od|manual_deliveries)\s+SET\s+.*?\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^INSERT\s+INTO\s+manual_deliveries\s*\(id,\s*customer_id,\s*customer_name,\s*chassis_no,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*purpose_of_use,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type,\s*tp,\s*dp,\s*tenure,\s*discount_type,\s*discount_amount,\s*gift_item,\s*old_customer_id,\s*status,\s*comments,\s*timestamp,\s*created_by\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i'
+        ];
 
         foreach ($whitelist as $pattern) {
             if (preg_match($pattern, $trimmedQuery)) {
