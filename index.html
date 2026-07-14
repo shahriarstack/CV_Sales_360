@@ -1973,7 +1973,7 @@
                         renderSidebarBtn('manual', 'Manual Deliveries', 'clipboard-list', 'text-indigo-400', 'app.renderAdminManualDeliveries()'),
                         renderSidebarBtn('notices', 'Notices & Links', 'megaphone', 'text-amber-500', 'app.renderAdminNotices()', '', 'border border-amber-600/20 bg-amber-600/10 text-slate-200'),
                         renderSidebarBtn('tiv', 'TIV Management', 'bar-chart', 'text-amber-400', 'app.renderTIVManagement()'),
-                        renderSidebarBtn('settings', 'System Settings', 'settings', 'text-cyan-400', 'app.renderSystemSettings()')
+                        renderSidebarBtn('settings', 'System Config', 'settings', 'text-cyan-400', 'app.renderSystemSettings()', '', 'border border-cyan-500/20 bg-cyan-500/10 text-slate-200 hover:bg-cyan-500/20')
                     ].join('');
                 } else if (app.currentUser.role === 'am') {
                     links = [
@@ -4170,12 +4170,6 @@
                                             <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                         </div>
                                     </div>
-
-                                    <button onclick="app.renderSystemSettings()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
-                                        <span class="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
-                                        <i data-lucide="settings" class="w-3.5 h-3.5 transition-transform group-hover:rotate-90"></i>
-                                        <span>System Config</span>
-                                    </button>
 
                                     <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
@@ -9570,7 +9564,7 @@
                     if (indicator) indicator.remove();
                     
                     const span = btn.querySelector('span');
-                    if (span && span.innerText === 'System Settings') {
+                    if (span && (span.innerText === 'System Settings' || span.innerText === 'System Config')) {
                         btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-white/5');
                         btn.classList.add('bg-white/10', 'text-white', 'font-bold', 'relative', 'pl-7');
                         const ind = document.createElement('div');
