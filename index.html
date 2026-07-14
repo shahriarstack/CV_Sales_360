@@ -6018,213 +6018,230 @@
             },
 
             renderAdminAnalytics: (keepDropdownOpen = false) => {
-                localStorage.setItem('aci_last_page', 'analytics');
-                app.setupSidebar();
-                app.closeSidebar();
+                try {
+                    localStorage.setItem('aci_last_page', 'analytics');
+                    app.setupSidebar();
+                    app.closeSidebar();
 
-                const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
-                const passedMonthsCount = app.getYtdMonths(app.currentMonth).length || 1; // Avoid division by zero
+                    const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                    const passedMonthsCount = app.getYtdMonths(app.currentMonth).length || 1; // Avoid division by zero
 
-                // Helper to filter sales
-                const filterSales = (fy) => {
-                    return DB.sales.filter(s => {
-                        let match = s.fy === fy && String(s.unit_qty) !== '0';
-                        if (app.analyticsBrand !== 'All') match = match && s.brand === app.analyticsBrand;
-                        if (app.analyticsModel !== 'All') match = match && s.model === app.analyticsModel;
-                        if (app.analyticsTerritory !== 'All') match = match && s.territory_id === app.analyticsTerritory;
-                        if (app.analyticsUpazila !== 'All') match = match && s.upazila === app.analyticsUpazila;
-                        return match;
+                    // Helper to filter sales
+                    const filterSales = (fy) => {
+                        return DB.sales.filter(s => {
+                            let match = s.fy === fy && String(s.unit_qty) !== '0';
+                            if (app.analyticsBrand !== 'All') match = match && s.brand === app.analyticsBrand;
+                            if (app.analyticsModel !== 'All') match = match && s.model === app.analyticsModel;
+                            if (app.analyticsTerritory !== 'All') match = match && s.territory_id === app.analyticsTerritory;
+                            if (app.analyticsUpazila !== 'All') match = match && s.upazila === app.analyticsUpazila;
+                            return match;
+                        });
+                    };
+
+                    const salesFY1 = filterSales(app.analyticsFY1);
+                    const salesFY2 = filterSales(app.analyticsFY2);
+
+                    const totalFY1 = salesFY1.reduce((sum, s) => sum + Number(s.unit_qty), 0);
+                    const totalFY2 = salesFY2.reduce((sum, s) => sum + Number(s.unit_qty), 0);
+                    
+                    // For prediction, check if the FY is the current one. If not, prediction = actual.
+                    const predictFY1 = app.analyticsFY1 === app.currentFY ? Math.round((totalFY1 / passedMonthsCount) * 12) : totalFY1;
+                    const predictFY2 = app.analyticsFY2 === app.currentFY ? Math.round((totalFY2 / passedMonthsCount) * 12) : totalFY2;
+
+                    const growthStr = totalFY1 > 0 ? (((totalFY2 - totalFY1) / totalFY1) * 100).toFixed(1) + '%' : 'N/A';
+                    const isPositive = totalFY2 >= totalFY1;
+
+                    // Unique dropdown values
+                    const allFys = [...new Set(DB.sales.map(s => s.fy))].filter(Boolean).sort().reverse();
+                    if(allFys.length === 0) allFys.push(app.currentFY);
+                    
+                    const allBrands = [...new Set(DB.sales.map(s => s.brand))].filter(Boolean).sort();
+                    const allModels = [...new Set(DB.sales.map(s => s.model))].filter(Boolean).sort();
+                    const allTerritories = DB.territories.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+                    const allUpazilas = [...new Set(DB.sales.map(s => s.upazila))].filter(Boolean).sort();
+
+                    let html = `
+                        <div class="animate-fade-in pb-20">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                                        <i data-lucide="bar-chart-2" class="w-6 h-6 text-sky-500"></i> Historical Analytics
+                                    </h2>
+                                    <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
+                                </div>
+                            </div>
+
+                            <!-- Filter Bar -->
+                            <div class="glass p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end sticky top-16 z-20">
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
+                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Compare FY</label>
+                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        ${allFys.map(f => `<option value="${f}" ${app.analyticsFY2 === f ? 'selected' : ''}>${f}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Brand</label>
+                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsBrand === 'All' ? 'selected' : ''}>All Brands</option>
+                                        ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Model</label>
+                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsModel === 'All' ? 'selected' : ''}>All Models</option>
+                                        ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Territory</label>
+                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsTerritory === 'All' ? 'selected' : ''}>All Territories</option>
+                                        ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upazila</label>
+                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsUpazila === 'All' ? 'selected' : ''}>All Upazilas</option>
+                                        ${allUpazilas.map(u => `<option value="${u}" ${app.analyticsUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- KPI Overview -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
+                                        <h4 class="text-3xl font-black text-slate-800 mt-1 tracking-tight">${totalFY1.toLocaleString()} <span class="text-xs font-medium text-slate-500">Units</span></h4>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
+                                </div>
+                                
+                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
+                                        <h4 class="text-3xl font-black text-slate-800 mt-1 tracking-tight">${totalFY2.toLocaleString()} <span class="text-xs font-medium text-slate-500">Units</span></h4>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
+                                </div>
+
+                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-3xl font-black tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
+                                            <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-6 h-6 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-medium">Compared to ${app.analyticsFY1} baseline</div>
+                                </div>
+                            </div>
+
+                            <!-- Charts Section -->
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Line Chart -->
+                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col">
+                                    <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i data-lucide="activity" class="w-4 h-4 text-sky-500"></i> Monthly Trend Analysis
+                                    </h3>
+                                    <div class="flex-1 relative min-h-[300px]">
+                                        <canvas id="chartAnalyticsTrend"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <!-- Brand Share -->
+                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                                    <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> Brand Share (${app.analyticsFY2})
+                                    </h3>
+                                    <div class="flex-1 relative min-h-[300px] flex items-center justify-center">
+                                        <canvas id="chartAnalyticsBrand"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <!-- Territory Bar Chart -->
+                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-3 flex flex-col">
+                                    <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-amber-500"></i> Regional Comparison (${app.analyticsFY1} vs ${app.analyticsFY2})
+                                    </h3>
+                                    <div class="flex-1 relative min-h-[400px]">
+                                        <canvas id="chartAnalyticsRegion"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('main-content').innerHTML = html;
+                    lucide.createIcons();
+
+                    // Prepare data for charts
+                    const monthlyDataFY1 = new Array(12).fill(0);
+                    const monthlyDataFY2 = new Array(12).fill(0);
+                    
+                    salesFY1.forEach(s => {
+                        const idx = monthsList.indexOf(s.sales_month);
+                        if (idx !== -1) monthlyDataFY1[idx] += Number(s.unit_qty);
                     });
-                };
+                    
+                    salesFY2.forEach(s => {
+                        const idx = monthsList.indexOf(s.sales_month);
+                        if (idx !== -1) monthlyDataFY2[idx] += Number(s.unit_qty);
+                    });
 
-                const salesFY1 = filterSales(app.analyticsFY1);
-                const salesFY2 = filterSales(app.analyticsFY2);
+                    // Prepare Brand Data for FY2
+                    const brandMap = {};
+                    salesFY2.forEach(s => {
+                        const b = s.brand || 'Unknown';
+                        brandMap[b] = (brandMap[b] || 0) + Number(s.unit_qty);
+                    });
+                    
+                    // Prepare Regional Data (Territory)
+                    const regionMap = {};
+                    salesFY1.forEach(s => {
+                        const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+                        if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
+                        regionMap[tName].fy1 += Number(s.unit_qty);
+                    });
+                    salesFY2.forEach(s => {
+                        const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+                        if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
+                        regionMap[tName].fy2 += Number(s.unit_qty);
+                    });
 
-                const totalFY1 = salesFY1.reduce((sum, s) => sum + Number(s.unit_qty), 0);
-                const totalFY2 = salesFY2.reduce((sum, s) => sum + Number(s.unit_qty), 0);
-                
-                // For prediction, check if the FY is the current one. If not, prediction = actual.
-                const predictFY1 = app.analyticsFY1 === app.currentFY ? Math.round((totalFY1 / passedMonthsCount) * 12) : totalFY1;
-                const predictFY2 = app.analyticsFY2 === app.currentFY ? Math.round((totalFY2 / passedMonthsCount) * 12) : totalFY2;
+                    const sortedRegions = Object.keys(regionMap).sort((a,b) => regionMap[b].fy2 - regionMap[a].fy2); // Sort by FY2 descending
 
-                const growthStr = totalFY1 > 0 ? (((totalFY2 - totalFY1) / totalFY1) * 100).toFixed(1) + '%' : 'N/A';
-                const isPositive = totalFY2 >= totalFY1;
-
-                // Unique dropdown values
-                const allFys = [...new Set(DB.sales.map(s => s.fy))].filter(Boolean).sort().reverse();
-                if(allFys.length === 0) allFys.push(app.currentFY);
-                
-                const allBrands = [...new Set(DB.sales.map(s => s.brand))].filter(Boolean).sort();
-                const allModels = [...new Set(DB.sales.map(s => s.model))].filter(Boolean).sort();
-                const allTerritories = DB.territories.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
-                const allUpazilas = [...new Set(DB.sales.map(s => s.upazila))].filter(Boolean).sort();
-
-                let html = `
-                    <div class="animate-fade-in pb-20">
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 class="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                                    <i data-lucide="bar-chart-2" class="w-6 h-6 text-sky-500"></i> Historical Analytics
-                                </h2>
-                                <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
-                            </div>
-                        </div>
-
-                        <!-- Filter Bar -->
-                        <div class="glass p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end sticky top-16 z-20">
-                            <div class="flex-1 min-w-[120px]">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
-                                <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                    ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="flex-1 min-w-[120px]">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Compare FY</label>
-                                <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                    ${allFys.map(f => `<option value="${f}" ${app.analyticsFY2 === f ? 'selected' : ''}>${f}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="w-px h-10 bg-slate-200 hidden md:block"></div>
-                            <div class="flex-1 min-w-[120px]">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Brand</label>
-                                <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                    <option value="All">All Brands</option>
-                                    ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="flex-1 min-w-[120px]">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Model</label>
-                                <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                    <option value="All">All Models</option>
-                                    ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="w-px h-10 bg-slate-200 hidden md:block"></div>
-                            <div class="flex-1 min-w-[120px]">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Territory</label>
-                                <select onchange="app.analyticsTerritory = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                    <option value="All">All Territories</option>
-                                    ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="flex-1 min-w-[120px]">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upazila</label>
-                                <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                    <option value="All">All Upazilas</option>
-                                    ${allUpazilas.map(u => `<option value="${u}" ${app.analyticsUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- KPI Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div class="glass p-5 rounded-2xl border-l-4 border-slate-400 shadow-sm relative overflow-hidden">
-                                <i data-lucide="database" class="absolute -right-2 -bottom-2 w-12 h-12 text-slate-200 opacity-50"></i>
-                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
-                                <div class="mt-2 flex items-baseline gap-2">
-                                    <span class="text-3xl font-black text-slate-700">${totalFY1}</span>
-                                    <span class="text-xs text-slate-500 font-medium">Units</span>
+                    // Render Charts
+                    app.renderChartAnalyticsTrend(monthsList, monthlyDataFY1, monthlyDataFY2, app.analyticsFY1, app.analyticsFY2);
+                    app.renderChartAnalyticsBrand(Object.keys(brandMap), Object.values(brandMap));
+                    app.renderChartAnalyticsRegion(sortedRegions, sortedRegions.map(r => regionMap[r].fy1), sortedRegions.map(r => regionMap[r].fy2), app.analyticsFY1, app.analyticsFY2);
+                } catch (e) {
+                    console.error("Historical Analytics Error:", e);
+                    document.getElementById('main-content').innerHTML = `
+                        <div class="p-6 max-w-2xl mx-auto mt-10 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+                            <div class="flex gap-3 items-start">
+                                <div class="p-2 bg-red-100 text-red-600 rounded-lg">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                 </div>
-                                <div class="mt-1 text-[10px] font-semibold text-sky-600 bg-sky-50 border border-sky-100 rounded px-1.5 py-0.5 inline-block">Predicted Close: ${predictFY1}</div>
-                            </div>
-                            <div class="glass p-5 rounded-2xl border-l-4 border-sky-500 shadow-sm relative overflow-hidden">
-                                <i data-lucide="bar-chart-2" class="absolute -right-2 -bottom-2 w-12 h-12 text-sky-200 opacity-50"></i>
-                                <p class="text-[10px] font-bold text-sky-600 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
-                                <div class="mt-2 flex items-baseline gap-2">
-                                    <span class="text-3xl font-black text-sky-700">${totalFY2}</span>
-                                    <span class="text-xs text-sky-500 font-medium">Units</span>
-                                </div>
-                                <div class="mt-1 text-[10px] font-semibold text-sky-600 bg-sky-50 border border-sky-100 rounded px-1.5 py-0.5 inline-block">Predicted Close: ${predictFY2}</div>
-                            </div>
-                            <div class="glass p-5 rounded-2xl border-l-4 ${isPositive ? 'border-emerald-500' : 'border-rose-500'} shadow-sm relative overflow-hidden md:col-span-2">
-                                <i data-lucide="trending-up" class="absolute -right-2 -bottom-2 w-12 h-12 ${isPositive ? 'text-emerald-200' : 'text-rose-200'} opacity-50"></i>
-                                <p class="text-[10px] font-bold ${isPositive ? 'text-emerald-600' : 'text-rose-600'} uppercase tracking-wide">YOY Growth (FY2 vs FY1)</p>
-                                <div class="mt-2 flex items-baseline gap-2">
-                                    <span class="text-3xl font-black ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
-                                    <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
-                                </div>
-                                <div class="mt-1 text-xs text-slate-500 font-medium">Absolute Diff: <span class="font-bold ${totalFY2 - totalFY1 >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${totalFY2 >= totalFY1 ? '+' : ''}${totalFY2 - totalFY1} Units</span></div>
-                            </div>
-                        </div>
-
-                        <!-- Charts Section -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Line Chart -->
-                            <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col">
-                                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                    <i data-lucide="activity" class="w-4 h-4 text-sky-500"></i> Monthly Trend Analysis
-                                </h3>
-                                <div class="flex-1 relative min-h-[300px]">
-                                    <canvas id="chartAnalyticsTrend"></canvas>
-                                </div>
-                            </div>
-                            
-                            <!-- Brand Share -->
-                            <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
-                                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                    <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> Brand Share (${app.analyticsFY2})
-                                </h3>
-                                <div class="flex-1 relative min-h-[300px] flex items-center justify-center">
-                                    <canvas id="chartAnalyticsBrand"></canvas>
-                                </div>
-                            </div>
-                            
-                            <!-- Territory Bar Chart -->
-                            <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-3 flex flex-col">
-                                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                    <i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-amber-500"></i> Regional Comparison (${app.analyticsFY1} vs ${app.analyticsFY2})
-                                </h3>
-                                <div class="flex-1 relative min-h-[400px]">
-                                    <canvas id="chartAnalyticsRegion"></canvas>
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-bold text-red-800">Historical Analytics Failed to Load</h3>
+                                    <p class="text-xs text-red-600 mt-1">${e.message}</p>
+                                    <div class="mt-4 bg-slate-900 text-slate-300 p-3 rounded-lg text-[10px] font-mono overflow-auto max-h-48 leading-relaxed">
+                                        ${e.stack}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-
-                document.getElementById('main-content').innerHTML = html;
-                lucide.createIcons();
-
-                // Prepare data for charts
-                const monthlyDataFY1 = new Array(12).fill(0);
-                const monthlyDataFY2 = new Array(12).fill(0);
-                
-                salesFY1.forEach(s => {
-                    const idx = monthsList.indexOf(s.sales_month);
-                    if (idx !== -1) monthlyDataFY1[idx] += Number(s.unit_qty);
-                });
-                
-                salesFY2.forEach(s => {
-                    const idx = monthsList.indexOf(s.sales_month);
-                    if (idx !== -1) monthlyDataFY2[idx] += Number(s.unit_qty);
-                });
-
-                // Prepare Brand Data for FY2
-                const brandMap = {};
-                salesFY2.forEach(s => {
-                    const b = s.brand || 'Unknown';
-                    brandMap[b] = (brandMap[b] || 0) + Number(s.unit_qty);
-                });
-                
-                // Prepare Regional Data (Territory)
-                const regionMap = {};
-                salesFY1.forEach(s => {
-                    const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
-                    if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
-                    regionMap[tName].fy1 += Number(s.unit_qty);
-                });
-                salesFY2.forEach(s => {
-                    const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
-                    if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
-                    regionMap[tName].fy2 += Number(s.unit_qty);
-                });
-
-                const sortedRegions = Object.keys(regionMap).sort((a,b) => regionMap[b].fy2 - regionMap[a].fy2); // Sort by FY2 descending
-
-                // Render Charts
-                app.renderChartAnalyticsTrend(monthsList, monthlyDataFY1, monthlyDataFY2, app.analyticsFY1, app.analyticsFY2);
-                app.renderChartAnalyticsBrand(Object.keys(brandMap), Object.values(brandMap));
-                app.renderChartAnalyticsRegion(sortedRegions, sortedRegions.map(r => regionMap[r].fy1), sortedRegions.map(r => regionMap[r].fy2), app.analyticsFY1, app.analyticsFY2);
+                    `;
+                }
             },
 
             renderChartAnalyticsTrend: (labels, data1, data2, label1, label2) => {
