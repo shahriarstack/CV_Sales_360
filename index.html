@@ -3794,23 +3794,18 @@
                 });
 
                 // Area (AM) Aggregation
-                const amMapping = {
-                    't1': 'Md. Shafiqul', 't2': 'Md. Shafiqul',
-                    't3': 'Karim Uddin', 't6': 'Karim Uddin',
-                    't4': 'Hasan Mahmud', 't8': 'Hasan Mahmud',
-                    't5': 'SM Akram', 't7': 'SM Akram'
-                };
+                const amUsers = DB.users.filter(u => u.role === 'am' || u.role === 'admin');
 
                 const areaStatsMap = {};
                 activeTerritories.forEach(t => {
-                    const amName = amMapping[t.id] || 'General Area';
-                    const amUser = DB.users.find(u => u.role === 'am' && (u.name.includes(amName) || amName.includes(u.name.split(' (')[0])));
+                    const amUser = amUsers.find(u => Array.isArray(u.territories) && u.territories.includes(t.id));
+                    const amName = amUser ? amUser.name.split(' (')[0] : 'Unassigned';
                     const areaName = amUser?.area_name || 'Unassigned Area';
 
-                    if (!areaStatsMap[amName]) {
-                        areaStatsMap[amName] = {
-                            name: amName,
-                            areaName: areaName,
+                    if (!areaStatsMap[areaName]) {
+                        areaStatsMap[areaName] = {
+                            name: areaName,          // Main Title
+                            areaName: amName,        // Subtitle (AM Name)
                             ytd: { budget: 0, sales: 0, sply: 0 },
                             lastMonth: { budget: 0, sales: 0, sply: 0 },
                             currBudget: 0, currProj: 0, currSales: 0,
@@ -3818,29 +3813,30 @@
                             modelSales: {}
                         };
                     }
+                    const aStat = areaStatsMap[areaName];
                     const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
-                    areaStatsMap[amName].ytd.budget += perf.ytd.budget;
-                    areaStatsMap[amName].ytd.sales += perf.ytd.sales;
-                    areaStatsMap[amName].ytd.sply += perf.ytd.sply;
-                    areaStatsMap[amName].lastMonth.budget += perf.lastMonth.budget;
-                    areaStatsMap[amName].lastMonth.sales += perf.lastMonth.sales;
-                    areaStatsMap[amName].lastMonth.sply += perf.lastMonth.sply;
+                    aStat.ytd.budget += perf.ytd.budget;
+                    aStat.ytd.sales += perf.ytd.sales;
+                    aStat.ytd.sply += perf.ytd.sply;
+                    aStat.lastMonth.budget += perf.lastMonth.budget;
+                    aStat.lastMonth.sales += perf.lastMonth.sales;
+                    aStat.lastMonth.sply += perf.lastMonth.sply;
 
                     const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
                     const currentTgtsStats = tTargets.filter(tg => tg.month === app.currentMonth);
                     const tBudgetStats = currentTgtsStats.length > 0 ? currentTgtsStats.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
-                    areaStatsMap[amName].currBudget += tBudgetStats;
+                    aStat.currBudget += tBudgetStats;
 
                     const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType);
-                    areaStatsMap[amName].currProj += tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                    aStat.currProj += tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
 
                     const tSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth);
                     const tSales = tSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
-                    areaStatsMap[amName].currSales += tSales;
-                    tSalesRecords.forEach(s => { areaStatsMap[amName].modelSales[s.model] = (areaStatsMap[amName].modelSales[s.model] || 0) + Number(s.unit_qty || 0); });
+                    aStat.currSales += tSales;
+                    tSalesRecords.forEach(s => { aStat.modelSales[s.model] = (aStat.modelSales[s.model] || 0) + Number(s.unit_qty || 0); });
 
                     const tCurrSply = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
-                    areaStatsMap[amName].mockCurrSply += tCurrSply;
+                    aStat.mockCurrSply += tCurrSply;
                 });
                 let areaStats = Object.values(areaStatsMap).sort((a, b) => b.currSales - a.currSales);
 
@@ -5304,21 +5300,23 @@
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
-                                        <th class="px-6 py-4 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">AM</th>
-                                        <th class="px-6 py-4 font-black bg-indigo-50/50 border-r border-indigo-100">Area Name</th>
+                                        <th class="px-6 py-4 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
+                                        <th class="px-6 py-4 font-black bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
                                         ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="3">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
                                         ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="2">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
                                         <th class="px-3 py-4 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
                                     <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center">
-                                        <th class="px-6 py-3 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"></th>
-                                        <th class="px-6 py-3 bg-white border-r border-indigo-100 text-left">
+                                        <th class="px-6 py-3 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                             <div class="flex items-center justify-between gap-2">
-                                                <span>Area Name</span>
+                                                <span>Area</span>
                                                 <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
+                                        </th>
+                                        <th class="px-6 py-3 bg-white border-r border-indigo-100 text-left">
+                                            <span>AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
                                             <th class="px-2 py-3">Budget</th>
@@ -5393,7 +5391,7 @@
                                                     <h4 class="font-black text-slate-800">${area.name}</h4>
                                                     <div class="flex items-center gap-1.5 mt-0.5">
                                                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active Leader</p>
+                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${area.areaName}</p>
                                                     </div>
                                                 </div>
                                             </div>
