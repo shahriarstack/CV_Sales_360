@@ -1877,6 +1877,7 @@
                         if (sameRole && lastPage) {
                             switch (lastPage) {
                                 case 'map': app.renderAdminSalesMap(); break;
+                                case 'analytics': app.renderAdminAnalytics(); break;
                                 case 'ai': app.renderAdminAIInsights(); break;
                                 case 'users': app.renderUserManagement(); break;
                                 case 'models': app.renderModelManagement(); break;
@@ -6018,6 +6019,7 @@
 
             renderAdminAnalytics: (keepDropdownOpen = false) => {
                 localStorage.setItem('aci_last_page', 'analytics');
+                app.setupSidebar();
                 app.closeSidebar();
 
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
@@ -6054,7 +6056,7 @@
                 
                 const allBrands = [...new Set(DB.sales.map(s => s.brand))].filter(Boolean).sort();
                 const allModels = [...new Set(DB.sales.map(s => s.model))].filter(Boolean).sort();
-                const allTerritories = DB.territories.sort((a,b) => a.name.localeCompare(b.name));
+                const allTerritories = DB.territories.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
                 const allUpazilas = [...new Set(DB.sales.map(s => s.upazila))].filter(Boolean).sort();
 
                 let html = `
