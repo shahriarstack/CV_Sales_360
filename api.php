@@ -146,7 +146,7 @@ try {
 
         // Compile regex whitelist of allowed SQL statement structures
         $whitelist = [
-            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|manual_deliveries)$/i',
+            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions)$/i',
             '/^UPDATE\s+models\s+SET\s+brand\s*=\s*\?,\s*name\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+models\s*\(id,\s*brand,\s*name\)\s*VALUES\s*\(\?,\s*\?,\s*\?\)$/i',
             '/^DELETE\s+FROM\s+models\s+WHERE\s+id\s*=\s*\?$/i',
@@ -157,9 +157,9 @@ try {
             '/^UPDATE\s+users\s+SET\s+territories\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+territories\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+notices\s*\(id,\s*title,\s*message,\s*timestamp,\s*filetype,\s*filename\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links|manual_deliveries)\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links|manual_deliveries)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|emi|recovery_od|notices|links|manual_deliveries)$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|emi|recovery_od|notices|links)$/i',
             '/^DELETE\s+FROM\s+sales\s+WHERE\s+fy\s*=\s*\'2025-26\'$/i',
             '/^DELETE\s+FROM\s+sales\s+WHERE\s+fy\s*=\s*\'2024-25\'$/i',
             '/^INSERT\s+INTO\s+targets\s*\(id,\s*fy,\s*month,\s*territory_id,\s*upazila,\s*brand,\s*sale_type,\s*target_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
@@ -172,8 +172,7 @@ try {
             '/^INSERT\s+INTO\s+tiv_submissions\s*\(id,\s*territory,\s*month,\s*brand,\s*submission_data\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+links\s*\(id,\s*title,\s*url,\s*type,\s*icon\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+links\s+SET\s+title\s*=\s*\?,\s*url\s*=\s*\?,\s*type\s*=\s*\?,\s*icon\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od|manual_deliveries)\s+SET\s+.*?\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^INSERT\s+INTO\s+manual_deliveries\s*\(id,\s*customer_id,\s*customer_name,\s*chassis_no,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*purpose_of_use,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type,\s*tp,\s*dp,\s*tenure,\s*discount_type,\s*discount_amount,\s*gift_item,\s*old_customer_id,\s*status,\s*comments,\s*timestamp,\s*created_by\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i'
+            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+id\s*=\s*\?$/i'
         ];
 
         foreach ($whitelist as $pattern) {
@@ -197,13 +196,7 @@ try {
         $upperQuery = strtoupper(trim($query));
         if (stripos($upperQuery, 'SELECT') === 0 || stripos($upperQuery, 'SHOW') === 0) {
             $data = $stmt->fetchAll();
-            // Secure passwords and employee_ids in SELECT * FROM users outputs
-            if (preg_match('/SELECT\s+\*\s+FROM\s+users/i', $trimmedQuery)) {
-                foreach ($data as &$userRow) {
-                    unset($userRow['password']);
-                    unset($userRow['employee_id']);
-                }
-            }
+
         } else {
             $data = [
                 'affected_rows' => $stmt->rowCount(),
