@@ -6116,29 +6116,29 @@
                             </div>
 
                             <!-- KPI Overview -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                                <div class="glass p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
-                                        <h4 class="text-3xl font-black text-slate-800 mt-1 tracking-tight">${totalFY1.toLocaleString()} <span class="text-xs font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-2xl font-black text-slate-800 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
                                 </div>
                                 
-                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                                <div class="glass p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
-                                        <h4 class="text-3xl font-black text-slate-800 mt-1 tracking-tight">${totalFY2.toLocaleString()} <span class="text-xs font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-2xl font-black text-slate-800 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
                                 </div>
 
-                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[120px]">
+                                <div class="glass p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
-                                        <div class="flex items-center gap-2 mt-1">
-                                            <span class="text-3xl font-black tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
-                                            <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-6 h-6 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="text-2xl font-black tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
+                                            <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
                                         </div>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">Compared to ${app.analyticsFY1} baseline</div>
