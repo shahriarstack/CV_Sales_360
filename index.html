@@ -6052,19 +6052,19 @@
                     let monthlyTarget = 0;
                     if (t.month) {
                         if (activeMonthsInSelection.includes(t.month)) {
-                            monthlyTarget = t.target_qty;
+                            monthlyTarget = Number(t.target_qty || 0);
                         }
                     } else {
                         // Annual target: distribute proportionally to number of selected months
-                        monthlyTarget = Math.round((t.target_qty / 12) * activeMonthsInSelection.length);
+                        monthlyTarget = Math.round((Number(t.target_qty || 0) / 12) * activeMonthsInSelection.length);
                     }
                     totalTarget += monthlyTarget;
                     if (brandStats[t.brand]) brandStats[t.brand].target += monthlyTarget;
                 });
 
                 DB.projections.filter(p => p.fy === currentFY && activeMonthsInSelection.includes(p.month)).forEach(p => {
-                    totalProjection += p.projection_qty;
-                    if (brandStats[p.brand]) brandStats[p.brand].projection += p.projection_qty;
+                    totalProjection += Number(p.projection_qty || 0);
+                    if (brandStats[p.brand]) brandStats[p.brand].projection += Number(p.projection_qty || 0);
                 });
 
                 // LY Stats for Growth Analysis
@@ -6099,10 +6099,10 @@
                         let mTarget = 0;
                         if (tg.month) {
                             if (activeMonthsInSelection.includes(tg.month)) {
-                                mTarget = tg.target_qty;
+                                mTarget = Number(tg.target_qty || 0);
                             }
                         } else {
-                            mTarget = Math.round((tg.target_qty / 12) * activeMonthsInSelection.length);
+                            mTarget = Math.round((Number(tg.target_qty || 0) / 12) * activeMonthsInSelection.length);
                         }
                         return sum + mTarget;
                     }, 0);
