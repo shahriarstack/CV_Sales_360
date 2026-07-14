@@ -1881,6 +1881,7 @@
                                 case 'tiv': app.renderTIVManagement(); break;
                                 case 'settings': app.renderSystemSettings(); break;
                                 case 'pulse': app.renderAMPulseMatrix(); break;
+                                case 'bi_analyzer': app.renderBIAnalyzer(); break;
                                 default: app.renderAdminDashboard();
                             }
                         } else {
@@ -1969,6 +1970,7 @@
                         renderSidebarBtn('manual', 'Manual Deliveries', 'clipboard-list', 'text-indigo-400', 'app.renderAdminManualDeliveries()'),
                         renderSidebarBtn('tiv', 'TIV Management', 'bar-chart', 'text-amber-400', 'app.renderTIVManagement()'),
                         renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
+                        renderSidebarBtn('bi_analyzer', 'BI Historical Analyzer', 'trending-up', 'text-violet-400', 'app.renderBIAnalyzer()'),
                         renderSidebarBtn('notices', 'Notices & Links', 'megaphone', 'text-amber-500', 'app.renderAdminNotices()', '', 'border border-amber-600/20 bg-amber-600/10 text-slate-200'),
                         renderSidebarBtn('upload', 'Data Upload (Bulk)', 'upload-cloud', 'text-slate-400', 'app.renderDataUpload()'),
                         renderSidebarBtn('users', 'User Management', 'users', 'text-slate-400', 'app.renderUserManagement()'),
@@ -7252,6 +7254,531 @@
                 });
             },
 
+            renderBIAnalyzer: () => {
+                localStorage.setItem('aci_last_page', 'bi_analyzer');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
+
+                const uniqueFYs = [...new Set(DB.sales.map(s => s.fy).filter(Boolean))].sort().reverse();
+                if (uniqueFYs.length === 0) {
+                    uniqueFYs.push('2025-26');
+                }
+
+                if (!app.biSelectedFYs || app.biSelectedFYs.length === 0) {
+                    app.biSelectedFYs = uniqueFYs.slice(0, 2);
+                }
+
+                app.biBrand = app.biBrand || 'All';
+                app.biModel = app.biModel || 'All';
+                app.biTerritory = app.biTerritory || 'All';
+                app.biUpazila = app.biUpazila || 'All';
+
+                const currentFY = app.currentFY;
+
+                // Apply Filters
+                let filtered = DB.sales.filter(s => app.biSelectedFYs.includes(s.fy));
+                if (app.biBrand !== 'All') filtered = filtered.filter(s => s.brand === app.biBrand);
+                if (app.biModel !== 'All') filtered = filtered.filter(s => s.model === app.biModel);
+                if (app.biTerritory !== 'All') filtered = filtered.filter(s => s.territory_id === app.biTerritory);
+                if (app.biUpazila !== 'All') filtered = filtered.filter(s => s.upazila === app.biUpazila);
+
+                // Get dynamic options based on current selection
+                const brands = ['All', ...new Set(DB.sales.map(s => s.brand).filter(Boolean))];
+                let modelFilterSource = DB.sales;
+                if (app.biBrand !== 'All') modelFilterSource = modelFilterSource.filter(s => s.brand === app.biBrand);
+                const models = ['All', ...new Set(modelFilterSource.map(s => s.model).filter(Boolean))].sort();
+
+                const territoriesList = [{ id: 'All', name: 'All Territories' }, ...DB.territories.map(t => ({ id: t.id, name: t.name }))];
+                let upazilaSource = DB.sales;
+                if (app.biTerritory !== 'All') upazilaSource = upazilaSource.filter(s => s.territory_id === app.biTerritory);
+                const upazilas = ['All', ...new Set(upazilaSource.map(s => s.upazila).filter(Boolean))].sort();
+
+                // Compute KPI aggregates
+                const totalUnits = filtered.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                
+                // Group by FY to get YoY comparison
+                const salesByFY = {};
+                app.biSelectedFYs.forEach(fy => {
+                    salesByFY[fy] = filtered.filter(s => s.fy === fy).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                });
+
+                // Top Model
+                const modelCounts = {};
+                filtered.forEach(s => {
+                    if (s.model) modelCounts[s.model] = (modelCounts[s.model] || 0) + Number(s.unit_qty || 0);
+                });
+                let topModel = 'None';
+                let topModelQty = 0;
+                Object.entries(modelCounts).forEach(([k, v]) => {
+                    if (v > topModelQty) {
+                        topModel = k;
+                        topModelQty = v;
+                    }
+                });
+
+                // Top Territory
+                const terrCounts = {};
+                filtered.forEach(s => {
+                    if (s.territory_id) terrCounts[s.territory_id] = (terrCounts[s.territory_id] || 0) + Number(s.unit_qty || 0);
+                });
+                let topTerr = 'None';
+                let topTerrQty = 0;
+                Object.entries(terrCounts).forEach(([k, v]) => {
+                    if (v > topTerrQty) {
+                        topTerr = k;
+                        topTerrQty = v;
+                    }
+                });
+                const topTerrName = DB.territories.find(t => t.id === topTerr)?.name || topTerr;
+
+                // Automated Insights Engine
+                const insights = [];
+                if (app.biSelectedFYs.length >= 2) {
+                    const latestFY = app.biSelectedFYs[0];
+                    const prevFY = app.biSelectedFYs[1];
+                    const latestVal = salesByFY[latestFY] || 0;
+                    const prevVal = salesByFY[prevFY] || 0;
+                    const diff = latestVal - prevVal;
+                    const pct = prevVal > 0 ? Math.round((diff / prevVal) * 100) : 0;
+                    
+                    if (diff > 0) {
+                        insights.push(`Volume expanded by <strong class="text-green-400 font-bold">${diff} units (+${pct}%)</strong> from FY ${prevFY} to FY ${latestFY} under selected filters.`);
+                    } else if (diff < 0) {
+                        insights.push(`Volume contracted by <strong class="text-rose-400 font-bold">${Math.abs(diff)} units (${pct}%)</strong> from FY ${prevFY} to FY ${latestFY}.`);
+                    } else {
+                        insights.push(`Volume remained flat between FY ${prevFY} and FY ${latestFY}.`);
+                    }
+                }
+
+                // Find peak season
+                const monthCounts = {};
+                filtered.forEach(s => {
+                    if (s.sales_month) monthCounts[s.sales_month] = (monthCounts[s.sales_month] || 0) + Number(s.unit_qty || 0);
+                });
+                let peakMonth = 'None';
+                let peakMonthVal = 0;
+                Object.entries(monthCounts).forEach(([m, v]) => {
+                    if (v > peakMonthVal) {
+                        peakMonth = m;
+                        peakMonthVal = v;
+                    }
+                });
+                if (peakMonth !== 'None') {
+                    insights.push(`Historically, <strong class="text-indigo-400 font-bold">${peakMonth}</strong> is the strongest sales month, representing <strong class="text-slate-200">${Math.round((peakMonthVal / (totalUnits || 1)) * 100)}%</strong> of total volume.`);
+                }
+
+                // Model Affinity insight
+                if (topModel !== 'None' && totalUnits > 0) {
+                    const share = Math.round((topModelQty / totalUnits) * 100);
+                    insights.push(`Champion model is <strong class="text-amber-400 font-bold">${topModel}</strong>, capturing <strong class="text-slate-200">${share}%</strong> of the filtered cohort volume.`);
+                }
+
+                // Territory insight
+                if (topTerr !== 'None' && totalUnits > 0) {
+                    const share = Math.round((topTerrQty / totalUnits) * 100);
+                    insights.push(`Regional hub <strong class="text-emerald-400 font-bold">${topTerrName}</strong> contributes <strong class="text-slate-200">${share}%</strong> of the aggregated historical sales.`);
+                }
+
+                // Simple linear trend forecast
+                if (app.biSelectedFYs.length >= 2) {
+                    const latestFY = app.biSelectedFYs[0];
+                    const prevFY = app.biSelectedFYs[1];
+                    const latestVal = salesByFY[latestFY] || 0;
+                    const prevVal = salesByFY[prevFY] || 0;
+                    const forecastNext = Math.round(latestVal + (latestVal - prevVal) * 0.5);
+                    insights.push(`BI Predictive Trend projects next year's sales around <strong class="text-cyan-400 font-extrabold">${forecastNext} units</strong> under active filters.`);
+                }
+
+                const html = `
+                    <div class="max-w-7xl mx-auto fade-in pb-10">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-100 pb-5">
+                            <div>
+                                <h1 class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 tracking-tight flex items-center gap-2.5">
+                                    <div class="p-2 bg-purple-100 rounded-xl"><i data-lucide="trending-up" class="w-6 h-6 text-purple-600"></i></div>
+                                    BI Historical Analyzer
+                                </h1>
+                                <p class="text-sm text-slate-500 font-medium mt-1">Cross-fiscal year comparative dashboard and automated trend forecasting</p>
+                            </div>
+                            <button onclick="app.exportBICohortCSV()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-sm hover:shadow flex items-center gap-2 transition-all duration-300">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                Export Filtered Cohort
+                            </button>
+                        </div>
+
+                        <!-- Power BI KPI Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                            <div class="glass p-4.5 rounded-[1.25rem] border border-white shadow-sm flex flex-col justify-between">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Aggregate Sales Volume</span>
+                                <h3 class="text-3xl font-black text-slate-800 tracking-tight my-2">${totalUnits} <span class="text-xs font-semibold text-slate-400">units</span></h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Accumulated across selected slices</p>
+                            </div>
+                            <div class="glass p-4.5 rounded-[1.25rem] border border-white shadow-sm flex flex-col justify-between">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Champion Model</span>
+                                <h3 class="text-2xl font-black text-purple-600 tracking-tight my-2 truncate" title="${topModel}">${topModel}</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">${topModelQty} units (${totalUnits > 0 ? Math.round((topModelQty / totalUnits) * 100) : 0}% share)</p>
+                            </div>
+                            <div class="glass p-4.5 rounded-[1.25rem] border border-white shadow-sm flex flex-col justify-between">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Top Regional Area</span>
+                                <h3 class="text-2xl font-black text-indigo-600 tracking-tight my-2 truncate" title="${topTerrName}">${topTerrName}</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">${topTerrQty} units (${totalUnits > 0 ? Math.round((topTerrQty / totalUnits) * 100) : 0}% share)</p>
+                            </div>
+                            <div class="glass p-4.5 rounded-[1.25rem] border border-white shadow-sm flex flex-col justify-between">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Compare Cohort</span>
+                                <h3 class="text-base font-black text-slate-800 tracking-tight my-2">${app.biSelectedFYs.map(fy => `FY ${fy}`).join(' vs ')}</h3>
+                                <p class="text-[10px] text-slate-500 font-medium">Comparison dataset volume ratio</p>
+                            </div>
+                        </div>
+
+                        <!-- Power BI Splits -->
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            <div class="lg:col-span-1 space-y-5">
+                                <div class="glass p-5 rounded-[1.5rem] border border-white shadow-md">
+                                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-1.5"><i data-lucide="sliders" class="w-4 h-4 text-purple-600"></i> Interactive Slicers</h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-2">Compare Fiscal Years</label>
+                                            <div class="flex flex-col gap-1.5 max-h-36 overflow-y-auto pr-1">
+                                                ${uniqueFYs.map(fy => {
+                                                    const isChecked = app.biSelectedFYs.includes(fy);
+                                                    return `
+                                                        <label class="flex items-center justify-between p-2 rounded-lg border text-xs cursor-pointer transition-colors ${isChecked ? 'bg-purple-50/50 border-purple-200 font-bold text-purple-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">
+                                                            <div class="flex items-center gap-2">
+                                                                <input type="checkbox" onchange="app.toggleBIFY('${fy}')" ${isChecked ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                                <span>FY ${fy}</span>
+                                                            </div>
+                                                            <span class="text-[9px] text-slate-400">${salesByFY[fy] || 0} U</span>
+                                                        </label>
+                                                    `;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Brand</label>
+                                            <select onchange="app.biBrand=this.value; app.biModel='All'; app.renderBIAnalyzer()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors shadow-sm">
+                                                ${brands.map(b => `<option value="${b}" ${app.biBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Model</label>
+                                            <select onchange="app.biModel=this.value; app.renderBIAnalyzer()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors shadow-sm">
+                                                ${models.map(m => `<option value="${m}" ${app.biModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Territory</label>
+                                            <select onchange="app.biTerritory=this.value; app.biUpazila='All'; app.renderBIAnalyzer()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors shadow-sm">
+                                                ${territoriesList.map(t => `<option value="${t.id}" ${app.biTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Upazila</label>
+                                            <select onchange="app.biUpazila=this.value; app.renderBIAnalyzer()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors shadow-sm">
+                                                ${upazilas.map(u => `<option value="${u}" ${app.biUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
+                                            </select>
+                                        </div>
+
+                                        <button onclick="app.clearBIFilters()" class="w-full mt-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 text-[10px] font-black uppercase tracking-wider py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5">
+                                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                            Reset Slicers
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="lg:col-span-3 space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="glass p-5 rounded-[1.5rem] md:col-span-2 border border-white shadow-md">
+                                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-purple-600"></i> Monthly Sales Velocity Over Years</h3>
+                                        <div class="h-64 w-full relative">
+                                            <canvas id="biMonthlyTrendChart"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="glass p-5 rounded-[1.5rem] border border-white shadow-md">
+                                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5"><i data-lucide="pie-chart" class="w-4 h-4 text-purple-600"></i> Model Contribution Share</h3>
+                                        <div class="h-56 w-full relative flex items-center justify-center">
+                                            <canvas id="biModelShareChart"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="glass p-5 rounded-[1.5rem] border border-white shadow-md">
+                                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5"><i data-lucide="bar-chart-2" class="w-4 h-4 text-purple-600"></i> Territory Leaderboard</h3>
+                                        <div class="h-56 w-full relative">
+                                            <canvas id="biTerritoryRankChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-900 text-white p-6 rounded-[1.75rem] border border-slate-800 shadow-xl relative overflow-hidden group">
+                                    <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-125 transition-transform duration-700 pointer-events-none">
+                                        <i data-lucide="sparkles" class="w-48 h-48 text-purple-400"></i>
+                                    </div>
+                                    <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+                                        <i data-lucide="cpu" class="w-4 h-4 text-purple-400"></i>
+                                        Automated BI Strategic Summary
+                                    </h3>
+                                    <ul class="space-y-3.5 text-xs text-slate-300 font-medium">
+                                        ${insights.map(ins => `
+                                            <li class="flex items-start gap-2.5 leading-relaxed">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 shrink-0 shadow-[0_0_8px_#a855f7]"></span>
+                                                <span>${ins}</span>
+                                            </li>
+                                        `).join('')}
+                                        ${insights.length === 0 ? '<li class="text-slate-500 italic text-center py-4">No insights generated. Select multiple years or expand filters.</li>' : ''}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+                
+                setTimeout(() => {
+                    app.drawBICharts(filtered, app.biSelectedFYs);
+                }, 100);
+            },
+
+            toggleBIFY: (fy) => {
+                app.biSelectedFYs = app.biSelectedFYs || [];
+                const idx = app.biSelectedFYs.indexOf(fy);
+                if (idx > -1) {
+                    if (app.biSelectedFYs.length > 1) {
+                        app.biSelectedFYs.splice(idx, 1);
+                    } else {
+                        app.showToast("At least one Fiscal Year must be selected for comparison.", "warning");
+                        return;
+                    }
+                } else {
+                    app.biSelectedFYs.push(fy);
+                }
+                app.renderBIAnalyzer();
+            },
+
+            clearBIFilters: () => {
+                app.biBrand = 'All';
+                app.biModel = 'All';
+                app.biTerritory = 'All';
+                app.biUpazila = 'All';
+                app.renderBIAnalyzer();
+            },
+
+            exportBICohortCSV: () => {
+                let filtered = DB.sales.filter(s => app.biSelectedFYs.includes(s.fy));
+                if (app.biBrand !== 'All') filtered = filtered.filter(s => s.brand === app.biBrand);
+                if (app.biModel !== 'All') filtered = filtered.filter(s => s.model === app.biModel);
+                if (app.biTerritory !== 'All') filtered = filtered.filter(s => s.territory_id === app.biTerritory);
+                if (app.biUpazila !== 'All') filtered = filtered.filter(s => s.upazila === app.biUpazila);
+
+                if (filtered.length === 0) {
+                    app.showToast("No data found to export.", "warning");
+                    return;
+                }
+
+                let csv = 'Customer_ID,District,Territory,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n';
+                filtered.forEach(s => {
+                    const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+                    const row = [
+                        s.customer_id || '',
+                        s.district || '',
+                        tName || '',
+                        s.upazila || '',
+                        s.brand || '',
+                        s.model || '',
+                        s.unit_qty || 0,
+                        s.fy || '',
+                        s.sales_year || '',
+                        s.sales_month || '',
+                        s.sale_type || ''
+                    ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
+                    csv += row + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `BI_Historical_Cohort_Export_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            },
+
+            drawBICharts: (filteredData, selectedFYs) => {
+                if (window.biChart1) window.biChart1.destroy();
+                if (window.biChart2) window.biChart2.destroy();
+                if (window.biChart3) window.biChart3.destroy();
+
+                const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const shortMonths = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+                const ctx1 = document.getElementById('biMonthlyTrendChart');
+                if (ctx1) {
+                    const colors = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#06b6d4', '#64748b'];
+                    const datasets = selectedFYs.map((fy, index) => {
+                        const monthlySales = Array(12).fill(0);
+                        filteredData.filter(s => s.fy === fy).forEach(s => {
+                            const idx = monthsList.indexOf(s.sales_month);
+                            if (idx > -1) monthlySales[idx] += Number(s.unit_qty || 0);
+                        });
+
+                        const color = colors[index % colors.length];
+                        return {
+                            label: `FY ${fy}`,
+                            data: monthlySales,
+                            borderColor: color,
+                            backgroundColor: 'transparent',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
+                        };
+                    });
+
+                    window.biChart1 = new Chart(ctx1.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: shortMonths,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { font: { weight: 'bold', size: 9 }, color: '#475569' }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9, weight: 'bold' } } },
+                                y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 9 } } }
+                            }
+                        }
+                    });
+                }
+
+                const ctx2 = document.getElementById('biModelShareChart');
+                if (ctx2) {
+                    const modelShares = {};
+                    filteredData.forEach(s => {
+                        if (s.model) modelShares[s.model] = (modelShares[s.model] || 0) + Number(s.unit_qty || 0);
+                    });
+
+                    const sortedModels = Object.entries(modelShares).sort((a, b) => b[1] - a[1]);
+                    const top5 = sortedModels.slice(0, 5);
+                    const othersSum = sortedModels.slice(5).reduce((sum, item) => sum + item[1], 0);
+
+                    const labels = top5.map(item => item[0]);
+                    const values = top5.map(item => item[1]);
+                    if (othersSum > 0) {
+                        labels.push('Other Models');
+                        values.push(othersSum);
+                    }
+
+                    const colors = ['#8b5cf6', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#94a3b8'];
+
+                    window.biChart2 = new Chart(ctx2.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: values,
+                                backgroundColor: colors.slice(0, labels.length),
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: { font: { weight: 'bold', size: 8 }, color: '#475569', boxWidth: 10 }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                const ctx3 = document.getElementById('biTerritoryRankChart');
+                if (ctx3) {
+                    const terrShares = {};
+                    filteredData.forEach(s => {
+                        if (s.territory_id) {
+                            const name = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+                            terrShares[name] = (terrShares[name] || 0) + Number(s.unit_qty || 0);
+                        }
+                    });
+
+                    const sortedTerrs = Object.entries(terrShares).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                    const labels = sortedTerrs.map(item => item[0]);
+                    const values = sortedTerrs.map(item => item[1]);
+
+                    window.biChart3 = new Chart(ctx3.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Units Sold',
+                                data: values,
+                                backgroundColor: '#6366f1',
+                                borderRadius: 5,
+                                barThickness: 10
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                x: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 9 } } },
+                                y: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9, weight: 'bold' } } }
+                            }
+                        }
+                    });
+                }
+            },
+
+            renderChartBrand: (f, m) => {
+                if (app.charts.brand) app.charts.brand.destroy();
+                const ctx = document.getElementById('chartBrand').getContext('2d');
+
+                // Glassmorphic Gradients for Doughnut
+                const fotonGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                fotonGrad.addColorStop(0, 'rgba(4, 26, 84, 0.9)');
+                fotonGrad.addColorStop(1, 'rgba(4, 26, 84, 0.3)');
+
+                const mahindraGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                mahindraGrad.addColorStop(0, 'rgba(229, 34, 62, 0.9)');
+                mahindraGrad.addColorStop(1, 'rgba(229, 34, 62, 0.3)');
+
+                app.charts.brand = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Foton', 'Mahindra'],
+                        datasets: [{
+                            data: [f, m],
+                            backgroundColor: [fotonGrad, mahindraGrad],
+                            borderColor: '#ffffff',
+                            borderWidth: 3,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+                });
+            },
+
             renderDataUpload: () => {
                 localStorage.setItem('aci_last_page', 'upload');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
@@ -7364,15 +7891,15 @@
                                 </div>
                             </div>
                             
-                            <!-- 5. Last Year Sales Data -->
+                            <!-- 5. Historical Sales Data -->
                             <div class="glass p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-rose-600 group-hover:scale-110 transition-transform"></i> Last Year Sales</h3>
-                                        <p class="text-[10px] text-slate-500 mt-1">Historical FY data for YOY analysis</p>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-rose-600 group-hover:scale-110 transition-transform"></i> Historical Sales</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Upload multiple previous years sales</p>
                                         <div class="flex items-center gap-1 mt-2.5 bg-rose-50/80 border border-rose-100 px-2 py-0.5 rounded-full w-max">
                                             <i data-lucide="clock" class="w-3 h-3 text-rose-500"></i>
-                                            <span class="text-[9px] font-black text-rose-700 uppercase tracking-widest">Updated: 15 May '26</span>
+                                            <span class="text-[9px] font-black text-rose-700 uppercase tracking-widest">Multi-Year Support</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
@@ -7383,8 +7910,8 @@
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-last-year').click()">
                                     <i data-lucide="upload-cloud" class="w-8 h-8 text-rose-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload LY Sales CSV</p>
-                                    <input type="file" id="file-last-year" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Last Year Sales Data', 'last_year_sales')">
+                                    <p class="text-xs font-semibold text-slate-700">Upload Historical CSV</p>
+                                    <input type="file" id="file-last-year" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Historical Sales Data', 'last_year_sales')">
                                 </div>
                             </div>
 
@@ -8157,8 +8684,18 @@
                                              DB.sales = DB.sales.filter(s => s.fy !== currentFY);
                                              if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${currentFY}`;
                                          } else if (dataKey === 'last_year_sales') {
-                                             DB.sales = DB.sales.filter(s => s.fy !== lastFY);
-                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`;
+                                              const fyToPurge = new Set();
+                                              parsedData.forEach(row => {
+                                                  const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
+                                                  const recordFY = app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, lastFY);
+                                                  if (recordFY && recordFY !== currentFY) {
+                                                      fyToPurge.add(recordFY);
+                                                  }
+                                              });
+                                              for (const fy of fyToPurge) {
+                                                  DB.sales = DB.sales.filter(s => s.fy !== fy);
+                                                  if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${fy}`;
+                                              }
                                          } else if (dataKey === 'recovery_od') {
                                             DB.recovery_od = [];
                                             if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`;
@@ -8222,11 +8759,11 @@
                                             } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
                                                 const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
                                                 const recordFY = app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? currentFY : lastFY));
-                                                const targetFY = dataKey === 'sales' ? currentFY : lastFY;
                                                 
-                                                // Skip rows that do not match the target fiscal year to prevent duplicates and cross-contamination
-                                                if (recordFY !== targetFY) {
-                                                    return;
+                                                if (dataKey === 'sales') {
+                                                    if (recordFY !== currentFY) return;
+                                                } else if (dataKey === 'last_year_sales') {
+                                                    if (recordFY === currentFY) return; // protect current active year
                                                 }
 
                                                 const customerId = app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`;
