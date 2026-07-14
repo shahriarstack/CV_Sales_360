@@ -1283,6 +1283,12 @@
                     DB.projections = projections;
                     DB.emi = emi;
                     DB.sales = sales;
+                    try {
+                        const localManual = JSON.parse(localStorage.getItem('aci_manual_deliveries')) || [];
+                        if (localManual.length > 0) {
+                            DB.sales = [...DB.sales, ...localManual];
+                        }
+                    } catch(e) {}
                     DB.recovery_od = recovery_od;
                     
                     // Parse JSON fields where necessary
@@ -3448,6 +3454,7 @@
 
             clearManualDeliveries: () => {
                 DB.sales = DB.sales.filter(s => !s.is_manual);
+                localStorage.removeItem('aci_manual_deliveries');
                 app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
                 app.renderAdminManualDeliveries();
             },
@@ -3456,6 +3463,7 @@
                 const idx = DB.sales.findIndex(s => s.id === id);
                 if (idx > -1) {
                     DB.sales[idx].approval_status = 'Done';
+                    localStorage.setItem('aci_manual_deliveries', JSON.stringify(DB.sales.filter(s => s.is_manual)));
                     app.showToast('Manual delivery approved.', 'success');
                     app.renderAdminManualDeliveries();
                 }
@@ -3464,6 +3472,7 @@
             deleteManualDelivery: (id) => {
                 if (confirm('Are you sure you want to delete this manual delivery?')) {
                     DB.sales = DB.sales.filter(s => s.id !== id);
+                    localStorage.setItem('aci_manual_deliveries', JSON.stringify(DB.sales.filter(s => s.is_manual)));
                     app.showToast('Manual delivery deleted.', 'success');
                     app.renderAdminManualDeliveries();
                 }
@@ -3614,6 +3623,8 @@
                     
                     if (!DB.sales[idx].discounts) DB.sales[idx].discounts = { type: 'Cash', amount: 0, gift: '' };
                     DB.sales[idx].discounts.amount = document.getElementById('em-disc-amt').value;
+                    
+                    localStorage.setItem('aci_manual_deliveries', JSON.stringify(DB.sales.filter(s => s.is_manual)));
 
                     app.showToast('Delivery updated successfully.', 'success');
                     app.closeEditManualDeliveryModal();
@@ -11228,6 +11239,8 @@
                         admin_comments: '',
                         timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     });
+                    
+                    localStorage.setItem('aci_manual_deliveries', JSON.stringify(DB.sales.filter(s => s.is_manual)));
 
                     app.hideLoader();
                     app.closeDeliveryModal();
