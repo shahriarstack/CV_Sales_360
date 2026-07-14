@@ -1965,14 +1965,14 @@
                     links = [
                         renderSidebarBtn('dashboard', 'Dashboard', 'pie-chart', 'text-aci-gold', 'app.renderAdminDashboard()'),
                         renderSidebarBtn('map', 'Upazila Sales Map', 'map', 'text-emerald-400', 'app.renderAdminSalesMap()'),
-                        renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
-                        renderSidebarBtn('users', 'User Management', 'users', 'text-slate-400', 'app.renderUserManagement()'),
-                        renderSidebarBtn('models', 'Manage Models', 'box', 'text-slate-400', 'app.renderModelManagement()'),
-                        renderSidebarBtn('upload', 'Data Upload (Bulk)', 'upload-cloud', 'text-slate-400', 'app.renderDataUpload()'),
                         renderSidebarBtn('emi', 'EMI Analytics', 'banknote', 'text-slate-400', 'app.renderAdminEMI()'),
                         renderSidebarBtn('manual', 'Manual Deliveries', 'clipboard-list', 'text-indigo-400', 'app.renderAdminManualDeliveries()'),
-                        renderSidebarBtn('notices', 'Notices & Links', 'megaphone', 'text-amber-500', 'app.renderAdminNotices()', '', 'border border-amber-600/20 bg-amber-600/10 text-slate-200'),
                         renderSidebarBtn('tiv', 'TIV Management', 'bar-chart', 'text-amber-400', 'app.renderTIVManagement()'),
+                        renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
+                        renderSidebarBtn('notices', 'Notices & Links', 'megaphone', 'text-amber-500', 'app.renderAdminNotices()', '', 'border border-amber-600/20 bg-amber-600/10 text-slate-200'),
+                        renderSidebarBtn('upload', 'Data Upload (Bulk)', 'upload-cloud', 'text-slate-400', 'app.renderDataUpload()'),
+                        renderSidebarBtn('users', 'User Management', 'users', 'text-slate-400', 'app.renderUserManagement()'),
+                        renderSidebarBtn('models', 'Manage Models', 'box', 'text-slate-400', 'app.renderModelManagement()'),
                         renderSidebarBtn('settings', 'System Config', 'settings', 'text-cyan-400', 'app.renderSystemSettings()', '', 'border border-cyan-500/20 bg-cyan-500/10 text-slate-200 hover:bg-cyan-500/20')
                     ].join('');
                 } else if (app.currentUser.role === 'am') {
