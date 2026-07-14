@@ -3287,6 +3287,8 @@
                                         <th class="px-5 py-3 font-semibold text-right">Financials (BDT)</th>
                                         <th class="px-5 py-3 font-semibold">Offers & Gifts</th>
                                         <th class="px-5 py-3 font-semibold">Logged On</th>
+                                        <th class="px-5 py-3 font-semibold text-center">Status</th>
+                                        <th class="px-5 py-3 font-semibold text-right">Actions</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
                                         <th class="px-5 py-2 border-b border-slate-200"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
@@ -3301,6 +3303,14 @@
                                         <th class="px-5 py-2 border-b border-slate-200 text-right"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
                                         <th class="px-5 py-2 border-b border-slate-200"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
                                         <th class="px-5 py-2 border-b border-slate-200"><span class="text-[10px] text-slate-400 font-normal">Use top filter</span></th>
+                                        <th class="px-5 py-2 border-b border-slate-200 text-center">
+                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="">All Status</option>
+                                                <option value="pending approval">Pending</option>
+                                                <option value="done">Done</option>
+                                            </select>
+                                        </th>
+                                        <th class="px-5 py-2 border-b border-slate-200 text-right"><span class="text-[10px] text-slate-400 font-normal">-</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -3344,14 +3354,37 @@
                                                 ${s.discounts?.gift ? `<div class="text-[10px] text-indigo-600 font-bold mt-1 flex items-center gap-1"><i data-lucide="gift" class="w-3 h-3"></i> ${s.discounts.gift}</div>` : ''}
                                             </td>
                                             <td class="px-5 py-4 border-b border-slate-100 text-xs text-slate-500 font-medium whitespace-nowrap">
-                                                <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded w-max">
-                                                    <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-slate-400"></i>
-                                                    ${s.timestamp || 'Recent'}
+                                                <div class="flex flex-col gap-1">
+                                                    <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded w-max">
+                                                        <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                                        ${s.timestamp || 'Recent'}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-4 border-b border-slate-100 text-center">
+                                                <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${s.approval_status === 'Done' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                                    ${s.approval_status || 'Pending Approval'}
+                                                </span>
+                                                ${s.admin_comments ? `<div class="text-[9px] text-slate-400 mt-1 truncate max-w-[100px] mx-auto" title="${s.admin_comments}">Note: ${s.admin_comments}</div>` : ''}
+                                            </td>
+                                            <td class="px-5 py-4 border-b border-slate-100 text-right">
+                                                <div class="flex items-center justify-end gap-2">
+                                                    ${s.approval_status !== 'Done' ? `
+                                                        <button onclick="app.approveManualDelivery('${s.id}')" title="Approve" class="p-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition-colors shadow-sm">
+                                                            <i data-lucide="check" class="w-4 h-4"></i>
+                                                        </button>
+                                                    ` : ''}
+                                                    <button onclick="app.editManualDeliveryModal('${s.id}')" title="Edit/Comment" class="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded transition-colors shadow-sm">
+                                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                                    </button>
+                                                    <button onclick="app.deleteManualDelivery('${s.id}')" title="Delete" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded transition-colors shadow-sm">
+                                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
                                     `}).join('')}
-                                    ${manualSales.length === 0 ? '<tr><td colspan="6" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
+                                    ${manualSales.length === 0 ? '<tr><td colspan="8" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
@@ -3418,6 +3451,176 @@
                 app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
                 app.renderAdminManualDeliveries();
             },
+
+            approveManualDelivery: (id) => {
+                const idx = DB.sales.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    DB.sales[idx].approval_status = 'Done';
+                    app.showToast('Manual delivery approved.', 'success');
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+            deleteManualDelivery: (id) => {
+                if (confirm('Are you sure you want to delete this manual delivery?')) {
+                    DB.sales = DB.sales.filter(s => s.id !== id);
+                    app.showToast('Manual delivery deleted.', 'success');
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+            closeEditManualDeliveryModal: () => {
+                const m = document.getElementById('edit-manual-modal');
+                if (m) {
+                    m.classList.add('hidden');
+                    m.classList.remove('opacity-100');
+                    document.getElementById('edit-manual-content').classList.remove('scale-100');
+                    document.getElementById('edit-manual-content').classList.add('scale-95');
+                }
+            },
+
+            editManualDeliveryModal: (id) => {
+                const s = DB.sales.find(x => x.id === id);
+                if (!s) return;
+                
+                let modal = document.getElementById('edit-manual-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'edit-manual-modal';
+                    modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
+                    document.body.appendChild(modal);
+                }
+                
+                modal.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-manual-content">
+                        <div class="bg-gradient-to-r from-blue-900 to-indigo-800 p-5 text-white flex justify-between items-center shrink-0 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-pattern opacity-10"></div>
+                            <div class="relative z-10">
+                                <h2 class="text-xl font-black tracking-tight">Edit Manual Delivery</h2>
+                                <p class="text-xs text-blue-200 mt-1">Review and update delivery details for ID: ${s.id}</p>
+                            </div>
+                            <button onclick="app.closeEditManualDeliveryModal()" class="relative z-10 text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50">
+                            <form id="edit-manual-form" onsubmit="app.saveEditedManualDelivery(event, '${s.id}')" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Customer & Vehicle Details</h3>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Customer Name</label>
+                                            <input type="text" id="em-customer-name" value="${s.customer_name || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Chassis Number</label>
+                                            <input type="text" id="em-chassis" value="${s.chassis_no || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Brand</label>
+                                                <select id="em-brand" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="Foton" ${s.brand === 'Foton' ? 'selected' : ''}>Foton</option>
+                                                    <option value="Mahindra" ${s.brand === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Model</label>
+                                                <input type="text" id="em-model" value="${s.model || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sale Type</label>
+                                                <select id="em-type" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="New Sale" ${s.sale_type === 'New Sale' ? 'selected' : ''}>New Sale</option>
+                                                    <option value="Exchange" ${s.sale_type === 'Exchange' ? 'selected' : ''}>Exchange</option>
+                                                    <option value="Corporate" ${s.sale_type === 'Corporate' ? 'selected' : ''}>Corporate</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Purpose of Use</label>
+                                                <select id="em-purpose" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="Commercial" ${s.purpose_of_use === 'Commercial' ? 'selected' : ''}>Commercial</option>
+                                                    <option value="Personal" ${s.purpose_of_use === 'Personal' ? 'selected' : ''}>Personal</option>
+                                                    <option value="Agricultural" ${s.purpose_of_use === 'Agricultural' ? 'selected' : ''}>Agricultural</option>
+                                                    <option value="Others" ${s.purpose_of_use === 'Others' ? 'selected' : ''}>Others</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Financials & Comments</h3>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Trade Price (TP)</label>
+                                                <input type="number" id="em-tp" value="${s.financials?.tp || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Down Payment (DP)</label>
+                                                <input type="number" id="em-dp" value="${s.financials?.dp || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tenure (Months)</label>
+                                                <input type="number" id="em-tenure" value="${s.financials?.tenure || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Discount Amount</label>
+                                                <input type="number" id="em-disc-amt" value="${s.discounts?.amount || 0}" min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Admin Comments</label>
+                                            <textarea id="em-comments" rows="3" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Add note for Sales Officer...">${s.admin_comments || ''}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                                    <button type="button" onclick="app.closeEditManualDeliveryModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+                                    <button type="submit" class="px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-colors">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('opacity-100');
+                    document.getElementById('edit-manual-content').classList.remove('scale-95');
+                    document.getElementById('edit-manual-content').classList.add('scale-100');
+                }, 10);
+                app.refreshIcons();
+            },
+
+            saveEditedManualDelivery: (e, id) => {
+                e.preventDefault();
+                const idx = DB.sales.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    DB.sales[idx].customer_name = document.getElementById('em-customer-name').value;
+                    DB.sales[idx].chassis_no = document.getElementById('em-chassis').value;
+                    DB.sales[idx].brand = document.getElementById('em-brand').value;
+                    DB.sales[idx].model = document.getElementById('em-model').value;
+                    DB.sales[idx].sale_type = document.getElementById('em-type').value;
+                    DB.sales[idx].purpose_of_use = document.getElementById('em-purpose').value;
+                    DB.sales[idx].admin_comments = document.getElementById('em-comments').value;
+                    
+                    if (!DB.sales[idx].financials) DB.sales[idx].financials = {};
+                    DB.sales[idx].financials.tp = document.getElementById('em-tp').value;
+                    DB.sales[idx].financials.dp = document.getElementById('em-dp').value;
+                    DB.sales[idx].financials.tenure = document.getElementById('em-tenure').value;
+                    
+                    if (!DB.sales[idx].discounts) DB.sales[idx].discounts = { type: 'Cash', amount: 0, gift: '' };
+                    DB.sales[idx].discounts.amount = document.getElementById('em-disc-amt').value;
+
+                    app.showToast('Delivery updated successfully.', 'success');
+                    app.closeEditManualDeliveryModal();
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
 
             renderAdminDashboard: () => {
                 localStorage.setItem('aci_last_page', 'dashboard');
@@ -10118,12 +10321,22 @@
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
-                                                        <div class="flex items-center justify-end gap-1.5">
-                                                            <span class="relative flex h-2 w-2">
-                                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                                                            </span>
-                                                            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-tight">Manual Sync Required</span>
+                                                        <div class="flex flex-col items-end justify-center gap-1 text-right">
+                                                            ${m.approval_status === 'Done' ? 
+                                                                `<div class="flex items-center justify-end gap-1.5 text-emerald-600">
+                                                                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                                                    <span class="text-[10px] font-black uppercase tracking-tight">Done</span>
+                                                                 </div>` 
+                                                            : 
+                                                                `<div class="flex items-center justify-end gap-1.5 text-amber-500">
+                                                                    <span class="relative flex h-2 w-2">
+                                                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                                                    </span>
+                                                                    <span class="text-[10px] font-black uppercase tracking-tight">${m.approval_status || 'Pending Approval'}</span>
+                                                                 </div>`
+                                                            }
+                                                            ${m.admin_comments ? `<div class="text-[9px] text-slate-500 italic max-w-[150px] truncate" title="${m.admin_comments}">Note: ${m.admin_comments}</div>` : ''}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -11011,6 +11224,8 @@
                         discounts: { type: discType, amount: discAmt, gift: giftItem },
                         old_customer_id: oldCustomerId,
                         is_manual: true,
+                        approval_status: 'Pending Approval',
+                        admin_comments: '',
                         timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     });
 

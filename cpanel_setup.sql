@@ -295,39 +295,4 @@ INSERT INTO app_settings (id, settings_json) VALUES
 ('1', '{"currentMonth": "April", "lastMonth": "March"}')
 ON DUPLICATE KEY UPDATE id=id;
 
--- 14. Manual Deliveries Table
-CREATE TABLE IF NOT EXISTS manual_deliveries (
-    id VARCHAR(100) PRIMARY KEY,
-    customer_id VARCHAR(100),
-    customer_name VARCHAR(255),
-    chassis_no VARCHAR(100),
-    district VARCHAR(100),
-    territory_id VARCHAR(50),
-    upazila VARCHAR(100),
-    brand VARCHAR(100),
-    model VARCHAR(100),
-    purpose_of_use VARCHAR(255),
-    unit_qty INTEGER,
-    fy VARCHAR(20),
-    sales_year INTEGER,
-    sales_month VARCHAR(20),
-    sale_type VARCHAR(50),
-    tp INTEGER,
-    dp INTEGER,
-    tenure VARCHAR(50),
-    discount_type VARCHAR(50),
-    discount_amount INTEGER,
-    gift_item VARCHAR(255),
-    old_customer_id VARCHAR(100),
-    status VARCHAR(50) DEFAULT 'Pending',
-    comments TEXT,
-    timestamp VARCHAR(50),
-    created_by VARCHAR(50)
-);
-
-INSERT INTO manual_deliveries (id, customer_id, customer_name, chassis_no, district, territory_id, upazila, brand, model, purpose_of_use, unit_qty, fy, sales_year, sales_month, sale_type, tp, dp, tenure, discount_type, discount_amount, gift_item, old_customer_id, status, comments, timestamp, created_by) VALUES
-('man1', 'C-MAN-001', 'Abul Hashim', 'CHAS1234567890123', 'Cox\'s Bazar', 't1', 'Cox\'s Bazar', 'Foton', 'TM3', 'Cow carry', 1, '2025-26', 2026, 'April', 'New Sale', 1450000, 300000, '36', 'Amount', 15000, '', '', 'Pending', '', '10/07/2026', 'u3'),
-('man2', 'C-MAN-002', 'Babul Mia', 'CHAS9876543210987', 'Cox\'s Bazar', 't1', 'Cox\'s Bazar', 'Mahindra', 'Bolero', 'Poultry Firm use', 1, '2025-26', 2026, 'April', 'New Sale', 1650000, 400000, '18', 'Gift', 0, 'Smart TV', '', 'Approved', 'Approved by Admin', '09/07/2026', 'u3')
-ON DUPLICATE KEY UPDATE id=id;
-
 SET FOREIGN_KEY_CHECKS = 1;
