@@ -6180,7 +6180,7 @@
                         </div>
                     `;
 
-                    document.getElementById('main-content').innerHTML = html;
+                    document.getElementById('view-port').innerHTML = html;
                     lucide.createIcons();
 
                     // Prepare data for charts
@@ -6225,7 +6225,7 @@
                     app.renderChartAnalyticsRegion(sortedRegions, sortedRegions.map(r => regionMap[r].fy1), sortedRegions.map(r => regionMap[r].fy2), app.analyticsFY1, app.analyticsFY2);
                 } catch (e) {
                     console.error("Historical Analytics Error:", e);
-                    document.getElementById('main-content').innerHTML = `
+                    document.getElementById('view-port').innerHTML = `
                         <div class="p-6 max-w-2xl mx-auto mt-10 bg-red-50 border border-red-200 rounded-xl shadow-sm">
                             <div class="flex gap-3 items-start">
                                 <div class="p-2 bg-red-100 text-red-600 rounded-lg">
