@@ -4307,15 +4307,14 @@
                                         </div>
                                     </td>
                                     <td class="px-3 py-2 font-bold text-slate-600 bg-slate-50/50 border-r border-slate-100">${fyBgt}</td>
-                                    
-                                    <td class="px-3 py-2 font-medium text-slate-500">${yBgt}</td>
-                                    <td class="px-3 py-2 font-bold text-slate-800">${yAct}</td>
-                                    <td class="px-3 py-2 font-black ${achColor(yAch)}">${yAch}%</td>
-                                    <td class="px-3 py-2 font-bold text-rose-500 border-r border-slate-100">${ySht}</td>
+                                          <td class="px-3 py-2 font-medium text-slate-500">${isFirstMonth ? '-' : yBgt}</td>
+                                    <td class="px-3 py-2 font-bold text-slate-800">${isFirstMonth ? '-' : yAct}</td>
+                                    <td class="px-3 py-2 font-black ${isFirstMonth ? 'text-slate-400' : achColor(yAch)}">${isFirstMonth ? '-' : `${yAch}%`}</td>
+                                    <td class="px-3 py-2 font-bold text-rose-500 border-r border-slate-100">${isFirstMonth ? '-' : ySht}</td>
 
-                                    <td class="px-3 py-2 font-medium text-slate-500 bg-slate-50/30">${lBgt}</td>
-                                    <td class="px-3 py-2 font-bold text-slate-800 bg-slate-50/30">${lAct}</td>
-                                    <td class="px-3 py-2 font-black ${achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${lAch}%</td>
+                                    <td class="px-3 py-2 font-medium text-slate-500 bg-slate-50/30">${isFirstMonth ? '-' : lBgt}</td>
+                                    <td class="px-3 py-2 font-bold text-slate-800 bg-slate-50/30">${isFirstMonth ? '-' : lAct}</td>
+                                    <td class="px-3 py-2 font-black ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${isFirstMonth ? '-' : `${lAch}%`}</td>
 
                                     <td class="px-3 py-2 font-medium text-slate-500">${cBgt}</td>
                                     <td class="px-3 py-2 font-black text-indigo-900 bg-indigo-100/50">${cAct}</td>
@@ -4337,8 +4336,8 @@
                                             <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[9px] border-b border-slate-200">
                                                 <th class="px-4 py-3 font-black border-r border-slate-200 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
                                                 <th class="px-3 py-3 font-extrabold text-center border-r border-slate-200" rowspan="2">Total FY Budget</th>
-                                                <th class="px-3 py-2 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200 font-black" colspan="4">YTD (${isFirstMonth ? 'Jul' : `Jul-${lastMonth.substring(0,3)}`})</th>
-                                                <th class="px-3 py-2 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200 font-black" colspan="3">Last Month (${lastMonth.substring(0,3)})</th>
+                                                <th class="px-3 py-2 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200 font-black" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
+                                                <th class="px-3 py-2 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200 font-black" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
                                                 <th class="px-3 py-2 text-center bg-emerald-500/10 text-emerald-800 font-black" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
                                             <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
@@ -4363,14 +4362,14 @@
                                                 <td class="px-4 py-2 text-left border-r border-slate-200 sticky left-0 z-10 bg-slate-100 font-bold">GRAND TOTAL</td>
                                                 <td class="px-3 py-2 border-r border-slate-200">${gTot.fyBgt}</td>
                                                 
-                                                <td class="px-3 py-2">${gTot.yBgt}</td>
-                                                <td class="px-3 py-2">${gTot.yAct}</td>
-                                                <td class="px-3 py-2 ${achColor(gYAch)}">${gYAch}%</td>
-                                                <td class="px-3 py-2 text-rose-600 border-r border-slate-200">${gTot.ySht}</td>
+                                                <td class="px-3 py-2">${isFirstMonth ? '-' : gTot.yBgt}</td>
+                                                <td class="px-3 py-2">${isFirstMonth ? '-' : gTot.yAct}</td>
+                                                <td class="px-3 py-2 ${isFirstMonth ? 'text-slate-400' : achColor(gYAch)}">${isFirstMonth ? '-' : `${gYAch}%`}</td>
+                                                <td class="px-3 py-2 text-rose-600 border-r border-slate-200">${isFirstMonth ? '-' : gTot.ySht}</td>
 
-                                                <td class="px-3 py-2 bg-slate-50/30">${gTot.lBgt}</td>
-                                                <td class="px-3 py-2 bg-slate-50/30">${gTot.lAct}</td>
-                                                <td class="px-3 py-2 ${achColor(gLAch)} bg-slate-50/30 border-r border-slate-200">${gLAch}%</td>
+                                                <td class="px-3 py-2 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lBgt}</td>
+                                                <td class="px-3 py-2 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lAct}</td>
+                                                <td class="px-3 py-2 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} bg-slate-50/30 border-r border-slate-200">${isFirstMonth ? '-' : `${gLAch}%`}</td>
 
                                                 <td class="px-3 py-2">${gTot.cBgt}</td>
                                                 <td class="px-3 py-2 text-indigo-900 bg-indigo-200/50 font-extrabold">${gTot.cAct}</td>
