@@ -3006,7 +3006,7 @@
                     const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                     const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                }).filter(Boolean);
+                }).filter(Boolean).sort((a, b) => b.tColRate - a.tColRate);
 
                 // Populate active territories dropdown
                 const activeTerritories = DB.territories.filter(t => {
@@ -3137,44 +3137,44 @@
                             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <h3 class="font-bold text-slate-800 text-sm">Territory Wise EMI Summary</h3>
                             </div>
-                            <table class="w-full text-left text-sm whitespace-nowrap">
-                                <thead class="border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider bg-slate-100/50">
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead class="border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest bg-slate-100/50">
                                     <tr>
-                                        <th class="px-6 py-3 font-semibold">Sales Territory</th>
-                                        <th class="px-4 py-3 font-semibold text-center">Total Customers</th>
-                                        <th class="px-4 py-3 font-semibold text-center text-green-600">Paying Customers</th>
-                                        <th class="px-4 py-3 font-semibold text-center text-red-500">Non-Paying Customers</th>
-                                        <th class="px-4 py-3 font-semibold text-right">Total Due (Inst)</th>
-                                        <th class="px-4 py-3 font-semibold text-right">Amount Collected</th>
-                                        <th class="px-6 py-3 font-semibold text-center">Collection Rate %</th>
+                                        <th class="px-6 py-1.5 font-bold">Sales Territory</th>
+                                        <th class="px-4 py-1.5 font-bold text-center">Total Customers</th>
+                                        <th class="px-4 py-1.5 font-bold text-center text-green-600">Paying Customers</th>
+                                        <th class="px-4 py-1.5 font-bold text-center text-red-500">Non-Paying Customers</th>
+                                        <th class="px-4 py-1.5 font-bold text-right">Total Due (Inst)</th>
+                                        <th class="px-4 py-1.5 font-bold text-right">Amount Collected</th>
+                                        <th class="px-6 py-1.5 font-bold text-center">Collection Rate %</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
-                                        <th class="px-6 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Total Cust..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Paying..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Unpaid..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Due Amt..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Collected..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-6 py-2"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Rate..." class="w-full text-[10px] px-2 py-1.5 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Total Cust..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Paying..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Unpaid..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Due Amt..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Rate..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     ${territorySummary.map(t => `
                                         <tr class="hover:bg-slate-50 transition-colors">
-                                            <td class="px-6 py-3 font-bold text-slate-800">${t.name}</td>
-                                            <td class="px-4 py-3 text-center font-semibold text-slate-700">${t.totalCust}</td>
-                                            <td class="px-4 py-3 text-center font-bold text-green-600">${t.payingCust}</td>
-                                            <td class="px-4 py-3 text-center font-bold text-red-500">${t.nonPayingCust}</td>
-                                            <td class="px-4 py-3 text-right font-semibold text-slate-700">${app.formatCurrency(t.tTotalDue)}</td>
-                                            <td class="px-4 py-3 text-right font-semibold text-aci-blue">${app.formatCurrency(t.tAmountCol)}</td>
-                                            <td class="px-6 py-3 text-center">
-                                                <span class="px-2 py-1 rounded text-[10px] font-bold ${t.tColRate >= 80 ? 'bg-green-100 text-green-700 border border-green-200' : (t.tColRate >= 50 ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-red-100 text-red-700 border border-red-200')}">
+                                            <td class="px-6 py-1.5 font-bold text-slate-800">${t.name}</td>
+                                            <td class="px-4 py-1.5 text-center font-semibold text-slate-700">${t.totalCust}</td>
+                                            <td class="px-4 py-1.5 text-center font-bold text-green-600">${t.payingCust}</td>
+                                            <td class="px-4 py-1.5 text-center font-bold text-red-500">${t.nonPayingCust}</td>
+                                            <td class="px-4 py-1.5 text-right font-semibold text-slate-700">${app.formatCurrency(t.tTotalDue)}</td>
+                                            <td class="px-4 py-1.5 text-right font-semibold text-aci-blue">${app.formatCurrency(t.tAmountCol)}</td>
+                                            <td class="px-6 py-1.5 text-center">
+                                                <span class="px-2 py-0.5 rounded text-[9px] font-bold ${t.tColRate >= 80 ? 'bg-green-100 text-green-700 border border-green-200' : (t.tColRate >= 50 ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-red-100 text-red-700 border border-red-200')}">
                                                     ${t.tColRate}%
                                                 </span>
                                             </td>
                                         </tr>
-                                    `).join('')}
-                                    ${territorySummary.length === 0 ? '<tr><td colspan="7" class="px-6 py-6 text-center text-slate-500">No territory data available.</td></tr>' : ''}
+                                     `).join('')}
+                                     ${territorySummary.length === 0 ? '<tr><td colspan="7" class="px-6 py-4 text-center text-slate-500">No territory data available.</td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
