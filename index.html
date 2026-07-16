@@ -7952,7 +7952,7 @@
                     title = 'Monthly Targets';
                     icon = 'target';
                     themeColor = 'indigo';
-                    headers = ['FY', 'Month', 'Territory_Name', 'Upazila', 'Brand', 'Sale_Type', 'Target_Qty'];
+                    headers = ['FY', 'Month', 'Territory_Name', 'Upazila', 'District', 'Brand', 'Sale_Type', 'Target_Qty'];
                     data = DB.targets;
                     keyField = 'target_qty';
                 } else if (type === 'projections') {
@@ -8043,7 +8043,7 @@
                                     <tbody class="divide-y divide-slate-100">
                                         ${data.length > 0 ? data.map((item, idx) => {
                     let rowCells = [];
-                    if (type === 'targets') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.target_qty}</span>`];
+                    if (type === 'targets') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.district || '', item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.target_qty}</span>`];
                     else if (type === 'projections') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.projection_qty}</span>`];
                     else if (type === 'sales' || type === 'last_year_sales') rowCells = [item.customer_id, item.district, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.brand, item.model, `<span class="font-bold text-slate-800">${item.unit_qty}</span>`, item.fy, item.sales_year, item.sales_month, item.sale_type];
                     else if (type === 'emi') rowCells = [item.customer_code, item.customer, DB.territories.find(t => t.id === item.territory_id)?.name || item.location, item.brand, item.delivery_date, item.first_inst_date, item.overdue_count, `<span class="text-rose-600 font-bold">${app.formatCurrency(item.overdue_total)}</span>`, app.formatCurrency(item.installment)];
@@ -8176,7 +8176,7 @@
                 const cells = row.querySelectorAll('td');
 
                 const editFields = [];
-                if (type === 'targets') editFields = ['fy', 'month', 'territory_id', 'upazila', 'brand', 'sale_type', 'target_qty'];
+                if (type === 'targets') editFields = ['fy', 'month', 'territory_id', 'upazila', 'district', 'brand', 'sale_type', 'target_qty'];
                 else if (type === 'projections') editFields = ['fy', 'month', 'territory_id', 'brand', 'sale_type', 'projection_qty'];
                 else if (type === 'sales' || type === 'last_year_sales') editFields = ['customer_id', 'district', 'territory_id', 'upazila', 'brand', 'model', 'unit_qty', 'fy', 'sales_year', 'sales_month', 'sale_type'];
                 else if (type === 'emi') editFields = ['customer_code', 'customer', 'territory_id', 'brand', 'delivery_date', 'first_inst_date', 'overdue_count', 'overdue_total', 'installment'];
@@ -8226,7 +8226,7 @@
                 if (app.neonSQL) {
                     try {
                         if (type === 'targets') {
-                            await app.neonSQL`UPDATE targets SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, upazila = ${item.upazila}, brand = ${item.brand}, sale_type = ${item.sale_type}, target_qty = ${item.target_qty} WHERE id = ${id}`;
+                            await app.neonSQL`UPDATE targets SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, upazila = ${item.upazila}, district = ${item.district}, brand = ${item.brand}, sale_type = ${item.sale_type}, target_qty = ${item.target_qty} WHERE id = ${id}`;
                         } else if (type === 'projections') {
                             await app.neonSQL`UPDATE projections SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, brand = ${item.brand}, sale_type = ${item.sale_type}, projection_qty = ${item.projection_qty} WHERE id = ${id}`;
                         } else if (type === 'sales' || type === 'last_year_sales') {
@@ -8276,10 +8276,10 @@
 
                 if (downloadCurrent) {
                     if (type === 'target') {
-                        headers = "FY,Month,Territory_Name,Upazila,Brand,Sale_Type,Target_Qty\n";
+                        headers = "FY,Month,Territory_Name,Upazila,District,Brand,Sale_Type,Target_Qty\n";
                         const rows = DB.targets.map(t => {
                             const tName = DB.territories.find(ter => ter.id === t.territory_id)?.name || '';
-                            return [t.fy, t.month, tName, t.upazila, t.brand, t.sale_type, t.target_qty].map(csvCell).join(',');
+                            return [t.fy, t.month, tName, t.upazila, t.district || '', t.brand, t.sale_type, t.target_qty].map(csvCell).join(',');
                         }).join('\n');
                         csvContent = headers + rows;
                         filename = "ACI_Monthly_Target_Export.csv";
@@ -8326,8 +8326,8 @@
                     }
                 } else {
                     if (type === 'target') {
-                        headers = "FY,Month,Territory_Name,Upazila,Brand,Sale_Type,Target_Qty\n";
-                        headers += `${currentFY},April,Dhaka North,Mirpur,Foton,New Sale,4\n`;
+                        headers = "FY,Month,Territory_Name,Upazila,District,Brand,Sale_Type,Target_Qty\n";
+                        headers += `${currentFY},April,Dhaka North,Mirpur,Dhaka,Foton,New Sale,4\n`;
                         filename = "ACI_Monthly_Target_Template.csv";
                     } else if (type === 'projection') {
                         headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
@@ -8608,6 +8608,7 @@
                                                     month: recordMonth,
                                                     territory_id: terrId,
                                                     upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
+                                                    district: app.getCSVValue(row, ['District', 'Zila']) || '',
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
                                                     target_qty: parseInt(app.getCSVValue(row, ['Target_Qty', 'TargetQty', 'Target'])) || 0
@@ -8710,7 +8711,7 @@
                                             for(let i=0; i<newRecords.length; i+=batchSize) {
                                                 const chunk = newRecords.slice(i, i+batchSize);
                                                 const promises = chunk.map(r => {
-                                                     if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`;
+                                                     if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, district, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.district}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`;
                                                      if(dataKey === 'projections') return app.neonSQL`INSERT INTO projections (id, fy, month, territory_id, brand, sale_type, projection_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.brand}, ${r.sale_type}, ${r.projection_qty})`;
                                                      if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no}) ON CONFLICT (id) DO NOTHING`;
                                                      if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type}) ON CONFLICT (id) DO NOTHING`;

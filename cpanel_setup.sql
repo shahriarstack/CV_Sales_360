@@ -100,17 +100,18 @@ CREATE TABLE IF NOT EXISTS targets (
     month VARCHAR(20),
     territory_id VARCHAR(50),
     upazila VARCHAR(100),
+    district VARCHAR(100),
     brand VARCHAR(100),
     sale_type VARCHAR(50),
     target_qty INTEGER,
     FOREIGN KEY (territory_id) REFERENCES territories(id) ON DELETE SET NULL
 );
 
-INSERT INTO targets (id, fy, month, territory_id, upazila, brand, sale_type, target_qty) VALUES
-('tg1', '2025-26', 'April', 't1', 'Mirpur', 'Foton', 'New Sale', 4),
-('tg2', '2025-26', 'April', 't1', 'Uttara', 'Foton', 'New Sale', 3),
-('tg3', '2025-26', 'April', 't1', 'Savar', 'Foton', 'New Sale', 5),
-('tg4', '2025-26', 'April', 't1', 'Mirpur', 'Mahindra', 'New Sale', 2)
+INSERT INTO targets (id, fy, month, territory_id, upazila, district, brand, sale_type, target_qty) VALUES
+('tg1', '2025-26', 'April', 't1', 'Mirpur', 'Dhaka', 'Foton', 'New Sale', 4),
+('tg2', '2025-26', 'April', 't1', 'Uttara', 'Dhaka', 'Foton', 'New Sale', 3),
+('tg3', '2025-26', 'April', 't1', 'Savar', 'Dhaka', 'Foton', 'New Sale', 5),
+('tg4', '2025-26', 'April', 't1', 'Mirpur', 'Dhaka', 'Mahindra', 'New Sale', 2)
 ON DUPLICATE KEY UPDATE id=id;
 
 -- 5. Notices Table
