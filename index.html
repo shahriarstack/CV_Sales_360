@@ -5293,14 +5293,14 @@
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
-                                        <th class="px-6 py-4 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
-                                        <th class="px-6 py-4 font-black bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-4 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                        <th class="px-6 py-2 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
+                                        <th class="px-6 py-2 font-black bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center">
-                                        <th class="px-6 py-3 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center font-bold">
+                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                             <div class="flex items-center justify-between gap-2">
                                                 <span>Area</span>
                                                 <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
@@ -5308,58 +5308,58 @@
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-6 py-3 bg-white border-r border-indigo-100 text-left">
+                                        <th class="px-6 py-1.5 bg-white border-r border-indigo-100 text-left">
                                             <span>AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
-                                            <th class="px-2 py-3">Budget</th>
-                                            <th class="px-2 py-3 font-bold text-slate-600">Actual</th>
-                                            <th class="px-2 py-3">Ach%</th>
+                                            <th class="px-2 py-1.5">Budget</th>
+                                            <th class="px-2 py-1.5 font-bold text-slate-600">Actual</th>
+                                            <th class="px-2 py-1.5">Ach%</th>
                                         ` : ''}
                                         ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-3">Budget</th>
-                                            <th class="px-2 py-3 font-bold text-slate-600">Actual</th>
+                                            <th class="px-2 py-1.5">Budget</th>
+                                            <th class="px-2 py-1.5 font-bold text-slate-600">Actual</th>
                                         ` : ''}
-                                        <th class="px-2 py-3 bg-indigo-50/30">Budget</th>
-                                        <th class="px-2 py-3 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-3 bg-indigo-50/30">${m}</th>`).join('')}
-                                        <th class="px-2 py-3 bg-indigo-600 font-black text-white">Total</th>
-                                        <th class="px-2 py-3 bg-indigo-600 font-black text-white">Ach%</th>
+                                        <th class="px-2 py-1.5 bg-indigo-50/30">Budget</th>
+                                        <th class="px-2 py-1.5 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-indigo-50/30">${m}</th>`).join('')}
+                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-extrabold border-l border-indigo-200">Total</th>
+                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-extrabold">Ach%</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-50 bg-white">
                                     ${areaStats.map(area => {
                             const modelCells = activeModels.map(mName => {
                                 const qty = area.modelSales[mName] || 0;
-                                return `<td class="px-2 py-4 bg-slate-50/30 ${qty > 0 ? 'font-bold text-slate-700' : 'text-slate-300'}">${qty > 0 ? qty : '-'}</td>`;
+                                return `<td class="px-2 py-1.5 bg-slate-50/30 ${qty > 0 ? 'font-bold text-slate-700' : 'text-slate-300'} border-r border-slate-100/60">${qty > 0 ? qty : '-'}</td>`;
                             }).join('');
-                            const totalSalesDisplay = area.currSales > 0 ? `<div class="font-bold text-sm">${area.currSales}</div>` : '<span class="text-slate-400">0</span>';
+                            const totalSalesDisplay = area.currSales > 0 ? `<div class="font-bold text-[11px]">${area.currSales}</div>` : '<span class="text-slate-400">0</span>';
 
                             return `
                                             <tr class="hover:bg-indigo-50/20 transition-colors text-center">
-                                                <td class="px-6 py-4 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                                <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                                     <div class="flex items-center gap-2">
-                                                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[10px] font-black shrink-0">${area.name.charAt(0)}</div>
+                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[9px] font-black shrink-0">${area.name.charAt(0)}</div>
                                                         <span class="font-black text-slate-700">${area.name}</span>
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-4 text-left font-bold text-indigo-600 border-r border-indigo-50 bg-slate-50/30 whitespace-nowrap">
+                                                <td class="px-6 py-1.5 text-left font-bold text-indigo-600 border-r border-indigo-50 bg-slate-50/30 whitespace-nowrap">
                                                     ${area.areaName}
                                                 </td>
                                                 ${app.adminShowYTD ? `
-                                                    <td class="px-2 py-4 text-slate-400">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
-                                                    <td class="px-2 py-4 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
-                                                    <td class="px-2 py-4 font-black text-indigo-600">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
+                                                    <td class="px-2 py-1.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
+                                                    <td class="px-2 py-1.5 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
+                                                    <td class="px-2 py-1.5 font-black text-indigo-600">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
-                                                    <td class="px-2 py-4 text-slate-400">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
-                                                    <td class="px-2 py-4 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.lastMonth.sales}</td>
+                                                    <td class="px-2 py-1.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
+                                                    <td class="px-2 py-1.5 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.lastMonth.sales}</td>
                                                 ` : ''}
-                                                <td class="px-2 py-4 bg-slate-50/50 text-slate-400">${area.currBudget}</td>
-                                                <td class="px-2 py-4 bg-slate-50/50 font-black text-slate-700">${area.currProj}</td>
+                                                <td class="px-2 py-1.5 bg-slate-50/50 text-slate-400">${area.currBudget}</td>
+                                                <td class="px-2 py-1.5 bg-slate-50/50 font-black text-slate-700">${area.currProj}</td>
                                                 ${modelCells}
-                                                <td class="px-2 py-4 bg-indigo-600 font-black text-white">${totalSalesDisplay}</td>
-                                                <td class="px-2 py-4 bg-indigo-600 font-black text-white">${ach(area.currSales, area.currBudget)}%</td>
+                                                <td class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-900 border-l border-indigo-100/50">${totalSalesDisplay}</td>
+                                                <td class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-900">${ach(area.currSales, area.currBudget)}%</td>
                                             </tr>
                                         `;
                         }).join('')}
