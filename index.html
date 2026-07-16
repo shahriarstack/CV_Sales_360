@@ -4210,45 +4210,64 @@
                     <!-- YOY Trajectory Chart -->
                     <div class="glass p-5 rounded-[2rem] border border-white shadow-xl mb-8 relative overflow-hidden">
                         <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 relative z-10 gap-4">
-                            <div>
-                                <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 text-indigo-500"></i> Performance vs Budget & YOY</h3>
-                                <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Month by Month Comparative Velocity & Pacing</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <label class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
-                                    <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-3 h-3">
-                                    <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
-                                </label>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+                            <!-- Left: Chart & Controls (Col span 2) -->
+                            <div class="lg:col-span-2 flex flex-col justify-between">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 text-indigo-500"></i> Performance vs Budget & YOY</h3>
+                                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Month by Month Comparative Velocity & Pacing</p>
+                                    </div>
+                                    <div class="flex items-center gap-3 flex-wrap">
+                                        <label class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                            <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-3 h-3">
+                                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
+                                        </label>
 
-                                <!-- Territory Filter Dropdown -->
-                                <div class="relative">
-                                    <select onchange="app.yoyTerritoryFilter = this.value; app.renderAdminDashboard()" 
-                                            class="appearance-none bg-white/80 border border-slate-200 rounded-lg pl-3 pr-8 py-1.5 text-[10px] font-bold text-slate-600 uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer shadow-sm min-w-[120px]">
-                                        <option value="All">All Territories</option>
-                                        ${activeTerritories.map(t => `<option value="${t.id}" ${app.yoyTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
-                                    </select>
-                                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                        <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                        <!-- Territory Filter Dropdown -->
+                                        <div class="relative">
+                                            <select onchange="app.yoyTerritoryFilter = this.value; app.renderAdminDashboard()" 
+                                                    class="appearance-none bg-white/80 border border-slate-200 rounded-lg pl-3 pr-8 py-1.5 text-[10px] font-bold text-slate-600 uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer shadow-sm min-w-[120px]">
+                                                <option value="All">All Territories</option>
+                                                ${activeTerritories.map(t => `<option value="${t.id}" ${app.yoyTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                            </select>
+                                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Creative Brand Logo Toggle -->
+                                        <div class="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200 shadow-inner">
+                                            <button onclick="app.yoyBrandTab='Foton'; app.renderAdminDashboard()" 
+                                                    class="relative flex items-center justify-center px-4 py-2 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-6 object-contain" alt="Foton">
+                                            </button>
+                                            <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                                            <button onclick="app.yoyBrandTab='Mahindra'; app.renderAdminDashboard()" 
+                                                    class="relative flex items-center justify-center px-4 py-2 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-5 object-contain" alt="Mahindra">
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <!-- Creative Brand Logo Toggle -->
-                                <div class="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200 shadow-inner">
-                                    <button onclick="app.yoyBrandTab='Foton'; app.renderAdminDashboard()" 
-                                            class="relative flex items-center justify-center px-4 py-2 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
-                                        <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-6 object-contain" alt="Foton">
-                                    </button>
-                                    <div class="w-px h-5 bg-slate-300 mx-1"></div>
-                                    <button onclick="app.yoyBrandTab='Mahindra'; app.renderAdminDashboard()" 
-                                            class="relative flex items-center justify-center px-4 py-2 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
-                                        <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-5 object-contain" alt="Mahindra">
-                                    </button>
+                                <div class="h-64 relative w-full">
+                                    <canvas id="chartYoyTrend"></canvas>
                                 </div>
                             </div>
-                        </div>
-                        <div class="h-64 relative w-full z-10">
-                            <canvas id="chartYoyTrend"></canvas>
+                            
+                            <!-- Right: Bangladesh Sales Heatmap (Col span 1) -->
+                            <div class="lg:col-span-1 flex flex-col bg-slate-50/50 rounded-2xl p-4 border border-slate-100 relative min-h-[300px]">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                            <i data-lucide="map" class="w-3.5 h-3.5 text-indigo-500"></i> ${app.currentMonth} Sales Map
+                                        </h4>
+                                        <p class="text-[9px] text-slate-400 font-medium mt-0.5">District wise actual units</p>
+                                    </div>
+                                    <span id="minimap-sales-total" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-black rounded-full border border-indigo-100">0 Units</span>
+                                </div>
+                                <div id="dashboard-mini-map" class="w-full flex-1 rounded-xl overflow-hidden border border-slate-200/60 shadow-inner min-h-[220px]"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -5518,8 +5537,130 @@
 
                 // Render Charts
                 app.renderChartYoyTrend(yoyCurrSales, yoyLastSales, yoyMonthlyBudgets);
+                app.renderDashboardMiniMap(yoyCurrSales);
                 app.renderChartTerritory(currFYSales);
                 app.renderChartBrand(fotonUnits, mahindraUnits);
+            },
+
+            renderDashboardMiniMap: async (yoyCurrSales) => {
+                const monthSales = yoyCurrSales.filter(s => s.sales_month === app.currentMonth);
+                const totalMonthSales = monthSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                
+                const badgeEl = document.getElementById('minimap-sales-total');
+                if (badgeEl) badgeEl.innerText = totalMonthSales + ' Units';
+
+                // Aggregate District Sales
+                const districtAgg = {};
+                monthSales.forEach(s => {
+                    if (s.district) {
+                        districtAgg[s.district] = (districtAgg[s.district] || 0) + Number(s.unit_qty || 0);
+                    }
+                });
+
+                const maxSales = Math.max(...Object.values(districtAgg), 1);
+                const normalizedAgg = {};
+                Object.entries(districtAgg).forEach(([k, v]) => {
+                    normalizedAgg[app.getNormalizedKey(k)] = v;
+                });
+
+                // Clear existing map instance
+                if (app.dashboardMiniMap) {
+                    try {
+                        app.dashboardMiniMap.remove();
+                    } catch (e) {
+                        console.error('Failed to remove mini map:', e);
+                    }
+                    app.dashboardMiniMap = null;
+                }
+
+                // Check if element exists in DOM
+                const mapContainer = document.getElementById('dashboard-mini-map');
+                if (!mapContainer) return;
+
+                // Initialize Leaflet mini map
+                app.dashboardMiniMap = L.map('dashboard-mini-map', {
+                    zoomControl: false,
+                    attributionControl: false,
+                    maxBounds: [[20.0, 87.5], [27.0, 93.0]],
+                    minZoom: 5.5,
+                    maxZoom: 9,
+                    zoomSnap: 0.05,
+                    zoomDelta: 0.5
+                }).setView([23.75, 90.25], 6.05);
+
+                try {
+                    const geoUrl = 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json';
+                    if (!app.geoJsonCache) app.geoJsonCache = {};
+                    if (!app.geoJsonCache['district']) {
+                        const res = await fetch(geoUrl);
+                        if (!res.ok) throw new Error('Failed to fetch mini-map boundaries');
+                        app.geoJsonCache['district'] = await res.json();
+                    }
+
+                    const geoData = app.geoJsonCache['district'];
+
+                    // Color palette logic matching high/med/low density
+                    const getPolygonColor = (d) => {
+                        if (!d || d === 0) return '#f8fafc'; // light slate-50 background for 0 sales
+                        const pct = d / maxSales;
+                        if (pct > 0.66) return '#e11d48'; // rose-600 (High sales)
+                        if (pct > 0.33) return '#f59e0b'; // amber-500 (Med sales)
+                        return '#3b82f6'; // blue-500 (Low sales)
+                    };
+
+                    const style = (feature) => {
+                        const propName = feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '';
+                        const normProp = app.getNormalizedKey(propName);
+                        const sales = normalizedAgg[normProp] || 0;
+                        return {
+                            fillColor: getPolygonColor(sales),
+                            weight: sales > 0 ? 1.5 : 0.8,
+                            opacity: 1,
+                            color: sales > 0 ? '#ffffff' : '#cbd5e1', // white border if has sales, light slate border if empty
+                            fillOpacity: sales > 0 ? 0.75 : 0.25
+                        };
+                    };
+
+                    const onEachFeature = (feature, layer) => {
+                        const propName = feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '';
+                        const normProp = app.getNormalizedKey(propName);
+                        const sales = normalizedAgg[normProp] || 0;
+                        
+                        layer.bindTooltip(`
+                            <div class="px-2 py-1 text-slate-800 font-bold font-sans text-xs bg-white rounded-lg shadow border border-slate-100">
+                                <div class="text-[10px] text-slate-500 font-medium">${propName}</div>
+                                <div class="text-indigo-600 font-extrabold mt-0.5">${sales} Units</div>
+                            </div>
+                        `, {
+                            permanent: false,
+                            sticky: true,
+                            opacity: 0.95,
+                            className: 'custom-leaflet-tooltip'
+                        });
+
+                        layer.on({
+                            mouseover: (e) => {
+                                const l = e.target;
+                                l.setStyle({
+                                    weight: 2,
+                                    color: '#10b981', // Emerald green border on hover
+                                    fillOpacity: 0.9
+                                });
+                            },
+                            mouseout: (e) => {
+                                geojsonLayer.resetStyle(e.target);
+                            }
+                        });
+                    };
+
+                    const geojsonLayer = L.geoJSON(geoData, {
+                        style: style,
+                        onEachFeature: onEachFeature
+                    }).addTo(app.dashboardMiniMap);
+
+                } catch (err) {
+                    console.error('Failed to load dashboard mini map:', err);
+                }
             },
 
             renderChartYoyTrend: (currData, lastData, monthlyBudget) => {
