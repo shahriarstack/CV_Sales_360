@@ -160,7 +160,17 @@ CREATE TABLE IF NOT EXISTS sales (
     fy VARCHAR(20),
     sales_year INTEGER,
     sales_month VARCHAR(20),
-    sale_type VARCHAR(50)
+    sale_type VARCHAR(50),
+    customer_name VARCHAR(255) DEFAULT NULL,
+    chassis_no VARCHAR(100) DEFAULT NULL,
+    purpose_of_use VARCHAR(255) DEFAULT NULL,
+    financials JSON DEFAULT NULL,
+    discounts JSON DEFAULT NULL,
+    old_customer_id VARCHAR(50) DEFAULT NULL,
+    is_manual BOOLEAN DEFAULT FALSE,
+    approval_status VARCHAR(50) DEFAULT NULL,
+    admin_comments TEXT DEFAULT NULL,
+    timestamp VARCHAR(50) DEFAULT NULL
 );
 
 INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES

@@ -1288,7 +1288,14 @@
                     DB.targets = targets;
                     DB.projections = projections;
                     DB.emi = emi;
-                    DB.sales = sales;
+                    DB.sales = sales.map(s => {
+                        return {
+                            ...s,
+                            is_manual: s.is_manual === 1 || s.is_manual === true || s.is_manual === '1',
+                            financials: typeof s.financials === 'string' ? JSON.parse(s.financials) : s.financials,
+                            discounts: typeof s.discounts === 'string' ? JSON.parse(s.discounts) : s.discounts
+                        };
+                    });
                     DB.recovery_od = recovery_od;
                     
                     // Parse JSON fields where necessary
@@ -1333,10 +1340,6 @@
                         app.fyReviewActive = DB.settings.fyReviewActive !== undefined ? DB.settings.fyReviewActive : true;
                         app.showLastFYData = DB.settings.showLastFYData !== undefined ? DB.settings.showLastFYData : false;
                         
-                        if (DB.settings.manualDeliveries && Array.isArray(DB.settings.manualDeliveries)) {
-                            DB.sales = [...DB.sales, ...DB.settings.manualDeliveries];
-                        }
-
                         // Set default selected FY in transition review mode
                         const activeFY = app.currentFY;
                         const concludingFY = (() => {
@@ -3459,37 +3462,56 @@
             },
 
             saveManualDeliveriesToBackend: async () => {
-                if (app.neonSQL && DB.settings) {
-                    DB.settings.manualDeliveries = DB.sales.filter(s => s.is_manual);
-                    try {
-                        await app.neonSQL`UPDATE app_settings SET settings_json = ${JSON.stringify(DB.settings)} WHERE id = '1'`;
-                    } catch (e) {
-                        console.error("Failed to save manual deliveries to backend", e);
+                // Deprecated: manual deliveries are now updated directly in database rows.
+            },
+
+            clearManualDeliveries: async () => {
+                if (confirm('Are you sure you want to clear all manual deliveries? This will delete all pending and approved manual entries from the database.')) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM sales WHERE is_manual = 1`;
+                        } catch (err) {
+                            console.error("Failed to clear manual deliveries from database", err);
+                            app.showToast('Database delete failed', 'error');
+                            return;
+                        }
                     }
+                    DB.sales = DB.sales.filter(s => !s.is_manual);
+                    app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
+                    app.renderAdminManualDeliveries();
                 }
             },
 
-            clearManualDeliveries: () => {
-                DB.sales = DB.sales.filter(s => !s.is_manual);
-                app.saveManualDeliveriesToBackend();
-                app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
-                app.renderAdminManualDeliveries();
-            },
-
-            approveManualDelivery: (id) => {
+            approveManualDelivery: async (id) => {
                 const idx = DB.sales.findIndex(s => s.id === id);
                 if (idx > -1) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`UPDATE sales SET approval_status = 'Done' WHERE id = ${id}`;
+                        } catch (err) {
+                            console.error("Failed to approve manual delivery in database", err);
+                            app.showToast('Database update failed', 'error');
+                            return;
+                        }
+                    }
                     DB.sales[idx].approval_status = 'Done';
-                    app.saveManualDeliveriesToBackend();
                     app.showToast('Manual delivery approved.', 'success');
                     app.renderAdminManualDeliveries();
                 }
             },
 
-            deleteManualDelivery: (id) => {
+            deleteManualDelivery: async (id) => {
                 if (confirm('Are you sure you want to delete this manual delivery?')) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM sales WHERE id = ${id}`;
+                        } catch (err) {
+                            console.error("Failed to delete manual delivery from database", err);
+                            app.showToast('Database delete failed', 'error');
+                            return;
+                        }
+                    }
                     DB.sales = DB.sales.filter(s => s.id !== id);
-                    app.saveManualDeliveriesToBackend();
                     app.showToast('Manual delivery deleted.', 'success');
                     app.renderAdminManualDeliveries();
                 }
@@ -3621,27 +3643,36 @@
                 app.refreshIcons();
             },
 
-            saveEditedManualDelivery: (e, id) => {
+            saveEditedManualDelivery: async (e, id) => {
                 e.preventDefault();
                 const idx = DB.sales.findIndex(s => s.id === id);
                 if (idx > -1) {
-                    DB.sales[idx].customer_name = document.getElementById('em-customer-name').value;
-                    DB.sales[idx].chassis_no = document.getElementById('em-chassis').value;
-                    DB.sales[idx].brand = document.getElementById('em-brand').value;
-                    DB.sales[idx].model = document.getElementById('em-model').value;
-                    DB.sales[idx].sale_type = document.getElementById('em-type').value;
-                    DB.sales[idx].purpose_of_use = document.getElementById('em-purpose').value;
-                    DB.sales[idx].admin_comments = document.getElementById('em-comments').value;
+                    const s = DB.sales[idx];
+                    s.customer_name = document.getElementById('em-customer-name').value;
+                    s.chassis_no = document.getElementById('em-chassis').value;
+                    s.brand = document.getElementById('em-brand').value;
+                    s.model = document.getElementById('em-model').value;
+                    s.sale_type = document.getElementById('em-type').value;
+                    s.purpose_of_use = document.getElementById('em-purpose').value;
+                    s.admin_comments = document.getElementById('em-comments').value;
                     
-                    if (!DB.sales[idx].financials) DB.sales[idx].financials = {};
-                    DB.sales[idx].financials.tp = document.getElementById('em-tp').value;
-                    DB.sales[idx].financials.dp = document.getElementById('em-dp').value;
-                    DB.sales[idx].financials.tenure = document.getElementById('em-tenure').value;
+                    if (!s.financials) s.financials = {};
+                    s.financials.tp = document.getElementById('em-tp').value;
+                    s.financials.dp = document.getElementById('em-dp').value;
+                    s.financials.tenure = document.getElementById('em-tenure').value;
                     
-                    if (!DB.sales[idx].discounts) DB.sales[idx].discounts = { type: 'Cash', amount: 0, gift: '' };
-                    DB.sales[idx].discounts.amount = document.getElementById('em-disc-amt').value;
+                    if (!s.discounts) s.discounts = { type: 'Cash', amount: 0, gift: '' };
+                    s.discounts.amount = document.getElementById('em-disc-amt').value;
                     
-                    app.saveManualDeliveriesToBackend();
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`UPDATE sales SET customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                        } catch (err) {
+                            console.error("Failed to update manual delivery in database", err);
+                            app.showToast('Database update failed', 'error');
+                            return;
+                        }
+                    }
 
                     app.showToast('Delivery updated successfully.', 'success');
                     app.closeEditManualDeliveryModal();
@@ -11815,7 +11846,7 @@
 
                 app.showLoader('Logging delivery data...');
 
-                setTimeout(() => {
+                setTimeout(async () => {
                     const terrId = app.currentUser.territories[0];
                     const territory = DB.territories.find(t => t.id === terrId);
 
@@ -11830,13 +11861,12 @@
                         currentYear = h2Months.includes(app.currentMonth) ? y2 : y1;
                     }
 
-                    // Push to simulated DB
-                    DB.sales.push({
+                    const newDelivery = {
                         id: 's_man_' + Date.now(),
                         customer_id: customerCode || ('NEW_' + Math.floor(Math.random() * 1000)),
                         customer_name: customerName,
                         chassis_no: chassisNo,
-                        district: territory.district,
+                        district: territory ? territory.district : '',
                         territory_id: terrId,
                         upazila: upazila,
                         brand: brand,
@@ -11854,9 +11884,20 @@
                         approval_status: 'Pending Approval',
                         admin_comments: '',
                         timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-                    });
-                    
-                    app.saveManualDeliveriesToBackend();
+                    };
+
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (${newDelivery.id}, ${newDelivery.customer_id}, ${newDelivery.district}, ${newDelivery.territory_id}, ${newDelivery.upazila}, ${newDelivery.brand}, ${newDelivery.model}, ${newDelivery.unit_qty}, ${newDelivery.fy}, ${newDelivery.sales_year}, ${newDelivery.sales_month}, ${newDelivery.sale_type}, ${newDelivery.customer_name}, ${newDelivery.chassis_no}, ${newDelivery.purpose_of_use}, ${JSON.stringify(newDelivery.financials)}, ${JSON.stringify(newDelivery.discounts)}, ${newDelivery.old_customer_id}, 1, ${newDelivery.approval_status}, ${newDelivery.admin_comments}, ${newDelivery.timestamp})`;
+                            
+                            DB.sales.push(newDelivery);
+                        } catch (err) {
+                            console.error("Failed to insert manual delivery to database", err);
+                            app.showToast('Database insertion failed', 'error');
+                            app.hideLoader();
+                            return;
+                        }
+                    }
 
                     app.hideLoader();
                     app.closeDeliveryModal();

@@ -174,6 +174,16 @@ CREATE TABLE IF NOT EXISTS sales (
     sales_year INTEGER,
     sales_month VARCHAR(20),
     sale_type VARCHAR(50),
+    customer_name VARCHAR(255) DEFAULT NULL,
+    chassis_no VARCHAR(100) DEFAULT NULL,
+    purpose_of_use VARCHAR(255) DEFAULT NULL,
+    financials JSON DEFAULT NULL,
+    discounts JSON DEFAULT NULL,
+    old_customer_id VARCHAR(50) DEFAULT NULL,
+    is_manual BOOLEAN DEFAULT FALSE,
+    approval_status VARCHAR(50) DEFAULT NULL,
+    admin_comments TEXT DEFAULT NULL,
+    timestamp VARCHAR(50) DEFAULT NULL,
     FOREIGN KEY (territory_id) REFERENCES territories(id) ON DELETE SET NULL
 );
 

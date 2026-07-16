@@ -42,6 +42,66 @@ try {
         $pdo->exec($setupSql);
     }
 
+    // Check if sales table has 'is_manual' column, if not, add manual columns
+    $checkSalesManual = $pdo->query("SHOW COLUMNS FROM sales LIKE 'is_manual'")->rowCount();
+    if ($checkSalesManual === 0) {
+        $pdo->exec("ALTER TABLE sales ADD COLUMN customer_name VARCHAR(255) DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN chassis_no VARCHAR(100) DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN purpose_of_use VARCHAR(255) DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN financials JSON DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN discounts JSON DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN old_customer_id VARCHAR(50) DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN is_manual BOOLEAN DEFAULT FALSE");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN approval_status VARCHAR(50) DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN admin_comments TEXT DEFAULT NULL");
+        $pdo->exec("ALTER TABLE sales ADD COLUMN timestamp VARCHAR(50) DEFAULT NULL");
+    }
+
+    // Migrate any existing manual deliveries from settings to sales table
+    $checkMigrated = $pdo->query("SELECT 1 FROM sales WHERE is_manual = 1 LIMIT 1")->rowCount();
+    if ($checkMigrated === 0) {
+        $stmtSettings = $pdo->query("SELECT settings_json FROM app_settings WHERE id = '1'");
+        $settingsRow = $stmtSettings->fetch();
+        if ($settingsRow) {
+            $settings = json_decode($settingsRow['settings_json'], true);
+            if (isset($settings['manualDeliveries']) && is_array($settings['manualDeliveries'])) {
+                $stmtInsert = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                foreach ($settings['manualDeliveries'] as $del) {
+                    // Check if already exists in sales
+                    $stmtCheck = $pdo->prepare("SELECT id FROM sales WHERE id = ?");
+                    $stmtCheck->execute([$del['id']]);
+                    $exists = $stmtCheck->fetch();
+                    if (!$exists) {
+                        $stmtInsert->execute([
+                            $del['id'],
+                            isset($del['customer_id']) ? $del['customer_id'] : null,
+                            isset($del['district']) ? $del['district'] : null,
+                            isset($del['territory_id']) ? $del['territory_id'] : null,
+                            isset($del['upazila']) ? $del['upazila'] : null,
+                            isset($del['brand']) ? $del['brand'] : null,
+                            isset($del['model']) ? $del['model'] : null,
+                            isset($del['unit_qty']) ? $del['unit_qty'] : 1,
+                            isset($del['fy']) ? $del['fy'] : null,
+                            isset($del['sales_year']) ? $del['sales_year'] : null,
+                            isset($del['sales_month']) ? $del['sales_month'] : null,
+                            isset($del['sale_type']) ? $del['sale_type'] : null,
+                            isset($del['customer_name']) ? $del['customer_name'] : null,
+                            isset($del['chassis_no']) ? $del['chassis_no'] : null,
+                            isset($del['purpose_of_use']) ? $del['purpose_of_use'] : null,
+                            isset($del['financials']) ? (is_array($del['financials']) ? json_encode($del['financials']) : $del['financials']) : null,
+                            isset($del['discounts']) ? (is_array($del['discounts']) ? json_encode($del['discounts']) : $del['discounts']) : null,
+                            isset($del['old_customer_id']) ? $del['old_customer_id'] : null,
+                            1, // is_manual
+                            isset($del['approval_status']) ? $del['approval_status'] : 'Pending Approval',
+                            isset($del['admin_comments']) ? $del['admin_comments'] : '',
+                            isset($del['timestamp']) ? $del['timestamp'] : null
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
     if ($action === 'login') {
         $userId = isset($input['userId']) ? $input['userId'] : '';
         $employeeId = isset($input['employeeId']) ? $input['employeeId'] : '';
@@ -166,6 +226,10 @@ try {
             '/^INSERT\s+INTO\s+projections\s*\(id,\s*fy,\s*month,\s*territory_id,\s*brand,\s*sale_type,\s*projection_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^INSERT\s+INTO\s+emi\s*\(id,\s*customer_code,\s*customer,\s*phone,\s*location,\s*delivery_date,\s*first_inst_date,\s*overdue_count,\s*overdue_total,\s*installment,\s*collected,\s*territory_id,\s*brand,\s*model,\s*installment_no\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
+            '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type,\s*customer_name,\s*chassis_no,\s*purpose_of_use,\s*financials,\s*discounts,\s*old_customer_id,\s*is_manual,\s*approval_status,\s*admin_comments,\s*timestamp\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
+            '/^UPDATE\s+sales\s+SET\s+customer_name\s*=\s*\?,\s*chassis_no\s*=\s*\?,\s*brand\s*=\s*\?,\s*model\s*=\s*\?,\s*sale_type\s*=\s*\?,\s*purpose_of_use\s*=\s*\?,\s*admin_comments\s*=\s*\?,\s*financials\s*=\s*\?,\s*discounts\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^UPDATE\s+sales\s+SET\s+approval_status\s*=\s*\'Done\'\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^DELETE\s+FROM\s+sales\s+WHERE\s+is_manual\s*=\s*1$/i',
             '/^INSERT\s+INTO\s+recovery_od\s*\(id,\s*fy,\s*month,\s*territory_id,\s*perfile_od,\s*total_overdue\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^UPDATE\s+emi\s+SET\s+collected\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^UPDATE\s+app_settings\s+SET\s+settings_json\s*=\s*\?(?:\s+WHERE\s+id\s*=\s*\'1\')?$/i',
