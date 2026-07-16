@@ -4956,8 +4956,8 @@
                                         <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200">
                                             <th class="px-6 py-2 font-black sticky left-0 z-10 bg-slate-50 border-r border-slate-200/80 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">Territory</th>
                                             <th class="px-3 py-2 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" colspan="1">Total FY Budget</th>
-                                            ${app.adminShowYTD ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-indigo-500/10 to-indigo-500/5 text-indigo-700 border-l border-r-2 border-t border-indigo-500/20 font-extrabold shadow-sm" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-emerald-500/10 to-emerald-500/5 text-emerald-700 border-l border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            ${app.adminShowYTD ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-indigo-500/10 to-indigo-500/5 text-indigo-700 border-l border-r-2 border-t border-indigo-500/20 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-emerald-500/10 to-emerald-500/5 text-emerald-700 border-l border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                             <th class="px-3 py-2 text-center bg-gradient-to-b from-cyan-500/10 to-cyan-500/5 text-cyan-700 border-l border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                         </tr>
                                         <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-200/80 text-center">
@@ -5034,15 +5034,15 @@
                                                         </td>
                                                         <td class="px-3 py-1.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[10px]">${mt.totalFYBudget}</span></td>
                                                         ${app.adminShowYTD ? `
-                                                            <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.perf.ytd.budget}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center">${mt.perf.ytd.sales}</td>
-                                                            <td class="px-2 py-1.5 text-center"><span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-black">${mt.ytdAchVal}%</span></td>
-                                                            <td class="px-2 py-1.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${mt.ytdShortVal}</td>
+                                                            <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
+                                                            <td class="px-2 py-1.5 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-black">${mt.ytdAchVal}%</span>`}</td>
+                                                            <td class="px-2 py-1.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
                                                         ` : ''}
                                                         ${app.adminShowLastMonth ? `
-                                                            <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.perf.lastMonth.budget}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center">${mt.perf.lastMonth.sales}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-600 text-center border-r-2 border-emerald-500/20">${mt.lmAchVal}%</td>
+                                                            <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.sales}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-600 text-center border-r-2 border-emerald-500/20">${app.currentMonth === 'July' ? '-' : `${mt.lmAchVal}%`}</td>
                                                         ` : ''}
                                                         <td class="px-2 py-1.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
                                                         <td class="px-2 py-1.5 bg-slate-50/30 font-black text-slate-700 text-center">${mt.currProj}</td>
@@ -5067,15 +5067,15 @@
                                                     </td>
                                                     <td class="px-3 py-2 font-black text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-xs shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-black text-xs shadow-md shadow-amber-500/20">${totalFYBudget}</span></td>
                                                     ${app.adminShowYTD ? `
-                                                        <td class="px-2 py-2 text-slate-700 font-extrabold bg-indigo-50/10 text-center border-l border-slate-100/80">${totalYtdBudget}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-900 bg-indigo-50/10 text-center">${totalYtdSales}</td>
-                                                        <td class="px-2 py-2 bg-indigo-50/10 text-center"><span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-50 text-${totalH}-600 font-black">${totalYtdAchVal}%</span></td>
-                                                        <td class="px-2 py-2 font-bold text-rose-600 bg-indigo-50/10 text-center border-r-2 border-indigo-500/20">${totalYtdShort}</td>
+                                                        <td class="px-2 py-2 text-slate-700 font-extrabold bg-indigo-50/10 text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
+                                                        <td class="px-2 py-2 font-black text-slate-900 bg-indigo-50/10 text-center">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
+                                                        <td class="px-2 py-2 bg-indigo-50/10 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-50 text-${totalH}-600 font-black">${totalYtdAchVal}%</span>`}</td>
+                                                        <td class="px-2 py-2 font-bold text-rose-600 bg-indigo-50/10 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : totalYtdShort}</td>
                                                     ` : ''}
                                                     ${app.adminShowLastMonth ? `
-                                                        <td class="px-2 py-2 text-slate-700 font-extrabold text-center border-l border-slate-100/80">${totalLastMonthBudget}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-900 text-center">${totalLastMonthSales}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-800 text-center border-r-2 border-emerald-500/20">${ach(totalLastMonthSales, totalLastMonthBudget)}%</td>
+                                                        <td class="px-2 py-2 text-slate-700 font-extrabold text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
+                                                        <td class="px-2 py-2 font-black text-slate-900 text-center">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
+                                                        <td class="px-2 py-2 font-black text-slate-800 text-center border-r-2 border-emerald-500/20">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
                                                     ` : ''}
                                                     <td class="px-2 py-2 bg-slate-100/50 text-slate-700 font-extrabold text-center border-l border-slate-100/80">${totalCurrBudget}</td>
                                                     <td class="px-2 py-2 bg-slate-100/50 font-black text-slate-900 text-center">${totalCurrProj}</td>
@@ -5257,7 +5257,7 @@
                                                 </div>
                                                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                                                     <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">YTD Ach</p>
-                                                    <p class="text-sm font-black text-${h}-600">${ytdAchVal}%</p>
+                                                    <p class="text-sm font-black text-${app.currentMonth === 'July' ? 'slate-400' : `${h}-600`}">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</p>
                                                 </div>
                                                 <div class="bg-indigo-50 p-2.5 rounded-xl border border-indigo-100">
                                                     <p class="text-[8px] font-bold text-indigo-400 uppercase mb-1">M.Ach</p>
@@ -5295,8 +5295,8 @@
                                     <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
                                         <th class="px-6 py-4 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
                                         <th class="px-6 py-4 font-black bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="3">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="2">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                         <th class="px-3 py-4 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
                                     <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center">
@@ -5347,13 +5347,13 @@
                                                     ${area.areaName}
                                                 </td>
                                                 ${app.adminShowYTD ? `
-                                                    <td class="px-2 py-4 text-slate-400">${area.ytd.budget}</td>
-                                                    <td class="px-2 py-4 font-black text-slate-700">${area.ytd.sales}</td>
-                                                    <td class="px-2 py-4 font-black text-indigo-600">${ach(area.ytd.sales, area.ytd.budget)}%</td>
+                                                    <td class="px-2 py-4 text-slate-400">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
+                                                    <td class="px-2 py-4 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
+                                                    <td class="px-2 py-4 font-black text-indigo-600">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
-                                                    <td class="px-2 py-4 text-slate-400">${area.lastMonth.budget}</td>
-                                                    <td class="px-2 py-4 font-black text-slate-700">${area.lastMonth.sales}</td>
+                                                    <td class="px-2 py-4 text-slate-400">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
+                                                    <td class="px-2 py-4 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.lastMonth.sales}</td>
                                                 ` : ''}
                                                 <td class="px-2 py-4 bg-slate-50/50 text-slate-400">${area.currBudget}</td>
                                                 <td class="px-2 py-4 bg-slate-50/50 font-black text-slate-700">${area.currProj}</td>
@@ -5407,10 +5407,10 @@
                                             <div class="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100">
                                                 <div class="flex justify-between items-center mb-1">
                                                     <p class="text-[8px] font-black text-emerald-500 uppercase">YTD Target</p>
-                                                    <span class="text-[10px] font-black text-emerald-700">${ytdAchVal}%</span>
+                                                    <span class="text-[10px] font-black text-emerald-700">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</span>
                                                 </div>
                                                 <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border border-emerald-100">
-                                                    <div class="h-full bg-emerald-500 rounded-full" style="width: ${Math.min(100, ytdAchVal)}%"></div>
+                                                    <div class="h-full bg-emerald-500 rounded-full" style="width: ${app.currentMonth === 'July' ? 0 : Math.min(100, ytdAchVal)}%"></div>
                                                 </div>
                                             </div>
                                         </div>
