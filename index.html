@@ -10521,8 +10521,14 @@
                     }
                 });
 
-                // Pending Manual Deliveries specifically for this MO and selected brand/type
-                const myManualDeliveries = brandSales.filter(s => s.is_manual);
+                // Successful manual deliveries logged by this MO (always visible, not filtered by active brand/type tabs)
+                const myManualDeliveries = DB.sales
+                    .filter(s => s.territory_id === terrId && s.is_manual)
+                    .sort((a, b) => {
+                        const tA = Number(a.id.replace('s_man_', '')) || 0;
+                        const tB = Number(b.id.replace('s_man_', '')) || 0;
+                        return tB - tA; // Newest first
+                    });
 
                 // --- 5. Selected Month Performance (For new dynamic table) ---
                 const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
@@ -10728,16 +10734,23 @@
                             </div>
                         </button>
 
-                        <!-- Pending Manual Deliveries List (Modern Table Style) -->
+                        <!-- Successful Deliveries Log History (Unified Style) -->
                         ${myManualDeliveries.length > 0 ? `
                             <div class="mb-6">
-                                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
-                                    <div class="p-1.5 bg-indigo-100 rounded-lg"><i data-lucide="clipboard-list" class="w-4 h-4 text-indigo-600"></i></div>
-                                    Manual Field Deliveries
+                                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between flex-wrap gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-1.5 bg-indigo-100 rounded-lg"><i data-lucide="clipboard-list" class="w-4 h-4 text-indigo-600"></i></div>
+                                        <span>Manual Field Deliveries Log History</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-slate-100 text-slate-600 border border-slate-200" title="Total manual logs entered">Total: ${myManualDeliveries.length}</span>
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200" title="Approved and synced to cPanel">Synced: ${myManualDeliveries.filter(s => s.approval_status === 'Done').length}</span>
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-amber-50 text-amber-600 border border-amber-200 animate-pulse" title="Pending admin approval">Pending: ${myManualDeliveries.filter(s => s.approval_status !== 'Done').length}</span>
+                                    </div>
                                 </h3>
                                 <div class="glass overflow-hidden rounded-2xl border border-white/40 shadow-xl overflow-x-auto no-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap">
-                                        <thead class="${brand === 'Foton' ? 'bg-foton' : 'bg-mahindra'} text-white/90 uppercase tracking-[0.1em] text-[9px] font-black border-b border-white/20">
+                                        <thead class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white/90 uppercase tracking-[0.1em] text-[9px] font-black border-b border-white/20">
                                             <tr>
                                                 <th class="px-4 py-3 text-center">SL</th>
                                                 <th class="px-4 py-3">Customer Information</th>
