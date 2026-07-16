@@ -3830,7 +3830,7 @@
                     aStat.lastMonth.sales += perf.lastMonth.sales;
                     aStat.lastMonth.sply += perf.lastMonth.sply;
 
-                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                     const currentTgtsStats = tTargets.filter(tg => tg.month === app.currentMonth);
                     const tBudgetStats = currentTgtsStats.length > 0 ? currentTgtsStats.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
                     aStat.currBudget += tBudgetStats;
@@ -4045,7 +4045,7 @@
                                         </div>
                                         <div class="space-y-1">
                                             ${activeTerritories.map(t => {
-                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                 const currentTgtsM = tTgtObj.filter(tg => tg.month === app.currentMonth);
                                 const tBudgetM = currentTgtsM.length > 0 ? currentTgtsM.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
                                 const tProjM = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
@@ -4134,7 +4134,7 @@
                                         </div>
                                         <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                                             ${activeTerritories.map(t => {
-                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                 const currTgtsT = tTgtObj.filter(tg => tg.month === app.currentMonth);
                                 const tBudget = currTgtsT.length > 0 ? currTgtsT.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
                                 const tSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
@@ -4525,7 +4525,7 @@
 
                             const rowsHTML = activeTerritories.filter(t => !app.adminTerritoryFilter || app.adminTerritoryFilter === 'All' || t.id === app.adminTerritoryFilter).map(t => {
                                 const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
-                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                 const currTgts = tTargets.filter(tg => tg.month === performanceMonth);
                                 const currBudget = currTgts.length > 0 ? currTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
                                 const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === performanceMonth && p.sale_type === currentSaleType);
@@ -4747,7 +4747,7 @@
 
                                             const detailedRowsHTML = mappedTerritories.map((mt, idx) => {
                                                 const t = mt.t;
-                                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                                 const totalFYBudget = mt.totalFYBudget;
 
                                                 const monthlyPerf = {};
@@ -4851,7 +4851,7 @@
 
                                             mappedTerritories.forEach(mt => {
                                                 const t = mt.t;
-                                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                                 const totalFYBudget = mt.totalFYBudget;
                                                 grandFYBudget += totalFYBudget;
 
@@ -5127,7 +5127,7 @@
 
                                         const monthlyPerf = {};
                                         fiscalMonths.forEach(m => {
-                                            const monthTgts = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.month === m);
+                                            const monthTgts = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY && tg.month === m);
                                             const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
                                             const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                                             const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
