@@ -2964,11 +2964,13 @@
                 app.showLoader('Generating EMI Report...');
 
                 // Gather data (unfiltered — all territories, 1st & 2nd installments)
-                const emiData = DB.emi.filter(e => e.installment_no === 1 || e.installment_no === 2 || !e.installment_no);
+                const emiData = (DB.emi || []).filter(e => {
+                    const instNo = e.installment_no;
+                    return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                });
 
-                const territorySummary = DB.territories.map(t => {
+                const territorySummary = (DB.territories || []).map(t => {
                     const tEmi = emiData.filter(e => e.territory_id === t.id);
-                    if (tEmi.length === 0) return null;
                     const totalCust = tEmi.length;
                     const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
                     const nonPayingCust = totalCust - payingCust;
@@ -2976,7 +2978,7 @@
                     const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                     const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                }).filter(Boolean).sort((a, b) => a.tColRate - b.tColRate); // Sort worst first (bottom to last)
+                }).sort((a, b) => a.tColRate - b.tColRate); // Sort worst first (bottom to last)
 
                 // Grand totals
                 const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
