@@ -2993,92 +2993,88 @@
                 // Build off-screen container styled like a clean Excel report (A4 = 794 x 1123 px at 96 dpi)
                 const container = document.createElement('div');
                 container.id = 'emi-report-capture';
-                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#fff;z-index:99999;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;box-sizing:border-box;padding:0;';
+                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#fff;z-index:99999;font-family:Arial,sans-serif;box-sizing:border-box;padding:0;';
 
                 container.innerHTML = `
-                    <div style="width:794px;height:1123px;display:flex;flex-direction:column;background:#ffffff;padding:12px 20px 8px 20px;box-sizing:border-box;">
+                    <div style="width:794px;height:1123px;background:#ffffff;padding:20px 25px;box-sizing:border-box;display:block;">
                         
-                        <!-- Compact Excel-Style Header Area -->
-                        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #334155;padding-bottom:6px;margin-bottom:8px;">
+                        <!-- Header Area -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px;">
                             <div>
-                                <div style="font-size:9px;font-weight:850;color:#4f46e5;text-transform:uppercase;letter-spacing:1px;margin-bottom:1px;">ACI Motors Limited</div>
-                                <div style="font-size:7.5px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Commercial Vehicle</div>
-                                <h1 style="font-size:15px;font-weight:900;color:#0f172a;margin:0 0 1px 0;letter-spacing:-0.2px;">1st & 2nd EMI Collection Status</h1>
-                                <p style="font-size:8.5px;font-weight:600;color:#64748b;margin:0;">Report Date / Period: Till Date (${today})</p>
+                                <div style="font-size:11px;font-weight:bold;text-transform:uppercase;margin-bottom:2px;">ACI Motors Limited</div>
+                                <div style="font-size:10px;font-weight:bold;color:#555;text-transform:uppercase;margin-bottom:6px;">Commercial Vehicle</div>
+                                <h1 style="font-size:18px;margin:0 0 3px 0;color:#000;">1st & 2nd EMI Collection Status</h1>
+                                <p style="font-size:10px;color:#444;margin:0;">Report Date: ${today}</p>
                             </div>
                             
-                            <!-- Premium Compact KPI Grid -->
-                            <table style="border-collapse:collapse;font-size:8.5px;color:#1e293b;border:1px solid #cbd5e1;background:#f8fafc;width:290px;line-height:1.25;">
+                            <!-- KPI Grid -->
+                            <table style="border-collapse:collapse;font-size:9.5px;color:#000;width:300px;">
                                 <tr>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:700;background:#e2e8f0;color:#475569;width:25%;vertical-align:middle;">Total Cust.</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:800;text-align:right;width:20%;vertical-align:middle;">${grandCust}</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:700;background:#e2e8f0;color:#475569;width:25%;vertical-align:middle;">Total Due</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:800;text-align:right;color:#0f172a;width:30%;vertical-align:middle;">${app.formatCurrency(grandDue)}</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;font-weight:bold;background:#f0f0f0;width:25%;">Total Cust.</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;text-align:right;width:20%;">${grandCust}</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;font-weight:bold;background:#f0f0f0;width:25%;">Total Due</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;text-align:right;font-weight:bold;width:30%;">${app.formatCurrency(grandDue)}</td>
                                 </tr>
                                 <tr>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:700;background:#e2e8f0;color:#475569;vertical-align:middle;">Paying</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:800;text-align:right;color:#16a34a;vertical-align:middle;">${grandPaying}</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:700;background:#e2e8f0;color:#475569;vertical-align:middle;">Collected</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:800;text-align:right;color:#2563eb;vertical-align:middle;">${app.formatCurrency(grandCol)}</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;font-weight:bold;background:#f0f0f0;">Paying</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;text-align:right;color:#008000;">${grandPaying}</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;font-weight:bold;background:#f0f0f0;">Collected</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;text-align:right;font-weight:bold;color:#0000FF;">${app.formatCurrency(grandCol)}</td>
                                 </tr>
                                 <tr>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:700;background:#e2e8f0;color:#475569;vertical-align:middle;">Non-Paying</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:800;text-align:right;color:#dc2626;vertical-align:middle;">${grandNonPaying}</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:700;background:#e2e8f0;color:#475569;vertical-align:middle;">Col. Rate</td>
-                                    <td style="border:1px solid #cbd5e1;padding:2px 4px;font-weight:900;text-align:right;color:#15803d;background:#dcfce7;vertical-align:middle;">${grandRate}%</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;font-weight:bold;background:#f0f0f0;">Non-Paying</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;text-align:right;color:#FF0000;">${grandNonPaying}</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;font-weight:bold;background:#f0f0f0;">Col. Rate</td>
+                                    <td style="border:1px solid #aaa;padding:2px 4px;text-align:right;font-weight:bold;color:#008000;">${grandRate}%</td>
                                 </tr>
                             </table>
                         </div>
 
                         <!-- Minimal Excel-like Table -->
-                        <div style="flex:1;overflow:hidden;">
-                            <table style="width:100%;border-collapse:collapse;font-size:8.2px;color:#1e293b;border:1px solid #94a3b8;line-height:1.25;">
-                                <thead>
-                                    <tr style="background:#cbd5e1;font-weight:800;color:#1e293b;">
-                                        <th style="border:1px solid #94a3b8;padding:3px 4px;width:5%;text-align:center;vertical-align:middle;">#</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 5px;width:27%;text-align:left;vertical-align:middle;">Sales Territory</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 4px;width:10%;text-align:center;vertical-align:middle;">Total Cust.</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 4px;width:10%;text-align:center;vertical-align:middle;">Paying</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 4px;width:10%;text-align:center;vertical-align:middle;">Non-Paying</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 5px;width:15%;text-align:right;vertical-align:middle;">Due (Inst.)</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 5px;width:15%;text-align:right;vertical-align:middle;">Collected</th>
-                                        <th style="border:1px solid #94a3b8;padding:3px 4px;width:8%;text-align:center;vertical-align:middle;">Rate</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${territorySummary.map((t, i) => {
-                                        const bgColor = i % 2 === 0 ? '#ffffff' : '#f8fafc';
-                                        const rateColor = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#854d0e' : '#b91c1c');
-                                        const rateBg = t.tColRate >= 80 ? '#f0fdf4' : (t.tColRate >= 50 ? '#fefce8' : '#fef2f2');
-                                        return `<tr style="background:${bgColor};">
-                                            <td style="border:1px solid #cbd5e1;padding:2px 4px;text-align:center;font-weight:700;color:#64748b;vertical-align:middle;">${i + 1}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 5px;text-align:left;font-weight:700;color:#0f172a;vertical-align:middle;">${t.name}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 4px;text-align:center;font-weight:600;vertical-align:middle;">${t.totalCust}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 4px;text-align:center;font-weight:700;color:#16a34a;vertical-align:middle;">${t.payingCust}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 4px;text-align:center;font-weight:700;color:#dc2626;vertical-align:middle;">${t.nonPayingCust}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 5px;text-align:right;font-weight:600;color:#475569;vertical-align:middle;">${app.formatCurrency(t.tTotalDue)}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 5px;text-align:right;font-weight:700;color:#2563eb;vertical-align:middle;">${app.formatCurrency(t.tAmountCol)}</td>
-                                            <td style="border:1px solid #cbd5e1;padding:2px 4px;text-align:center;font-weight:800;color:${rateColor};background:${rateBg};vertical-align:middle;">${t.tColRate}%</td>
-                                        </tr>`;
-                                    }).join('')}
-                                    <!-- Excel Grand Total Row (Double Line Bottom Border) -->
-                                    <tr style="background:#e2e8f0;font-weight:900;color:#0f172a;border-top:2px solid #64748b;border-bottom:4px double #64748b;">
-                                        <td style="border:1px solid #cbd5e1;padding:3px 5px;text-align:left;vertical-align:middle;" colspan="2">GRAND TOTAL</td>
-                                        <td style="border:1px solid #cbd5e1;padding:3px 4px;text-align:center;vertical-align:middle;">${grandCust}</td>
-                                        <td style="border:1px solid #cbd5e1;padding:3px 4px;text-align:center;color:#15803d;vertical-align:middle;">${grandPaying}</td>
-                                        <td style="border:1px solid #cbd5e1;padding:3px 4px;text-align:center;color:#b91c1c;vertical-align:middle;">${grandNonPaying}</td>
-                                        <td style="border:1px solid #cbd5e1;padding:3px 5px;text-align:right;color:#0f172a;vertical-align:middle;">${app.formatCurrency(grandDue)}</td>
-                                        <td style="border:1px solid #cbd5e1;padding:3px 5px;text-align:right;color:#1e3a8a;vertical-align:middle;">${app.formatCurrency(grandCol)}</td>
-                                        <td style="border:1px solid #cbd5e1;padding:3px 4px;text-align:center;color:#15803d;background:#dcfce7;vertical-align:middle;">${grandRate}%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <table style="width:100%;border-collapse:collapse;font-size:9.5px;color:#000;">
+                            <thead>
+                                <tr style="background:#f0f0f0;font-weight:bold;">
+                                    <th style="border:1px solid #888;padding:3px;text-align:center;width:5%;">#</th>
+                                    <th style="border:1px solid #888;padding:3px 5px;text-align:left;width:27%;">Sales Territory</th>
+                                    <th style="border:1px solid #888;padding:3px;text-align:center;width:10%;">Total Cust.</th>
+                                    <th style="border:1px solid #888;padding:3px;text-align:center;width:10%;">Paying</th>
+                                    <th style="border:1px solid #888;padding:3px;text-align:center;width:10%;">Non-Paying</th>
+                                    <th style="border:1px solid #888;padding:3px 5px;text-align:right;width:15%;">Due (Inst.)</th>
+                                    <th style="border:1px solid #888;padding:3px 5px;text-align:right;width:15%;">Collected</th>
+                                    <th style="border:1px solid #888;padding:3px;text-align:center;width:8%;">Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${territorySummary.map((t, i) => {
+                                    const bgColor = i % 2 === 0 ? '#ffffff' : '#fafafa';
+                                    const rateColor = t.tColRate >= 80 ? '#008000' : (t.tColRate >= 50 ? '#b8860b' : '#FF0000');
+                                    return `<tr style="background:${bgColor};">
+                                        <td style="border:1px solid #aaa;padding:2.5px 3px;text-align:center;">${i + 1}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 5px;text-align:left;">${t.name}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 3px;text-align:center;">${t.totalCust}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 3px;text-align:center;color:#008000;">${t.payingCust}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 3px;text-align:center;color:#FF0000;">${t.nonPayingCust}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 5px;text-align:right;">${app.formatCurrency(t.tTotalDue)}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 5px;text-align:right;color:#0000FF;">${app.formatCurrency(t.tAmountCol)}</td>
+                                        <td style="border:1px solid #aaa;padding:2.5px 3px;text-align:center;font-weight:bold;color:${rateColor};">${t.tColRate}%</td>
+                                    </tr>`;
+                                }).join('')}
+                                <!-- Excel Grand Total Row -->
+                                <tr style="background:#e0e0e0;font-weight:bold;">
+                                    <td style="border:1px solid #888;padding:4px 5px;text-align:left;" colspan="2">GRAND TOTAL</td>
+                                    <td style="border:1px solid #888;padding:4px 3px;text-align:center;">${grandCust}</td>
+                                    <td style="border:1px solid #888;padding:4px 3px;text-align:center;color:#008000;">${grandPaying}</td>
+                                    <td style="border:1px solid #888;padding:4px 3px;text-align:center;color:#FF0000;">${grandNonPaying}</td>
+                                    <td style="border:1px solid #888;padding:4px 5px;text-align:right;">${app.formatCurrency(grandDue)}</td>
+                                    <td style="border:1px solid #888;padding:4px 5px;text-align:right;color:#0000FF;">${app.formatCurrency(grandCol)}</td>
+                                    <td style="border:1px solid #888;padding:4px 3px;text-align:center;color:#008000;">${grandRate}%</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <!-- Footer -->
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;padding-top:4px;border-top:1px solid #cbd5e1;font-size:7.5px;color:#64748b;">
-                            <span>Generated from Sales360 — ACI Motors Ltd.</span>
-                            <span>Report Date: ${today} • Sorted by Collection Rate (High → Low)</span>
+                        <div style="margin-top:10px;text-align:center;font-size:8px;color:#777;">
+                            Generated from Sales360 — ACI Motors Ltd. | Sorted by Collection Rate (High → Low)
                         </div>
                     </div>
                 `;
