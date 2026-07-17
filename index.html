@@ -2990,175 +2990,94 @@
 
                 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-                // Dynamically scale elements based on row count to fit A4 page (1123px height)
-                const rowCount = territorySummary.length;
-                
-                let outerPadding = '28px 32px 20px 32px';
-                let headerMargin = '18px';
-                let cardMargin = '16px';
-                let cardPadding = '10px 12px';
-                let cardValSize = '20px';
-                let barMargin = '16px';
-                let barPadding = '8px 12px';
-                let barValSize = '14px';
-                let bodyFontSize = '11px';
-                let headerFontSize = '9px';
-                let cellPadY = '6px';
-                let cellPadX = '10px';
-                let logoSize = '40px';
-                let titleSize = '22px';
-
-                if (rowCount > 10 && rowCount <= 18) {
-                    outerPadding = '18px 24px 12px 24px';
-                    headerMargin = '12px';
-                    cardMargin = '10px';
-                    cardPadding = '6px 10px';
-                    cardValSize = '16px';
-                    barMargin = '10px';
-                    barPadding = '6px 10px';
-                    barValSize = '12px';
-                    bodyFontSize = '10px';
-                    headerFontSize = '8.5px';
-                    cellPadY = '4.5px';
-                    cellPadX = '8px';
-                    titleSize = '18px';
-                } else if (rowCount > 18 && rowCount <= 26) {
-                    outerPadding = '12px 20px 8px 20px';
-                    headerMargin = '8px';
-                    cardMargin = '8px';
-                    cardPadding = '4px 8px';
-                    cardValSize = '14px';
-                    barMargin = '8px';
-                    barPadding = '5px 8px';
-                    barValSize = '11px';
-                    bodyFontSize = '9px';
-                    headerFontSize = '7.5px';
-                    cellPadY = '3.5px';
-                    cellPadX = '6px';
-                    logoSize = '30px';
-                    titleSize = '16px';
-                } else if (rowCount > 26) {
-                    outerPadding = '8px 16px 6px 16px';
-                    headerMargin = '6px';
-                    cardMargin = '6px';
-                    cardPadding = '3px 6px';
-                    cardValSize = '12px';
-                    barMargin = '6px';
-                    barPadding = '4px 8px';
-                    barValSize = '10px';
-                    bodyFontSize = '8px';
-                    headerFontSize = '7px';
-                    cellPadY = '2.5px';
-                    cellPadX = '5px';
-                    logoSize = '20px';
-                    titleSize = '14px';
-                }
-
-                // Build off-screen container  (A4 = 794 x 1123 px at 96 dpi)
+                // Build off-screen container styled like a clean Excel report (A4 = 794 x 1123 px at 96 dpi)
                 const container = document.createElement('div');
                 container.id = 'emi-report-capture';
-                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#fff;z-index:99999;font-family:Inter,system-ui,sans-serif;overflow:hidden;box-sizing:border-box;padding:0;';
+                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#fff;z-index:99999;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden;box-sizing:border-box;padding:0;';
 
                 container.innerHTML = `
-                    <div style="width:794px;height:1123px;display:flex;flex-direction:column;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 40%);padding:${outerPadding};box-sizing:border-box;">
+                    <div style="width:794px;height:1123px;display:flex;flex-direction:column;background:#ffffff;padding:24px 28px 16px 28px;box-sizing:border-box;">
                         
-                        <!-- Header -->
-                        <div style="text-align:center;margin-bottom:${headerMargin};">
-                            <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:4px;">
-                                <div style="width:${logoSize};height:3px;background:linear-gradient(90deg,transparent,#4f46e5);border-radius:2px;"></div>
-                                <span style="font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#6366f1;">ACI Motors Limited</span>
-                                <div style="width:${logoSize};height:3px;background:linear-gradient(90deg,#4f46e5,transparent);border-radius:2px;"></div>
+                        <!-- Compact Excel-Style Header Area -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #334155;padding-bottom:10px;margin-bottom:12px;">
+                            <div>
+                                <div style="font-size:10px;font-weight:850;color:#4f46e5;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">ACI Motors Limited</div>
+                                <h1 style="font-size:18px;font-weight:900;color:#0f172a;margin:0 0 2px 0;letter-spacing:-0.2px;">1st & 2nd EMI Collection Status</h1>
+                                <p style="font-size:9.5px;font-weight:600;color:#64748b;margin:0;">Report Date / Period: Till Date (${today})</p>
                             </div>
-                            <h1 style="font-size:${titleSize};font-weight:900;color:#1e293b;margin:0 0 4px 0;letter-spacing:-0.3px;">1st & 2nd EMI Collection Status</h1>
-                            <p style="font-size:12px;font-weight:600;color:#64748b;margin:0;">Till date — ${today}</p>
+                            
+                            <!-- Premium Compact KPI Grid -->
+                            <table style="border-collapse:collapse;font-size:9.5px;color:#1e293b;border:1px solid #cbd5e1;background:#f8fafc;width:340px;line-height:1.2;">
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:700;background:#e2e8f0;color:#475569;width:25%;">Total Cust.</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:800;text-align:right;width:20%;">${grandCust}</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:700;background:#e2e8f0;color:#475569;width:25%;">Total Due</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:800;text-align:right;color:#0f172a;width:30%;">${app.formatCurrency(grandDue)}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:700;background:#e2e8f0;color:#475569;">Paying</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:800;text-align:right;color:#16a34a;">${grandPaying}</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:700;background:#e2e8f0;color:#475569;">Collected</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:800;text-align:right;color:#2563eb;">${app.formatCurrency(grandCol)}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:700;background:#e2e8f0;color:#475569;">Non-Paying</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:800;text-align:right;color:#dc2626;">${grandNonPaying}</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:700;background:#e2e8f0;color:#475569;">Col. Rate</td>
+                                    <td style="border:1px solid #cbd5e1;padding:3px 6px;font-weight:900;text-align:right;color:#15803d;background:#dcfce7;">${grandRate}%</td>
+                                </tr>
+                            </table>
                         </div>
 
-                        <!-- Summary Cards -->
-                        <div style="display:flex;gap:8px;margin-bottom:${cardMargin};">
-                            <div style="flex:1;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:10px;padding:${cardPadding};text-align:center;">
-                                <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#3b82f6;margin-bottom:2px;">Total Customers</div>
-                                <div style="font-size:${cardValSize};font-weight:900;color:#1e40af;">${grandCust}</div>
-                            </div>
-                            <div style="flex:1;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;border-radius:10px;padding:${cardPadding};text-align:center;">
-                                <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#16a34a;margin-bottom:2px;">Paying</div>
-                                <div style="font-size:${cardValSize};font-weight:900;color:#15803d;">${grandPaying}</div>
-                            </div>
-                            <div style="flex:1;background:linear-gradient(135deg,#fef2f2,#fecaca);border:1px solid #fca5a5;border-radius:10px;padding:${cardPadding};text-align:center;">
-                                <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#dc2626;margin-bottom:2px;">Non-Paying</div>
-                                <div style="font-size:${cardValSize};font-weight:900;color:#b91c1c;">${grandNonPaying}</div>
-                            </div>
-                            <div style="flex:1;background:linear-gradient(135deg,#fefce8,#fef08a);border:1px solid #fde047;border-radius:10px;padding:${cardPadding};text-align:center;">
-                                <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#ca8a04;margin-bottom:2px;">Collection Rate</div>
-                                <div style="font-size:${cardValSize};font-weight:900;color:#a16207;">${grandRate}%</div>
-                            </div>
-                        </div>
-
-                        <!-- Amount Summary Bar -->
-                        <div style="display:flex;gap:8px;margin-bottom:${barMargin};">
-                            <div style="flex:1;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:${barPadding};display:flex;justify-content:space-between;align-items:center;">
-                                <span style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;">Total Due (Installment)</span>
-                                <span style="font-size:${barValSize};font-weight:900;color:#334155;">${app.formatCurrency(grandDue)}</span>
-                            </div>
-                            <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:${barPadding};display:flex;justify-content:space-between;align-items:center;">
-                                <span style="font-size:9px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:1px;">Total Collected</span>
-                                <span style="font-size:${barValSize};font-weight:900;color:#15803d;">${app.formatCurrency(grandCol)}</span>
-                            </div>
-                        </div>
-
-                        <!-- Territory Table -->
-                        <div style="flex:1;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;">
-                            <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+                        <!-- Minimal Excel-like Table -->
+                        <div style="flex:1;overflow:hidden;">
+                            <table style="width:100%;border-collapse:collapse;font-size:9.5px;color:#1e293b;border:1px solid #94a3b8;line-height:1.2;">
                                 <thead>
-                                    <tr style="background:linear-gradient(135deg,#1e293b,#334155);">
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:left;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:5%;">#</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:left;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:25%;">Sales Territory</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:11%;">Total Cust.</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:11%;">Paying</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:11%;">Non-Paying</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:right;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:15%;">Due (Inst.)</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:right;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:15%;">Collected</th>
-                                        <th style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${headerFontSize};font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;width:9%;">Rate</th>
+                                    <tr style="background:#cbd5e1;font-weight:800;color:#1e293b;text-align:center;">
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:5%;text-align:center;">#</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:27%;text-align:left;">Sales Territory</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:10%;">Total Cust.</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:10%;">Paying</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:10%;">Non-Paying</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:15%;text-align:right;">Due (Inst.)</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:15%;text-align:right;">Collected</th>
+                                        <th style="border:1px solid #94a3b8;padding:4px 4px;width:8%;">Rate</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${territorySummary.map((t, i) => {
                                         const bgColor = i % 2 === 0 ? '#ffffff' : '#f8fafc';
-                                        const rateColor = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#a16207' : '#dc2626');
+                                        const rateColor = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#854d0e' : '#b91c1c');
                                         const rateBg = t.tColRate >= 80 ? '#f0fdf4' : (t.tColRate >= 50 ? '#fefce8' : '#fef2f2');
-                                        const rateBorder = t.tColRate >= 80 ? '#bbf7d0' : (t.tColRate >= 50 ? '#fde047' : '#fca5a5');
-                                        return `<tr style="background:${bgColor};border-bottom:1px solid #f1f5f9;">
-                                            <td style="padding:${cellPadY} ${cellPadX};font-size:${bodyFontSize};font-weight:700;color:#94a3b8;">${i + 1}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};font-size:${bodyFontSize};font-weight:800;color:#1e293b;">${t.name}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${bodyFontSize};font-weight:700;color:#475569;">${t.totalCust}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${bodyFontSize};font-weight:800;color:#16a34a;">${t.payingCust}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${bodyFontSize};font-weight:800;color:#dc2626;">${t.nonPayingCust}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};text-align:right;font-size:${bodyFontSize};font-weight:700;color:#475569;">${app.formatCurrency(t.tTotalDue)}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};text-align:right;font-size:${bodyFontSize};font-weight:700;color:#2563eb;">${app.formatCurrency(t.tAmountCol)}</td>
-                                            <td style="padding:${cellPadY} ${cellPadX};text-align:center;">
-                                                <span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:${bodyFontSize};font-weight:900;color:${rateColor};background:${rateBg};border:1px solid ${rateBorder};">${t.tColRate}%</span>
-                                            </td>
+                                        return `<tr style="background:${bgColor};">
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:center;font-weight:700;color:#64748b;">${i + 1}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;font-weight:700;color:#0f172a;">${t.name}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:center;font-weight:600;">${t.totalCust}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:center;font-weight:700;color:#16a34a;">${t.payingCust}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:center;font-weight:700;color:#dc2626;">${t.nonPayingCust}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:right;font-weight:600;color:#475569;">${app.formatCurrency(t.tTotalDue)}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:right;font-weight:700;color:#2563eb;">${app.formatCurrency(t.tAmountCol)}</td>
+                                            <td style="border:1px solid #cbd5e1;padding:3.5px 4px;text-align:center;font-weight:800;color:${rateColor};background:${rateBg};">${t.tColRate}%</td>
                                         </tr>`;
                                     }).join('')}
-                                    <!-- Grand Total Row -->
-                                    <tr style="background:linear-gradient(135deg,#1e293b,#334155);border-top:2px solid #475569;">
-                                        <td style="padding:${cellPadY} ${cellPadX};font-size:${bodyFontSize};font-weight:900;color:#f8fafc;" colspan="2">GRAND TOTAL</td>
-                                        <td style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${bodyFontSize};font-weight:900;color:#f8fafc;">${grandCust}</td>
-                                        <td style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${bodyFontSize};font-weight:900;color:#4ade80;">${grandPaying}</td>
-                                        <td style="padding:${cellPadY} ${cellPadX};text-align:center;font-size:${bodyFontSize};font-weight:900;color:#f87171;">${grandNonPaying}</td>
-                                        <td style="padding:${cellPadY} ${cellPadX};text-align:right;font-size:${bodyFontSize};font-weight:900;color:#f8fafc;">${app.formatCurrency(grandDue)}</td>
-                                        <td style="padding:${cellPadY} ${cellPadX};text-align:right;font-size:${bodyFontSize};font-weight:900;color:#4ade80;">${app.formatCurrency(grandCol)}</td>
-                                        <td style="padding:${cellPadY} ${cellPadX};text-align:center;">
-                                            <span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:${bodyFontSize};font-weight:900;color:#fff;background:linear-gradient(135deg,#6366f1,#4f46e5);border:1px solid #818cf8;">${grandRate}%</span>
-                                        </td>
+                                    <!-- Excel Grand Total Row (Double Line Bottom Border) -->
+                                    <tr style="background:#e2e8f0;font-weight:900;color:#0f172a;border-top:2px solid #64748b;border-bottom:4px double #64748b;">
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:center;" colspan="2">GRAND TOTAL</td>
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:center;">${grandCust}</td>
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:center;color:#15803d;">${grandPaying}</td>
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:center;color:#b91c1c;">${grandNonPaying}</td>
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:right;color:#0f172a;">${app.formatCurrency(grandDue)}</td>
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:right;color:#1e3a8a;">${app.formatCurrency(grandCol)}</td>
+                                        <td style="border:1px solid #cbd5e1;padding:5px 4px;text-align:center;color:#15803d;background:#dcfce7;">${grandRate}%</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Footer -->
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:8px;border-top:1px solid #e2e8f0;">
-                            <span style="font-size:8px;font-weight:600;color:#94a3b8;">Generated from Sales360 — ACI Motors Ltd.</span>
-                            <span style="font-size:8px;font-weight:600;color:#94a3b8;">Report Date: ${today} • Sorted by Collection Rate (Low → High)</span>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:6px;border-top:1px solid #cbd5e1;font-size:8px;color:#64748b;">
+                            <span>Generated from Sales360 — ACI Motors Ltd.</span>
+                            <span>Report Date: ${today} • Sorted by Collection Rate (Low → High)</span>
                         </div>
                     </div>
                 `;
