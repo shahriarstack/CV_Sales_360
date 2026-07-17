@@ -12006,6 +12006,96 @@
                 app.refreshIcons();
             },
 
+            showDuplicateWarning: (customerCode, duplicate) => {
+                let modal = document.getElementById('duplicate-warning-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'duplicate-warning-modal';
+                    modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-100 transform scale-95 opacity-0 transition-all duration-300 flex flex-col" id="duplicate-warning-content">
+                        <!-- Top Banner / Header -->
+                        <div class="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-8 text-center text-white relative">
+                            <div class="absolute inset-0 bg-black/10 mix-blend-overlay"></div>
+                            
+                            <!-- Animated Pulse Warning Icon -->
+                            <div class="mx-auto w-16 h-16 bg-white/20 rounded-full flex items-center justify-center animate-bounce mb-4 border-2 border-white/30">
+                                <i data-lucide="alert-triangle" class="w-8 h-8 text-white"></i>
+                            </div>
+                            
+                            <h3 class="text-xl font-black tracking-tight">Duplicate Customer ID!</h3>
+                            <p class="text-amber-100 text-xs font-semibold mt-1">This Customer ID is already registered in the system.</p>
+                        </div>
+                        
+                        <!-- Content Details -->
+                        <div class="p-6 space-y-4">
+                            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Customer ID</span>
+                                    <span class="text-sm font-extrabold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/50">${customerCode}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 text-xs">
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Customer Name</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.customer_name || 'N/A'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Brand / Model</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.brand || ''} ${duplicate.model || ''}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Region / Upazila</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.district || ''} - ${duplicate.upazila || ''}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Submission Date</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.timestamp || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed text-center">
+                                To prevent duplicate logs, please verify the Customer ID. If this is a new sale, ensure a unique Customer ID is assigned.
+                            </p>
+                        </div>
+                        
+                        <!-- Action Footer -->
+                        <div class="px-6 pb-6 pt-2 flex justify-center">
+                            <button onclick="app.closeDuplicateWarning()" class="w-full py-3 bg-slate-900 text-white rounded-xl text-sm font-black hover:bg-slate-800 shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                                <i data-lucide="corner-up-left" class="w-4 h-4"></i>
+                                Go Back & Edit ID
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    const content = document.getElementById('duplicate-warning-content');
+                    content.classList.remove('scale-95', 'opacity-0');
+                }, 50);
+            },
+
+            closeDuplicateWarning: () => {
+                const modal = document.getElementById('duplicate-warning-modal');
+                if (!modal) return;
+                const content = document.getElementById('duplicate-warning-content');
+                content.classList.add('scale-95', 'opacity-0');
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }, 300);
+            },
+
             saveManualDelivery: (e) => {
                 e.preventDefault();
 
@@ -12031,6 +12121,18 @@
                 const discType = document.getElementById('del-discount-type').value;
                 const discAmt = document.getElementById('del-discount-amount')?.value || 0;
                 const giftItem = document.getElementById('del-gift-item')?.value || '';
+
+                // Duplicate Customer ID Check
+                const customerCodeTrimmed = (customerCode || '').trim();
+                const isPlaceholderId = ['na', 'n/a', 'n.a.', 'none', 'null', 'temp', 'new'].includes(customerCodeTrimmed.toLowerCase());
+                
+                if (customerCodeTrimmed && !isPlaceholderId) {
+                    const duplicate = DB.sales.find(s => s.customer_id && s.customer_id.trim().toLowerCase() === customerCodeTrimmed.toLowerCase());
+                    if (duplicate) {
+                        app.showDuplicateWarning(customerCodeTrimmed, duplicate);
+                        return;
+                    }
+                }
 
                 app.showLoader('Logging delivery data...');
 
