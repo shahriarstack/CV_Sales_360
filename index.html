@@ -2990,15 +2990,69 @@
 
                 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-                // Dynamically scale font size to fit all territories on one A4 page
+                // Dynamically scale elements based on row count to fit A4 page (1123px height)
                 const rowCount = territorySummary.length;
+                
+                let outerPadding = '28px 32px 20px 32px';
+                let headerMargin = '18px';
+                let cardMargin = '16px';
+                let cardPadding = '10px 12px';
+                let cardValSize = '20px';
+                let barMargin = '16px';
+                let barPadding = '8px 12px';
+                let barValSize = '14px';
                 let bodyFontSize = '11px';
                 let headerFontSize = '9px';
                 let cellPadY = '6px';
                 let cellPadX = '10px';
-                if (rowCount > 15) { bodyFontSize = '10px'; headerFontSize = '8px'; cellPadY = '5px'; cellPadX = '8px'; }
-                if (rowCount > 20) { bodyFontSize = '9px'; headerFontSize = '7.5px'; cellPadY = '4px'; cellPadX = '7px'; }
-                if (rowCount > 28) { bodyFontSize = '8px'; headerFontSize = '7px'; cellPadY = '3px'; cellPadX = '6px'; }
+                let logoSize = '40px';
+                let titleSize = '22px';
+
+                if (rowCount > 10 && rowCount <= 18) {
+                    outerPadding = '18px 24px 12px 24px';
+                    headerMargin = '12px';
+                    cardMargin = '10px';
+                    cardPadding = '6px 10px';
+                    cardValSize = '16px';
+                    barMargin = '10px';
+                    barPadding = '6px 10px';
+                    barValSize = '12px';
+                    bodyFontSize = '10px';
+                    headerFontSize = '8.5px';
+                    cellPadY = '4.5px';
+                    cellPadX = '8px';
+                    titleSize = '18px';
+                } else if (rowCount > 18 && rowCount <= 26) {
+                    outerPadding = '12px 20px 8px 20px';
+                    headerMargin = '8px';
+                    cardMargin = '8px';
+                    cardPadding = '4px 8px';
+                    cardValSize = '14px';
+                    barMargin = '8px';
+                    barPadding = '5px 8px';
+                    barValSize = '11px';
+                    bodyFontSize = '9px';
+                    headerFontSize = '7.5px';
+                    cellPadY = '3.5px';
+                    cellPadX = '6px';
+                    logoSize = '30px';
+                    titleSize = '16px';
+                } else if (rowCount > 26) {
+                    outerPadding = '8px 16px 6px 16px';
+                    headerMargin = '6px';
+                    cardMargin = '6px';
+                    cardPadding = '3px 6px';
+                    cardValSize = '12px';
+                    barMargin = '6px';
+                    barPadding = '4px 8px';
+                    barValSize = '10px';
+                    bodyFontSize = '8px';
+                    headerFontSize = '7px';
+                    cellPadY = '2.5px';
+                    cellPadX = '5px';
+                    logoSize = '20px';
+                    titleSize = '14px';
+                }
 
                 // Build off-screen container  (A4 = 794 x 1123 px at 96 dpi)
                 const container = document.createElement('div');
@@ -3006,48 +3060,48 @@
                 container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#fff;z-index:99999;font-family:Inter,system-ui,sans-serif;overflow:hidden;box-sizing:border-box;padding:0;';
 
                 container.innerHTML = `
-                    <div style="width:794px;height:1123px;display:flex;flex-direction:column;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 40%);padding:28px 32px 20px 32px;box-sizing:border-box;">
+                    <div style="width:794px;height:1123px;display:flex;flex-direction:column;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 40%);padding:${outerPadding};box-sizing:border-box;">
                         
                         <!-- Header -->
-                        <div style="text-align:center;margin-bottom:18px;">
-                            <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:6px;">
-                                <div style="width:40px;height:3px;background:linear-gradient(90deg,transparent,#4f46e5);border-radius:2px;"></div>
+                        <div style="text-align:center;margin-bottom:${headerMargin};">
+                            <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:4px;">
+                                <div style="width:${logoSize};height:3px;background:linear-gradient(90deg,transparent,#4f46e5);border-radius:2px;"></div>
                                 <span style="font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#6366f1;">ACI Motors Limited</span>
-                                <div style="width:40px;height:3px;background:linear-gradient(90deg,#4f46e5,transparent);border-radius:2px;"></div>
+                                <div style="width:${logoSize};height:3px;background:linear-gradient(90deg,#4f46e5,transparent);border-radius:2px;"></div>
                             </div>
-                            <h1 style="font-size:22px;font-weight:900;color:#1e293b;margin:0 0 4px 0;letter-spacing:-0.3px;">1st & 2nd EMI Collection Status</h1>
+                            <h1 style="font-size:${titleSize};font-weight:900;color:#1e293b;margin:0 0 4px 0;letter-spacing:-0.3px;">1st & 2nd EMI Collection Status</h1>
                             <p style="font-size:12px;font-weight:600;color:#64748b;margin:0;">Till date — ${today}</p>
                         </div>
 
                         <!-- Summary Cards -->
-                        <div style="display:flex;gap:8px;margin-bottom:16px;">
-                            <div style="flex:1;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;text-align:center;">
+                        <div style="display:flex;gap:8px;margin-bottom:${cardMargin};">
+                            <div style="flex:1;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:10px;padding:${cardPadding};text-align:center;">
                                 <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#3b82f6;margin-bottom:2px;">Total Customers</div>
-                                <div style="font-size:20px;font-weight:900;color:#1e40af;">${grandCust}</div>
+                                <div style="font-size:${cardValSize};font-weight:900;color:#1e40af;">${grandCust}</div>
                             </div>
-                            <div style="flex:1;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;text-align:center;">
+                            <div style="flex:1;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;border-radius:10px;padding:${cardPadding};text-align:center;">
                                 <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#16a34a;margin-bottom:2px;">Paying</div>
-                                <div style="font-size:20px;font-weight:900;color:#15803d;">${grandPaying}</div>
+                                <div style="font-size:${cardValSize};font-weight:900;color:#15803d;">${grandPaying}</div>
                             </div>
-                            <div style="flex:1;background:linear-gradient(135deg,#fef2f2,#fecaca);border:1px solid #fca5a5;border-radius:10px;padding:10px 12px;text-align:center;">
+                            <div style="flex:1;background:linear-gradient(135deg,#fef2f2,#fecaca);border:1px solid #fca5a5;border-radius:10px;padding:${cardPadding};text-align:center;">
                                 <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#dc2626;margin-bottom:2px;">Non-Paying</div>
-                                <div style="font-size:20px;font-weight:900;color:#b91c1c;">${grandNonPaying}</div>
+                                <div style="font-size:${cardValSize};font-weight:900;color:#b91c1c;">${grandNonPaying}</div>
                             </div>
-                            <div style="flex:1;background:linear-gradient(135deg,#fefce8,#fef08a);border:1px solid #fde047;border-radius:10px;padding:10px 12px;text-align:center;">
+                            <div style="flex:1;background:linear-gradient(135deg,#fefce8,#fef08a);border:1px solid #fde047;border-radius:10px;padding:${cardPadding};text-align:center;">
                                 <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#ca8a04;margin-bottom:2px;">Collection Rate</div>
-                                <div style="font-size:20px;font-weight:900;color:#a16207;">${grandRate}%</div>
+                                <div style="font-size:${cardValSize};font-weight:900;color:#a16207;">${grandRate}%</div>
                             </div>
                         </div>
 
                         <!-- Amount Summary Bar -->
-                        <div style="display:flex;gap:8px;margin-bottom:16px;">
-                            <div style="flex:1;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+                        <div style="display:flex;gap:8px;margin-bottom:${barMargin};">
+                            <div style="flex:1;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:${barPadding};display:flex;justify-content:space-between;align-items:center;">
                                 <span style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;">Total Due (Installment)</span>
-                                <span style="font-size:14px;font-weight:900;color:#334155;">${app.formatCurrency(grandDue)}</span>
+                                <span style="font-size:${barValSize};font-weight:900;color:#334155;">${app.formatCurrency(grandDue)}</span>
                             </div>
-                            <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+                            <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:${barPadding};display:flex;justify-content:space-between;align-items:center;">
                                 <span style="font-size:9px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:1px;">Total Collected</span>
-                                <span style="font-size:14px;font-weight:900;color:#15803d;">${app.formatCurrency(grandCol)}</span>
+                                <span style="font-size:${barValSize};font-weight:900;color:#15803d;">${app.formatCurrency(grandCol)}</span>
                             </div>
                         </div>
 
