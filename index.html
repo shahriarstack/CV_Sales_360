@@ -1373,7 +1373,7 @@
             updateViewport: () => {
                 const meta = document.querySelector('meta[name="viewport"]');
                 if (meta) {
-                    if (app.currentUser && app.currentUser.role === 'admin') {
+                    if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'subadmin')) {
                         // Desktop mode viewport width 1280px with scale control and zoom enabled
                         meta.setAttribute('content', 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
                     } else {
@@ -1600,6 +1600,27 @@
                 } else {
                     app.showLoginScreen();
                 }
+
+                // Security Access Guard for Sub Admin
+                const restrictViews = [
+                    'renderAdminDashboard', 'renderAdminSalesMap', 'renderAdminManualDeliveries',
+                    'renderTIVManagement', 'renderAdminAIInsights', 'renderAdminAnalytics',
+                    'renderAdminNotices', 'renderDataUpload', 'renderUserManagement',
+                    'renderModelManagement', 'renderSystemSettings', 'renderAMPulseMatrix'
+                ];
+                restrictViews.forEach(fnName => {
+                    if (typeof app[fnName] === 'function') {
+                        const originalFn = app[fnName];
+                        app[fnName] = function() {
+                            if (app.currentUser && app.currentUser.role === 'subadmin') {
+                                console.warn(`Access Denied: Sub Admin is restricted from ${fnName}. Redirecting...`);
+                                app.renderAdminEMI();
+                                return;
+                            }
+                            return originalFn.apply(app, arguments);
+                        };
+                    }
+                });
             },
 
             showLoginScreen: () => {
@@ -1745,10 +1766,10 @@
 
                 let optionsHtml = '';
 
-                const admins = DB.users.filter(u => u.role === 'admin');
+                const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
                 if (admins.length > 0) {
                     optionsHtml += `<optgroup label="System Administration">`;
-                    admins.forEach(u => optionsHtml += `<option value="${u.id}">Global - ${u.name}</option>`);
+                    admins.forEach(u => optionsHtml += `<option value="${u.id}">${u.role === 'subadmin' ? 'Sub Admin' : 'Global'} - ${u.name}</option>`);
                     optionsHtml += `</optgroup>`;
                 }
 
@@ -1873,6 +1894,13 @@
                         const targetPage = (sameRole && lastPage) ? lastPage : 'dashboard';
                         app.navigateSO(targetPage);
                         app.updateSOBadge();
+                    } else if (app.currentUser.role === 'subadmin') {
+                        const notifContainer = document.getElementById('officer-notifications-container');
+                        if (notifContainer) {
+                            notifContainer.classList.add('hidden');
+                            notifContainer.classList.remove('flex');
+                        }
+                        app.renderAdminEMI();
                     } else {
                         const notifContainer = document.getElementById('officer-notifications-container');
                         if (notifContainer) {
@@ -1974,7 +2002,7 @@
 
                 let links = '';
 
-                if (app.currentUser.role === 'admin') {
+                   if (app.currentUser.role === 'admin') {
                     links = [
                         renderSidebarBtn('dashboard', 'Dashboard', 'pie-chart', 'text-aci-gold', 'app.renderAdminDashboard()'),
                         renderSidebarBtn('map', 'Upazila Sales Map', 'map', 'text-emerald-400', 'app.renderAdminSalesMap()'),
@@ -1988,6 +2016,10 @@
                         renderSidebarBtn('users', 'User Management', 'users', 'text-slate-400', 'app.renderUserManagement()'),
                         renderSidebarBtn('models', 'Manage Models', 'box', 'text-slate-400', 'app.renderModelManagement()'),
                         renderSidebarBtn('settings', 'System Config', 'settings', 'text-cyan-400', 'app.renderSystemSettings()', '', 'border border-cyan-500/20 bg-cyan-500/10 text-slate-200 hover:bg-cyan-500/20')
+                    ].join('');
+                } else if (app.currentUser.role === 'subadmin') {
+                    links = [
+                        renderSidebarBtn('emi', 'Global EMI Analytics', 'banknote', 'text-slate-400', 'app.renderAdminEMI()')
                     ].join('');
                 } else if (app.currentUser.role === 'am') {
                     links = [
@@ -2193,7 +2225,7 @@
             renderUserManagement: () => {
                 localStorage.setItem('aci_last_page', 'users');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
-                const admins = DB.users.filter(u => u.role === 'admin');
+                const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
                 const ams = DB.users.filter(u => u.role === 'am');
 
                 const html = `
@@ -2232,7 +2264,10 @@
                                                     <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
                                                 </td>
                                                 <td class="px-6 py-4">
-                                                    <span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-rose-200">${u.role}</span>
+                                                    ${u.role === 'subadmin' 
+                                                        ? `<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-purple-200">Sub Admin</span>`
+                                                        : `<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-rose-200">Admin</span>`
+                                                    }
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
@@ -2398,7 +2433,7 @@
                         <form id="add-user-form" onsubmit="app.handleAddUser(event, ${user ? `'${user.id}'` : 'null'})" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
-                                <input type="text" id="new-user-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. Shakil Ahmed" value="${user ? user.name.replace(/\s\((AM|MO)\)$/, '') : ''}">
+                                <input type="text" id="new-user-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. Shakil Ahmed" value="${user ? user.name.replace(/\s\((AM|MO|Sub Admin)\)$/, '') : ''}">
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -2410,6 +2445,7 @@
                                     <select id="new-user-role" onchange="app.handleRoleChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all appearance-none" required>
                                         <option value="so" ${(user && user.role === 'so') || defaultTerritoryId ? 'selected' : ''}>MO</option>
                                         <option value="am" ${user && user.role === 'am' ? 'selected' : ''}>AM</option>
+                                        <option value="subadmin" ${user && user.role === 'subadmin' && !defaultTerritoryId ? 'selected' : ''}>Sub Admin</option>
                                         <option value="admin" ${user && user.role === 'admin' && !defaultTerritoryId ? 'selected' : ''}>System Admin</option>
                                     </select>
                                 </div>
@@ -2460,7 +2496,7 @@
                     if (areaInput) areaInput.removeAttribute('required');
                 }
 
-                if (role === 'admin') {
+                if (role === 'admin' || role === 'subadmin') {
                     terrContainer.classList.add('hidden');
                     terrSelect.removeAttribute('required');
                 } else if (role === 'so') {
@@ -2491,7 +2527,7 @@
                 const areaName = role === 'am' ? document.getElementById('new-user-areaname').value : '';
 
                 let territories = [];
-                if (role !== 'admin') {
+                if (role !== 'admin' && role !== 'subadmin') {
                     territories = Array.from(terrSelect.selectedOptions).map(opt => opt.value);
                     if (territories.length === 0) {
                         app.showToast('Please assign at least one territory.', 'error');
@@ -2499,7 +2535,7 @@
                     }
                 }
 
-                const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (MO)' : '');
+                const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (MO)' : role === 'subadmin' ? ' (Sub Admin)' : '');
 
                 app.showLoader('Saving user...');
 
@@ -2990,90 +3026,193 @@
 
                 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-                // Build off-screen container styled like a clean Excel report (A4 = 794 x 1123 px at 96 dpi)
+                // Calculate layout spacing dynamically to ensure it fits 100% on one A4 page
+                const totalTerritories = territorySummary.length;
+                const itemsPerCol = Math.ceil(totalTerritories / 2);
+
+                // Base style variables (highly tuned for pixel-perfect A4 printing/capture)
+                let cardHeight = 40;
+                let gap = 4;
+                let fontSizeName = 10.5;
+                let fontSizeInfo = 8.5;
+                let fontSizeRate = 9.5;
+
+                // Auto-scale sizes down if territory counts are very large
+                if (itemsPerCol > 20) {
+                    const factor = 20 / itemsPerCol;
+                    cardHeight = Math.max(32, Math.floor(40 * factor));
+                    gap = Math.max(2.5, Math.floor(4 * factor));
+                    fontSizeName = Math.max(9, 10.5 * factor);
+                    fontSizeInfo = Math.max(7.5, 8.5 * factor);
+                    fontSizeRate = Math.max(8.5, 9.5 * factor);
+                }
+
+                const col1 = territorySummary.slice(0, itemsPerCol);
+                const col2 = territorySummary.slice(itemsPerCol);
+
+                const getCardHtml = (t, index) => {
+                    const rateColor = t.tColRate >= 80 ? '#10b981' : (t.tColRate >= 50 ? '#f59e0b' : '#ef4444');
+                    const colStr = app.formatCurrency(t.tAmountCol).replace('৳', '');
+                    const dueStr = app.formatCurrency(t.tTotalDue).replace('৳', '');
+                    
+                    return `
+                        <div style="
+                            display:block;
+                            position:relative;
+                            height:${cardHeight}px;
+                            background:#ffffff;
+                            border:1px solid #e2e8f0;
+                            border-radius:6px;
+                            box-shadow:0 1px 2px rgba(0,0,0,0.01);
+                            box-sizing:border-box;
+                            overflow:hidden;
+                            margin-bottom:${gap}px;
+                            width:100%;
+                        ">
+                            <!-- Left Accent Color Strip -->
+                            <div style="width:4px; height:100%; background:${rateColor}; position:absolute; left:0; top:0;"></div>
+                            
+                            <!-- Left: Territory details -->
+                            <div style="
+                                position:absolute;
+                                left:14px;
+                                top:0;
+                                bottom:0;
+                                width:180px;
+                                display:flex;
+                                flex-direction:column;
+                                justify-content:center;
+                                text-align:left;
+                                box-sizing:border-box;
+                            ">
+                                <span style="font-size:${fontSizeName}px; font-weight:700; color:#0f172a; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; width:100%;">
+                                    <span style="color:#94a3b8; font-weight:500; font-size:${fontSizeName - 1}px; margin-right:3px;">#${index}</span>${t.name}
+                                </span>
+                                <span style="font-size:${fontSizeInfo}px; color:#64748b; line-height:1.2; margin-top:2px; display:block; width:100%;">
+                                    Paying: <strong style="color:#334155;">${t.payingCust}</strong>/${t.totalCust}
+                                </span>
+                            </div>
+
+                            <!-- Right: Financial details -->
+                            <div style="
+                                position:absolute;
+                                right:12px;
+                                top:0;
+                                bottom:0;
+                                width:145px;
+                                display:flex;
+                                flex-direction:column;
+                                justify-content:center;
+                                text-align:right;
+                                box-sizing:border-box;
+                            ">
+                                <div style="font-size:${fontSizeRate}px; font-weight:700; color:#1e293b; line-height:1.2; text-align:right; width:100%;">
+                                    <span style="color:#10b981;">${colStr}</span><span style="color:#94a3b8; font-weight:400; margin:0 2px;">/</span><span style="color:#64748b; font-weight:500;">${dueStr}</span>
+                                </div>
+                                <div style="text-align:right; width:100%; margin-top:2px; height:12px; line-height:12px;">
+                                    <div style="width:36px; height:3.5px; background:#e2e8f0; border-radius:2px; overflow:hidden; display:inline-block; vertical-align:middle; margin-right:4px;">
+                                        <div style="width:${t.tColRate}%; height:100%; background:${rateColor}; border-radius:2px;"></div>
+                                    </div>
+                                    <span style="font-size:${fontSizeRate}px; font-weight:800; color:${rateColor}; display:inline-block; vertical-align:middle;">${t.tColRate}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                };
+
+                const col1Html = col1.map((t, i) => getCardHtml(t, i + 1)).join('');
+                const col2Html = col2.map((t, i) => getCardHtml(t, i + itemsPerCol + 1)).join('');
+
+                // Build off-screen container styled like a premium modern A4 print dashboard
                 const container = document.createElement('div');
                 container.id = 'emi-report-capture';
-                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#fff;z-index:99999;font-family:\'Segoe UI\',Arial,sans-serif;box-sizing:border-box;padding:0;';
+                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#f8fafc;z-index:99999;font-family:\'Segoe UI\',Arial,sans-serif;box-sizing:border-box;padding:0;';
 
                 container.innerHTML = `
-                    <div style="width:794px;min-height:1123px;background:#ffffff;padding:20px 25px;box-sizing:border-box;display:block;">
+                    <div style="
+                        width:794px;
+                        height:1123px;
+                        background:#f8fafc;
+                        padding:20px 24px;
+                        box-sizing:border-box;
+                        display:flex;
+                        flex-direction:column;
+                        position:relative;
+                    ">
+                        <!-- Top Gradient Accent Bar -->
+                        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(to right, #1e3a8a, #3b82f6);"></div>
                         
-                        <!-- Header Area -->
-                        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1.5px solid #334155;padding-bottom:8px;margin-bottom:12px;">
+                        <!-- Header Section -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                             <div>
-                                <div style="font-size:11px;font-weight:bold;color:#1e3a8a;text-transform:uppercase;margin-bottom:2px;">ACI Motors Limited</div>
-                                <div style="font-size:10px;font-weight:bold;color:#475569;text-transform:uppercase;margin-bottom:4px;">Commercial Vehicle</div>
-                                <h1 style="font-size:18px;margin:0 0 4px 0;color:#0f172a;font-weight:800;letter-spacing:-0.3px;">1st & 2nd EMI Collection Status</h1>
-                                <p style="font-size:10px;color:#64748b;margin:0;">Report Date: ${today}</p>
+                                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                                    <span style="background:#1e3a8a; color:#ffffff; font-size:8.5px; font-weight:900; padding:1.5px 5px; border-radius:3px; letter-spacing:0.5px; text-transform:uppercase;">ACI Motors</span>
+                                    <span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Commercial Vehicle</span>
+                                </div>
+                                <h1 style="font-size:17px; margin:0; color:#0f172a; font-weight:800; letter-spacing:-0.5px;">1st & 2nd EMI Collection Status</h1>
+                                <div style="font-size:9px; color:#64748b; margin-top:2px; font-weight:500;">Report Date: <span style="color:#334155; font-weight:600;">${today}</span></div>
                             </div>
-                            
-                            <!-- KPI Grid -->
-                            <table style="border-collapse:collapse;font-size:10px;color:#334155;width:300px;border:0.5px solid #cbd5e1;background:#ffffff;">
-                                <tr>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;font-weight:600;background:#f8fafc;width:25%;text-align:center;vertical-align:middle;">Total Cust.</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;text-align:center;width:20%;vertical-align:middle;font-weight:600;">${grandCust}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;font-weight:600;background:#f8fafc;width:25%;text-align:center;vertical-align:middle;">Total Due</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;text-align:center;font-weight:600;width:30%;vertical-align:middle;">${app.formatCurrency(grandDue)}</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;font-weight:600;background:#f8fafc;text-align:center;vertical-align:middle;">Paying</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;text-align:center;color:#16a34a;vertical-align:middle;font-weight:600;">${grandPaying}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;font-weight:600;background:#f8fafc;text-align:center;vertical-align:middle;">Collected</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;text-align:center;font-weight:600;color:#2563eb;vertical-align:middle;">${app.formatCurrency(grandCol)}</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;font-weight:600;background:#f8fafc;text-align:center;vertical-align:middle;">Non-Paying</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;text-align:center;color:#dc2626;vertical-align:middle;font-weight:600;">${grandNonPaying}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;font-weight:600;background:#f8fafc;text-align:center;vertical-align:middle;">Col. Rate</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:4px;text-align:center;font-weight:bold;color:#16a34a;vertical-align:middle;">${grandRate}%</td>
-                                </tr>
-                            </table>
+                            <div style="text-align:right;">
+                                <div style="font-size:9.5px; font-weight:700; color:#1e3a8a; text-transform:uppercase; letter-spacing:0.5px;">Global Dashboard</div>
+                                <div style="font-size:8.5px; color:#94a3b8; margin-top:1px;">Performance Analytics</div>
+                            </div>
                         </div>
 
-                        <!-- Minimal Excel-like Table -->
-                        <table style="width:100%;border-collapse:collapse;font-size:9.5px;color:#334155;border:0.5px solid #cbd5e1;line-height:normal;">
-                            <thead>
-                                <tr style="background:#f8fafc;font-weight:600;color:#1e293b;">
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:4%;">#</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:28%;">Sales Territory</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:10%;">Total Cust.</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:10%;">Paying</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:10%;">Non-Paying</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:15%;">Due (Inst.)</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:15%;">Collected</th>
-                                    <th style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;width:8%;">Rate</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${territorySummary.map((t, i) => {
-                                    const rateColor = t.tColRate >= 80 ? '#16a34a' : (t.tColRate >= 50 ? '#d97706' : '#dc2626');
-                                    return `<tr style="background:#ffffff;">
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;">${i + 1}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;font-weight:500;color:#0f172a;">${t.name}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;">${t.totalCust}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;color:#16a34a;font-weight:500;">${t.payingCust}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;color:#dc2626;font-weight:500;">${t.nonPayingCust}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;color:#475569;">${app.formatCurrency(t.tTotalDue)}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;color:#2563eb;font-weight:500;">${app.formatCurrency(t.tAmountCol)}</td>
-                                        <td style="border:0.5px solid #cbd5e1;padding:4px 3px;text-align:center;vertical-align:middle;font-weight:600;color:${rateColor};">${t.tColRate}%</td>
-                                    </tr>`;
-                                }).join('')}
-                                <!-- Excel Grand Total Row -->
-                                <tr style="background:#f1f5f9;font-weight:600;color:#0f172a;border-top:1px solid #94a3b8;border-bottom:2px solid #94a3b8;">
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;" colspan="2">GRAND TOTAL</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;">${grandCust}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;color:#16a34a;">${grandPaying}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;color:#dc2626;">${grandNonPaying}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;">${app.formatCurrency(grandDue)}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;color:#2563eb;">${app.formatCurrency(grandCol)}</td>
-                                    <td style="border:0.5px solid #cbd5e1;padding:5px 3px;text-align:center;vertical-align:middle;color:#16a34a;">${grandRate}%</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <!-- KPI Summary Cards -->
+                        <div style="display:flex; gap:10px; margin-bottom:14px; width:100%;">
+                            <!-- Rate Card -->
+                            <div style="flex:1; width:25%; background:linear-gradient(135deg, #1e3a8a, #3b82f6); color:#ffffff; padding:10px 12px; border-radius:10px; box-shadow:0 3px 6px rgba(30,58,138,0.1); box-sizing:border-box;">
+                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#93c5fd;">Collection Rate</div>
+                                <div style="font-size:18px; font-weight:800; margin-top:3px; letter-spacing:-0.5px;">${grandRate}%</div>
+                                <div style="width:100%; height:3px; background:rgba(255,255,255,0.25); border-radius:1.5px; margin-top:6px; overflow:hidden;">
+                                    <div style="width:${grandRate}%; height:100%; background:#10b981; border-radius:1.5px;"></div>
+                                </div>
+                            </div>
+                            <!-- Customers Card -->
+                            <div style="flex:1; width:25%; background:#ffffff; border:1px solid #e2e8f0; padding:10px 12px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); box-sizing:border-box;">
+                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#64748b;">Customer Coverage</div>
+                                <div style="font-size:18px; font-weight:800; color:#0f172a; margin-top:3px; letter-spacing:-0.5px;">${grandCust} <span style="font-size:10px; font-weight:500; color:#64748b;">Total</span></div>
+                                <div style="font-size:8px; color:#64748b; margin-top:5px; display:flex; justify-content:space-between;">
+                                    <span>Paying: <strong style="color:#10b981;">${grandPaying}</strong></span>
+                                    <span>Unpaid: <strong style="color:#ef4444;">${grandNonPaying}</strong></span>
+                                </div>
+                            </div>
+                            <!-- Due Card -->
+                            <div style="flex:1; width:25%; background:#ffffff; border:1px solid #e2e8f0; padding:10px 12px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); box-sizing:border-box;">
+                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#64748b;">Total Installment Due</div>
+                                <div style="font-size:15px; font-weight:800; color:#0f172a; margin-top:6px; letter-spacing:-0.3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${app.formatCurrency(grandDue)}">${app.formatCurrency(grandDue)}</div>
+                                <div style="font-size:7.5px; color:#94a3b8; margin-top:4px; font-weight:500;">Target Amount</div>
+                            </div>
+                            <!-- Collected Card -->
+                            <div style="flex:1; width:25%; background:#ffffff; border:1px solid #e2e8f0; padding:10px 12px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); box-sizing:border-box;">
+                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#64748b;">Total Collected</div>
+                                <div style="font-size:15px; font-weight:800; color:#2563eb; margin-top:6px; letter-spacing:-0.3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${app.formatCurrency(grandCol)}">${app.formatCurrency(grandCol)}</div>
+                                <div style="font-size:7.5px; color:#94a3b8; margin-top:4px; font-weight:500;">Collected Amount</div>
+                            </div>
+                        </div>
 
-                        <!-- Footer -->
-                        <div style="margin-top:10px;text-align:center;font-size:8px;color:#64748b;">
-                            Generated from Sales360 — ACI Motors Ltd. | Sorted by Collection Rate (High → Low)
+                        <!-- Section Divider & Header -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
+                            <span style="font-size:9.5px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Territory Performance Summary</span>
+                            <span style="font-size:8px; color:#64748b;">Amounts in BDT (৳)</span>
+                        </div>
+
+                        <!-- Grid Columns Container -->
+                        <div style="display:flex; gap:16px; flex:1; overflow:hidden;">
+                            <!-- Column 1 -->
+                            <div style="flex:1; width:calc(50% - 8px); display:flex; flex-direction:column; gap:${gap}px; overflow:hidden;">
+                                ${col1Html}
+                            </div>
+                            <!-- Column 2 -->
+                            <div style="flex:1; width:calc(50% - 8px); display:flex; flex-direction:column; gap:${gap}px; overflow:hidden;">
+                                ${col2Html}
+                            </div>
+                        </div>
+
+                        <!-- Footer Area -->
+                        <div style="height:20px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; margin-top:12px; font-size:8px; color:#94a3b8; font-weight:500;">
+                            <span>Generated dynamically from Sales360 System | ACI Motors Ltd.</span>
+                            <span>Page 1 of 1</span>
                         </div>
                     </div>
                 `;
@@ -3087,7 +3226,7 @@
                     const canvas = await html2canvas(container, {
                         scale: 2,
                         useCORS: true,
-                        backgroundColor: '#ffffff',
+                        backgroundColor: '#f8fafc',
                         width: 794,
                         height: 1123,
                         windowWidth: 794,
@@ -3446,6 +3585,68 @@
                             </div>
                         </div>
 
+
+                        <!-- Minimal & Creative Summary Section -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <!-- Total Entries -->
+                            <div class="bg-gradient-to-br from-indigo-50/50 to-slate-50 border border-indigo-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-extrabold text-indigo-500 uppercase tracking-wider">Total Logged</span>
+                                    <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                                <div class="mt-2 flex items-baseline gap-1">
+                                    <span class="text-xl font-black text-slate-800">${manualSales.length}</span>
+                                    <span class="text-[9px] font-bold text-slate-400">Deliveries</span>
+                                </div>
+                            </div>
+
+                            <!-- Pending Sync -->
+                            <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-extrabold text-amber-500 uppercase tracking-wider">Pending Sync</span>
+                                    <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg relative flex items-center justify-center">
+                                        <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75"></span>
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 relative"></i>
+                                    </span>
+                                </div>
+                                <div class="mt-2 flex items-baseline gap-1">
+                                    <span class="text-xl font-black text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
+                                    <span class="text-[9px] font-bold text-slate-400">Pending</span>
+                                </div>
+                            </div>
+
+                            <!-- Brand Share -->
+                            <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-extrabold text-emerald-500 uppercase tracking-wider">Brand Share</span>
+                                    <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="tag" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                                <div class="mt-2.5 flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-black text-slate-800">${manualSales.filter(s => s.brand === 'Foton').length}</span>
+                                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Foton</span>
+                                    </div>
+                                    <div class="h-6 w-px bg-slate-100"></div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-xs font-black text-slate-800">${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
+                                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Mahindra</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Combined Trade Value -->
+                            <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
+                                    <span class="p-1.5 bg-slate-50 text-slate-600 rounded-lg"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                                <div class="mt-2 flex flex-col">
+                                    <span class="text-sm font-black text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Est. Trade Value</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
                             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <h3 class="font-bold text-slate-800 text-sm">Pending Actuals Integration <span class="bg-aci-blue text-white px-2 py-0.5 rounded-full text-xs ml-2">${manualSales.length} Entries</span></h3>
@@ -3453,6 +3654,7 @@
                             <table class="w-full text-left text-[11px] whitespace-nowrap min-w-[1000px]">
                                 <thead class="border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest bg-slate-100/50">
                                     <tr>
+                                        <th class="px-3 py-1.5 font-bold text-center w-12">S/N</th>
                                         <th class="px-4 py-1.5 font-bold">Territory & Area</th>
                                         <th class="px-4 py-1.5 font-bold">Customer Details</th>
                                         <th class="px-4 py-1.5 font-bold">Product Info</th>
@@ -3463,6 +3665,7 @@
                                         <th class="px-4 py-1.5 font-bold text-right">Actions</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
+                                        <th class="px-3 py-1 border-b border-slate-200 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
                                         <th class="px-4 py-1 border-b border-slate-200"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-4 py-1 border-b border-slate-200"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-4 py-1 border-b border-slate-200">
@@ -3486,10 +3689,13 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    ${manualSales.map(s => {
+                                    ${manualSales.map((s, idx) => {
                     const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
                     return `
                                         <tr class="hover:bg-slate-50 transition-colors group">
+                                            <td class="px-3 py-1.5 border-b border-slate-100 text-center font-bold text-slate-400">
+                                                ${idx + 1}
+                                            </td>
                                             <td class="px-4 py-1.5 border-b border-slate-100">
                                                 <div class="font-bold text-slate-800 flex items-center gap-2">
                                                     ${terrName}
@@ -3556,7 +3762,7 @@
                                             </td>
                                         </tr>
                                     `}).join('')}
-                                    ${manualSales.length === 0 ? '<tr><td colspan="8" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
+                                    ${manualSales.length === 0 ? '<tr><td colspan="9" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
@@ -12604,7 +12810,7 @@
             },
 
             renderUserProfile: () => {
-                const roleName = app.currentUser.role === 'am' ? 'AM' : (app.currentUser.role === 'admin' ? 'System Admin' : 'MO');
+                const roleName = app.currentUser.role === 'am' ? 'AM' : (app.currentUser.role === 'admin' ? 'System Admin' : (app.currentUser.role === 'subadmin' ? 'Sub Admin' : 'MO'));
                 const territoriesText = app.currentUser.territories && app.currentUser.territories.length > 0 ? app.currentUser.territories.map(tId => { const t = DB.territories.find(ter => ter.id === tId); return t ? t.name : tId; }).join(', ') : 'All Territories';
                 
                 if (!document.getElementById('user-manual-modal')) {
@@ -13086,6 +13292,153 @@
                 return { rowsHTML, grandTotalRowHTML, metricHeadersHTML, mobileCardsHTML, mobileGrandTotalHTML };
             },
 
+            downloadPulseMatrixCSV: () => {
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+                const brand     = app.pmBrandTab    || 'Foton';
+                const saleType  = app.pmSaleTypeTab || 'New Sale';
+                const assignedTerrs = app.currentUser.territories || [];
+                const territories = DB.territories.filter(t => assignedTerrs.length === 0 || assignedTerrs.includes(t.id));
+
+                const fiscalMonths = ['July','August','September','October','November','December','January','February','March','April','May','June'];
+                const quarters = {
+                    Q1: ['July','August','September'],
+                    Q2: ['October','November','December'],
+                    Q3: ['January','February','March'],
+                    Q4: ['April','May','June']
+                };
+                
+                const ach     = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
+                const calcGrw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : (s > 0 ? 100 : 0);
+
+                const activeMonths = [];
+                let foundCurrent = false;
+                const cMonth = app.currentMonth || 'April';
+                for (const m of fiscalMonths) {
+                    activeMonths.push(m);
+                    if (m === cMonth) {
+                        foundCurrent = true;
+                        break;
+                    }
+                }
+                if (!foundCurrent) activeMonths.push(...fiscalMonths);
+
+                // Build CSV Headers
+                let csv = 'Territory,Total FY Budget';
+                fiscalMonths.forEach(m => {
+                    csv += `,${m} Bgt,${m} Sal,${m} Ach%,${m} SPLY,${m} Gr%`;
+                    const qName = m === 'September' ? 'Q1' : m === 'December' ? 'Q2' : m === 'March' ? 'Q3' : m === 'June' ? 'Q4' : null;
+                    if (qName) {
+                        csv += `,${qName} Bgt,${qName} Sal,${qName} Ach%,${qName} SPLY,${qName} Gr%`;
+                    }
+                });
+                csv += ',YTD Bgt,YTD Sal,YTD Ach%,YTD SPLY,YTD Gr%\n';
+
+                let grandFYBudget = 0;
+                const grandMonth = {};
+                const grandQuarter = {};
+                fiscalMonths.forEach(m => { grandMonth[m] = { budget: 0, sales: 0, sply: 0 }; });
+                ['Q1','Q2','Q3','Q4'].forEach(q => { grandQuarter[q] = { budget: 0, sales: 0, sply: 0 }; });
+
+                territories.forEach(t => {
+                    const tTargets      = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brand && tg.sale_type === saleType && tg.fy === currentFY);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+                    grandFYBudget += totalFYBudget;
+
+                    const hasMonthlyTargets = tTargets.some(tg => tg.month && fiscalMonths.includes(tg.month));
+
+                    const monthlyPerf = {};
+                    fiscalMonths.forEach(m => {
+                        const mTgts   = tTargets.filter(tg => tg.month === m);
+                        let mBudget = 0;
+                        if (mTgts.length > 0) {
+                            mBudget = mTgts.reduce((s, tg) => s + Number(tg.target_qty || 0), 0);
+                        } else if (!hasMonthlyTargets && totalFYBudget > 0) {
+                            const base = Math.floor(totalFYBudget / 12);
+                            const remainder = totalFYBudget % 12;
+                            const mIdx = fiscalMonths.indexOf(m);
+                            mBudget = base + (mIdx < remainder ? 1 : 0);
+                        }
+                        const mSales  = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === currentFY && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
+                        const mSply   = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === lastFY  && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
+                        monthlyPerf[m] = { budget:mBudget, sales:mSales, sply:mSply, ach:ach(mSales,mBudget), growth:calcGrw(mSales,mSply) };
+                        grandMonth[m].budget += mBudget; grandMonth[m].sales += mSales; grandMonth[m].sply += mSply;
+                    });
+
+                    const quarterPerf = {};
+                    Object.entries(quarters).forEach(([qName, qMs]) => {
+                        const activeMs = qMs.filter(m => activeMonths.includes(m));
+                        const qBudget = activeMs.reduce((s, m) => s + monthlyPerf[m].budget, 0);
+                        const qSales  = activeMs.reduce((s, m) => s + monthlyPerf[m].sales,  0);
+                        const qSply   = activeMs.reduce((s, m) => s + monthlyPerf[m].sply,   0);
+                        quarterPerf[qName] = { budget:qBudget, sales:qSales, sply:qSply, ach:ach(qSales,qBudget), growth:calcGrw(qSales,qSply) };
+                        grandQuarter[qName].budget += qBudget; grandQuarter[qName].sales += qSales; grandQuarter[qName].sply += qSply;
+                    });
+
+                    const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
+                    const ytdBudget = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].budget, 0);
+                    const ytdSales  = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sales, 0);
+                    const ytdSply   = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sply, 0);
+                    const ytdAch    = ach(ytdSales, ytdBudget);
+                    const ytdGrowth = calcGrw(ytdSales, ytdSply);
+
+                    let row = `"${t.name}",${totalFYBudget}`;
+                    fiscalMonths.forEach(m => {
+                        const p = monthlyPerf[m];
+                        row += `,${p.budget},${p.sales},${p.ach}%,${p.sply},${p.growth}%`;
+                        const qName = m === 'September' ? 'Q1' : m === 'December' ? 'Q2' : m === 'March' ? 'Q3' : m === 'June' ? 'Q4' : null;
+                        if (qName) {
+                            const q = quarterPerf[qName];
+                            row += `,${q.budget},${q.sales},${q.ach}%,${q.sply},${q.growth}%`;
+                        }
+                    });
+                    row += `,${ytdBudget},${ytdSales},${ytdAch}%,${ytdSply},${ytdGrowth}%\n`;
+                    csv += row;
+                });
+
+                let grandRow = `"[GRAND TOTAL]",${grandFYBudget}`;
+                fiscalMonths.forEach(m => {
+                    const g = grandMonth[m];
+                    const mAch = ach(g.sales, g.budget);
+                    const mGrw = calcGrw(g.sales, g.sply);
+                    grandRow += `,${g.budget},${g.sales},${mAch}%,${g.sply},${mGrw}%`;
+
+                    const qName = m === 'September' ? 'Q1' : m === 'December' ? 'Q2' : m === 'March' ? 'Q3' : m === 'June' ? 'Q4' : null;
+                    if (qName) {
+                        const gq = grandQuarter[qName];
+                        const qAch = ach(gq.sales, gq.budget);
+                        const qGrw = calcGrw(gq.sales, gq.sply);
+                        grandRow += `,${gq.budget},${gq.sales},${qAch}%,${gq.sply},${qGrw}%`;
+                    }
+                });
+                const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
+                const gYtdBudget = activeYtdMonths.reduce((s, m) => s + grandMonth[m].budget, 0);
+                const gYtdSales  = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sales, 0);
+                const gYtdSply   = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sply, 0);
+                const gYtdAch    = ach(gYtdSales, gYtdBudget);
+                const gYtdGrowth = calcGrw(gYtdSales, gYtdSply);
+
+                grandRow += `,${gYtdBudget},${gYtdSales},${gYtdAch}%,${gYtdSply},${gYtdGrowth}%\n`;
+                csv += grandRow;
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', `Performance_Matrix_${brand}_${saleType}_FY${currentFY}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                app.showToast('Performance Matrix CSV downloaded!', 'success');
+            },
+
             // ==========================================
             // SHARED: Build the HTML frame for the matrix page
             // ==========================================
@@ -13104,6 +13457,9 @@
                             </h2>
                             <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5 ml-10">12-Month Territory Breakdown &middot; FY ${app.currentFY}</p>
                         </div>
+                        <button onclick="app.downloadPulseMatrixCSV()" class="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-black shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95 duration-200" title="Export Matrix to CSV">
+                            <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                        </button>
                     </div>
 
                     <div class="flex flex-wrap gap-2 mb-5">
@@ -13266,7 +13622,7 @@
                 
                 // Fetch local DB metrics
                 const userTerrs = app.currentUser ? app.currentUser.territories || [] : [];
-                const isGlobal = role === 'admin' || userTerrs.length === 0;
+                const isGlobal = role === 'admin' || role === 'subadmin' || userTerrs.length === 0;
                 const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
                 const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
                 const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
@@ -13335,7 +13691,7 @@
                         const role = app.currentUser.role;
                         
                         // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
-                        const isGlobal = role === 'admin' || userTerrs.length === 0;
+                        const isGlobal = role === 'admin' || role === 'subadmin' || userTerrs.length === 0;
                         const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
                         const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
                         const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
