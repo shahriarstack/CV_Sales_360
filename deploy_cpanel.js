@@ -29,13 +29,14 @@ function makeRequest(module, func, params = {}) {
         const path = `/execute/${module}/${func}?${queryParams}`;
         
         const options = {
-            hostname: config.cpanelHost,
+            hostname: '116.202.222.251',
             port: config.cpanelPort,
             path: path,
             method: 'POST',
             headers: {
                 'Authorization': authHeader,
-                'Content-Length': 0
+                'Content-Length': 0,
+                'Host': config.cpanelHost
             }
         };
 
@@ -90,14 +91,15 @@ function uploadFiles(destinationDir, filesArray) {
         const payload = Buffer.concat(chunks);
 
         const options = {
-            hostname: config.cpanelHost,
+            hostname: '116.202.222.251',
             port: config.cpanelPort,
             path: '/execute/Fileman/upload_files',
             method: 'POST',
             headers: {
                 'Authorization': authHeader,
                 'Content-Type': `multipart/form-data; boundary=${boundary}`,
-                'Content-Length': payload.length
+                'Content-Length': payload.length,
+                'Host': config.cpanelHost
             }
         };
 
