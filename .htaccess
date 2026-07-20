@@ -6,3 +6,9 @@
         Header set Expires "0"
     </IfModule>
 </FilesMatch>
+
+# Disable LiteSpeed Cache
+<IfModule LiteSpeed>
+    CacheDisable public
+    CacheDisable private
+</IfModule>
