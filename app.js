@@ -3124,7 +3124,15 @@
                 const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
                 const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
                 const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
-    
+
+                const brandDark = brandFilter === 'Mahindra' ? 'bg-[#5e0d18]' : 'bg-[#020e2e]';
+                const brandTextLight = brandFilter === 'Mahindra' ? 'text-rose-200' : 'text-sky-200';
+                const brandTextMedium = brandFilter === 'Mahindra' ? 'text-rose-300' : 'text-sky-300';
+                const brandBorderMedium = brandFilter === 'Mahindra' ? 'border-mahindra/30' : 'border-foton/30';
+                const brandBorderDark = brandFilter === 'Mahindra' ? 'border-[#5e0d18]/50' : 'border-[#020e2e]/50';
+                const brandShadow = brandFilter === 'Mahindra' ? 'shadow-mahindra/40' : 'shadow-foton/40';
+                const brandBgPillActive = brandFilter === 'Mahindra' ? 'bg-gradient-to-r from-mahindra to-rose-700' : 'bg-gradient-to-r from-foton to-indigo-900';
+        
                 localStorage.setItem('aci_last_page', 'dashboard');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 app.setupSidebar();
@@ -3335,14 +3343,14 @@
                         <!-- AM / Executive Header -->
                         <div class="mb-3">
                             ${isAM ? `
-                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-sm border border-slate-200/60 border border-white/10 relative overflow-hidden mb-3">
+                            <div class="bg-gradient-to-br ${brandGradient} p-3 rounded-[1.25rem] shadow-sm border border-slate-200/60 border border-white/10 relative overflow-hidden mb-3">
                                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="relative z-10 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
                                     
                                     <!-- Left Section: Welcome Info & Mobile-only Sync Badge -->
                                     <div class="flex justify-between items-start w-full md:w-auto">
                                         <div>
-                                            <p class="text-[8px] font-bold text-indigo-300 uppercase tracking-[0.2em]">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
+                                            <p class="text-[8px] font-bold ${brandTextMedium} uppercase tracking-[0.2em]">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
                                             <h2 class="text-base font-bold text-white leading-tight">Welcome, ${app.currentUser.name.split(' ')[0]}</h2>
                                         </div>
                                         
@@ -3385,14 +3393,14 @@
                                         <!-- Target & Desktop-only Sync Stats -->
                                         <div class="flex items-center gap-3 justify-end ml-auto md:ml-0">
                                             <div class="flex flex-col items-end">
-                                                <span class="text-[7px] font-bold text-indigo-200 uppercase">Target</span>
+                                                <span class="text-[7px] font-bold ${brandTextLight} uppercase">Target</span>
                                                 <span class="text-[10px] font-bold text-white">${totalYearlyTarget} Units</span>
                                             </div>
                                             <!-- Desktop-only Sync Indicator -->
                                             <div class="hidden md:flex items-center gap-3">
                                                 <div class="w-px h-4 bg-white/20"></div>
                                                 <div class="flex flex-col items-end">
-                                                    <span class="text-[7px] font-bold text-indigo-200 uppercase">Live</span>
+                                                    <span class="text-[7px] font-bold ${brandTextLight} uppercase">Live</span>
                                                     <span class="text-[9px] font-bold text-green-400 flex items-center gap-1"><i data-lucide="activity" class="w-2.5 h-2.5"></i> Sync</span>
                                                 </div>
                                             </div>
@@ -3561,7 +3569,7 @@
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-white shadow-sm mb-3 relative overflow-hidden">
                                     <div class="absolute right-0 top-0 w-32 h-32 ${brandBg}/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-3">
-                                        <div class="p-2 bg-indigo-100 rounded-lg ${brandText}"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                                        <div class="p-2 ${brandBgLight} rounded-lg ${brandText}"><i data-lucide="zap" class="w-4 h-4"></i></div>
                                         <h3 class="font-bold text-slate-800 text-[10px] tracking-tight">${app.currentMonth} Pacing Monitor</h3>
                                         <span class="ml-auto bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-slate-200/60 uppercase">Day ${currentDay} of ${daysInMonth}</span>
                                     </div>
@@ -3592,12 +3600,12 @@
                                             </div>
                                         </div>
 
-                                        <div class="bg-indigo-900 rounded-xl p-3 shadow-sm border border-slate-200/60 flex items-center justify-between text-white border border-white/10">
+                                        <div class="bg-gradient-to-br ${brandFilter === 'Mahindra' ? 'from-mahindra to-[#8a1426]' : 'from-foton to-[#052269]'} rounded-xl p-2.5 shadow-sm border border-white/10 flex items-center justify-between text-white">
                                             <div>
-                                                <p class="text-[9px] font-bold text-indigo-300 uppercase mb-0.5">Req. Daily Rate</p>
+                                                <p class="text-[9px] font-bold ${brandTextMedium} uppercase mb-0.5">Req. Daily Rate</p>
                                                 <h4 class="text-lg font-bold">${Math.max(0, Math.ceil((currMonthBudget - currMonthSalesPacing) / (daysInMonth - currentDay)))}</h4>
                                             </div>
-                                            <div class="p-2 bg-white/10 rounded-xl"><i data-lucide="trending-up" class="w-5 h-5 text-indigo-200"></i></div>
+                                            <div class="p-2 bg-white/10 rounded-xl"><i data-lucide="trending-up" class="w-5 h-5 ${brandTextLight}"></i></div>
                                         </div>
                                     </div>
 
@@ -3810,7 +3818,7 @@
                                     <td class="px-2 py-0.5 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${isFirstMonth ? '-' : `${lAch}%`}</td>
 
                                     <td class="px-2 py-0.5 font-medium text-slate-500">${cBgt}</td>
-                                    <td class="px-2 py-0.5 font-bold text-indigo-900 bg-indigo-100/50">${cAct}</td>
+                                    <td class="px-2 py-0.5 font-bold ${brandText} ${brandBgLightHalf}">${cAct}</td>
                                     <td class="px-2 py-0.5 font-bold ${achColor(cAch)}">${cAch}%</td>
                                 </tr>
                             `;
@@ -3845,7 +3853,7 @@
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60 border-r border-slate-200/60">Ach%</th>
                                                 <!-- Current Month -->
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60">Budget</th>
-                                                <th class="px-2 py-0.5 border-t border-indigo-200 bg-indigo-100 text-indigo-900 font-extrabold">Total Delivered</th>
+                                                <th class="px-2 py-0.5 border-t ${brandBorderLight} ${brandBgLight} ${brandText} font-extrabold">Total Delivered</th>
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60">Ach%</th>
                                             </tr>
                                         </thead>
@@ -3865,7 +3873,7 @@
                                                 <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} bg-slate-50/30 border-r border-slate-200/60">${isFirstMonth ? '-' : `${gLAch}%`}</td>
 
                                                 <td class="px-2 py-0.5">${gTot.cBgt}</td>
-                                                <td class="px-2 py-0.5 text-indigo-900 bg-indigo-200/50 font-extrabold">${gTot.cAct}</td>
+                                                <td class="px-2 py-0.5 ${brandText} ${brandBgLightHalf} font-extrabold">${gTot.cAct}</td>
                                                 <td class="px-2 py-0.5 ${achColor(gCAch)}">${gCAch}%</td>
                                             </tr>
                                         </tbody>
@@ -3966,7 +3974,7 @@
                                         <button onclick="app.performanceFilterMonth='${m}'; app.renderAdminDashboard()" 
                                                 class="px-3.5 py-1.5 rounded-xl text-[9px] font-bold tracking-wider transition-all duration-300 shrink-0 relative flex items-center gap-1.5 ${
                                                     isActive 
-                                                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-sm shadow-emerald-500/20 scale-105 border border-emerald-400/30' 
+                                                    ? 'bg-gradient-to-r ' + (brandFilter === 'Mahindra' ? 'from-mahindra to-rose-700' : 'from-foton to-indigo-900') + ' text-white shadow-sm border border-white/20 scale-105' 
                                                     : 'bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-slate-200/60 shadow-sm'
                                                 }">
                                             ${isCurrentSetting ? `<span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-emerald-500'}"></span>` : ''}
@@ -4096,7 +4104,7 @@
                                                 <td class="px-1.5 py-0.5 bg-slate-100/50 text-slate-700 font-extrabold text-center">${totalCurrBudget}</td>
                                                 <td class="px-1.5 py-0.5 bg-slate-100/50 font-bold text-slate-900 text-center">${totalCurrProj}</td>
                                                 ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-100/50 font-bold ${brandText} text-center">${totalModelMap[m] || 0}</td>`).join('')}
-                                                <td class="px-1.5 py-0.5 bg-indigo-100/50 font-bold ${brandText} text-[10px] text-center">${totalCurrSalesUnits}</td>
+                                                <td class="px-1.5 py-0.5 ${brandBgLightHalf} font-bold ${brandText} text-[10px] text-center">${totalCurrSalesUnits}</td>
                                                 <td class="px-1.5 py-0.5 text-center ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                             </tr>
                                         `;
@@ -4169,7 +4177,7 @@
                                             <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                         </button>
                                         <button onclick="app.pulseDetailedView = !app.pulseDetailedView; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm border border-slate-200/60 ${brandGlow} border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r ' + (brandFilter === 'Mahindra' ? 'from-mahindra to-rose-700' : 'from-foton to-indigo-900') + ' text-white shadow-sm border border-slate-200/60 ' + brandGlow : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
                                             <i data-lucide="${app.pulseDetailedView ? 'layout-grid' : 'list'}" class="w-3.5 h-3.5"></i>
                                             Detailed View
                                         </button>
@@ -4198,7 +4206,7 @@
                                                     <div class="flex items-center gap-1 cursor-pointer hover:${brandText} transition-colors" onclick="app.setPulseSort('name')">
                                                         Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 ${brandText} shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? brandBgLight + ' ' + brandText + ' shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
@@ -4465,8 +4473,8 @@
                                             `;
 
                                             const grandTotalRowHTML = `
-                                                <tr class="${brandBgLight}/20 font-bold text-slate-800 text-center border-t-2 border-indigo-200">
-                                                    <td class="px-2 py-0.5 text-left sticky left-0 z-10 ${brandBgLight} border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                                <tr class="${brandBgLight}/20 font-bold text-slate-800 text-center border-t-2 ${brandBorderLight}">
+                                                    <td class="px-2 py-0.5 text-left sticky left-0 z-10 ${brandBgLight} border-r-2 ${brandBorderLight} shadow-sm">
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
                                                             <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow shadow-indigo-500/50"></div>
@@ -4489,18 +4497,18 @@
                                 const dynamicModels = activeModels.filter(m => modelsWithSales.has(m));
 
                                 return `
-                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-slate-200/60 border border-indigo-900/10 ring-1 ring-slate-200/50">
+                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-slate-200/60 border ${brandBorderLight} ring-1 ring-slate-200/50">
                                         <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse bg-white">
                                             <thead>
-                                                <tr class="bg-indigo-950 text-indigo-200 uppercase tracking-widest text-[9px] border-b border-indigo-900/50">
-                                                    <th class="px-2 py-0.5 font-bold sticky left-0 z-10 bg-indigo-950 border-r border-indigo-900/80 shadow-[2px_0_5px_rgba(0,0,0,0.2)] text-indigo-50">Territory</th>
+                                                <tr class="${brandDark} ${brandTextLight} uppercase tracking-widest text-[9px] border-b ${brandBorderLight}">
+                                                    <th class="px-2 py-0.5 font-bold sticky left-0 z-10 ${brandDark} border-r ${brandBorderLight} shadow-sm ${brandTextLight}">Territory</th>
                                                     <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-900/30 to-transparent text-amber-400 font-extrabold border-l border-r border-t border-amber-900/30 shadow-sm" colspan="1">Total FY Budget</th>
                                                     ${app.adminShowYTD ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-blue-900/30 to-transparent text-blue-300 border-l border-r border-t border-blue-900/30 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                     ${app.adminShowLastMonth ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-emerald-900/30 to-transparent text-emerald-400 border-l border-r border-t border-emerald-900/30 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                     <th class="px-2 py-0.5 text-center bg-gradient-to-b from-cyan-900/30 to-transparent text-cyan-300 border-l border-r border-t border-cyan-900/30 font-extrabold shadow-sm" colspan="${4 + dynamicModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                                 </tr>
-                                                <tr class="bg-indigo-900 text-indigo-300 uppercase tracking-tighter text-[9px] border-b-2 border-indigo-950 text-center">
-                                                    <th class="px-2 py-0.5 sticky left-0 z-10 bg-indigo-900 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                                                <tr class="${brandBg} ${brandTextMedium} uppercase tracking-tighter text-[9px] border-b-2 ${brandBorderDark} text-center">
+                                                    <th class="px-2 py-0.5 sticky left-0 z-10 ${brandBg} border-r ${brandBorderLight} shadow-sm">
                                                         <div class="flex items-center justify-between gap-2">
                                                             <div class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" onclick="app.setPulseSort('name')">
                                                                 <span class="w-4 text-right opacity-50">#</span> Territory ${app.getSortIcon('name')}
@@ -4529,8 +4537,8 @@
                                                     <th class="px-1.5 py-0.5 bg-cyan-900/10 cursor-pointer hover:bg-cyan-900/30 transition-colors border-l border-cyan-900/20" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
                                                     <th class="px-1.5 py-0.5 bg-cyan-900/10 cursor-pointer hover:bg-cyan-900/30 transition-colors" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1 text-cyan-200">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
                                                     ${dynamicModels.map(m => `<th class="px-1.5 py-0.5 bg-cyan-900/10 text-cyan-400 font-bold">${m}</th>`).join('')}
-                                                    <th class="px-1.5 py-0.5 ${brandBgHover.replace('hover:', '')}/40 font-bold text-indigo-200 cursor-pointer ${brandBgHoverHalf} transition-colors border-l ${brandBorder}/50" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
-                                                    <th class="px-1.5 py-0.5 ${brandBgHover.replace('hover:', '')}/40 font-bold text-indigo-200 cursor-pointer ${brandBgHoverHalf} transition-colors border-r ${brandBorder}/50" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
+                                                    <th class="px-1.5 py-0.5 ${brandBgHover.replace('hover:', '')}/40 font-bold ${brandTextLight} cursor-pointer ${brandBgHoverHalf} transition-colors border-l ${brandBorder}/50" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
+                                                    <th class="px-1.5 py-0.5 ${brandBgHover.replace('hover:', '')}/40 font-bold ${brandTextLight} cursor-pointer ${brandBgHoverHalf} transition-colors border-r ${brandBorder}/50" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-slate-100">
@@ -4582,7 +4590,7 @@
                                                                     <td class="px-2 py-0.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
                                                                     <td class="px-2 py-0.5 font-bold text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
                                                                     <td class="px-2 py-0.5 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-bold">${mt.ytdAchVal}%</span>`}</td>
-                                                                    <td class="px-2 py-0.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
+                                                                    <td class="px-2 py-0.5 font-bold text-rose-500 text-center border-r-2 ${brandBorderLight}">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
                                                                 ` : ''}
                                                                 ${app.adminShowLastMonth ? `
                                                                     <td class="px-2 py-0.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
@@ -4609,11 +4617,11 @@
                                                     else { tAchBg = 'bg-rose-100'; tAchText = 'text-rose-700'; }
 
                                                     const totalRowHTML = `
-                                                        <tr class="bg-indigo-950 font-bold text-indigo-100 text-center border-t-[3px] border-indigo-900/80 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] relative z-20">
-                                                            <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-indigo-950 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.2)]">
+                                                        <tr class="${brandDark} font-bold ${brandTextLight} text-center border-t-[3px] ${brandBorderLight} shadow-md relative z-20">
+                                                            <td class="px-2 py-0.5 text-left sticky left-0 z-10 ${brandDark} border-r ${brandBorderLight} shadow-sm">
                                                                 <div class="flex items-center gap-2">
                                                                     <span class="w-4"></span>
-                                                                    <div class="w-1.5 h-4.5 bg-indigo-400 rounded-full shadow shadow-indigo-400/50"></div>
+                                                                    <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow ${brandShadow}"></div>
                                                                     <span class="font-bold text-white text-[10.5px] uppercase tracking-widest">Grand Total</span>
                                                                 </div>
                                                             </td>
@@ -4632,8 +4640,8 @@
                                                             <td class="px-1.5 py-0.5 bg-cyan-900/20 text-cyan-100 font-extrabold text-center border-l border-cyan-900/30">${totalCurrBudget}</td>
                                                             <td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-white text-center">${totalCurrProj}</td>
                                                             ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-cyan-300 text-center">${totalModelMap[m] || 0}</td>`).join('')}
-                                                            <td class="px-1.5 py-0.5 bg-indigo-900/40 font-bold text-white text-[10px] text-center border-l border-indigo-800/50">${totalCurrSalesUnits}</td>
-                                                            <td class="px-1.5 py-0.5 text-center border-r border-indigo-800/50 bg-indigo-900/40 ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
+                                                            <td class="px-1.5 py-0.5 ${brandBgLightHalf} font-bold text-white text-[10px] text-center border-l ${brandBorderLight}">${totalCurrSalesUnits}</td>
+                                                            <td class="px-1.5 py-0.5 text-center border-r ${brandBorderLight} ${brandBgLightHalf} ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                                         </tr>
                                                     `;
 
