@@ -4896,39 +4896,15 @@
                             </div>
                         </div>
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-[11px] whitespace-nowrap">
-                                <thead>
-                                    <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
-                                        <th class="px-5 py-2.5 font-black sticky left-0 z-10 bg-slate-50">Territory</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-4 text-center border-l border-slate-100 font-extrabold" colspan="${4 + activeModels.length}">
-                                            ${(app.performanceFilterMonth || app.currentMonth) === app.currentMonth ? 'Current' : 'Selected'} Month (${(app.performanceFilterMonth || app.currentMonth).substring(0, 3)})
-                                        </th>
-                                    </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-100 text-center">
-                                        <th class="px-5 py-2 sticky left-0 z-10 bg-white"></th>
-                                        ${app.adminShowYTD ? `
-                                            <th class="px-2 py-3 bg-slate-50">Budget</th>
-                                            <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Actual</th>
-                                            <th class="px-2 py-3 bg-slate-50">Ach%</th>
-                                            <th class="px-2 py-3 bg-slate-50">Short</th>
-                                        ` : ''}
-                                        ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-3">Budget</th>
-                                            <th class="px-2 py-3 font-bold text-slate-600">Actual</th>
-                                            <th class="px-2 py-3">Ach%</th>
-                                        ` : ''}
-                                        <th class="px-2 py-3 bg-slate-50">Budget</th>
-                                        <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-3 bg-slate-50">${m}</th>`).join('')}
-                                        <th class="px-2 py-3 bg-indigo-50 font-black text-indigo-700">Total</th>
-                                        <th class="px-2 py-3 bg-indigo-50 font-black text-indigo-700">Ach%</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-50 bg-white">
-                                    ${(() => {
+                        ${(() => {
+                            const performanceMonth = app.performanceFilterMonth || app.currentMonth;
+                            const activeTerrs = activeTerritories.filter(t => !app.adminTerritoryFilter || app.adminTerritoryFilter === 'All' || t.id === app.adminTerritoryFilter);
+                            const activeTerrIds = activeTerrs.map(t => t.id);
+
+                            const currentSales = currFYSales.filter(s => activeTerrIds.includes(s.territory_id) && s.brand === brandFilter && s.sales_month === performanceMonth && Number(s.unit_qty) > 0);
+                            const modelsWithSales = new Set(currentSales.map(s => s.model));
+                            const dynamicModels = activeModels.filter(m => modelsWithSales.has(m));
+
                             let totalYtdBudget = 0;
                             let totalYtdSales = 0;
                             let totalYtdShort = 0;
@@ -4939,10 +4915,7 @@
                             const totalModelMap = {};
                             let totalCurrSalesUnits = 0;
 
-                            const performanceMonth = app.performanceFilterMonth || app.currentMonth;
-
-                            const rowsHTML = activeTerritories.filter(t => !app.adminTerritoryFilter || app.adminTerritoryFilter === 'All' || t.id === app.adminTerritoryFilter).map(t => {
-                                // Pre-compute current month ach for sorting
+                            const rowsHTML = activeTerrs.map(t => {
                                 const _tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                 const _currTgts = _tTargets.filter(tg => tg.month === performanceMonth);
                                 const _currBudget = _currTgts.length > 0 ? _currTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(_tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
@@ -4963,7 +4936,6 @@
                                 const ytdAchVal = ach(perf.ytd.sales, perf.ytd.budget);
                                 const h = ytdAchVal >= 90 ? 'emerald' : (ytdAchVal >= 70 ? 'blue' : 'rose');
 
-                                // Accumulate totals
                                 totalYtdBudget += perf.ytd.budget;
                                 totalYtdSales += perf.ytd.sales;
                                 totalYtdShort += Math.max(0, perf.ytd.budget - perf.ytd.sales);
@@ -4971,10 +4943,17 @@
                                 totalLastMonthSales += perf.lastMonth.sales;
                                 totalCurrBudget += currBudget;
                                 totalCurrProj += currProj;
-                                activeModels.forEach(m => {
+                                dynamicModels.forEach(m => {
                                     totalModelMap[m] = (totalModelMap[m] || 0) + (modelMap[m] || 0);
                                 });
                                 totalCurrSalesUnits += currSalesUnits;
+
+                                const currAchVal = ach(currSalesUnits, currBudget);
+                                let achBg, achText;
+                                if (currAchVal >= 100) { achBg = 'bg-emerald-100'; achText = 'text-emerald-700'; }
+                                else if (currAchVal >= 80) { achBg = 'bg-lime-100'; achText = 'text-lime-700'; }
+                                else if (currAchVal >= 60) { achBg = 'bg-amber-100'; achText = 'text-amber-700'; }
+                                else { achBg = 'bg-rose-100'; achText = 'text-rose-700'; }
 
                                 return `
                                                 <tr class="hover:bg-slate-50/50 transition-colors group text-center border-b border-slate-100/50">
@@ -4997,15 +4976,22 @@
                                                     ` : ''}
                                                     <td class="px-2 py-1 bg-slate-50/50 text-slate-400 font-medium text-center">${currBudget}</td>
                                                     <td class="px-2 py-1 bg-slate-50/50 font-black text-slate-700 text-center">${currProj}</td>
-                                                    ${activeModels.map(m => `<td class="px-2 py-1 bg-slate-50/50 font-bold text-center ${modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
+                                                    ${dynamicModels.map(m => `<td class="px-2 py-1 bg-slate-50/50 font-bold text-center ${modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
                                                     <td class="px-2 py-1 bg-indigo-50/30 font-black text-indigo-700 text-sm text-center">${currSalesUnits}</td>
-                                                    <td class="px-2 py-1 text-center"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px]" style="background:${ach(currSalesUnits, currBudget) >= 100 ? '#dcfce7' : ach(currSalesUnits, currBudget) >= 80 ? '#fef9c3' : ach(currSalesUnits, currBudget) >= 60 ? '#ffedd5' : '#fee2e2'};color:${ach(currSalesUnits, currBudget) >= 100 ? '#15803d' : ach(currSalesUnits, currBudget) >= 80 ? '#a16207' : ach(currSalesUnits, currBudget) >= 60 ? '#c2410c' : '#dc2626'};">${ach(currSalesUnits, currBudget)}%</span></td>
+                                                    <td class="px-2 py-1 text-center ${achBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px] ${achText}">${currAchVal}%</span></td>
                                                 </tr>
                                             `;
                             }).join('');
 
                             const totalYtdAchVal = ach(totalYtdSales, totalYtdBudget);
                             const totalH = totalYtdAchVal >= 90 ? 'emerald' : (totalYtdAchVal >= 70 ? 'blue' : 'rose');
+
+                            const totalCurrAchVal = ach(totalCurrSalesUnits, totalCurrBudget);
+                            let tAchBg, tAchText;
+                            if (totalCurrAchVal >= 100) { tAchBg = 'bg-emerald-100'; tAchText = 'text-emerald-700'; }
+                            else if (totalCurrAchVal >= 80) { tAchBg = 'bg-lime-100'; tAchText = 'text-lime-700'; }
+                            else if (totalCurrAchVal >= 60) { tAchBg = 'bg-amber-100'; tAchText = 'text-amber-700'; }
+                            else { tAchBg = 'bg-rose-100'; tAchText = 'text-rose-700'; }
 
                             const totalRowHTML = `
                                             <tr class="bg-indigo-50/20 font-black text-slate-800 text-center border-t border-indigo-100/55">
@@ -5028,17 +5014,52 @@
                                                 ` : ''}
                                                 <td class="px-2 py-1.5 bg-slate-100/50 text-slate-700 font-extrabold text-center">${totalCurrBudget}</td>
                                                 <td class="px-2 py-1.5 bg-slate-100/50 font-black text-slate-900 text-center">${totalCurrProj}</td>
-                                                ${activeModels.map(m => `<td class="px-2 py-1.5 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
+                                                ${dynamicModels.map(m => `<td class="px-2 py-1.5 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
                                                 <td class="px-2 py-1.5 bg-indigo-100/50 font-black text-indigo-700 text-sm text-center">${totalCurrSalesUnits}</td>
-                                                <td class="px-2 py-1.5 text-center"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px]" style="background:${ach(totalCurrSalesUnits, totalCurrBudget) >= 100 ? '#dcfce7' : ach(totalCurrSalesUnits, totalCurrBudget) >= 80 ? '#fef9c3' : ach(totalCurrSalesUnits, totalCurrBudget) >= 60 ? '#ffedd5' : '#fee2e2'};color:${ach(totalCurrSalesUnits, totalCurrBudget) >= 100 ? '#15803d' : ach(totalCurrSalesUnits, totalCurrBudget) >= 80 ? '#a16207' : ach(totalCurrSalesUnits, totalCurrBudget) >= 60 ? '#c2410c' : '#dc2626'};">${ach(totalCurrSalesUnits, totalCurrBudget)}%</span></td>
+                                                <td class="px-2 py-1.5 text-center ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                             </tr>
                                         `;
 
-                            return rowsHTML + totalRowHTML;
+                            return `
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                        <thead>
+                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
+                                                <th class="px-5 py-2.5 font-black sticky left-0 z-10 bg-slate-50">Territory</th>
+                                                ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                <th class="px-3 py-4 text-center border-l border-slate-100 font-extrabold" colspan="${4 + dynamicModels.length}">
+                                                    ${(app.performanceFilterMonth || app.currentMonth) === app.currentMonth ? 'Current' : 'Selected'} Month (${(app.performanceFilterMonth || app.currentMonth).substring(0, 3)})
+                                                </th>
+                                            </tr>
+                                            <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-100 text-center">
+                                                <th class="px-5 py-2 sticky left-0 z-10 bg-white"></th>
+                                                ${app.adminShowYTD ? `
+                                                    <th class="px-2 py-3 bg-slate-50">Budget</th>
+                                                    <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Actual</th>
+                                                    <th class="px-2 py-3 bg-slate-50">Ach%</th>
+                                                    <th class="px-2 py-3 bg-slate-50">Short</th>
+                                                ` : ''}
+                                                ${app.adminShowLastMonth ? `
+                                                    <th class="px-2 py-3">Budget</th>
+                                                    <th class="px-2 py-3 font-bold text-slate-600">Actual</th>
+                                                    <th class="px-2 py-3">Ach%</th>
+                                                ` : ''}
+                                                <th class="px-2 py-3 bg-slate-50">Budget</th>
+                                                <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Proj</th>
+                                                ${dynamicModels.map(m => `<th class="px-2 py-3 bg-slate-50">${m}</th>`).join('')}
+                                                <th class="px-2 py-3 bg-indigo-50 font-black text-indigo-700">Total</th>
+                                                <th class="px-2 py-3 bg-indigo-50 font-black text-indigo-700">Ach%</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-50 bg-white">
+                                            ${rowsHTML}
+                                            ${totalRowHTML}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
                         })()}
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                     ` : ''}
 
