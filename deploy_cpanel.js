@@ -219,7 +219,11 @@ async function run() {
 
         console.log(`Uploading ${preparedFiles.length} files to "${config.docRoot}"...`);
         await uploadFiles(config.docRoot, preparedFiles);
-        console.log("✓ Files uploaded successfully!");
+        console.log("✓ Files uploaded to sales successfully!");
+        
+        console.log(`Uploading ${preparedFiles.length} files to "public_html/sales360"...`);
+        await uploadFiles("public_html/sales360", preparedFiles);
+        console.log("✓ Files uploaded to sales360 successfully!");
         
         console.log("\n=============================================");
         console.log("✓ DEPLOYMENT COMPLETED SUCCESSFULY!");
