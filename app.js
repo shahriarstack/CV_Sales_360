@@ -1127,7 +1127,7 @@
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">Vehicle Models</h1>
+                                <h1 class="text-lg font-bold text-slate-800">Vehicle Models</h1>
                                 <p class="text-sm text-slate-500">Manage brands and model names for MO delivery entry</p>
                             </div>
                             <button onclick="app.showAddEditModelModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
@@ -1305,7 +1305,7 @@
                     <div class="max-w-6xl mx-auto fade-in pb-12">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">User Management</h1>
+                                <h1 class="text-lg font-bold text-slate-800">User Management</h1>
                                 <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
                             </div>
                             <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
@@ -2281,7 +2281,7 @@
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <h1 class="text-lg font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
                                 <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
                             </div>
                             
@@ -2527,7 +2527,7 @@
                     <div class="max-w-7xl mx-auto fade-in">
                         <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">Manual Deliveries Tracker</h1>
+                                <h1 class="text-lg font-bold text-slate-800">Manual Deliveries Tracker</h1>
                                 <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
@@ -3527,7 +3527,7 @@
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                                 <div>
-                                    <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
+                                    <h1 class="text-xl font-black text-slate-900 tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
                                     <p class="text-sm font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -6125,7 +6125,7 @@
                         <!-- AI Header Section -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
                             <div class="w-full md:w-auto">
-                                <h1 class="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                                <h1 class="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
                                     <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl shadow-md shadow-purple-200">
                                         <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
                                     </div>
@@ -6749,7 +6749,7 @@
                         <!-- Header & Dynamic Filters -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 shrink-0 relative z-50">
                             <div>
-                                <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
+                                <h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
                                     <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
                                     Geospatial Sales Heatmap
                                 </h1>
@@ -7220,7 +7220,7 @@
                 const html = `
                     <div class="max-w-6xl mx-auto pb-10">
                         <div class="mb-6">
-                            <h1 class="text-2xl font-bold text-slate-800">Bulk Data Upload</h1>
+                            <h1 class="text-lg font-bold text-slate-800">Bulk Data Upload</h1>
                             <p class="text-sm text-slate-500">Upload Targets, Projections, and System Sales securely.</p>
                         </div>
                         
@@ -7538,7 +7538,7 @@
                                 <button onclick="app.renderDataUpload()" class="text-slate-500 hover:text-aci-blue flex items-center gap-1.5 text-sm font-bold mb-3 transition-colors">
                                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Upload Hub
                                 </button>
-                                <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                     <i data-lucide="${icon}" class="w-6 h-6 text-${themeColor}-600"></i> ${title}
                                 </h1>
                                 <p class="text-sm text-slate-500 mt-1">Viewing all synchronized records currently in the active database.</p>
@@ -9055,7 +9055,7 @@
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">TIV Data Management</h1>
+                                <h1 class="text-lg font-bold text-slate-800">TIV Data Management</h1>
                                 <p class="text-sm text-slate-500">Total Industry Volume Collection & Administration</p>
                             </div>
                             <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
