@@ -3690,43 +3690,43 @@
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-white shadow-sm mb-3 relative overflow-hidden">
-                        <div class="absolute -right-20 -top-20 ${brandBg}/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="border border-white/20 p-3 rounded-xl shadow-lg mb-3 relative overflow-hidden text-white" style="background: linear-gradient(90deg, #d946ef 0%, #4f46e5 50%, #06b6d4 100%);">
+                        <div class="absolute -right-20 -top-20 bg-white/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
                             <div class="lg:col-span-2 flex flex-col justify-between">
                                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                                     <div>
-                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 ${brandText}"></i> Performance vs Budget & YOY</h3>
-                                        <p class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5">Month by Month Comparative Velocity & Pacing</p>
+                                        <h3 class="font-bold text-white flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 text-cyan-300"></i> Performance vs Budget & YOY</h3>
+                                        <p class="text-[9px] text-white/80 uppercase tracking-widest mt-0.5">Month by Month Comparative Velocity & Pacing</p>
                                     </div>
                                     <div class="flex items-center gap-3 flex-wrap">
-                                        <label class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200/60 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
-                                            <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 ${brandText} focus:ring-indigo-500 w-3 h-3">
-                                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
+                                        <label class="flex items-center gap-1.5 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/20 shadow-sm cursor-pointer transition-all ${app.yoyShowLY ? 'bg-white text-indigo-950 border-white' : 'bg-white/10 text-white hover:bg-white/20'}">
+                                            <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-white/30 text-indigo-600 focus:ring-white w-3 h-3 bg-white/20">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider">Vs Last Year</span>
                                         </label>
 
                                         <!-- Territory Filter Dropdown -->
                                         <div class="relative">
                                             <select onchange="app.yoyTerritoryFilter = this.value; app.renderAdminDashboard()" 
-                                                    class="appearance-none bg-white/80 border border-slate-200/60 rounded-lg pl-3 pr-8 py-1.5 text-[10px] font-bold text-slate-600 uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer shadow-sm min-w-[120px]">
+                                                    class="appearance-none backdrop-blur-md border border-white/20 rounded-lg pl-3 pr-8 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm min-w-[120px] ${app.yoyTerritoryFilter !== 'All' ? 'bg-white text-indigo-950 border-white' : 'bg-white/10 text-white hover:bg-white/20'}">
                                                 <option value="All">All Territories</option>
                                                 ${activeTerritories.map(t => `<option value="${t.id}" ${app.yoyTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                             </select>
-                                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none ${app.yoyTerritoryFilter !== 'All' ? 'text-indigo-950' : 'text-white/60'}">
                                                 <i data-lucide="chevron-down" class="w-3 h-3"></i>
                                             </div>
                                         </div>
                                         
                                         <!-- Creative Brand Logo Toggle -->
-                                        <div class="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200/60 shadow-inner">
+                                        <div class="flex items-center bg-white/10 p-1 rounded-lg border border-white/10 shadow-inner backdrop-blur-md">
                                             <button onclick="app.yoyBrandTab='Foton'; app.renderAdminDashboard()" 
-                                                    class="relative flex items-center justify-center px-2 py-1 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                    class="relative flex items-center justify-center px-2 py-1 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border-white scale-105 z-10' : 'opacity-60 hover:opacity-100 hover:bg-white/5 grayscale-0'}">
                                                 <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-6 object-contain" alt="Foton">
                                             </button>
-                                            <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                                            <div class="w-px h-5 bg-white/20 mx-1"></div>
                                             <button onclick="app.yoyBrandTab='Mahindra'; app.renderAdminDashboard()" 
-                                                    class="relative flex items-center justify-center px-2 py-1 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                    class="relative flex items-center justify-center px-2 py-1 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border-white scale-105 z-10' : 'opacity-60 hover:opacity-100 hover:bg-white/5 grayscale-0'}">
                                                 <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-5 object-contain" alt="Mahindra">
                                             </button>
                                         </div>
@@ -3738,17 +3738,17 @@
                             </div>
                             
                             <!-- Right: Bangladesh Sales Heatmap (Col span 1) -->
-                            <div class="lg:col-span-1 flex flex-col bg-slate-50/50 rounded-xl p-3 border border-slate-100 relative min-h-[300px]">
+                            <div class="lg:col-span-1 flex flex-col bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10 relative min-h-[300px]">
                                 <div class="flex items-center justify-between mb-2">
                                     <div>
-                                        <h4 class="text-[10px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                                            <i data-lucide="map" class="w-3.5 h-3.5 ${brandText}"></i> ${app.currentMonth} Sales Map
+                                        <h4 class="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                                            <i data-lucide="map" class="w-3.5 h-3.5 text-cyan-300"></i> ${app.currentMonth} Sales Map
                                         </h4>
-                                        <p class="text-[9px] text-slate-400 font-medium mt-0.5">District wise actual units</p>
+                                        <p class="text-[9px] text-white/70 font-medium mt-0.5">District wise actual units</p>
                                     </div>
-                                    <span id="minimap-sales-total" class="px-2 py-0.5 ${brandBgLight} ${brandText} text-[10px] font-bold rounded-full border ${brandBorderLight}">0 Units</span>
+                                    <span id="minimap-sales-total" class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded-full border border-white/20">0 Units</span>
                                 </div>
-                                <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[250px]" style="height: 250px; min-height: 250px;"></div>
+                                <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-white/15 shadow-inner h-[250px] bg-white/5" style="height: 250px; min-height: 250px;"></div>
                             </div>
                         </div>
                     </div>
@@ -5258,7 +5258,7 @@
                     tension: 0.4,
                     fill: true,
                     pointBackgroundColor: '#fff',
-                    pointBorderColor: '#06b6d4',
+                    pointBorderColor: '#22d3ee',
                     pointBorderWidth: 2,
                     pointRadius: 5,
                     pointHoverRadius: 7
@@ -5269,12 +5269,12 @@
                     datasets.push({
                         label: 'Last FY (24-25)',
                         data: lastAgg,
-                        borderColor: '#f59e0b', // Distinct Amber/Orange
+                        borderColor: '#fb7185', // Distinct Amber/Orange
                         borderWidth: 2,
                         borderDash: [6, 4],
                         tension: 0.4,
                         fill: false,
-                        pointBackgroundColor: '#f59e0b',
+                        pointBackgroundColor: '#fb7185',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointRadius: 4,
@@ -5286,7 +5286,7 @@
                 datasets.push({
                     label: 'Monthly Budget',
                     data: budgetAgg,
-                    borderColor: '#94a3b8', // Slate 400
+                    borderColor: 'rgba(255, 255, 255, 0.65)', // Slate 400
                     borderWidth: 2,
                     borderDash: [8, 6],
                     tension: 0,
@@ -5306,12 +5306,21 @@
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
                         plugins: {
-                            legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 10 } } },
-                            tooltip: { titleFont: { family: 'Inter' }, bodyFont: { family: 'Inter' } }
+                            legend: { position: 'top', align: 'end', labels: { color: '#ffffff', usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 10 } } },
+                            tooltip: { titleFont: { family: 'Inter' }, bodyFont: { family: 'Inter' }, backgroundColor: 'rgba(15, 23, 42, 0.95)', titleColor: '#ffffff', bodyColor: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 1 }
                         },
                         scales: {
-                            y: { border: { display: false }, grid: { borderDash: [4, 4], color: '#f1f5f9' }, beginAtZero: true },
-                            x: { border: { display: false }, grid: { display: false } }
+                            y: {
+                                border: { display: false },
+                                grid: { borderDash: [4, 4], color: 'rgba(255, 255, 255, 0.15)' },
+                                ticks: { color: '#ffffff', font: { family: 'Inter', size: 9 } },
+                                beginAtZero: true
+                            },
+                            x: {
+                                border: { display: false },
+                                grid: { display: false },
+                                ticks: { color: '#ffffff', font: { family: 'Inter', size: 9 } }
+                            }
                         }
                     }
                 });
