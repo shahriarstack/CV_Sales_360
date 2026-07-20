@@ -5533,33 +5533,33 @@
                                                         else { achBg = 'bg-red-100'; achText = 'text-red-700'; }
 
                                                         return `
-                                                            <tr class="hover:bg-slate-50/50 transition-colors group text-center border-b border-slate-100">
-                                                                <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
+                                                            <tr class="hover:bg-slate-50/50 transition-all duration-150 group text-center border-b border-slate-100">
+                                                                <td class="px-6 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
                                                                     <div class="flex items-center justify-between gap-2">
                                                                         <div class="flex items-center gap-1.5">
                                                                             <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
-                                                                            <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full"></div>
+                                                                            <div class="w-1 h-3 bg-${mt.h}-500 rounded-full transition-all duration-300 group-hover:h-4.5 group-hover:w-1.5"></div>
                                                                             <span class="font-black text-slate-700">${mt.name}</span>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td class="px-3 py-1.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[10px]">${mt.totalFYBudget}</span></td>
+                                                                <td class="px-3 py-0.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[10px]">${mt.totalFYBudget}</span></td>
                                                                 ${app.adminShowYTD ? `
-                                                                    <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
-                                                                    <td class="px-2 py-1.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
-                                                                    <td class="px-2 py-1.5 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-black">${mt.ytdAchVal}%</span>`}</td>
-                                                                    <td class="px-2 py-1.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
+                                                                    <td class="px-2 py-0.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
+                                                                    <td class="px-2 py-0.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
+                                                                    <td class="px-2 py-0.5 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-black">${mt.ytdAchVal}%</span>`}</td>
+                                                                    <td class="px-2 py-0.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
                                                                 ` : ''}
                                                                 ${app.adminShowLastMonth ? `
-                                                                    <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
-                                                                    <td class="px-2 py-1.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.sales}</td>
-                                                                    <td class="px-2 py-1.5 font-black text-slate-600 text-center border-r-2 border-emerald-500/20">${app.currentMonth === 'July' ? '-' : `${mt.lmAchVal}%`}</td>
+                                                                    <td class="px-2 py-0.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
+                                                                    <td class="px-2 py-0.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.sales}</td>
+                                                                    <td class="px-2 py-0.5 font-black text-slate-600 text-center border-r-2 border-emerald-500/20">Token7 ${app.currentMonth === 'July' ? '-' : `${mt.lmAchVal}%`}</td>
                                                                 ` : ''}
-                                                                <td class="px-2 py-1.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
-                                                                <td class="px-2 py-1.5 bg-slate-50/30 font-black text-slate-700 text-center">${mt.currProj}</td>
-                                                                ${dynamicModels.map(m => `<td class="px-2 py-1.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
-                                                                <td class="px-2 py-1.5 bg-indigo-50/30 font-black text-indigo-700 text-center border-l border-indigo-100">${mt.currSalesUnits}</td>
-                                                                <td class="px-2 py-1.5 text-center border-r border-indigo-100 ${achBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
+                                                                <td class="px-2 py-0.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
+                                                                <td class="px-2 py-0.5 bg-slate-50/30 font-black text-slate-700 text-center">${mt.currProj}</td>
+                                                                ${dynamicModels.map(m => `<td class="px-2 py-0.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
+                                                                <td class="px-2 py-0.5 bg-indigo-50/30 font-black text-indigo-700 text-center border-l border-indigo-100">${mt.currSalesUnits}</td>
+                                                                <td class="px-2 py-0.5 text-center border-r border-indigo-100 ${achBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
                                                             </tr>
                                                         `;
                                                     }).join('');
