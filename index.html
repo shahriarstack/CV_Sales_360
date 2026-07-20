@@ -1149,6 +1149,7 @@
             adminShowYTD: false,
             adminShowLastMonth: false,
             performanceFilterMonth: null,
+            manualSaleTypeFilter: 'All',
             pulseDetailedView: false,
             pulseMobileQuarter: 'Q1',
             pulseSortCol: 'name',
@@ -3536,16 +3537,31 @@
                 localStorage.setItem('aci_last_page', 'manual');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 
+                app.manualSaleTypeFilter = app.manualSaleTypeFilter || 'All';
+                
+                if (startDate !== null || endDate !== null) {
+                    app.manualStartDate = startDate;
+                    app.manualEndDate = endDate;
+                } else {
+                    app.manualStartDate = app.manualStartDate || null;
+                    app.manualEndDate = app.manualEndDate || null;
+                }
+
                 let manualSales = DB.sales.filter(s => s.is_manual);
 
+                // Sale Type filtering logic
+                if (app.manualSaleTypeFilter !== 'All') {
+                    manualSales = manualSales.filter(s => s.sale_type === app.manualSaleTypeFilter);
+                }
+
                 // Date filtering logic
-                if (startDate || endDate) {
+                if (app.manualStartDate || app.manualEndDate) {
                     manualSales = manualSales.filter(s => {
                         if (!s.timestamp || s.timestamp === 'Recent') return true;
                         const d = new Date(s.timestamp);
                         if (isNaN(d.getTime())) return true;
-                        if (startDate && new Date(startDate) > d) return false;
-                        if (endDate && new Date(endDate) < d) return false;
+                        if (app.manualStartDate && new Date(app.manualStartDate) > d) return false;
+                        if (app.manualEndDate && new Date(app.manualEndDate) < d) return false;
                         return true;
                     });
                 }
@@ -3561,6 +3577,36 @@
                                 <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
+                                <!-- Creative Sale Type Selector Button Group -->
+                                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner">
+                                    <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()"
+                                            class="px-3.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-300 ${
+                                                app.manualSaleTypeFilter === 'All'
+                                                ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/30'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                            }">
+                                        All
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()"
+                                            class="px-3.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-300 flex items-center gap-1.5 Token1 ${
+                                                app.manualSaleTypeFilter === 'New Sale'
+                                                ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                            }">
+                                        <span class="w-1.5 h-1.5 rounded-full ${app.manualSaleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
+                                        New Sales
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()"
+                                            class="px-3.5 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all duration-300 flex items-center gap-1.5 Token2 ${
+                                                app.manualSaleTypeFilter === 'Resale'
+                                                ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                            }">
+                                        <span class="w-1.5 h-1.5 rounded-full ${app.manualSaleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
+                                        Resale
+                                    </button>
+                                </div>
+
                                 <!-- Date Range Selector -->
                                 <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:border-aci-blue">
                                     <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
@@ -3689,78 +3735,79 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     ${manualSales.map((s, idx) => {
-                    const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
-                    return `
-                                        <tr class="hover:bg-slate-50 transition-colors group">
-                                            <td class="px-3 py-1.5 border-b border-slate-100 text-center font-bold text-slate-400">
-                                                ${idx + 1}
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100">
-                                                <div class="font-bold text-slate-800 flex items-center gap-2">
-                                                    ${terrName}
-                                                </div>
-                                                <div class="text-[9px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1">
-                                                    <i data-lucide="map-pin" class="w-2.5 h-2.5 text-slate-400"></i>
-                                                    ${s.upazila || 'N/A'} ${s.district ? `(${s.district})` : ''}
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100">
-                                                <div class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
-                                                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                                    <span class="text-[9px] font-bold text-aci-blue bg-blue-50 px-1 py-0.2 rounded">ID: ${s.customer_id}</span>
-                                                    ${s.chassis_no ? `<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded" title="Chassis No">Chassis: ${s.chassis_no}</span>` : ''}
-                                                    ${s.old_customer_id ? `<span class="text-[8px] font-semibold text-slate-500 bg-slate-100 px-1 py-0.2 rounded" title="Old Customer ID">Old: ${s.old_customer_id}</span>` : ''}
-                                                    ${s.purpose_of_use ? `<span class="text-[8px] font-bold text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded flex items-center gap-0.5" title="Purpose of Use"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> ${s.purpose_of_use}</span>` : ''}
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100">
-                                                <div class="font-bold text-slate-700 text-[11px]">${s.model}</div>
-                                                <div class="flex items-center gap-1 mt-0.5">
-                                                    <img src="${s.brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-2.5 object-contain">
-                                                    <span class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">${s.brand}</span>
-                                                    <span class="px-1 py-0.2 rounded-full text-[8px] font-bold ml-1 ${s.sale_type === 'New Sale' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${s.sale_type}</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100 text-right">
-                                                <div class="text-[11px] font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
-                                                <div class="text-[10px] text-slate-600 font-medium mt-0.2">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
-                                                <div class="text-[9px] text-slate-400 font-medium mt-0.2">Tenure: ${s.financials?.tenure || 0} Mos</div>
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100">
-                                                ${s.discounts?.amount > 0 ? `<div class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5"><i data-lucide="tags" class="w-2.5 h-2.5"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[10px] text-slate-400 italic">No Discount</div>'}
-                                                ${s.discounts?.gift ? `<div class="text-[9px] text-indigo-600 font-bold mt-0.5 flex items-center gap-0.5"><i data-lucide="gift" class="w-2.5 h-2.5"></i> ${s.discounts.gift}</div>` : ''}
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100 text-[10px] text-slate-500 font-medium whitespace-nowrap">
-                                                <div class="flex flex-col gap-0.5">
-                                                    <div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded w-max">
-                                                        <i data-lucide="calendar-clock" class="w-3 h-3 text-slate-400"></i>
-                                                        ${s.timestamp || 'Recent'}
+                                        const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
+                                        return `
+                                            <tr class="hover:bg-slate-50 transition-colors group">
+                                                <td class="px-3 py-1.5 border-b border-slate-100 text-center font-bold text-slate-400">
+                                                    ${idx + 1}
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100">
+                                                    <div class="font-bold text-slate-800 flex items-center gap-2">
+                                                        ${terrName}
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100 text-center">
-                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${s.approval_status === 'Done' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                                    ${s.approval_status || 'Pending Approval'}
-                                                </span>
-                                                ${s.admin_comments ? `<div class="text-[8px] text-slate-400 mt-0.5 truncate max-w-[100px] mx-auto" title="${s.admin_comments}">Note: ${s.admin_comments}</div>` : ''}
-                                            </td>
-                                            <td class="px-4 py-1.5 border-b border-slate-100 text-right">
-                                                <div class="flex items-center justify-end gap-1.5">
-                                                    ${s.approval_status !== 'Done' ? `
-                                                        <button onclick="app.approveManualDelivery('${s.id}')" title="Approve" class="p-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition-colors shadow-sm">
-                                                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                    <div class="text-[9px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1">
+                                                        <i data-lucide="map-pin" class="w-2.5 h-2.5 text-slate-400"></i>
+                                                        ${s.upazila || 'N/A'} ${s.district ? `(${s.district})` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100">
+                                                    <div class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
+                                                    <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                                        <span class="text-[9px] font-bold text-aci-blue bg-blue-50 px-1 py-0.2 rounded">ID: ${s.customer_id}</span>
+                                                        ${s.chassis_no ? `<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded" title="Chassis No">Chassis: ${s.chassis_no}</span>` : ''}
+                                                        ${s.old_customer_id ? `<span class="text-[8px] font-semibold text-slate-500 bg-slate-100 px-1 py-0.2 rounded" title="Old Customer ID">Old: ${s.old_customer_id}</span>` : ''}
+                                                        ${s.purpose_of_use ? `<span class="text-[8px] font-bold text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded flex items-center gap-0.5" title="Purpose of Use"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> ${s.purpose_of_use}</span>` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100">
+                                                    <div class="font-bold text-slate-700 text-[11px]">${s.model}</div>
+                                                    <div class="flex items-center gap-1 mt-0.5">
+                                                        <img src="${s.brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-2.5 object-contain">
+                                                        <span class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">${s.brand}</span>
+                                                        <span class="px-1 py-0.2 rounded-full text-[8px] font-bold ml-1 ${s.sale_type === 'New Sale' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}" data-sale-type-badge="${s.sale_type}">${s.sale_type}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100 text-right">
+                                                    <div class="text-[11px] font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
+                                                    <div class="text-[10px] text-slate-600 font-medium mt-0.2">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
+                                                    <div class="text-[9px] text-slate-400 font-medium mt-0.2">Tenure: ${s.financials?.tenure || 0} Mos</div>
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100">
+                                                    ${s.discounts?.amount > 0 ? `<div class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5"><i data-lucide="tags" class="w-2.5 h-2.5"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[10px] text-slate-400 italic">No Discount</div>'}
+                                                    ${s.discounts?.gift ? `<div class="text-[9px] text-indigo-600 font-bold mt-0.5 flex items-center gap-0.5"><i data-lucide="gift" class="w-2.5 h-2.5"></i> ${s.discounts.gift}</div>` : ''}
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100 text-[10px] text-slate-500 font-medium whitespace-nowrap">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded w-max">
+                                                            <i data-lucide="calendar-clock" class="w-3 h-3 text-slate-400"></i>
+                                                            ${s.timestamp || 'Recent'}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100 text-center">
+                                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${s.approval_status === 'Done' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                                        ${s.approval_status || 'Pending Approval'}
+                                                    </span>
+                                                    ${s.admin_comments ? `<div class="text-[8px] text-slate-400 mt-0.5 truncate max-w-[100px] mx-auto" title="${s.admin_comments}">Note: ${s.admin_comments}</div>` : ''}
+                                                </td>
+                                                <td class="px-4 py-1.5 border-b border-slate-100 text-right">
+                                                    <div class="flex items-center justify-end gap-1.5">
+                                                        ${s.approval_status !== 'Done' ? `
+                                                            <button onclick="app.approveManualDelivery('${s.id}')" title="Approve" class="p-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition-colors shadow-sm">
+                                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                            </button>
+                                                        ` : ''}
+                                                        <button onclick="app.editManualDeliveryModal('${s.id}')" title="Edit/Comment" class="p-1 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded transition-colors shadow-sm">
+                                                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                                         </button>
-                                                    ` : ''}
-                                                    <button onclick="app.editManualDeliveryModal('${s.id}')" title="Edit/Comment" class="p-1 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded transition-colors shadow-sm">
-                                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                                                    </button>
-                                                    <button onclick="app.deleteManualDelivery('${s.id}')" title="Delete" class="p-1 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded transition-colors shadow-sm">
-                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    `}).join('')}
+                                                        <button onclick="app.deleteManualDelivery('${s.id}')" title="Delete" class="p-1 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded transition-colors shadow-sm">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
                                     ${manualSales.length === 0 ? '<tr><td colspan="9" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
                                 </tbody>
                             </table>
@@ -3771,9 +3818,9 @@
                 app.refreshIcons();
 
                 // Restore date inputs
-                if (startDate) document.getElementById('manual-start-date').value = startDate;
-                if (endDate) document.getElementById('manual-end-date').value = endDate;
-            },
+                if (app.manualStartDate) document.getElementById('manual-start-date').value = app.manualStartDate;
+                if (app.manualEndDate) document.getElementById('manual-end-date').value = app.manualEndDate;
+            }
 
             filterManualDeliveriesByDate: () => {
                 const start = document.getElementById('manual-start-date').value;
