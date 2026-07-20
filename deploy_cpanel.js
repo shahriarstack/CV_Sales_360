@@ -202,6 +202,8 @@ async function run() {
             { name: '.htaccess', path: path.join(__dirname, '.htaccess') },
             { name: 'inspect_emi.php', path: path.join(__dirname, 'inspect_emi.php') },
             { name: 'index.html', path: path.join(__dirname, 'index.html') },
+            { name: 'app.js', path: path.join(__dirname, 'app.js') },
+            { name: 'style.css', path: path.join(__dirname, 'style.css') },
             { name: 'api.php', path: path.join(__dirname, 'api.php') },
             { name: 'cpanel_setup.sql', path: path.join(__dirname, 'cpanel_setup.sql') }
         ];

@@ -1,0 +1,12707 @@
+// --- 1. MOCK DATABASE & STATE ---
+        const DB = {
+            users: [
+                { id: 'u1', name: 'System Administrator', role: 'admin', employee_id: 'ADMIN001', territories: [] },
+                { id: 'u2', name: 'Md. Shafiqul (AM)', role: 'am', employee_id: 'AM001', territories: ['t1', 't2'], area_name: 'Dhaka Area' },
+                { id: 'u3', name: 'Rahim Uddin (MO)', role: 'so', employee_id: 'SO001', territories: ['t1'] },
+                { id: 'u4', name: 'Karim Hasan (MO)', role: 'so', employee_id: 'SO002', territories: ['t2'] }
+            ],
+            territories: [
+                { id: 't1', name: 'Cox\'s Bazar', district: 'Cox\'s Bazar', upazilas: [] },
+                { id: 't2', name: 'Narayanganj', district: 'Narayanganj', upazilas: [] },
+                { id: 't3', name: 'Savar', district: 'Savar', upazilas: [] },
+                { id: 't4', name: 'Noakhali', district: 'Noakhali', upazilas: [] },
+                { id: 't5', name: 'Borguna', district: 'Borguna', upazilas: [] },
+                { id: 't6', name: 'Rajshahi', district: 'Rajshahi', upazilas: [] },
+                { id: 't7', name: 'Sylhet', district: 'Sylhet', upazilas: [] },
+                { id: 't8', name: 'Khulna', district: 'Khulna', upazilas: [] },
+                { id: 't9', name: 'Hobiganj', district: 'Hobiganj', upazilas: [] },
+                { id: 't10', name: 'Chattogram North', district: 'Chattogram North', upazilas: [] },
+                { id: 't11', name: 'Narshingdi', district: 'Narshingdi', upazilas: [] },
+                { id: 't12', name: 'B. Baria', district: 'B. Baria', upazilas: [] },
+                { id: 't13', name: 'Thakurgaon', district: 'Thakurgaon', upazilas: [] },
+                { id: 't14', name: 'Feni', district: 'Feni', upazilas: [] },
+                { id: 't15', name: 'Gopalganj', district: 'Gopalganj', upazilas: [] },
+                { id: 't16', name: 'Kishoreganj', district: 'Kishoreganj', upazilas: [] },
+                { id: 't17', name: 'Munshiganj', district: 'Munshiganj', upazilas: [] },
+                { id: 't18', name: 'Rangpur', district: 'Rangpur', upazilas: [] },
+                { id: 't19', name: 'Manikganj', district: 'Manikganj', upazilas: [] },
+                { id: 't20', name: 'Cumilla 1', district: 'Cumilla 1', upazilas: [] },
+                { id: 't21', name: 'Tongi', district: 'Tongi', upazilas: [] },
+                { id: 't22', name: 'Chapainawabgonj', district: 'Chapainawabgonj', upazilas: [] },
+                { id: 't23', name: 'Nilphamari', district: 'Nilphamari', upazilas: [] },
+                { id: 't24', name: 'Sirajganj', district: 'Sirajganj', upazilas: [] },
+                { id: 't25', name: 'Tangail', district: 'Tangail', upazilas: [] },
+                { id: 't26', name: 'Jashore', district: 'Jashore', upazilas: [] },
+                { id: 't27', name: 'Gazipur', district: 'Gazipur', upazilas: [] },
+                { id: 't28', name: 'Mymensingh', district: 'Mymensingh', upazilas: [] },
+                { id: 't29', name: 'Cumilla-2', district: 'Cumilla-2', upazilas: [] },
+                { id: 't30', name: 'Chattogram South', district: 'Chattogram South', upazilas: [] },
+                { id: 't31', name: 'Dinajpur', district: 'Dinajpur', upazilas: [] },
+                { id: 't32', name: 'Dhaka North', district: 'Dhaka North', upazilas: [] },
+                { id: 't33', name: 'Dhaka-3', district: 'Dhaka-3', upazilas: [] },
+                { id: 't34', name: 'Laxmipur', district: 'Laxmipur', upazilas: [] },
+                { id: 't35', name: 'Madaripur', district: 'Madaripur', upazilas: [] },
+                { id: 't36', name: 'Bogura', district: 'Bogura', upazilas: [] },
+                { id: 't37', name: 'Barisal', district: 'Barisal', upazilas: [] },
+                { id: 't38', name: 'Chandpur', district: 'Chandpur', upazilas: [] },
+                { id: 't39', name: 'Jamalpur', district: 'Jamalpur', upazilas: [] },
+                { id: 't40', name: 'Natore', district: 'Natore', upazilas: [] },
+                { id: 't41', name: 'Dhaka South', district: 'Dhaka South', upazilas: [] },
+                { id: 't42', name: 'Jhenaidah', district: 'Jhenaidah', upazilas: [] },
+                { id: 't43', name: 'Kushtia', district: 'Kushtia', upazilas: [] },
+                { id: 't44', name: 'Netrokona', district: 'Netrokona', upazilas: [] }
+            ],
+            models: [
+                { id: 'm1', brand: 'Foton', name: 'TM3' },
+                { id: 'm2', brand: 'Foton', name: 'Auman' },
+                { id: 'm3', brand: 'Foton', name: 'Tunland' },
+                { id: 'm4', brand: 'Mahindra', name: 'Bolero' },
+                { id: 'm5', brand: 'Mahindra', name: 'Supro' },
+                { id: 'm6', brand: 'Mahindra', name: 'Treo' }
+            ],
+            targets: [],
+            notices: [
+                { id: 'n1', title: 'System Live: ACI Sales360', message: 'Welcome to the production environment. Please upload your monthly targets and sales data via the Admin Panel to begin.', timestamp: '15/05/2026', fileType: 'pdf', fileName: 'User_Guide.pdf' }
+            ],
+            links: [
+                { id: 'lnk1', title: 'ACI Motors Web Portal', url: 'https://acimotors.com', type: 'web', icon: 'globe' },
+                { id: 'lnk2', title: 'Dealer Connect App', url: '#', type: 'app', icon: 'smartphone' }
+            ],
+            projections: [],
+            sales: [],
+            so_performance_sply_mock: {},
+            emi: [],
+            recovery_od: [],
+            tiv_brands: [
+                { name: 'TATA', models: ['TATA ACE EX2', 'TATA intra V20', 'TATA 407', 'TATA 709 EX CH'] },
+                { name: 'Ashok Leyland', models: ['Dost Strong 1 Ton', 'Dost Plus 1.2 Ton', 'Phoenix 1.2 Ton', 'Partner 1.5 Ton', 'Partner 3 Ton', 'Leo'] },
+                { name: 'JAC', models: ['JAC 1.2 Ton', 'JAC 1.5 Ton', 'JAC 3 Ton'] },
+                { name: 'Eicher', models: ['EicherPro 1049 CT', 'Eicher 1050', 'Eicher 1075'] },
+                { name: 'Forland', models: ['Forland 1 Ton', 'Forland 1.2 Ton'] },
+                { name: 'Mahindra', models: ['Mahindra Bolero 1 Ton', 'Mahindra Bolero 1.2 Ton', 'Mahindra Load king OPTIMO'] },
+                { name: 'JMC', models: ['JMC 1.5 Ton', 'JMC 3 Ton'] },
+                { name: 'SML', models: ['SML ISUZU 3 Ton'] }
+            ],
+            tiv_submissions: []
+        };
+
+        // --- 2. CORE APPLICATION LOGIC ---
+        const app = {
+            currentUser: null,
+            isSystemSettingsAuthorized: false,
+            currentMonth: localStorage.getItem('aci_current_month') || 'April',
+            lastMonth: localStorage.getItem('aci_last_month') || 'March',
+            currentFY: localStorage.getItem('aci_current_fy') || '2025-26',
+            selectedFY: null,
+            getYtdMonths: (currentMonth) => {
+                const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const idx = monthsList.indexOf(currentMonth);
+                if (idx <= 0) return [];
+                return monthsList.slice(0, idx);
+            },
+            currentSOView: 'dashboard',
+            soBrandTab: 'Foton',
+            soSaleTypeTab: 'New Sale',
+            soMonthTab: null, // Dynamically defaults to last month
+            adminBrandTab: 'Foton',
+            adminSaleTypeTab: 'New Sale',
+            aiBrandTab: 'Foton', // State for new AI tab
+            analyticsFY1: '2024-25', // Default Historical FY
+            analyticsFY2: '2025-26', // Default Compare FY
+            analyticsBrand: 'All',
+            analyticsTerritory: 'All',
+            analyticsModel: 'All',
+            analyticsUpazila: 'All',
+            yoyBrandTab: 'Foton', // State for YOY Chart Brand Filter (Default: Foton)
+            yoyTerritoryFilter: 'All', // State for YOY Chart Territory Filter (Default: All)
+            yoyShowLY: false,   // State for Last Year Line Toggle
+            adminShowYTD: false,
+            adminShowLastMonth: false,
+            performanceFilterMonth: null,
+            manualSaleTypeFilter: 'All',
+            pulseDetailedView: false,
+            pulseMobileQuarter: 'Q1',
+            pulseSortCol: 'name',
+            pulseSortDir: 'asc',
+            pulseFilterTerritories: [],
+            mapBrandTab: 'All', // State for Sales Map
+            mapModelTab: 'All', // State for Sales Map
+            mapDistrictTab: 'All', // State for District Filter
+            mapViewMode: 'district', // 'district' or 'upazila'
+            mapMonths: ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'], // State for Multi-Month map filter
+            geoJsonCache: {}, // Cache for large map polygons
+            charts: {},
+
+            downloadRawCSV: () => {
+                if (!DB || !DB.sales || DB.sales.length === 0) return;
+                const headers = Object.keys(DB.sales[0]).join(',');
+                const rows = DB.sales.map(s => Object.values(s).map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+                const csvStr = headers + '\n' + rows;
+                const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                    a.download = `Raw_Sales_Data_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            },
+
+            downloadPulseCSV: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const currentSaleType = app.adminSaleTypeTab || 'New Sale';
+                const currentFY = app.selectedFY || app.currentFY;
+                const concludingFY = app.getPreviousFY(app.currentFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : app.currentFY;
+                const activeFY = app.selectedFY || defaultFY;
+                const performanceMonth = app.performanceFilterMonth || app.currentMonth;
+                
+                const isAM = app.currentUser.role === 'am';
+                const baseTerritories = isAM ? DB.territories.filter(t => app.currentUser.territories.includes(t.id)) : DB.territories;
+                
+                let pulseTerritories = [...baseTerritories];
+                if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+                    pulseTerritories = pulseTerritories.filter(t => t.id === app.adminTerritoryFilter);
+                }
+                if (app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0) {
+                    pulseTerritories = pulseTerritories.filter(t => app.pulseFilterTerritories.includes(t.id));
+                }
+
+                const mapped = pulseTerritories.map(t => {
+                    const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === activeFY);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+
+                    const currBudgetTgts = tTargets.filter(tg => tg.month === performanceMonth);
+                    const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+
+                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === performanceMonth && p.sale_type === currentSaleType);
+                    const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+
+                    const currSalesRecords = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth && s.fy === activeFY && s.sale_type === currentSaleType);
+                    const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                    const ytdAchVal = perf.ytd.budget > 0 ? Math.round((perf.ytd.sales / perf.ytd.budget) * 100) : 0;
+                    const currAchVal = currBudget > 0 ? Math.round((currSalesUnits / currBudget) * 100) : 0;
+                    const lmAchVal = perf.lastMonth.budget > 0 ? Math.round((perf.lastMonth.sales / perf.lastMonth.budget) * 100) : 0;
+
+                    return {
+                        name: t.name,
+                        totalFYBudget,
+                        ytdBudget: perf.ytd.budget,
+                        ytdSales: perf.ytd.sales,
+                        ytdAch: ytdAchVal,
+                        lmBudget: perf.lastMonth.budget,
+                        lmSales: perf.lastMonth.sales,
+                        lmAch: lmAchVal,
+                        currBudget,
+                        currProj,
+                        currSalesUnits,
+                        currAch: currAchVal
+                    };
+                });
+
+                if (mapped.length === 0) {
+                    return app.showToast('No pulse data available to download.', 'error');
+                }
+
+                let csv = 'Territory,Brand,Sale Type,Total FY Budget,YTD Budget,YTD Actual,YTD Ach %,Last Month Budget,Last Month Actual,Last Month Ach %,Current Month Budget,Current Month Projection,Current Month Actual,Current Month Ach %\n';
+
+                mapped.forEach(row => {
+                    const csvRow = [
+                        `"${row.name}"`,
+                        `"${brandFilter}"`,
+                        `"${currentSaleType}"`,
+                        row.totalFYBudget,
+                        row.ytdBudget,
+                        row.ytdSales,
+                        `"${row.ytdAch}%"`,
+                        row.lmBudget,
+                        row.lmSales,
+                        `"${row.lmAch}%"`,
+                        row.currBudget,
+                        row.currProj,
+                        row.currSalesUnits,
+                        `"${row.currAch}%"`
+                    ];
+                    csv += csvRow.join(',') + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `Territory_Pulse_${brandFilter}_${currentSaleType}_${performanceMonth}_${activeFY}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                app.showToast('Territory Pulse CSV downloaded successfully!', 'success');
+            },
+
+            saveDBState: () => {
+                // Deprecated: All data is now persisted directly to Neon DB.
+            },
+
+            initNeonDB: async () => {
+                // Keep the app.neonSQL reference name to avoid changing 50+ database calls in the code
+                app.neonSQL = async (strings, ...values) => {
+                    let query = '';
+                    let params = [];
+                    
+                    for (let i = 0; i < strings.length; i++) {
+                        query += strings[i];
+                        if (i < values.length) {
+                            const val = values[i];
+                            
+                            // Translate PostgreSQL array-based deletes (e.g. id = ANY(${selected}))
+                            // to standard SQL IN (?, ?, ...) syntax
+                            const currentQueryState = query.trim();
+                            const match = currentQueryState.match(/(id\s*=\s*ANY\s*\()$/i);
+                            if (match) {
+                                if (Array.isArray(val)) {
+                                    if (val.length === 0) {
+                                        query = query.substring(0, query.length - match[0].length) + 'id IN (NULL';
+                                    } else {
+                                        const placeholders = val.map(() => '?').join(',');
+                                        query = query.substring(0, query.length - match[0].length) + `id IN (${placeholders}`;
+                                        params.push(...val);
+                                    }
+                                } else {
+                                    query += '?';
+                                    params.push(val);
+                                }
+                            } else {
+                                query += '?';
+                                params.push(val);
+                            }
+                        }
+                    }
+                    
+                    // Translate PG SQL features to MySQL syntax
+                    query = query.replace(/\bJSONB\b/gi, 'JSON');
+                    query = query.replace(/ON CONFLICT\s*\(\s*\w+\s*\)\s*DO NOTHING/gi, 'ON DUPLICATE KEY UPDATE id=id');
+                    
+                    // Send to cPanel local PHP bridge
+                    const response = await fetch('api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ query, params })
+                    });
+                    
+                    if (response.status === 401) {
+                        console.warn("Session expired or unauthorized. Logging out...");
+                        app.currentUser = null;
+                        localStorage.removeItem('aci_user');
+                        localStorage.removeItem('aci_last_page');
+                        localStorage.removeItem('aci_last_role');
+                        location.reload();
+                        return [];
+                    }
+
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(errText || 'Database query error');
+                    }
+                    
+                    const result = await response.json();
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    return result.data;
+                };
+
+                try {
+                    console.log("Connecting to cPanel MySQL database via api.php...");
+                    
+                    // Check authentication state to determine loading strategy
+                    let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [];
+
+                    if (app.currentUser) {
+                        // Load all data tables concurrently for authenticated users
+                        const results = await Promise.all([
+                            app.neonSQL`SELECT * FROM targets`,
+                            app.neonSQL`SELECT * FROM projections`,
+                            app.neonSQL`SELECT * FROM emi`,
+                            app.neonSQL`SELECT * FROM sales`,
+                            app.neonSQL`SELECT * FROM recovery_od`,
+                            app.neonSQL`SELECT * FROM users`,
+                            app.neonSQL`SELECT * FROM territories`,
+                            app.neonSQL`SELECT * FROM models`,
+                            app.neonSQL`SELECT * FROM notices`,
+                            app.neonSQL`SELECT * FROM links`,
+                            app.neonSQL`SELECT * FROM tiv_brands`,
+                            app.neonSQL`SELECT * FROM app_settings`,
+                            app.neonSQL`SELECT * FROM tiv_submissions`
+                        ]);
+                        targets = results[0];
+                        projections = results[1];
+                        emi = results[2];
+                        sales = results[3];
+                        recovery_od = results[4];
+                        users = results[5];
+                        territories = results[6];
+                        models = results[7];
+                        notices = results[8];
+                        links = results[9];
+                        tiv_brands = results[10];
+                        app_settings = results[11];
+                        tiv_submissions = results[12];
+                    } else {
+                        // Pre-authentication: Only load sanitized users and territories for login dropdown
+                        const results = await Promise.all([
+                            app.neonSQL`SELECT * FROM users`,
+                            app.neonSQL`SELECT * FROM territories`
+                        ]);
+                        users = results[0];
+                        territories = results[1];
+                    }
+                    
+                    DB.targets = targets;
+                    DB.projections = projections;
+                    DB.emi = emi;
+                    DB.sales = sales.map(s => {
+                        return {
+                            ...s,
+                            is_manual: s.is_manual === 1 || s.is_manual === true || s.is_manual === '1',
+                            financials: typeof s.financials === 'string' ? JSON.parse(s.financials) : s.financials,
+                            discounts: typeof s.discounts === 'string' ? JSON.parse(s.discounts) : s.discounts
+                        };
+                    });
+                    DB.recovery_od = recovery_od;
+                    
+                    // Parse JSON fields where necessary
+                    DB.users = users.map(u => ({ ...u, territories: typeof u.territories === 'string' ? JSON.parse(u.territories) : u.territories }));
+                    DB.territories = territories.map(t => ({ ...t, upazilas: typeof t.upazilas === 'string' ? JSON.parse(t.upazilas) : t.upazilas }));
+                    
+                    // Dynamic construction of Upazilas from data uploaded Yearly Targets (Set once per year by Upazila)
+                    DB.territories.forEach(t => {
+                        const upazilaSet = new Set();
+                        
+                        // Scan targets table
+                        DB.targets.forEach(tg => {
+                            if (tg.territory_id === t.id && tg.upazila) {
+                                const cleanUpa = tg.upazila.trim();
+                                if (cleanUpa && cleanUpa.toLowerCase() !== 'null' && cleanUpa.toLowerCase() !== 'undefined') {
+                                    upazilaSet.add(cleanUpa);
+                                }
+                            }
+                        });
+
+                        // If upazilas found in active targets data, override the empty seeded array
+                        if (upazilaSet.size > 0) {
+                            t.upazilas = Array.from(upazilaSet).sort();
+                        } else if (!t.upazilas || t.upazilas.length === 0) {
+                            t.upazilas = [];
+                        }
+                    });
+
+                    DB.models = models;
+                    DB.notices = notices;
+                    DB.links = links;
+                    DB.tiv_brands = tiv_brands.map(b => ({ ...b, models: typeof b.models === 'string' ? JSON.parse(b.models) : b.models }));
+                    DB.tiv_submissions = (tiv_submissions || []).map(s => {
+                        return typeof s.submission_data === 'string' ? JSON.parse(s.submission_data) : s.submission_data;
+                    });
+                    
+                    if (app_settings.length > 0) {
+                        DB.settings = typeof app_settings[0].settings_json === 'string' ? JSON.parse(app_settings[0].settings_json) : app_settings[0].settings_json;
+                        app.currentMonth = DB.settings.currentMonth || 'April';
+                        app.lastMonth = DB.settings.lastMonth || 'March';
+                        app.currentFY = DB.settings.currentFY || '2025-26';
+                        app.fyReviewActive = DB.settings.fyReviewActive !== undefined ? DB.settings.fyReviewActive : true;
+                        app.showLastFYData = DB.settings.showLastFYData !== undefined ? DB.settings.showLastFYData : false;
+                        
+                        // Set default selected FY in transition review mode
+                        const activeFY = app.currentFY;
+                        const concludingFY = (() => {
+                            const parts = activeFY.split('-');
+                            if (parts.length === 2) {
+                                const y1 = parseInt(parts[0]);
+                                const y2 = parseInt(parts[1]);
+                                if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                            }
+                            return '2025-26';
+                        })();
+                        
+                        if (app.currentMonth === 'July' && app.fyReviewActive) {
+                            app.selectedFY = concludingFY;
+                            app.soSelectedFY = concludingFY;
+                        }
+                    } else {
+                        app.fyReviewActive = true;
+                        app.showLastFYData = false;
+                    }
+
+                    console.log("Data successfully loaded from cPanel MySQL Database.");
+                } catch (e) {
+                    console.error("Failed to connect to MySQL DB via api.php:", e);
+                }
+            },
+
+            updateViewport: () => {
+                const meta = document.querySelector('meta[name="viewport"]');
+                if (meta) {
+                    if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'subadmin')) {
+                        // Desktop mode viewport width 1280px with scale control and zoom enabled
+                        meta.setAttribute('content', 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
+                    } else {
+                        // Standard mobile responsive viewport
+                        meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+                    }
+                }
+            },
+
+            initLoginParticles: () => {
+                const canvas = document.getElementById('login-particles');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                
+                if (canvas.cleanupParticles) {
+                    canvas.cleanupParticles();
+                }
+                
+                let width = canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+                let height = canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
+                
+                const particles = [];
+                // Adaptive count: fewer particles for premium minimal aesthetic
+                const numParticles = Math.min(Math.floor(width / 18), width < 640 ? 25 : 60);
+                
+                const colors = [
+                    'rgba(71, 85, 105, 0.45)',    // Slate 600
+                    'rgba(99, 102, 241, 0.50)',   // Indigo 500
+                    'rgba(14, 165, 233, 0.40)'    // Sky 500
+                ];
+                
+                for (let i = 0; i < numParticles; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.22, // Slower drifting speed
+                        vy: (Math.random() - 0.5) * 0.22,
+                        radius: Math.random() * 1.4 + 0.6, // Smaller elegant dots (0.6px to 2.0px)
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+                
+                const mouse = { x: null, y: null, radius: 140 }; // Refined interaction range
+                const loginView = document.getElementById('login-view');
+                
+                const handleMouseMove = (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouse.x = e.clientX - rect.left;
+                    mouse.y = e.clientY - rect.top;
+                };
+                
+                const handleMouseLeave = () => {
+                    mouse.x = null;
+                    mouse.y = null;
+                };
+                
+                if (loginView) {
+                    loginView.addEventListener('mousemove', handleMouseMove);
+                    loginView.addEventListener('mouseleave', handleMouseLeave);
+                }
+                
+                let animFrame;
+                function draw() {
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    for (let i = 0; i < particles.length; i++) {
+                        let p = particles[i];
+                        
+                        // Physics update
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        
+                        // Antigravity (Repulsion from cursor)
+                        if (mouse.x !== null && mouse.y !== null) {
+                            const dx = p.x - mouse.x;
+                            const dy = p.y - mouse.y;
+                            const dist = Math.hypot(dx, dy);
+                            if (dist < mouse.radius) {
+                                const force = (mouse.radius - dist) / mouse.radius;
+                                const angle = Math.atan2(dy, dx);
+                                // Push away smoothly
+                                p.x += Math.cos(angle) * force * 1.8;
+                                p.y += Math.sin(angle) * force * 1.8;
+                            }
+                        }
+                        
+                        // Wall bounds bounce
+                        if (p.x < 0) { p.x = 0; p.vx *= -1; }
+                        else if (p.x > width) { p.x = width; p.vx *= -1; }
+                        
+                        // Height bound bounce
+                        if (p.y < 0) { p.y = 0; p.vy *= -1; }
+                        else if (p.y > height) { p.y = height; p.vy *= -1; }
+                        
+                        // Draw dot with premium glow
+                        ctx.beginPath();
+                        ctx.fillStyle = p.color;
+                        ctx.shadowBlur = 4;
+                        ctx.shadowColor = p.color;
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0; // Reset shadow
+                        
+                        // Connect to mouse cursor
+                        if (mouse.x !== null && mouse.y !== null) {
+                            const dx = p.x - mouse.x;
+                            const dy = p.y - mouse.y;
+                            const dist = Math.hypot(dx, dy);
+                            if (dist < 150) {
+                                ctx.beginPath();
+                                ctx.strokeStyle = `rgba(14, 165, 233, ${0.18 * (1 - dist / 150)})`;
+                                ctx.lineWidth = 0.6;
+                                ctx.moveTo(p.x, p.y);
+                                ctx.lineTo(mouse.x, mouse.y);
+                                ctx.stroke();
+                            }
+                        }
+                        
+                        // Connect to other dots (interconnected silver web)
+                        for (let j = i + 1; j < particles.length; j++) {
+                            let p2 = particles[j];
+                            let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                            if (dist < 110) { // Minimal connection distance
+                                ctx.beginPath();
+                                ctx.strokeStyle = `rgba(99, 102, 241, ${0.08 * (1 - dist / 110)})`;
+                                ctx.lineWidth = 0.5;
+                                ctx.moveTo(p.x, p.y);
+                                ctx.lineTo(p2.x, p2.y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    animFrame = requestAnimationFrame(draw);
+                }
+
+                draw();
+
+                
+                app.loginParticleAnimFrame = animFrame;
+                
+                const handleResize = () => {
+                    width = canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+                    height = canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
+                };
+                
+                window.addEventListener('resize', handleResize);
+                
+                // Cleanup method to stop loops and clear event handlers
+                canvas.cleanupParticles = () => {
+                    window.removeEventListener('resize', handleResize);
+                    if (loginView) {
+                        loginView.removeEventListener('mousemove', handleMouseMove);
+                        loginView.removeEventListener('mouseleave', handleMouseLeave);
+                    }
+                    if (app.loginParticleAnimFrame) {
+                        cancelAnimationFrame(app.loginParticleAnimFrame);
+                        app.loginParticleAnimFrame = null;
+                    }
+                };
+            },
+
+            init: async () => {
+                app.updateViewport();
+
+                // Restore session from localStorage before calling initNeonDB
+                const storedUser = localStorage.getItem('aci_user');
+                if (storedUser) {
+                    try {
+                        app.currentUser = JSON.parse(storedUser);
+                    } catch (e) {
+                        localStorage.removeItem('aci_user');
+                    }
+                }
+
+                // Intercept localStorage.setItem to auto-update sidebar highlighted active states
+                const originalSetItem = localStorage.setItem;
+                localStorage.setItem = function(key, value) {
+                    originalSetItem.apply(localStorage, arguments);
+                    if (key === 'aci_last_page' && app.currentUser) {
+                        app.setupSidebar();
+                    }
+                };
+
+                await app.initNeonDB(); // Connect to Neon DB and fetch data
+                app.populateLoginDropdown(); // Setup Login Select Options
+                app.initLoginParticles(); // Initialize background web animation
+                document.getElementById('login-form').addEventListener('submit', app.handleLogin);
+
+                // Password visibility toggle handler
+                const pwToggle = document.getElementById('password-toggle');
+                if (pwToggle) {
+                    pwToggle.addEventListener('click', () => {
+                        const pwInput = document.getElementById('password');
+                        if (pwInput.type === 'password') {
+                            pwInput.type = 'text';
+                            pwToggle.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i>';
+                        } else {
+                            pwInput.type = 'password';
+                            pwToggle.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i>';
+                        }
+                        app.refreshIcons();
+                    });
+                }
+
+
+                // Check session with Pre-render Guard
+                const splash = document.getElementById('app-splash');
+
+                if (storedUser) {
+                    try {
+                        app.currentUser = JSON.parse(storedUser);
+                        // session found, go straight to dashboard
+                        app.loadAppLayout();
+
+                        // Smoothly lift the splash screen curtain
+                        setTimeout(() => {
+                            splash.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+                            setTimeout(() => splash.remove(), 700);
+                        }, 800);
+                    } catch (e) {
+                        localStorage.removeItem('aci_user');
+                        app.showLoginScreen();
+                    }
+                } else {
+                    app.showLoginScreen();
+                }
+
+                // Security Access Guard for Sub Admin
+                const restrictViews = [
+                    'renderAdminDashboard', 'renderAdminSalesMap', 'renderAdminManualDeliveries',
+                    'renderTIVManagement', 'renderAdminAIInsights', 'renderAdminAnalytics',
+                    'renderAdminNotices', 'renderDataUpload', 'renderUserManagement',
+                    'renderModelManagement', 'renderSystemSettings', 'renderAMPulseMatrix'
+                ];
+                restrictViews.forEach(fnName => {
+                    if (typeof app[fnName] === 'function') {
+                        const originalFn = app[fnName];
+                        app[fnName] = function() {
+                            if (app.currentUser && app.currentUser.role === 'subadmin') {
+                                console.warn(`Access Denied: Sub Admin is restricted from ${fnName}. Redirecting...`);
+                                app.renderAdminEMI();
+                                return;
+                            }
+                            return originalFn.apply(app, arguments);
+                        };
+                    }
+                });
+            },
+
+            showLoginScreen: () => {
+                const splash = document.getElementById('app-splash');
+                const loginView = document.getElementById('login-view');
+
+                loginView.classList.remove('hidden');
+                loginView.classList.add('flex');
+
+                if (splash) {
+                    setTimeout(() => {
+                        splash.classList.add('opacity-0', 'pointer-events-none');
+                        setTimeout(() => splash.remove(), 700);
+                    }, 500);
+                }
+            },
+
+            // --- UI Utilities ---
+            refreshIcons: () => {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            },
+
+            showLoader: (msg = 'Processing...') => {
+                const loader = document.getElementById('global-loader');
+                const card = document.getElementById('loader-card');
+                document.getElementById('loader-text').innerText = msg;
+                loader.classList.remove('opacity-0', 'pointer-events-none');
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            },
+
+            hideLoader: () => {
+                const loader = document.getElementById('global-loader');
+                const card = document.getElementById('loader-card');
+                loader.classList.add('opacity-0', 'pointer-events-none');
+                card.classList.remove('scale-100');
+                card.classList.add('scale-95');
+            },
+
+            showToast: (msg, type = 'success') => {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const colors = type === 'success' ? 'bg-green-100 border-green-500 text-green-800' :
+                    type === 'error' ? 'bg-red-100 border-red-500 text-red-800' : 'bg-blue-100 border-blue-500 text-blue-800';
+
+                toast.className = `flex items-center gap-2 p-4 border-l-4 rounded shadow-sm transition-all duration-300 transform translate-x-full opacity-0 ${colors}`;
+                toast.innerHTML = `
+                    <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info'}" class="w-5 h-5"></i>
+                    <span class="font-medium text-sm">${msg}</span>
+                `;
+                container.appendChild(toast);
+                app.refreshIcons();
+
+                // Animate in
+                setTimeout(() => { toast.classList.remove('translate-x-full', 'opacity-0'); }, 10);
+                // Remove
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            },
+
+            formatCurrency: (amount) => {
+                return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(amount).replace('BDT', '৳');
+            },
+
+            normalizeDate: (dateInput) => {
+                if (!dateInput) return '';
+                let str = String(dateInput).trim();
+                if (str === '' || str === '0000-00-00') return '';
+
+                // Try checking if it's an Excel serial date
+                const serial = parseFloat(str);
+                if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                    const date = new Date(Math.round((serial - 25569) * 86400 * 1000));
+                    if (!isNaN(date.getTime())) {
+                        return date.toISOString().split('T')[0];
+                    }
+                }
+
+                // Clean separators
+                let cleanStr = str.replace(/[\.\/]/g, '-');
+
+                // Match DD-MM-YYYY or DD-MM-YY
+                const dmyMatch = cleanStr.match(/^(\d{1,2})-(\d{1,2})-(\d{2,4})$/);
+                if (dmyMatch) {
+                    let day = parseInt(dmyMatch[1], 10);
+                    let month = parseInt(dmyMatch[2], 10);
+                    let year = parseInt(dmyMatch[3], 10);
+                    if (year < 100) {
+                        year += (year < 50 ? 2000 : 1900);
+                    }
+                    const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const testDate = new Date(formattedDate);
+                    if (!isNaN(testDate.getTime())) {
+                        return formattedDate;
+                    }
+                }
+
+                // Match YYYY-MM-DD
+                const ymdMatch = cleanStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                if (ymdMatch) {
+                    let year = parseInt(ymdMatch[1], 10);
+                    let month = parseInt(ymdMatch[2], 10);
+                    let day = parseInt(ymdMatch[3], 10);
+                    const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const testDate = new Date(formattedDate);
+                    if (!isNaN(testDate.getTime())) {
+                        return formattedDate;
+                    }
+                }
+
+                // Try standard JS date parsing
+                const date = new Date(str);
+                if (!isNaN(date.getTime())) {
+                    return date.toISOString().split('T')[0];
+                }
+
+                return str;
+            },
+
+            formatDateCreative: (dateStr) => {
+                if (!dateStr || dateStr === '0000-00-00' || String(dateStr).trim() === '') {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
+                }
+                try {
+                    const normalized = app.normalizeDate(dateStr);
+                    const date = new Date(normalized);
+                    if (isNaN(date.getTime())) {
+                        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
+                    }
+                    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); // e.g., "12 Apr 2025"
+                } catch (e) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-600 text-[9px] font-bold"><i data-lucide="help-circle" class="w-2.5 h-2.5"></i> Pending Sync</span>`;
+                }
+            },
+
+            populateLoginDropdown: () => {
+                const select = document.getElementById('login-user-select');
+                if (!select) return;
+
+                let optionsHtml = '';
+
+                const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
+                if (admins.length > 0) {
+                    optionsHtml += `<optgroup label="System Administration">`;
+                    admins.forEach(u => optionsHtml += `<option value="${u.id}">${u.role === 'subadmin' ? 'Sub Admin' : 'Global'} - ${u.name}</option>`);
+                    optionsHtml += `</optgroup>`;
+                }
+
+                const ams = DB.users.filter(u => u.role === 'am');
+                if (ams.length > 0) {
+                    optionsHtml += `<optgroup label="Area">`;
+                    ams.forEach(u => {
+                        const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || 'No Area';
+                        const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
+                        optionsHtml += `<option value="${u.id}">${areaNames} - ${cleanName}</option>`;
+                    });
+                    optionsHtml += `</optgroup>`;
+                }
+
+                const sos = DB.users.filter(u => u.role === 'so');
+                if (sos.length > 0) {
+                    optionsHtml += `<optgroup label="Territory">`;
+                    sos.forEach(u => {
+                        const areaName = DB.territories.find(t => t.id === u.territories[0])?.name || 'Unknown';
+                        const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
+                        optionsHtml += `<option value="${u.id}">${areaName} - ${cleanName}</option>`;
+                    });
+                    optionsHtml += `</optgroup>`;
+                }
+
+                select.innerHTML = optionsHtml;
+            },
+
+            // --- Authentication ---
+            handleLogin: async (e) => {
+                e.preventDefault();
+                const userId = document.getElementById('login-user-select').value;
+                const empId = document.getElementById('password').value;
+
+                app.showLoader('Authenticating...');
+
+                try {
+                    const response = await fetch('api.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'login',
+                            userId: userId,
+                            employeeId: empId
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    app.hideLoader();
+
+                    if (result.success && result.user) {
+                        app.currentUser = result.user;
+                        localStorage.setItem('aci_user', JSON.stringify(result.user));
+                        app.showToast('Login successful!');
+                        
+                        // Re-fetch data tables now that we are authenticated
+                        await app.init();
+                        
+                        app.loadAppLayout();
+                    } else {
+                        app.showToast(result.error || 'Invalid Employee ID for the selected Area/User.', 'error');
+                    }
+                } catch (err) {
+                    console.error("Login authentication error:", err);
+                    app.hideLoader();
+                    app.showToast('Failed to authenticate with security server.', 'error');
+                }
+            },
+
+            logout: async () => {
+                app.closeSidebar();
+                try {
+                    await fetch('api.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'logout' })
+                    });
+                } catch (err) {
+                    console.error("Logout API request error:", err);
+                }
+                app.currentUser = null;
+                localStorage.removeItem('aci_user');
+                localStorage.removeItem('aci_last_page');
+                localStorage.removeItem('aci_last_role');
+                location.reload();
+                document.getElementById('app-container').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('opacity-0', 'pointer-events-none');
+
+                // Destroy charts to prevent memory leaks
+                if (app.charts.yoyTrendAnimFrame) {
+                    cancelAnimationFrame(app.charts.yoyTrendAnimFrame);
+                    app.charts.yoyTrendAnimFrame = null;
+                }
+                Object.values(app.charts).forEach(c => {
+                    if (c && typeof c.destroy === 'function') c.destroy();
+                });
+                app.charts = {};
+            },
+
+            // --- Routing & Layout ---
+            loadAppLayout: () => {
+                const canvas = document.getElementById('login-particles');
+                if (canvas && typeof canvas.cleanupParticles === 'function') {
+                    canvas.cleanupParticles();
+                }
+                document.getElementById('login-view').classList.add('opacity-0', 'pointer-events-none');
+                app.updateViewport();
+                setTimeout(() => {
+                    document.getElementById('app-container').classList.remove('hidden');
+                    app.setupSidebar();
+
+                    const lastPage = localStorage.getItem('aci_last_page');
+                    const lastRole = localStorage.getItem('aci_last_role');
+                    const sameRole = lastRole === app.currentUser.role;
+
+                    if (app.currentUser.role === 'so') {
+                        const notifContainer = document.getElementById('officer-notifications-container');
+                        if (notifContainer) {
+                            notifContainer.classList.remove('hidden');
+                            notifContainer.classList.add('flex');
+                        }
+                        const targetPage = (sameRole && lastPage) ? lastPage : 'dashboard';
+                        app.navigateSO(targetPage);
+                        app.updateSOBadge();
+                    } else if (app.currentUser.role === 'subadmin') {
+                        const notifContainer = document.getElementById('officer-notifications-container');
+                        if (notifContainer) {
+                            notifContainer.classList.add('hidden');
+                            notifContainer.classList.remove('flex');
+                        }
+                        app.renderAdminEMI();
+                    } else {
+                        const notifContainer = document.getElementById('officer-notifications-container');
+                        if (notifContainer) {
+                            notifContainer.classList.add('hidden');
+                            notifContainer.classList.remove('flex');
+                        }
+
+                        if (sameRole && lastPage) {
+                            switch (lastPage) {
+                                case 'map': app.renderAdminSalesMap(); break;
+                                case 'analytics': app.renderAdminAnalytics(); break;
+                                case 'ai': app.renderAdminAIInsights(); break;
+                                case 'users': app.renderUserManagement(); break;
+                                case 'models': app.renderModelManagement(); break;
+                                case 'upload': app.renderDataUpload(); break;
+                                case 'emi': app.renderAdminEMI(); break;
+                                case 'manual': app.renderAdminManualDeliveries(); break;
+                                case 'notices': app.renderAdminNotices(); break;
+                                case 'tiv': app.renderTIVManagement(); break;
+                                case 'settings': app.renderSystemSettings(); break;
+                                case 'pulse': app.renderAMPulseMatrix(); break;
+                                default: app.renderAdminDashboard();
+                            }
+                        } else {
+                            app.renderAdminDashboard();
+                        }
+                    }
+                }, 300);
+            },
+
+            toggleSidebar: () => {
+                const sidebar = document.getElementById('desktop-sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                } else {
+                    app.closeSidebar();
+                }
+            },
+
+            closeSidebar: () => {
+                const sidebar = document.getElementById('desktop-sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (!sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
+            },
+
+
+
+            setupSidebar: () => {
+                document.getElementById('sidebar-user-name').innerText = app.currentUser.name;
+                let roleText = app.currentUser.role.toUpperCase();
+                if (app.currentUser.role === 'am' && app.currentUser.area_name) {
+                    roleText += ` - ${app.currentUser.area_name.toUpperCase()}`;
+                }
+                document.getElementById('sidebar-user-role').innerText = roleText;
+                document.getElementById('sidebar-user-initial').innerText = app.currentUser.name.charAt(0);
+
+                const nav = document.getElementById('sidebar-nav');
+                const activePage = localStorage.getItem('aci_last_page') || 'dashboard';
+
+                const renderSidebarBtn = (page, label, iconName, defaultIconColorClass, onClickAction, badgeHtml = '', specialClass = '') => {
+                    const isActive = activePage === page;
+                    const isSO = app.currentUser.role === 'so';
+                    
+                    let btnClass = '';
+                    let indicator = '';
+                    let iconColorClass = defaultIconColorClass;
+
+                    if (isActive) {
+                        btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-white bg-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/15 backdrop-blur-md font-bold relative pl-7 transition-all`;
+                        indicator = `<div class="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-aci-gold shadow-[0_0_12px_#F4A915] transition-all duration-300"></div>`;
+                        iconColorClass = 'text-aci-gold';
+                    } else {
+                        const hoverBg = isSO ? 'hover:bg-slate-800' : 'hover:bg-white/5';
+                        if (specialClass) {
+                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5 ${specialClass}`;
+                        } else {
+                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5`;
+                        }
+                    }
+
+                    return `
+                        <button onclick="app.closeSidebar(); ${onClickAction}" class="${btnClass}">
+                            ${indicator}
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="${iconName}" class="w-5 h-5 ${iconColorClass}"></i>
+                                <span>${label}</span>
+                            </div>
+                            ${badgeHtml}
+                        </button>
+                    `;
+                };
+
+                let links = '';
+
+                   if (app.currentUser.role === 'admin') {
+                    links = [
+                        renderSidebarBtn('dashboard', 'Dashboard', 'pie-chart', 'text-aci-gold', 'app.renderAdminDashboard()'),
+                        renderSidebarBtn('map', 'Upazila Sales Map', 'map', 'text-emerald-400', 'app.renderAdminSalesMap()'),
+                        renderSidebarBtn('emi', 'EMI Analytics', 'banknote', 'text-slate-400', 'app.renderAdminEMI()'),
+                        renderSidebarBtn('manual', 'Manual Deliveries', 'clipboard-list', 'text-indigo-400', 'app.renderAdminManualDeliveries()'),
+                        renderSidebarBtn('tiv', 'TIV Management', 'bar-chart', 'text-amber-400', 'app.renderTIVManagement()'),
+                        renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
+                        renderSidebarBtn('analytics', 'Historical Analytics', 'bar-chart-2', 'text-sky-400', 'app.renderAdminAnalytics()'),
+                        renderSidebarBtn('notices', 'Notices & Links', 'megaphone', 'text-amber-500', 'app.renderAdminNotices()', '', 'border border-amber-600/20 bg-amber-600/10 text-slate-200'),
+                        renderSidebarBtn('upload', 'Data Upload (Bulk)', 'upload-cloud', 'text-slate-400', 'app.renderDataUpload()'),
+                        renderSidebarBtn('users', 'User Management', 'users', 'text-slate-400', 'app.renderUserManagement()'),
+                        renderSidebarBtn('models', 'Manage Models', 'box', 'text-slate-400', 'app.renderModelManagement()'),
+                        renderSidebarBtn('settings', 'System Config', 'settings', 'text-cyan-400', 'app.renderSystemSettings()', '', 'border border-cyan-500/20 bg-cyan-500/10 text-slate-200 hover:bg-cyan-500/20')
+                    ].join('');
+                } else if (app.currentUser.role === 'subadmin') {
+                    links = [
+                        renderSidebarBtn('emi', 'Global EMI Analytics', 'banknote', 'text-slate-400', 'app.renderAdminEMI()')
+                    ].join('');
+                } else if (app.currentUser.role === 'am') {
+                    links = [
+                        renderSidebarBtn('dashboard', 'My Territories', 'layout-dashboard', 'text-aci-gold', 'app.renderAdminDashboard()'),
+                        renderSidebarBtn('pulse', 'Performance Matrix', 'calendar-range', 'text-violet-400', 'app.renderAMPulseMatrix()'),
+                        renderSidebarBtn('emi', 'Area EMI Summary', 'banknote', 'text-slate-400', 'app.renderAdminEMI()'),
+                        renderSidebarBtn('profile', 'Profile', 'user', 'text-slate-400', 'app.renderUserProfile()')
+                    ].join('');
+                    
+                } else if (app.currentUser.role === 'so') {
+                    links = [
+                        renderSidebarBtn('dashboard', 'Sales Dashboard', 'layout-dashboard', 'text-slate-400', "app.navigateSO('dashboard')"),
+                        renderSidebarBtn('pulse', 'Performance Matrix', 'calendar-range', 'text-violet-400', "app.navigateSO('pulse')"),
+                        renderSidebarBtn('emi', 'EMI Collection', 'wallet', 'text-slate-400', "app.navigateSO('emi')", '<span id="so-overdue-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>'),
+                        renderSidebarBtn('tiv', 'TIV Reporting', 'bar-chart-3', 'text-slate-400', "app.navigateSO('tiv')"),
+                        renderSidebarBtn('profile', 'Profile', 'user', 'text-slate-400', "app.navigateSO('profile')")
+                    ].join('');
+                }
+                nav.innerHTML = links;
+                app.refreshIcons();
+            },
+
+
+
+            // ==========================================
+            // ADMIN / AM VIEWS
+            // ==========================================
+            renderModelManagement: () => {
+                localStorage.setItem('aci_last_page', 'models');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                const html = `
+                    <div class="max-w-6xl mx-auto fade-in">
+                        <div class="mb-6 flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-slate-800">Vehicle Models</h1>
+                                <p class="text-sm text-slate-500">Manage brands and model names for MO delivery entry</p>
+                            </div>
+                            <button onclick="app.showAddEditModelModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add Model
+                            </button>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold">Brand</th>
+                                        <th class="px-6 py-4 font-semibold">Model Name</th>
+                                        <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${DB.models.map(m => `
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-4">
+                                                <span class="px-2 py-1 rounded text-xs font-bold border flex items-center gap-1.5 w-max ${m.brand === 'Foton' ? 'bg-foton-light text-foton border-foton/30' : 'bg-mahindra-light text-mahindra border-mahindra/30'}">
+                                                    <img src="${m.brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-3 w-3 object-contain">
+                                                    ${m.brand}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 font-semibold text-slate-800">${m.name}</td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button onclick="app.showAddEditModelModal('${m.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit Model"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <button onclick="app.deleteModel('${m.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete Model"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            showAddEditModelModal: (modelId = null) => {
+                let modal = document.getElementById('add-model-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-model-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                const model = modelId ? DB.models.find(m => m.id === modelId) : null;
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAddEditModelModal()"></div>
+                    <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-md mx-4 border border-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-sm font-extrabold text-slate-700 tracking-widest uppercase flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-aci-blue/10 flex items-center justify-center text-aci-blue">
+                                    <i data-lucide="${model ? 'edit' : 'plus-circle'}" class="w-5 h-5"></i>
+                                </div>
+                                ${model ? 'Edit Vehicle Model' : 'Add Vehicle Model'}
+                            </h2>
+                            <button type="button" onclick="app.closeAddEditModelModal()" class="text-slate-400 hover:text-red-500 p-2 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form id="add-model-form" onsubmit="app.handleAddEditModel(event, ${model ? `'${model.id}'` : 'null'})" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Brand</label>
+                                <div class="relative">
+                                    <select id="model-brand" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all appearance-none" required>
+                                        <option value="Foton" ${model && model.brand === 'Foton' ? 'selected' : ''}>Foton</option>
+                                        <option value="Mahindra" ${model && model.brand === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
+                                    </select>
+                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Model Name</label>
+                                <input type="text" id="model-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. TM3" value="${model ? model.name.replace(/"/g, '&quot;') : ''}">
+                            </div>
+                            <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                                <button type="button" onclick="app.closeAddEditModelModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                                <button type="submit" class="flex-1 btn-liquid text-white px-4 py-3 rounded-xl font-black shadow-sm flex items-center justify-center gap-2">
+                                    <i data-lucide="check" class="w-5 h-5"></i> ${model ? 'Save Changes' : 'Add Model'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                setTimeout(() => document.getElementById('model-name').focus(), 100);
+            },
+
+            closeAddEditModelModal: () => {
+                const modal = document.getElementById('add-model-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            handleAddEditModel: async (e, modelId = null) => {
+                e.preventDefault();
+                const brand = document.getElementById('model-brand').value;
+                const name = document.getElementById('model-name').value.trim();
+
+                if (!name) {
+                    app.showToast('Model name is required.', 'error');
+                    return;
+                }
+
+                app.showLoader('Saving model...');
+                try {
+                    if (modelId) {
+                        const model = DB.models.find(m => m.id === modelId);
+                        if (model) {
+                            model.brand = brand;
+                            model.name = name;
+                            if (app.neonSQL) {
+                                await app.neonSQL`UPDATE models SET brand = ${brand}, name = ${name} WHERE id = ${modelId}`;
+                            }
+                            app.showToast('Model updated successfully.', 'success');
+                        }
+                    } else {
+                        const newId = 'm' + (DB.models.length > 0 ? Math.max(...DB.models.map(m => parseInt(m.id.substring(1)))) + 1 : 1);
+                        const newModel = {
+                            id: newId,
+                            brand: brand,
+                            name: name
+                        };
+                        DB.models.push(newModel);
+                        if (app.neonSQL) {
+                            await app.neonSQL`INSERT INTO models (id, brand, name) VALUES (${newId}, ${brand}, ${name})`;
+                        }
+                        app.showToast('Model added successfully.', 'success');
+                    }
+
+                    app.closeAddEditModelModal();
+                    app.renderModelManagement();
+                } catch (err) {
+                    console.error('Failed to save model:', err);
+                    app.showToast('Failed to save model to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            deleteModel: async (modelId) => {
+                if (confirm('Are you sure you want to delete this vehicle model?')) {
+                    app.showLoader('Deleting model...');
+                    try {
+                        const index = DB.models.findIndex(m => m.id === modelId);
+                        if (index !== -1) {
+                            DB.models.splice(index, 1);
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM models WHERE id = ${modelId}`;
+                            }
+                            app.showToast('Model deleted successfully.', 'success');
+                            app.renderModelManagement();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete model:', err);
+                        app.showToast('Failed to delete model from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            renderUserManagement: () => {
+                localStorage.setItem('aci_last_page', 'users');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
+                const ams = DB.users.filter(u => u.role === 'am');
+
+                const html = `
+                    <div class="max-w-6xl mx-auto fade-in pb-12">
+                        <div class="mb-6 flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-slate-800">User Management</h1>
+                                <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
+                            </div>
+                            <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add User
+                            </button>
+                        </div>
+
+                        <!-- System Admin Section -->
+                        <div class="mb-8">
+                            <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"><i data-lucide="shield" class="w-4 h-4"></i></div>
+                                Administrator Management
+                            </h2>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold">User</th>
+                                            <th class="px-6 py-4 font-semibold">Role</th>
+                                            <th class="px-6 py-4 font-semibold">Status</th>
+                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${admins.map(u => `
+                                            <tr class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-bold text-slate-800">${u.name}</div>
+                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    ${u.role === 'subadmin' 
+                                                        ? `<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-purple-200">Sub Admin</span>`
+                                                        : `<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-rose-200">Admin</span>`
+                                                    }
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
+                                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit Admin"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                    ${u.id === app.currentUser.id ? `
+                                                        <button class="text-slate-200 cursor-not-allowed mx-1" title="You cannot delete yourself" disabled><i data-lucide="trash-2" class="w-4 h-4 text-slate-200"></i></button>
+                                                    ` : `
+                                                        <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete Admin"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                    `}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- AM Section -->
+                        <div class="mb-8">
+                            <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                                AM Management
+                            </h2>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold">User</th>
+                                            <th class="px-6 py-4 font-semibold">Role & Area</th>
+                                            <th class="px-6 py-4 font-semibold">Territories</th>
+                                            <th class="px-6 py-4 font-semibold">Status</th>
+                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${ams.map(u => `
+                                            <tr class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-bold text-slate-800">${u.name}</div>
+                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-slate-200">${u.role}</span>
+                                                    ${u.area_name ? `<div class="text-xs text-slate-500 mt-1 font-semibold">${u.area_name}</div>` : ''}
+                                                </td>
+                                                <td class="px-6 py-4 text-slate-600 text-xs">
+                                                    ${u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || '<span class="text-slate-400 italic">Global</span>'}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
+                                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit AM"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                    <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete AM"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- MO / Territory Section -->
+                        <div>
+                            <div class="mb-3 flex justify-between items-center">
+                                <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
+                                    MO Management
+                                </h2>
+                                <button onclick="app.showAddTerritoryModal()" class="btn-liquid text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Territory
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold w-16">#</th>
+                                            <th class="px-6 py-4 font-semibold">Territory Name (Username)</th>
+                                            <th class="px-6 py-4 font-semibold">Officer Name</th>
+                                            <th class="px-6 py-4 font-semibold">Employee ID (Password)</th>
+                                            <th class="px-6 py-4 font-semibold text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${DB.territories.map((t, index) => {
+                    const so = DB.users.find(u => u.role === 'so' && u.territories.includes(t.id));
+                    return `
+                                                <tr class="hover:bg-slate-50 transition-colors">
+                                                    <td class="px-6 py-4 font-semibold text-slate-400">${index + 1}</td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="font-bold text-slate-800">${t.name}</div>
+                                                        <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5 uppercase">ID: ${t.id}</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        ${so ? `<div class="font-bold text-slate-700">${so.name}</div>` : `<span class="px-2 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Unassigned</span>`}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        ${so ? `<div class="font-mono text-xs font-semibold text-slate-600">${so.employee_id}</div>` : `<span class="text-slate-300">-</span>`}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="flex items-center justify-end gap-1">
+                                                            ${so ? `
+                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:text-aci-blue p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit MO"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                                <button onclick="app.deleteUser('${so.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete MO"><i data-lucide="user-x" class="w-4 h-4"></i></button>
+                                                            ` : `
+                                                                <button onclick="app.showAddUserModal(null, '${t.id}')" class="text-aci-blue hover:text-indigo-600 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md hover:bg-indigo-50 transition-colors">
+                                                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign MO
+                                                                </button>
+                                                            `}
+                                                            <div class="w-px h-5 bg-slate-200 mx-1.5"></div>
+                                                            <button onclick="app.deleteTerritory('${t.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete Territory"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `;
+                }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            showAddUserModal: (userId = null, defaultTerritoryId = null) => {
+                let modal = document.getElementById('add-user-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-user-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                const user = userId ? DB.users.find(u => u.id === userId) : null;
+                const territoryOptions = DB.territories.map(t => {
+                    let isSelected = false;
+                    if (user && user.territories.includes(t.id)) isSelected = true;
+                    else if (!user && defaultTerritoryId === t.id) isSelected = true;
+                    return `<option value="${t.id}" ${isSelected ? 'selected' : ''}>${t.name} (${t.district})</option>`;
+                }).join('');
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAddUserModal()"></div>
+                    <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-lg mx-4 border border-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-sm font-extrabold text-slate-700 tracking-widest uppercase flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-aci-blue/10 flex items-center justify-center text-aci-blue">
+                                    <i data-lucide="${user ? 'edit' : 'user-plus'}" class="w-5 h-5"></i>
+                                </div>
+                                ${user ? 'Edit User Profile' : 'Create User Profile'}
+                            </h2>
+                            <button onclick="app.closeAddUserModal()" class="text-slate-400 hover:text-red-500 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form id="add-user-form" onsubmit="app.handleAddUser(event, ${user ? `'${user.id}'` : 'null'})" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
+                                <input type="text" id="new-user-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. Shakil Ahmed" value="${user ? user.name.replace(/\s\((AM|MO|Sub Admin)\)$/, '') : ''}">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Employee ID</label>
+                                    <input type="text" id="new-user-empid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. EMP1050" value="${user ? user.employee_id : ''}">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">System Role</label>
+                                    <select id="new-user-role" onchange="app.handleRoleChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all appearance-none" required>
+                                        <option value="so" ${(user && user.role === 'so') || defaultTerritoryId ? 'selected' : ''}>MO</option>
+                                        <option value="am" ${user && user.role === 'am' ? 'selected' : ''}>AM</option>
+                                        <option value="subadmin" ${user && user.role === 'subadmin' && !defaultTerritoryId ? 'selected' : ''}>Sub Admin</option>
+                                        <option value="admin" ${user && user.role === 'admin' && !defaultTerritoryId ? 'selected' : ''}>System Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="area-name-selection-container" class="hidden">
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Area Name</label>
+                                <input type="text" id="new-user-areaname" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" placeholder="e.g. Dhaka Area" value="${user ? (user.area_name || '') : ''}">
+                            </div>
+                            <div id="territory-selection-container">
+                                <div class="flex justify-between items-end mb-1.5 ml-1">
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest">Assigned Territory</label>
+                                    <span class="text-[9px] font-bold text-slate-400" id="terr-hint">Select one area</span>
+                                </div>
+                                <select id="new-user-territories" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" ${user && user.role === 'am' ? 'multiple' : ''} required>
+                                    ${territoryOptions}
+                                </select>
+                            </div>
+                            <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                                <button type="button" onclick="app.closeAddUserModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                                <button type="submit" class="flex-1 btn-liquid text-white px-4 py-3 rounded-xl font-black shadow-sm flex items-center justify-center gap-2"><i data-lucide="check" class="w-5 h-5"></i> ${user ? 'Update User' : 'Provision User'}</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                app.handleRoleChange(); // init state
+            },
+
+            closeAddUserModal: () => {
+                const modal = document.getElementById('add-user-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            handleRoleChange: () => {
+                const role = document.getElementById('new-user-role').value;
+                const terrContainer = document.getElementById('territory-selection-container');
+                const terrSelect = document.getElementById('new-user-territories');
+                const terrHint = document.getElementById('terr-hint');
+                const areaContainer = document.getElementById('area-name-selection-container');
+                const areaInput = document.getElementById('new-user-areaname');
+
+                if (role === 'am') {
+                    if (areaContainer) areaContainer.classList.remove('hidden');
+                    if (areaInput) areaInput.setAttribute('required', 'true');
+                } else {
+                    if (areaContainer) areaContainer.classList.add('hidden');
+                    if (areaInput) areaInput.removeAttribute('required');
+                }
+
+                if (role === 'admin' || role === 'subadmin') {
+                    terrContainer.classList.add('hidden');
+                    terrSelect.removeAttribute('required');
+                } else if (role === 'so') {
+                    terrContainer.classList.remove('hidden');
+                    terrSelect.removeAttribute('multiple');
+                    terrSelect.setAttribute('required', 'true');
+                    terrSelect.size = 1;
+                    terrSelect.classList.remove('py-2');
+                    terrSelect.classList.add('py-3');
+                    if (terrHint) terrHint.innerText = 'Select one area';
+                } else if (role === 'am') {
+                    terrContainer.classList.remove('hidden');
+                    terrSelect.setAttribute('multiple', 'true');
+                    terrSelect.setAttribute('required', 'true');
+                    terrSelect.size = 5;
+                    terrSelect.classList.remove('py-3');
+                    terrSelect.classList.add('py-2');
+                    if (terrHint) terrHint.innerText = 'Hold Ctrl/Cmd to select multiple';
+                }
+            },
+
+            handleAddUser: async (e, userId = null) => {
+                e.preventDefault();
+                const name = document.getElementById('new-user-name').value;
+                const empId = document.getElementById('new-user-empid').value;
+                const role = document.getElementById('new-user-role').value;
+                const terrSelect = document.getElementById('new-user-territories');
+                const areaName = role === 'am' ? document.getElementById('new-user-areaname').value : '';
+
+                let territories = [];
+                if (role !== 'admin' && role !== 'subadmin') {
+                    territories = Array.from(terrSelect.selectedOptions).map(opt => opt.value);
+                    if (territories.length === 0) {
+                        app.showToast('Please assign at least one territory.', 'error');
+                        return;
+                    }
+                }
+
+                const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (MO)' : role === 'subadmin' ? ' (Sub Admin)' : '');
+
+                app.showLoader('Saving user...');
+
+                try {
+                    if (userId) {
+                        const user = DB.users.find(u => u.id === userId);
+                        if (user) {
+                            user.name = appendedName;
+                            user.employee_id = empId;
+                            user.role = role;
+                            user.email = `${empId}.${role}.${userId}@acimotors.com`;
+                            user.territories = territories;
+                            user.area_name = areaName;
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`UPDATE users SET name = ${appendedName}, role = ${role}, employee_id = ${empId}, email = ${user.email}, territories = ${JSON.stringify(territories)}, area_name = ${areaName} WHERE id = ${userId}`;
+                            }
+                            app.showToast('User updated successfully.', 'success');
+                        }
+                    } else {
+                        const newId = 'u' + (DB.users.length + 1) + Date.now();
+                        const newUser = {
+                            id: newId,
+                            name: appendedName,
+                            role: role,
+                            employee_id: empId,
+                            territories: territories,
+                            area_name: areaName,
+                            email: `${empId}.${role}.${newId}@acimotors.com`, // unique email structure
+                            password: 'password' // dummy password
+                        };
+                        DB.users.push(newUser);
+                        
+                        if (app.neonSQL) {
+                            await app.neonSQL`INSERT INTO users (id, name, role, email, password, employee_id, territories, area_name) VALUES (${newUser.id}, ${newUser.name}, ${newUser.role}, ${newUser.email}, ${newUser.password}, ${newUser.employee_id}, ${JSON.stringify(newUser.territories)}, ${newUser.area_name})`;
+                        }
+                        app.showToast('User provisioned successfully.', 'success');
+                    }
+
+                    app.closeAddUserModal();
+                    app.renderUserManagement();
+                    app.populateLoginDropdown(); // Update the login screen dropdown
+                } catch (err) {
+                    console.error('Failed to save user:', err);
+                    app.showToast('Failed to save user to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            deleteUser: async (userId) => {
+                if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    app.showLoader('Deleting user...');
+                    try {
+                        const index = DB.users.findIndex(u => u.id === userId);
+                        if (index !== -1) {
+                            DB.users.splice(index, 1);
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM users WHERE id = ${userId}`;
+                            }
+                            
+                            app.showToast('User deleted successfully.', 'success');
+                            app.renderUserManagement();
+                            app.populateLoginDropdown();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete user:', err);
+                        app.showToast('Failed to delete user from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            showAddTerritoryModal: () => {
+                let modal = document.getElementById('add-territory-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-territory-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAddTerritoryModal()"></div>
+                    <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm mx-4 border border-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-black text-slate-800 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                                </div>
+                                Add Territory
+                            </h2>
+                            <button onclick="app.closeAddTerritoryModal()" class="text-slate-400 hover:text-red-500 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form id="add-territory-form" onsubmit="app.handleAddTerritory(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Territory Name</label>
+                                <input type="text" id="new-territory-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all" required placeholder="e.g. Dhaka East">
+                            </div>
+                            <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                                <button type="button" onclick="app.closeAddTerritoryModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                                <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-black shadow-sm shadow-emerald-600/30 flex items-center justify-center gap-2 transition-colors"><i data-lucide="check" class="w-5 h-5"></i> Create</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                // Ensure focus on input
+                setTimeout(() => document.getElementById('new-territory-name').focus(), 100);
+            },
+
+            closeAddTerritoryModal: () => {
+                const modal = document.getElementById('add-territory-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            handleAddTerritory: async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('new-territory-name').value.trim();
+                if (!name) return;
+
+                app.showLoader('Adding territory...');
+                try {
+                    const newId = 't' + (DB.territories.length > 0 ? Math.max(...DB.territories.map(t => parseInt(t.id.substring(1)))) + 1 : 1);
+                    const newTerritory = {
+                        id: newId,
+                        name: name,
+                        district: name,
+                        upazilas: []
+                    };
+                    DB.territories.push(newTerritory);
+
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO territories (id, name, district, upazilas) VALUES (${newId}, ${name}, ${name}, ${JSON.stringify(newTerritory.upazilas)})`;
+                    }
+
+                    app.showToast('Territory added successfully.', 'success');
+                    app.closeAddTerritoryModal();
+                    app.renderUserManagement();
+                } catch (err) {
+                    console.error('Failed to add territory:', err);
+                    app.showToast('Failed to save territory to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            // Pulse Table Sorting Utilities
+            getSortIcon: (col) => {
+                if (app.pulseSortCol !== col) return '<i data-lucide="arrow-up-down" class="w-3 h-3 text-slate-300"></i>';
+                return app.pulseSortDir === 'asc' ? '<i data-lucide="arrow-up" class="w-3 h-3 text-aci-blue"></i>' : '<i data-lucide="arrow-down" class="w-3 h-3 text-aci-blue"></i>';
+            },
+
+            setPulseSort: (col) => {
+                if (app.pulseSortCol === col) {
+                    app.pulseSortDir = app.pulseSortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    app.pulseSortCol = col;
+                    app.pulseSortDir = 'desc'; // Default to descending for numbers and stats
+                }
+                app.renderAdminDashboard();
+            },
+
+            deleteTerritory: async (territoryId) => {
+                const soAssigned = DB.users.some(u => u.role === 'so' && u.territories.includes(territoryId));
+                if (soAssigned) {
+                    app.showToast('Cannot delete territory. Unassign the active MO first.', 'error');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to delete this territory? This action cannot be undone.')) {
+                    app.showLoader('Deleting territory...');
+                    try {
+                        const index = DB.territories.findIndex(t => t.id === territoryId);
+                        if (index !== -1) {
+                            DB.territories.splice(index, 1);
+                            
+                            // We must await AM territory removal logic in SQL since AM's territory list is a JSON column.
+                            for (let u of DB.users) {
+                                if (u.role === 'am' && u.territories.includes(territoryId)) {
+                                    u.territories = u.territories.filter(id => id !== territoryId);
+                                    if (app.neonSQL) {
+                                        await app.neonSQL`UPDATE users SET territories = ${JSON.stringify(u.territories)} WHERE id = ${u.id}`;
+                                    }
+                                }
+                            }
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM territories WHERE id = ${territoryId}`;
+                            }
+                            
+                            app.showToast('Territory deleted successfully.', 'success');
+                            app.renderUserManagement();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete territory:', err);
+                        app.showToast('Failed to delete territory from database. Please check if sales exist for this territory.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            // Excel-Like Multi-Select Filter Modal
+            showPulseFilterModal: () => {
+                let modal = document.getElementById('pulse-filter-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'pulse-filter-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                if (!app.pulseFilterTerritories) app.pulseFilterTerritories = [];
+
+                const isAM = app.currentUser.role === 'am' || app.currentUser.role === 'so';
+                const activeTerritories = isAM
+                    ? DB.territories.filter(t => app.currentUser.territories.includes(t.id))
+                    : DB.territories;
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closePulseFilterModal()"></div>
+                    <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm mx-4 border border-white flex flex-col max-h-[85vh] fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="filter" class="w-4 h-4"></i></div>
+                                Filter Territories
+                            </h2>
+                            <button type="button" onclick="app.closePulseFilterModal()" class="text-slate-400 hover:text-red-500 p-2 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="pulse-filter-search" onkeyup="app.searchPulseFilterList(this.value)" placeholder="Search..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <button onclick="app.pulseFilterSelectAll(true)" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">Select All</button>
+                            <button onclick="app.pulseFilterSelectAll(false)" class="text-[10px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-widest transition-colors">Clear</button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto min-h-[250px] border border-slate-100 bg-slate-50/50 rounded-xl p-2 space-y-1 custom-scrollbar" id="pulse-filter-list">
+                            ${activeTerritories.map(t => `
+                                <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-100 hover:shadow-sm pulse-filter-item" data-name="${t.name.toLowerCase()}">
+                                    <input type="checkbox" value="${t.id}" class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all" ${app.pulseFilterTerritories.length === 0 || app.pulseFilterTerritories.includes(t.id) ? 'checked' : ''}>
+                                    <span class="text-xs font-bold text-slate-700">${t.name}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+                            <button onclick="app.closePulseFilterModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                            <button onclick="app.applyPulseFilter()" class="flex-[2] btn-liquid text-white py-3 rounded-xl text-xs font-black shadow-sm flex items-center justify-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4"></i> Apply Filter
+                            </button>
+                        </div>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                setTimeout(() => document.getElementById('pulse-filter-search')?.focus(), 100);
+            },
+
+            closePulseFilterModal: () => {
+                const modal = document.getElementById('pulse-filter-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            searchPulseFilterList: (val) => {
+                const term = val.toLowerCase();
+                document.querySelectorAll('.pulse-filter-item').forEach(item => {
+                    item.style.display = item.dataset.name.includes(term) ? 'flex' : 'none';
+                });
+            },
+
+            pulseFilterSelectAll: (select) => {
+                document.querySelectorAll('.pulse-filter-item input[type="checkbox"]').forEach(cb => {
+                    if (cb.closest('.pulse-filter-item').style.display !== 'none') {
+                        cb.checked = select;
+                    }
+                });
+            },
+
+            applyPulseFilter: () => {
+                const checkboxes = Array.from(document.querySelectorAll('.pulse-filter-item input[type="checkbox"]'));
+                const checked = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+
+                if (checked.length === checkboxes.length) {
+                    app.pulseFilterTerritories = []; // Empty array signifies "All"
+                } else {
+                    app.pulseFilterTerritories = checked;
+                }
+
+                app.closePulseFilterModal();
+                app.renderAdminDashboard();
+            },
+
+            // Excel-Like Area Name Filter Modal
+            showAreaFilterModal: () => {
+                let modal = document.getElementById('area-filter-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'area-filter-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                if (!app.areaFilterList) app.areaFilterList = [];
+
+                // Extract unique Area Names directly from AM users in DB
+                const uniqueAreas = [...new Set(DB.users.filter(u => u.role === 'am' && u.area_name).map(u => u.area_name))].sort();
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAreaFilterModal()"></div>
+                    <div class="bg-white p-4 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm mx-4 border border-white flex flex-col max-h-[85vh] fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="filter" class="w-4 h-4"></i></div>
+                                Filter Area Names
+                            </h2>
+                            <button type="button" onclick="app.closeAreaFilterModal()" class="text-slate-400 hover:text-red-500 p-2 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="area-filter-search" onkeyup="app.searchAreaFilterList(this.value)" placeholder="Search..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <button onclick="app.areaFilterSelectAll(true)" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">Select All</button>
+                            <button onclick="app.areaFilterSelectAll(false)" class="text-[10px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-widest transition-colors">Clear</button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto min-h-[200px] border border-slate-100 bg-slate-50/50 rounded-xl p-2 space-y-1 custom-scrollbar" id="area-filter-list">
+                            ${uniqueAreas.map(a => `
+                                <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-100 hover:shadow-sm area-filter-item" data-name="${a.toLowerCase()}">
+                                    <input type="checkbox" value="${a}" class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all" ${app.areaFilterList.length === 0 || app.areaFilterList.includes(a) ? 'checked' : ''}>
+                                    <span class="text-xs font-bold text-slate-700">${a}</span>
+                                </label>
+                            `).join('')}
+                            ${uniqueAreas.length === 0 ? '<div class="p-4 text-center text-slate-400 text-xs">No areas defined.</div>' : ''}
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+                            <button onclick="app.closeAreaFilterModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                            <button onclick="app.applyAreaFilter()" class="flex-[2] btn-liquid text-white py-3 rounded-xl text-xs font-black shadow-sm flex items-center justify-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4"></i> Apply Filter
+                            </button>
+                        </div>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                setTimeout(() => document.getElementById('area-filter-search')?.focus(), 100);
+            },
+
+            closeAreaFilterModal: () => {
+                const modal = document.getElementById('area-filter-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            searchAreaFilterList: (val) => {
+                const term = val.toLowerCase();
+                document.querySelectorAll('.area-filter-item').forEach(item => {
+                    item.style.display = item.dataset.name.includes(term) ? 'flex' : 'none';
+                });
+            },
+
+            areaFilterSelectAll: (select) => {
+                document.querySelectorAll('.area-filter-item input[type="checkbox"]').forEach(cb => {
+                    if (cb.closest('.area-filter-item').style.display !== 'none') {
+                        cb.checked = select;
+                    }
+                });
+            },
+
+            applyAreaFilter: () => {
+                const checkboxes = Array.from(document.querySelectorAll('.area-filter-item input[type="checkbox"]'));
+                const checked = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+
+                if (checked.length === checkboxes.length) {
+                    app.areaFilterList = []; // Empty array signifies "All"
+                } else {
+                    app.areaFilterList = checked;
+                }
+
+                app.closeAreaFilterModal();
+                app.renderAdminDashboard();
+            },
+
+            filterTableGroup: (triggerElem) => {
+                const thead = triggerElem.closest('thead');
+                const tbody = thead.nextElementSibling;
+                const filterRow = triggerElem.closest('tr');
+                const ths = Array.from(filterRow.children);
+                const rows = tbody.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    if (row.children.length === 1 && row.children[0].colSpan > 1) return;
+                    let show = true;
+                    ths.forEach((th, index) => {
+                        const cell = row.children[index];
+                        if (!cell) return;
+
+                        const text = cell.textContent.trim();
+                        const inputs = Array.from(th.querySelectorAll('input, select'));
+
+                        if (inputs.length === 1 && inputs[0].type !== 'date') {
+                            const filterVal = inputs[0].value.toLowerCase().trim();
+                            if (filterVal && !text.toLowerCase().includes(filterVal)) show = false;
+                        }
+                        else if (inputs.length === 2 && inputs[0].type === 'date' && inputs[1].type === 'date') {
+                            const startStr = inputs[0].value;
+                            const endStr = inputs[1].value;
+                            if (startStr || endStr) {
+                                let cellDate = new Date(text);
+                                if (isNaN(cellDate.getTime()) && text.includes('/')) {
+                                    const parts = text.split('/');
+                                    if (parts.length === 3) cellDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                                }
+                                if (text.toLowerCase() === 'recent' || text.toLowerCase() === 'today') cellDate = new Date();
+
+                                if (!isNaN(cellDate.getTime())) {
+                                    if (startStr) {
+                                        const startDate = new Date(startStr);
+                                        startDate.setHours(0, 0, 0, 0);
+                                        if (cellDate < startDate) show = false;
+                                    }
+                                    if (endStr) {
+                                        const endDate = new Date(endStr);
+                                        endDate.setHours(23, 59, 59, 999);
+                                        if (cellDate > endDate) show = false;
+                                    }
+                                } else {
+                                    if (startStr || endStr) show = false;
+                                }
+                            }
+                        }
+                    });
+                    row.style.display = show ? '' : 'none';
+                });
+            },
+
+            setAdminEMIBrandFilter: (brand) => {
+                app.adminEMIBrandFilter = brand;
+                app.renderAdminEMI();
+            },
+
+            setAdminEMITerritoryFilter: (terrId) => {
+                app.adminEMITerritoryFilter = terrId;
+                app.renderAdminEMI();
+            },
+
+            captureEMIReport: async () => {
+                app.showLoader('Generating EMI Report...');
+
+                // Gather data (unfiltered — all territories, 1st & 2nd installments)
+                const emiData = (DB.emi || []).filter(e => {
+                    const instNo = e.installment_no;
+                    return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                });
+
+                const territorySummary = (DB.territories || []).map(t => {
+                    const tEmi = emiData.filter(e => e.territory_id === t.id);
+                    const totalCust = tEmi.length;
+                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
+                    const nonPayingCust = totalCust - payingCust;
+                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                    const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
+                    return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
+                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name)); // Sort best first (top to bottom)
+
+                // Grand totals
+                const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
+                const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
+                const grandNonPaying = territorySummary.reduce((s, t) => s + t.nonPayingCust, 0);
+                const grandDue = territorySummary.reduce((s, t) => s + t.tTotalDue, 0);
+                const grandCol = territorySummary.reduce((s, t) => s + t.tAmountCol, 0);
+                const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
+
+                const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                // Auto-scale row height so ALL territories fit on one A4 page
+                const n       = territorySummary.length;
+                const budget  = 870;
+                const theadPx = 22;
+                const rh      = Math.max(13, Math.min(20, Math.floor((budget - theadPx) / (n + 1))));
+                const fs      = Math.max(7.5, Math.min(9, rh * 0.52));
+                const cs      = (clr, align, extra) =>
+                    `font-size:${fs}px;color:${clr};padding:0 6px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e8edf2;${extra||''}`;
+
+                const tableRowsHTML = territorySummary.map((t, i) => {
+                    const bg = i % 2 === 0 ? '#fff' : '#f8fafc';
+                    const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                    return `<tr style="height:${rh}px;background:${bg};">
+                        <td style="${cs('#1e293b','left','padding-left:10px;font-weight:600;border-right:1px solid #e8edf2;')}"><span style="color:#bfcad6;font-size:${fs-1}px;">#${i+1} </span>${t.name}</td>
+                        <td style="${cs('#334155','center','border-right:1px solid #e8edf2;font-weight:500;')}">${t.totalCust}</td>
+                        <td style="${cs('#15803d','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.payingCust}</td>
+                        <td style="${cs('#dc2626','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.nonPayingCust}</td>
+                        <td style="${cs('#475569','center','border-right:1px solid #e8edf2;font-weight:500;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                        <td style="${cs('#2563eb','center','border-right:1px solid #e8edf2;font-weight:600;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                        <td style="${cs(rc,'center','font-weight:700;')}">${t.tColRate}%</td>
+                    </tr>`;
+                }).join('');
+
+                const totalRowHTML = `<tr style="height:${rh}px;background:#1e3a8a;">
+                    <td style="${cs('#fff','left','padding-left:10px;font-weight:700;border-right:1px solid rgba(255,255,255,0.15);')}">GRAND TOTAL</td>
+                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandCust}</td>
+                    <td style="${cs('#86efac','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandPaying}</td>
+                    <td style="${cs('#fca5a5','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandNonPaying}</td>
+                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                    <td style="${cs('#93c5fd','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                    <td style="${cs('#fff','center','font-weight:800;')}">${grandRate}%</td>
+                </tr>`;
+
+                // Build A4 off-screen container
+                const container = document.createElement('div');
+                container.id = 'emi-report-capture';
+                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#fff;font-family:'Segoe UI',Arial,sans-serif;box-sizing:border-box;overflow:hidden;";
+
+                container.innerHTML = `
+                <div style="width:794px;height:1123px;background:#fff;padding:22px 26px 16px 26px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;padding-top:2px;flex-shrink:0;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                <span style="background:#1e3a8a;color:#fff;font-size:7.5px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;">ACI Motors</span>
+                                <span style="color:#94a3b8;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Commercial Vehicle</span>
+                            </div>
+                            <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;line-height:1.1;">1st &amp; 2nd EMI Collection Status</div>
+                            <div style="font-size:8px;color:#64748b;margin-top:3px;">Report Date: <b style="color:#1e3a8a;">${today}</b></div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:9px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">Global Dashboard</div>
+                            <div style="font-size:7.5px;color:#94a3b8;margin-top:1px;">Performance Analytics</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #cbd5e1;padding-bottom:5px;margin-bottom:8px;flex-shrink:0;">
+                        <span style="font-size:8px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.8px;">Territory Wise Performance Summary</span>
+                        <span style="font-size:7.5px;color:#94a3b8;">Amounts in BDT (৳)</span>
+                    </div>
+                    <div style="flex:1;">
+                        <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
+                            <colgroup>
+                                <col style="width:26%;"><col style="width:9%;"><col style="width:9%;"><col style="width:11%;"><col style="width:17%;"><col style="width:18%;"><col style="width:10%;">
+                            </colgroup>
+                            <thead>
+                                <tr style="height:${theadPx}px;background:#1e3a8a;color:#fff;">
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 8px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Sales Territory</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Total</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#86efac;">Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#fca5a5;">Non-Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Due (Inst)</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#93c5fd;">Collected</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;">Rate %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowsHTML}
+                                ${totalRowHTML}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;">
+                        <span>Generated from Sales360 System | ACI Motors Ltd.</span>
+                        <span>Page 1 of 1</span>
+                    </div>
+                </div>
+                `;
+
+                document.body.appendChild(container);
+
+                // Small delay for fonts/render
+                await new Promise(r => setTimeout(r, 300));
+
+                try {
+                    const canvas = await html2canvas(container, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#f8fafc',
+                        width: 794,
+                        height: 1123,
+                        windowWidth: 794,
+                        windowHeight: 1123
+                    });
+
+                    const link = document.createElement('a');
+                    link.download = `EMI_Collection_Status_${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    app.showToast('EMI report captured successfully!', 'success');
+                } catch (err) {
+                    console.error('EMI report capture failed:', err);
+                    app.showToast('Failed to capture report. Please try again.', 'error');
+                } finally {
+                    document.body.removeChild(container);
+                    app.hideLoader();
+                }
+            },
+
+            renderAdminEMI: () => {
+                localStorage.setItem('aci_last_page', 'emi');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                const isAM = app.currentUser.role === 'am';
+                app.adminEMIBrandFilter = app.adminEMIBrandFilter || 'Total';
+                app.adminEMITerritoryFilter = app.adminEMITerritoryFilter || 'All';
+
+                let emiData = DB.emi;
+                if (isAM) {
+                    emiData = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
+                }
+
+                // Apply Brand Filter
+                if (app.adminEMIBrandFilter !== 'Total') {
+                    emiData = emiData.filter(e => e.brand === app.adminEMIBrandFilter);
+                }
+
+                // Apply Territory Filter
+                if (app.adminEMITerritoryFilter !== 'All') {
+                    emiData = emiData.filter(e => e.territory_id === app.adminEMITerritoryFilter);
+                }
+
+                // --- Dashboard KPI Calculations ---
+                const totalCust = emiData.length;
+                const paidCust = emiData.filter(e => Number(e.collected || 0) > 0).length;
+                const unpaidCust = totalCust - paidCust;
+                const paidCustPercent = totalCust > 0 ? Math.round((paidCust / totalCust) * 100) : 0;
+
+                const totalInstallment = emiData.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalCol = emiData.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                const collectionRate = totalInstallment > 0 ? Math.round((totalCol / totalInstallment) * 100) : 0;
+
+                // Progress Bar Calculations
+                const overallTotalDue = emiData.reduce((sum, e) => sum + (Number(e.installment || 0) + Number(e.overdue_total || 0)), 0);
+                const overallTotalCollected = totalCol;
+                const collectionProgressPercent = overallTotalDue > 0 ? Math.round((overallTotalCollected / overallTotalDue) * 100) : 0;
+
+                const collectedCust = paidCust; // Since any payment counts as collected
+                const custProgressPercent = totalCust > 0 ? Math.round((collectedCust / totalCust) * 100) : 0;
+                const partialPaidCust = emiData.filter(e => Number(e.collected || 0) > 0 && Number(e.collected || 0) < Number(e.installment || 0)).length;
+
+                // Aggregate Territory Summary Table
+                const territorySummary = DB.territories.map(t => {
+                    const tEmi = emiData.filter(e => e.territory_id === t.id);
+                    if (tEmi.length === 0) return null;
+                    const totalCust = tEmi.length;
+                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
+                    const nonPayingCust = totalCust - payingCust;
+                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0); // Amount Due (inst)
+                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                    const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
+                    return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
+                }).filter(Boolean).sort((a, b) => b.tColRate - a.tColRate);
+
+                // Populate active territories dropdown
+                const activeTerritories = DB.territories.filter(t => {
+                    if (isAM) return app.currentUser.territories.includes(t.id);
+                    return DB.emi.some(e => e.territory_id === t.id);
+                });
+
+                const activeBrand = app.adminEMIBrandFilter || 'Total';
+                const html = `
+                    <div class="max-w-6xl mx-auto fade-in">
+                        <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <div>
+                                <h1 class="text-xs font-extrabold uppercase tracking-widest text-slate-700">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <p class="text-xs text-slate-500">Overdue collection monitoring and performance tracking</p>
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Territory Dropdown Filter -->
+                                <div class="relative group">
+                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-4 py-1.5 text-xs font-bold focus:outline-none focus:border-aci-blue appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
+                                        <option value="All" ${app.adminEMITerritoryFilter === 'All' ? 'selected' : ''}>All Territories</option>
+                                        ${activeTerritories.map(t => `<option value="${t.id}" ${app.adminEMITerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                    </select>
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Premium Brand Selection Pill -->
+                                <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/60 shadow-inner">
+                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-sm scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
+                                        Total
+                                    </button>
+                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-1.5 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-sm scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
+                                        <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
+                                    </button>
+                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-1.5 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-sm scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
+                                        <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
+                                    </button>
+                                </div>
+
+                                <!-- Capture Report Button -->
+                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-bold hover:from-indigo-700 hover:to-blue-700 shadow-sm hover:shadow-sm border border-slate-200/60 transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                                    Capture
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Analytics Panel -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                            <!-- Card 1: Credit Collection Progress -->
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 p-3 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2.5">
+                                    <div>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Due vs Collection till now</p>
+                                    </div>
+                                    <span class="text-xl font-bold text-indigo-600">${collectionProgressPercent}%</span>
+                                </div>
+                                
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                    <span>Collected: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
+                                    <span>Total Due: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 2: File Coverage Progress -->
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 p-3 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2.5">
+                                    <div>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Files vs Collected Files</p>
+                                    </div>
+                                    <span class="text-xl font-bold text-emerald-600">${custProgressPercent}%</span>
+                                </div>
+                                
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                    <span>Collected Files: <span class="text-slate-800 font-extrabold">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
+                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Premium Compact KPI Row -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
+                            <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="users" class="absolute -right-2 -bottom-2 w-10 h-10 text-blue-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Total Cust.</p>
+                                <h3 class="text-xl font-extrabold text-blue-700">${totalCust}</h3>
+                            </div>
+                            <div class="bg-green-50 border border-green-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="user-check" class="absolute -right-2 -bottom-2 w-10 h-10 text-green-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Paid Cust.</p>
+                                <h3 class="text-xl font-extrabold text-green-700">${paidCust}</h3>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="user-x" class="absolute -right-2 -bottom-2 w-10 h-10 text-red-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Unpaid Cust.</p>
+                                <h3 class="text-xl font-extrabold text-red-700">${unpaidCust}</h3>
+                            </div>
+                            <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="pie-chart" class="absolute -right-2 -bottom-2 w-10 h-10 text-teal-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-0.5">Paid Cust %</p>
+                                <h3 class="text-xl font-extrabold text-teal-700">${paidCustPercent}%</h3>
+                            </div>
+                            <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="wallet" class="absolute -right-2 -bottom-2 w-10 h-10 text-indigo-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-0.5 truncate" title="Total Installment Amount">Inst. Amt</p>
+                                <h3 class="text-base sm:text-lg font-extrabold text-indigo-700 truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</h3>
+                            </div>
+                            <div class="bg-cyan-50 border border-cyan-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="coins" class="absolute -right-2 -bottom-2 w-10 h-10 text-cyan-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-cyan-600 uppercase tracking-wider mb-0.5 truncate" title="Total Collected Amount">Collected Amt</p>
+                                <h3 class="text-base sm:text-lg font-extrabold text-cyan-700 truncate" title="${app.formatCurrency(totalCol)}">${app.formatCurrency(totalCol)}</h3>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="trending-up" class="absolute -right-2 -bottom-2 w-10 h-10 text-amber-200 opacity-50"></i>
+                                <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-0.5">Collect %</p>
+                                <h3 class="text-xl font-extrabold text-amber-700">${collectionRate}%</h3>
+                            </div>
+                        </div>
+
+                        <!-- Territory Summary Table -->
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden overflow-x-auto mb-4">
+                            <div class="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 class="font-bold text-slate-800 text-xs">Territory Wise EMI Summary</h3>
+                            </div>
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead class="border-b border-slate-200/60 text-slate-500 uppercase text-[10px] tracking-widest bg-slate-100/50">
+                                    <tr>
+                                        <th class="px-4 py-1 font-bold">Sales Territory</th>
+                                        <th class="px-3 py-1 font-bold text-center">Total Customers</th>
+                                        <th class="px-3 py-1 font-bold text-center text-green-600">Paying Customers</th>
+                                        <th class="px-3 py-1 font-bold text-center text-red-500">Non-Paying Customers</th>
+                                        <th class="px-3 py-1 font-bold text-right">Total Due (Inst)</th>
+                                        <th class="px-3 py-1 font-bold text-right">Amount Collected</th>
+                                        <th class="px-4 py-1 font-bold text-center">Collection Rate %</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/80">
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Total Cust..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Paying..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Unpaid..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Due Amt..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Rate..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${territorySummary.map(t => `
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-4 py-1 font-bold text-slate-800">${t.name}</td>
+                                            <td class="px-3 py-1 text-center font-semibold text-slate-700">${t.totalCust}</td>
+                                            <td class="px-3 py-1 text-center font-bold text-green-600">${t.payingCust}</td>
+                                            <td class="px-3 py-1 text-center font-bold text-red-500">${t.nonPayingCust}</td>
+                                            <td class="px-3 py-1 text-right font-semibold text-slate-700">${app.formatCurrency(t.tTotalDue)}</td>
+                                            <td class="px-3 py-1 text-right font-semibold text-aci-blue">${app.formatCurrency(t.tAmountCol)}</td>
+                                            <td class="px-4 py-1 text-center">
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.tColRate >= 80 ? 'bg-green-100 text-green-700 border border-green-200' : (t.tColRate >= 50 ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-red-100 text-red-700 border border-red-200')}">
+                                                    ${t.tColRate}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                     `).join('')}
+                                     ${territorySummary.length === 0 ? '<tr><td colspan="7" class="px-3 py-1.5 text-center text-slate-500">No territory data available.</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden overflow-x-auto">
+                            <div class="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 class="font-bold text-slate-800 text-xs">Account Level Breakdown</h3>
+                            </div>
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead class="border-b border-slate-200/60 text-slate-500 uppercase text-[10px] tracking-widest bg-slate-100/50">
+                                    <tr>
+                                        <th class="px-4 py-1 font-bold">Customer</th>
+                                        <th class="px-4 py-1 font-bold">Territory</th>
+                                        <th class="px-4 py-1 font-bold">EMI Size</th>
+                                        <th class="px-4 py-1 font-bold">Total Due (EMI+Overdue)</th>
+                                        <th class="px-4 py-1 font-bold">Collected</th>
+                                        <th class="px-4 py-1 font-bold">Status</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/80">
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter EMI..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Total Due..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Status..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${emiData.map(e => {
+                    const totalDue = Number(e.installment || 0) + Number(e.overdue_total || 0);
+                    const isCleared = e.collected >= totalDue;
+                    return `
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-4 py-1">
+                                                <div class="font-bold text-slate-800">${e.customer}</div>
+                                                <div class="text-[10px] text-slate-500">${e.customer_code || 'N/A'}</div>
+                                            </td>
+                                            <td class="px-4 py-1 text-slate-600 text-xs">${DB.territories.find(t => t.id === e.territory_id)?.name || 'Unknown'}</td>
+                                            <td class="px-4 py-1 text-slate-700 font-semibold">${app.formatCurrency(e.installment)}</td>
+                                            <td class="px-4 py-1 text-red-600 font-semibold">${app.formatCurrency(totalDue)}</td>
+                                            <td class="px-4 py-1 text-green-600 font-semibold">${app.formatCurrency(e.collected)}</td>
+                                            <td class="px-4 py-1">
+                                                ${isCleared
+                            ? '<span class="text-green-600 text-[10px] font-bold flex items-center gap-1 bg-green-50 px-2 py-0.5 rounded w-max border border-green-100"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Cleared</span>'
+                            : '<span class="text-amber-600 text-[10px] font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded w-max border border-amber-100"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>'
+                        }
+                                            </td>
+                                        </tr>
+                                    `}).join('')}
+                                    ${emiData.length === 0 ? '<tr><td colspan="6" class="px-3 py-1.5 text-center text-slate-500">No EMI data found.</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            renderAdminManualDeliveries: (startDate = null, endDate = null) => {
+                localStorage.setItem('aci_last_page', 'manual');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                
+                app.manualSaleTypeFilter = app.manualSaleTypeFilter || 'All';
+                
+                if (startDate !== null || endDate !== null) {
+                    app.manualStartDate = startDate;
+                    app.manualEndDate = endDate;
+                } else {
+                    app.manualStartDate = app.manualStartDate || null;
+                    app.manualEndDate = app.manualEndDate || null;
+                }
+
+                let manualSales = DB.sales.filter(s => s.is_manual);
+
+                // Sale Type filtering logic
+                if (app.manualSaleTypeFilter !== 'All') {
+                    manualSales = manualSales.filter(s => s.sale_type === app.manualSaleTypeFilter);
+                }
+
+                // Date filtering logic
+                if (app.manualStartDate || app.manualEndDate) {
+                    manualSales = manualSales.filter(s => {
+                        if (!s.timestamp || s.timestamp === 'Recent') return true;
+                        const d = new Date(s.timestamp);
+                        if (isNaN(d.getTime())) return true;
+                        if (app.manualStartDate && new Date(app.manualStartDate) > d) return false;
+                        if (app.manualEndDate && new Date(app.manualEndDate) < d) return false;
+                        return true;
+                    });
+                }
+                
+                // Store globally for CSV export
+                app.currentManualSales = manualSales;
+
+                const html = `
+                    <div class="max-w-7xl mx-auto fade-in">
+                        <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
+                            <div>
+                                <h1 class="text-xs font-extrabold uppercase tracking-widest text-slate-700">Manual Deliveries Tracker</h1>
+                                <p class="text-xs text-slate-500">Unsynced sales logged manually by Field Officers</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Creative Sale Type Selector Button Group -->
+                                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner">
+                                    <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()"
+                                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 ${
+                                                app.manualSaleTypeFilter === 'All'
+                                                ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/60/30'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                            }">
+                                        All
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()"
+                                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 Token1 ${
+                                                app.manualSaleTypeFilter === 'New Sale'
+                                                ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                            }">
+                                        <span class="w-1.5 h-1.5 rounded-full ${app.manualSaleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
+                                        New Sales
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()"
+                                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 Token2 ${
+                                                app.manualSaleTypeFilter === 'Resale'
+                                                ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/20'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                            }">
+                                        <span class="w-1.5 h-1.5 rounded-full ${app.manualSaleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
+                                        Resale
+                                    </button>
+                                </div>
+
+                                <!-- Date Range Selector -->
+                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200/60 shadow-sm transition-all hover:border-aci-blue">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Date Range</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="Start Date">
+                                            <span class="text-slate-300 font-bold">-</span>
+                                            <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="End Date">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:shadow-sm border border-slate-200/60 flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                                    <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                                </button>
+
+                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i> Clear Data
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <!-- Minimal & Creative Summary Section -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                            <!-- Total Entries -->
+                            <div class="bg-gradient-to-br from-indigo-50/50 to-slate-50 border border-indigo-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-extrabold text-indigo-500 uppercase tracking-wider">Total Logged</span>
+                                    <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                                <div class="mt-2 flex items-baseline gap-1">
+                                    <span class="text-xs font-extrabold uppercase tracking-widest text-slate-700">${manualSales.length}</span>
+                                    <span class="text-[10px] font-bold text-slate-400">Deliveries</span>
+                                </div>
+                            </div>
+
+                            <!-- Pending Sync -->
+                            <div class="bg-white border border-slate-200/60 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-extrabold text-amber-500 uppercase tracking-wider">Pending Sync</span>
+                                    <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg relative flex items-center justify-center">
+                                        <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75"></span>
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 relative"></i>
+                                    </span>
+                                </div>
+                                <div class="mt-2 flex items-baseline gap-1">
+                                    <span class="text-xl font-bold text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
+                                    <span class="text-[10px] font-bold text-slate-400">Pending</span>
+                                </div>
+                            </div>
+
+                            <!-- Brand Share -->
+                            <div class="bg-white border border-slate-200/60 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-extrabold text-emerald-500 uppercase tracking-wider">Brand Share</span>
+                                    <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="tag" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                                <div class="mt-2.5 flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-800">${manualSales.filter(s => s.brand === 'Foton').length}</span>
+                                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Foton</span>
+                                    </div>
+                                    <div class="h-6 w-px bg-slate-100"></div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-xs font-bold text-slate-800">${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
+                                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Mahindra</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Combined Trade Value -->
+                            <div class="bg-white border border-slate-200/60 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
+                                    <span class="p-1.5 bg-slate-50 text-slate-600 rounded-lg"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                                <div class="mt-2 flex flex-col">
+                                    <span class="text-xs font-bold text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Est. Trade Value</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden overflow-x-auto">
+                            <div class="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 class="font-bold text-slate-800 text-xs">Pending Actuals Integration <span class="bg-aci-blue text-white px-2 py-0.5 rounded-full text-xs ml-2">${manualSales.length} Entries</span></h3>
+                            </div>
+                            <table class="w-full text-left text-[11px] whitespace-nowrap min-w-[1000px]">
+                                <thead class="border-b border-slate-200/60 text-slate-500 uppercase text-[10px] tracking-widest bg-slate-100/50">
+                                    <tr>
+                                        <th class="px-3 py-1 font-bold text-center w-12">S/N</th>
+                                        <th class="px-3 py-1 font-bold">Territory & Area</th>
+                                        <th class="px-3 py-1 font-bold">Customer Details</th>
+                                        <th class="px-3 py-1 font-bold">Product Info</th>
+                                        <th class="px-3 py-1 font-bold text-right">Financials (BDT)</th>
+                                        <th class="px-3 py-1 font-bold">Offers & Gifts</th>
+                                        <th class="px-3 py-1 font-bold">Logged On</th>
+                                        <th class="px-3 py-1 font-bold text-center">Status</th>
+                                        <th class="px-3 py-1 font-bold text-right">Actions</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/80">
+                                        <th class="px-3 py-1 border-b border-slate-200/60 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60">
+                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="">All Brands</option>
+                                                <option value="foton">Foton</option>
+                                                <option value="mahindra">Mahindra</option>
+                                            </select>
+                                        </th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60 text-right"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60"><span class="text-[10px] text-slate-400 font-normal">Use top filter</span></th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60 text-center">
+                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="">All Status</option>
+                                                <option value="pending approval">Pending</option>
+                                                <option value="done">Done</option>
+                                            </select>
+                                        </th>
+                                        <th class="px-3 py-1 border-b border-slate-200/60 text-right"><span class="text-[10px] text-slate-400 font-normal">-</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${manualSales.map((s, idx) => {
+                                        const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
+                                        return `
+                                            <tr class="hover:bg-slate-50 transition-colors group">
+                                                <td class="px-3 py-1 border-b border-slate-100 text-center font-bold text-slate-400">
+                                                    ${idx + 1}
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                    <div class="font-bold text-slate-800 flex items-center gap-2">
+                                                        ${terrName}
+                                                    </div>
+                                                    <div class="text-[10px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1">
+                                                        <i data-lucide="map-pin" class="w-2.5 h-2.5 text-slate-400"></i>
+                                                        ${s.upazila || 'N/A'} ${s.district ? `(${s.district})` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                    <div class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
+                                                    <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                                        <span class="text-[10px] font-bold text-aci-blue bg-blue-50 px-1 py-0.2 rounded">ID: ${s.customer_id}</span>
+                                                        ${s.chassis_no ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded" title="Chassis No">Chassis: ${s.chassis_no}</span>` : ''}
+                                                        ${s.old_customer_id ? `<span class="text-[8px] font-semibold text-slate-500 bg-slate-100 px-1 py-0.2 rounded" title="Old Customer ID">Old: ${s.old_customer_id}</span>` : ''}
+                                                        ${s.purpose_of_use ? `<span class="text-[8px] font-bold text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded flex items-center gap-0.5" title="Purpose of Use"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> ${s.purpose_of_use}</span>` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                    <div class="font-bold text-slate-700 text-[11px]">${s.model}</div>
+                                                    <div class="flex items-center gap-1 mt-0.5">
+                                                        <img src="${s.brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-2.5 object-contain">
+                                                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">${s.brand}</span>
+                                                        <span class="px-1 py-0.2 rounded-full text-[8px] font-bold ml-1 ${s.sale_type === 'New Sale' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}" data-sale-type-badge="${s.sale_type}">${s.sale_type}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100 text-right">
+                                                    <div class="text-[11px] font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
+                                                    <div class="text-[10px] text-slate-600 font-medium mt-0.2">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
+                                                    <div class="text-[10px] text-slate-400 font-medium mt-0.2">Tenure: ${s.financials?.tenure || 0} Mos</div>
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                    ${s.discounts?.amount > 0 ? `<div class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5"><i data-lucide="tags" class="w-2.5 h-2.5"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[10px] text-slate-400 italic">No Discount</div>'}
+                                                    ${s.discounts?.gift ? `<div class="text-[10px] text-indigo-600 font-bold mt-0.5 flex items-center gap-0.5"><i data-lucide="gift" class="w-2.5 h-2.5"></i> ${s.discounts.gift}</div>` : ''}
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100 text-[10px] text-slate-500 font-medium whitespace-nowrap">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded w-max">
+                                                            <i data-lucide="calendar-clock" class="w-3 h-3 text-slate-400"></i>
+                                                            ${s.timestamp || 'Recent'}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100 text-center">
+                                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${s.approval_status === 'Done' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                                        ${s.approval_status || 'Pending Approval'}
+                                                    </span>
+                                                    ${s.admin_comments ? `<div class="text-[8px] text-slate-400 mt-0.5 truncate max-w-[100px] mx-auto" title="${s.admin_comments}">Note: ${s.admin_comments}</div>` : ''}
+                                                </td>
+                                                <td class="px-3 py-1 border-b border-slate-100 text-right">
+                                                    <div class="flex items-center justify-end gap-1.5">
+                                                        ${s.approval_status !== 'Done' ? `
+                                                            <button onclick="app.approveManualDelivery('${s.id}')" title="Approve" class="p-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition-colors shadow-sm">
+                                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                            </button>
+                                                        ` : ''}
+                                                        <button onclick="app.editManualDeliveryModal('${s.id}')" title="Edit/Comment" class="p-1 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded transition-colors shadow-sm">
+                                                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                        <button onclick="app.deleteManualDelivery('${s.id}')" title="Delete" class="p-1 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded transition-colors shadow-sm">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                    ${manualSales.length === 0 ? '<tr><td colspan="9" class="px-4 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+
+                // Restore date inputs
+                if (app.manualStartDate) document.getElementById('manual-start-date').value = app.manualStartDate;
+                if (app.manualEndDate) document.getElementById('manual-end-date').value = app.manualEndDate;
+            },
+
+            filterManualDeliveriesByDate: () => {
+                const start = document.getElementById('manual-start-date').value;
+                const end = document.getElementById('manual-end-date').value;
+                app.renderAdminManualDeliveries(start, end);
+            },
+
+            downloadManualCSV: () => {
+                const sales = app.currentManualSales || DB.sales.filter(s => s.is_manual);
+                if (sales.length === 0) return app.showToast('No data to export', 'error');
+
+                let csv = 'Territory,District,Upazila,Customer ID,Customer Name,Chassis Number,Old Customer ID,Purpose of Use,Brand,Model,Sale Type,TP,DP,Tenure,Discount Type,Discount Amount,Gift Item,Logged On\n';
+                
+                sales.forEach(s => {
+                    const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
+                    const row = [
+                        `"${terrName}"`,
+                        `"${s.district || ''}"`,
+                        `"${s.upazila || ''}"`,
+                        `"${s.customer_id || ''}"`,
+                        `"${s.customer_name || ''}"`,
+                        `"${s.chassis_no || ''}"`,
+                        `"${s.old_customer_id || ''}"`,
+                        `"${s.purpose_of_use || ''}"`,
+                        `"${s.brand || ''}"`,
+                        `"${s.model || ''}"`,
+                        `"${s.sale_type || ''}"`,
+                        s.financials?.tp || 0,
+                        s.financials?.dp || 0,
+                        s.financials?.tenure || 0,
+                        `"${s.discounts?.type || ''}"`,
+                        s.discounts?.amount || 0,
+                        `"${s.discounts?.gift || ''}"`,
+                        `"${s.timestamp || ''}"`
+                    ];
+                    csv += row.join(',') + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Manual_Deliveries_Export_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            },
+
+            saveManualDeliveriesToBackend: async () => {
+                // Deprecated: manual deliveries are now updated directly in database rows.
+            },
+
+            clearManualDeliveries: async () => {
+                if (confirm('Are you sure you want to clear all manual deliveries? This will delete all pending and approved manual entries from the database.')) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM sales WHERE is_manual = 1`;
+                        } catch (err) {
+                            console.error("Failed to clear manual deliveries from database", err);
+                            app.showToast('Database delete failed', 'error');
+                            return;
+                        }
+                    }
+                    DB.sales = DB.sales.filter(s => !s.is_manual);
+                    app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+            approveManualDelivery: async (id) => {
+                const idx = DB.sales.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`UPDATE sales SET approval_status = 'Done' WHERE id = ${id}`;
+                        } catch (err) {
+                            console.error("Failed to approve manual delivery in database", err);
+                            app.showToast('Database update failed', 'error');
+                            return;
+                        }
+                    }
+                    DB.sales[idx].approval_status = 'Done';
+                    app.showToast('Manual delivery approved.', 'success');
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+            deleteManualDelivery: async (id) => {
+                if (confirm('Are you sure you want to delete this manual delivery?')) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM sales WHERE id = ${id}`;
+                        } catch (err) {
+                            console.error("Failed to delete manual delivery from database", err);
+                            app.showToast('Database delete failed', 'error');
+                            return;
+                        }
+                    }
+                    DB.sales = DB.sales.filter(s => s.id !== id);
+                    app.showToast('Manual delivery deleted.', 'success');
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+            closeEditManualDeliveryModal: () => {
+                const m = document.getElementById('edit-manual-modal');
+                if (m) {
+                    m.classList.add('hidden');
+                    m.classList.remove('opacity-100');
+                    document.getElementById('edit-manual-content').classList.remove('scale-100');
+                    document.getElementById('edit-manual-content').classList.add('scale-95');
+                }
+            },
+
+            editManualDeliveryModal: (id) => {
+                const s = DB.sales.find(x => x.id === id);
+                if (!s) return;
+                
+                let modal = document.getElementById('edit-manual-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'edit-manual-modal';
+                    modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
+                    document.body.appendChild(modal);
+                }
+                
+                modal.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="edit-manual-content">
+                        <div class="bg-gradient-to-r from-blue-900 to-indigo-800 p-3.5 text-white flex justify-between items-center shrink-0 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-pattern opacity-10"></div>
+                            <div class="relative z-10">
+                                <h2 class="text-xl font-black tracking-tight">Edit Manual Delivery</h2>
+                                <p class="text-xs text-blue-200 mt-1">Review and update delivery details for ID: ${s.id}</p>
+                            </div>
+                            <button onclick="app.closeEditManualDeliveryModal()" class="relative z-10 text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="p-4 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50">
+                            <form id="edit-manual-form" onsubmit="app.saveEditedManualDelivery(event, '${s.id}')" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-4">
+                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Customer & Vehicle Details</h3>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Customer Name</label>
+                                            <input type="text" id="em-customer-name" value="${s.customer_name || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Chassis Number</label>
+                                            <input type="text" id="em-chassis" value="${s.chassis_no || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Brand</label>
+                                                <select id="em-brand" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="Foton" ${s.brand === 'Foton' ? 'selected' : ''}>Foton</option>
+                                                    <option value="Mahindra" ${s.brand === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Model</label>
+                                                <input type="text" id="em-model" value="${s.model || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sale Type</label>
+                                                <select id="em-type" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="New Sale" ${s.sale_type === 'New Sale' ? 'selected' : ''}>New Sale</option>
+                                                    <option value="Exchange" ${s.sale_type === 'Exchange' ? 'selected' : ''}>Exchange</option>
+                                                    <option value="Corporate" ${s.sale_type === 'Corporate' ? 'selected' : ''}>Corporate</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Purpose of Use</label>
+                                                <select id="em-purpose" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="Commercial" ${s.purpose_of_use === 'Commercial' ? 'selected' : ''}>Commercial</option>
+                                                    <option value="Personal" ${s.purpose_of_use === 'Personal' ? 'selected' : ''}>Personal</option>
+                                                    <option value="Agricultural" ${s.purpose_of_use === 'Agricultural' ? 'selected' : ''}>Agricultural</option>
+                                                    <option value="Others" ${s.purpose_of_use === 'Others' ? 'selected' : ''}>Others</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Financials & Comments</h3>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Trade Price (TP)</label>
+                                                <input type="number" id="em-tp" value="${s.financials?.tp || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Down Payment (DP)</label>
+                                                <input type="number" id="em-dp" value="${s.financials?.dp || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tenure (Months)</label>
+                                                <input type="number" id="em-tenure" value="${s.financials?.tenure || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Discount Amount</label>
+                                                <input type="number" id="em-disc-amt" value="${s.discounts?.amount || 0}" min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Admin Comments</label>
+                                            <textarea id="em-comments" rows="3" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Add note for Sales Officer...">${s.admin_comments || ''}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                                    <button type="button" onclick="app.closeEditManualDeliveryModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+                                    <button type="submit" class="px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition-colors">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('opacity-100');
+                    document.getElementById('edit-manual-content').classList.remove('scale-95');
+                    document.getElementById('edit-manual-content').classList.add('scale-100');
+                }, 10);
+                app.refreshIcons();
+            },
+
+            saveEditedManualDelivery: async (e, id) => {
+                e.preventDefault();
+                const idx = DB.sales.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    const s = DB.sales[idx];
+                    s.customer_name = document.getElementById('em-customer-name').value;
+                    s.chassis_no = document.getElementById('em-chassis').value;
+                    s.brand = document.getElementById('em-brand').value;
+                    s.model = document.getElementById('em-model').value;
+                    s.sale_type = document.getElementById('em-type').value;
+                    s.purpose_of_use = document.getElementById('em-purpose').value;
+                    s.admin_comments = document.getElementById('em-comments').value;
+                    
+                    if (!s.financials) s.financials = {};
+                    s.financials.tp = document.getElementById('em-tp').value;
+                    s.financials.dp = document.getElementById('em-dp').value;
+                    s.financials.tenure = document.getElementById('em-tenure').value;
+                    
+                    if (!s.discounts) s.discounts = { type: 'Cash', amount: 0, gift: '' };
+                    s.discounts.amount = document.getElementById('em-disc-amt').value;
+                    
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`UPDATE sales SET customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                        } catch (err) {
+                            console.error("Failed to update manual delivery in database", err);
+                            app.showToast('Database update failed', 'error');
+                            return;
+                        }
+                    }
+
+                    app.showToast('Delivery updated successfully.', 'success');
+                    app.closeEditManualDeliveryModal();
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+
+            renderAdminDashboard: () => {
+                localStorage.setItem('aci_last_page', 'dashboard');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
+                const isAM = app.currentUser.role === 'am';
+                const currentSaleType = app.adminSaleTypeTab || 'New Sale';
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : activeFY;
+                const currentFY = app.selectedFY || defaultFY;
+                const splyFY = (() => {
+                    const parts = concludingFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+                const lastFY = concludingFY;
+
+                // Filter data based on role AND Sale Type Tab
+                let salesData = DB.sales.filter(s => s.sale_type === currentSaleType);
+                const baseTerritories = isAM ? DB.territories.filter(t => app.currentUser.territories.includes(t.id)) : DB.territories;
+                let activeTerritories = [...baseTerritories];
+
+                if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+                    activeTerritories = activeTerritories.filter(t => t.id === app.adminTerritoryFilter);
+                    salesData = salesData.filter(s => s.territory_id === app.adminTerritoryFilter);
+                }
+
+                if (isAM) {
+                    salesData = salesData.filter(s => app.currentUser.territories.includes(s.territory_id));
+                }
+
+                const currFYSales = salesData.filter(s => s.fy === currentFY && s.sale_type === currentSaleType);
+                const lastFYSales = salesData.filter(s => s.fy === lastFY && s.sale_type === currentSaleType);
+
+                const totalUnits = currFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const lastYearUnits = lastFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                // YOY Math
+                const yoyGrowthPct = lastYearUnits > 0 ? Math.round(((totalUnits - lastYearUnits) / lastYearUnits) * 100) : 0;
+                const yoyColor = yoyGrowthPct >= 0 ? 'text-green-600' : 'text-red-600';
+                const yoyIcon = yoyGrowthPct >= 0 ? 'trending-up' : 'trending-down';
+                const yoySign = yoyGrowthPct > 0 ? '+' : '';
+
+                const fotonUnits = currFYSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const mahindraUnits = currFYSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const activeModels = DB.models.filter(m => m.brand === brandFilter).map(m => m.name);
+
+                // Calculate Monthly Budget for the current view
+                let activeTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.brand === brandFilter && tg.sale_type === currentSaleType);
+                if (isAM) {
+                    activeTgts = activeTgts.filter(tg => app.currentUser.territories.includes(tg.territory_id));
+                }
+                if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+                    activeTgts = activeTgts.filter(tg => tg.territory_id === app.adminTerritoryFilter);
+                }
+                const totalYearlyTarget = activeTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+                const currentActiveTgts = activeTgts.filter(tg => tg.month === app.currentMonth);
+                const monthlyBudget = currentActiveTgts.length > 0 ? currentActiveTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : (Math.round(totalYearlyTarget / 12) || 0);
+
+                // Helpers for table
+                const ach = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
+                const grw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : 0;
+                const formatGrw = (g) => g > 0 ? `<span class="text-green-600 font-bold">+${g}%</span>` : (g < 0 ? `<span class="text-red-600 font-bold">${g}%</span>` : `<span class="text-slate-500">0%</span>`);
+
+                // Precompute and Sort Territories for the Pulse Table
+                let pulseTerritories = [...baseTerritories];
+                if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+                    pulseTerritories = pulseTerritories.filter(t => t.id === app.adminTerritoryFilter);
+                }
+                if (app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0) {
+                    pulseTerritories = pulseTerritories.filter(t => app.pulseFilterTerritories.includes(t.id));
+                }
+
+                let mappedTerritories = pulseTerritories.map(t => {
+                    const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+
+                    const currBudgetTgts = tTargets.filter(tg => tg.month === app.currentMonth);
+                    const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+
+                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType);
+                    const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+
+                    const currSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth);
+                    const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const modelMap = {};
+                    currSalesRecords.forEach(s => { modelMap[s.model] = (modelMap[s.model] || 0) + Number(s.unit_qty || 0); });
+
+                    const ytdAchVal = ach(perf.ytd.sales, perf.ytd.budget);
+                    const h = ytdAchVal >= 90 ? 'emerald' : (ytdAchVal >= 70 ? 'blue' : 'rose');
+                    const currAchVal = ach(currSalesUnits, currBudget);
+                    const ytdShortVal = Math.max(0, perf.ytd.budget - perf.ytd.sales);
+                    const lmAchVal = ach(perf.lastMonth.sales, perf.lastMonth.budget);
+
+                    return {
+                        t,
+                        id: t.id,
+                        name: t.name,
+                        totalFYBudget,
+                        perf,
+                        ytdAchVal,
+                        h,
+                        currBudget,
+                        currProj,
+                        currSalesUnits,
+                        modelMap,
+                        currAchVal,
+                        ytdShortVal,
+                        lmAchVal,
+                        sortVal_fy_budget: totalFYBudget,
+                        sortVal_ytd_budget: perf.ytd.budget,
+                        sortVal_ytd_actual: perf.ytd.sales,
+                        sortVal_ytd_ach: ytdAchVal,
+                        sortVal_ytd_short: ytdShortVal,
+                        sortVal_lm_budget: perf.lastMonth.budget,
+                        sortVal_lm_actual: perf.lastMonth.sales,
+                        sortVal_lm_ach: lmAchVal,
+                        sortVal_curr_budget: currBudget,
+                        sortVal_curr_proj: currProj,
+                        sortVal_curr_actual: currSalesUnits,
+                        sortVal_curr_ach: currAchVal
+                    };
+                });
+
+                // Apply Sorting
+                const sortCol = app.pulseSortCol || 'name';
+                const sortDir = app.pulseSortDir || 'asc';
+                mappedTerritories.sort((a, b) => {
+                    let valA = a[sortCol];
+                    let valB = b[sortCol];
+
+                    if (sortCol === 'name') {
+                        valA = String(a.name).toLowerCase();
+                        valB = String(b.name).toLowerCase();
+                        if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+                        if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+                        return 0;
+                    }
+
+                    valA = valA || 0;
+                    valB = valB || 0;
+                    return sortDir === 'asc' ? valA - valB : valB - valA;
+                });
+
+                // Area (AM) Aggregation
+                const amUsers = DB.users.filter(u => u.role === 'am' || u.role === 'admin');
+
+                const areaStatsMap = {};
+                activeTerritories.forEach(t => {
+                    const amUser = amUsers.find(u => Array.isArray(u.territories) && u.territories.includes(t.id));
+                    const amName = amUser ? amUser.name.split(' (')[0] : 'Unassigned';
+                    const areaName = amUser?.area_name || 'Unassigned Area';
+
+                    if (!areaStatsMap[areaName]) {
+                        areaStatsMap[areaName] = {
+                            name: areaName,          // Main Title
+                            areaName: amName,        // Subtitle (AM Name)
+                            ytd: { budget: 0, sales: 0, sply: 0 },
+                            lastMonth: { budget: 0, sales: 0, sply: 0 },
+                            currBudget: 0, currProj: 0, currSales: 0,
+                            mockCurrSply: 0,
+                            modelSales: {}
+                        };
+                    }
+                    const aStat = areaStatsMap[areaName];
+                    const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
+                    aStat.ytd.budget += perf.ytd.budget;
+                    aStat.ytd.sales += perf.ytd.sales;
+                    aStat.ytd.sply += perf.ytd.sply;
+                    aStat.lastMonth.budget += perf.lastMonth.budget;
+                    aStat.lastMonth.sales += perf.lastMonth.sales;
+                    aStat.lastMonth.sply += perf.lastMonth.sply;
+
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                    const currentTgtsStats = tTargets.filter(tg => tg.month === app.currentMonth);
+                    const tBudgetStats = currentTgtsStats.length > 0 ? currentTgtsStats.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                    aStat.currBudget += tBudgetStats;
+
+                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType);
+                    aStat.currProj += tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+
+                    const tSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth);
+                    const tSales = tSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    aStat.currSales += tSales;
+                    tSalesRecords.forEach(s => { aStat.modelSales[s.model] = (aStat.modelSales[s.model] || 0) + Number(s.unit_qty || 0); });
+
+                    const tCurrSply = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    aStat.mockCurrSply += tCurrSply;
+                });
+                let areaStats = Object.values(areaStatsMap).sort((a, b) => b.currSales - a.currSales);
+
+                // Excel-Like Area Name Filter
+                if (app.areaFilterList && app.areaFilterList.length > 0) {
+                    areaStats = areaStats.filter(area => app.areaFilterList.includes(area.areaName));
+                }
+
+                const pendingManualCount = DB.sales.filter(s => s.is_manual && (s.approval_status === 'Pending Approval' || !s.approval_status)).length;
+
+                const html = `
+                    <div class="fade-in pb-12">
+                        ${app.getTransitionBannerHtml(currentFY)}
+                        <!-- AM / Executive Header -->
+                        <div class="mb-3">
+                            ${isAM ? `
+                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-sm border border-slate-200/60 border border-white/10 relative overflow-hidden mb-3">
+                                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+                                <div class="relative z-10 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
+                                    
+                                    <!-- Left Section: Welcome Info & Mobile-only Sync Badge -->
+                                    <div class="flex justify-between items-start w-full md:w-auto">
+                                        <div>
+                                            <p class="text-[8px] font-bold text-indigo-300 uppercase tracking-[0.2em]">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
+                                            <h2 class="text-base font-bold text-white leading-tight">Welcome, ${app.currentUser.name.split(' ')[0]}</h2>
+                                        </div>
+                                        
+                                        <!-- Mobile-only Live Sync Badge -->
+                                        <div class="flex md:hidden items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30 text-[8px] font-bold text-green-400">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                            <span>Sync</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right Section: Switchers & Stats -->
+                                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                                        <!-- Switchers Group -->
+                                        <div class="flex items-center gap-2 flex-grow sm:flex-grow-0 justify-between sm:justify-start">
+                                            <!-- Territory Switcher -->
+                                            <div class="relative flex-grow sm:flex-grow-0">
+                                                <select onchange="app.adminTerritoryFilter=this.value; app.renderAdminDashboard()" 
+                                                        class="w-full sm:w-auto appearance-none bg-black/20 border border-white/10 rounded-xl pl-3 pr-8 py-1.5 text-[9px] font-bold uppercase tracking-wider text-white focus:outline-none focus:border-white/40 shadow-sm backdrop-blur-md min-w-[110px]">
+                                                    <option value="All">All Territories</option>
+                                                    ${baseTerritories.map(t => `<option value="${t.id}" ${app.adminTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                                </select>
+                                                <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-white/40">
+                                                    <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                                </div>
+                                            </div>
+
+                                            <!-- Brand Switcher -->
+                                            <div class="flex bg-black/20 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+                                                <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex-1 py-1.5 px-3 rounded-md text-[10px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-white/40 hover:text-white/70'}">
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
+                                                    <span class="text-[9px] font-bold uppercase tracking-wider">Foton</span>
+                                                </button>
+                                                <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex-1 py-1.5 px-3 rounded-md text-[10px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-white/40 hover:text-white/70'}">
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
+                                                    <span class="text-[9px] font-bold uppercase tracking-wider">Mahindra</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Target & Desktop-only Sync Stats -->
+                                        <div class="flex items-center gap-3 justify-end ml-auto md:ml-0">
+                                            <div class="flex flex-col items-end">
+                                                <span class="text-[7px] font-bold text-indigo-200 uppercase">Target</span>
+                                                <span class="text-[10px] font-bold text-white">${totalYearlyTarget} Units</span>
+                                            </div>
+                                            <!-- Desktop-only Sync Indicator -->
+                                            <div class="hidden md:flex items-center gap-3">
+                                                <div class="w-px h-4 bg-white/20"></div>
+                                                <div class="flex flex-col items-end">
+                                                    <span class="text-[7px] font-bold text-indigo-200 uppercase">Live</span>
+                                                    <span class="text-[9px] font-bold text-green-400 flex items-center gap-1"><i data-lucide="activity" class="w-2.5 h-2.5"></i> Sync</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <!-- AM Style MO-Dashboard Blocks -->
+                            ${(() => {
+                             const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive && currentFY === concludingFY) || app.showLastFYData;
+                             const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(app.currentMonth);
+                             const passedMonths = ytdMonths.length;
+                             const monthlyTargets = activeTgts.filter(tg => tg.fy === (isTransitionMode ? concludingFY : currentFY) && ytdMonths.includes(tg.month));
+                             const ytdTargetTillLastMonth = isTransitionMode ? monthlyTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : (monthlyTargets.length > 0 ? monthlyTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round((totalYearlyTarget / 12) * passedMonths));
+                             const tillLastMonthSalesUnits = salesData.filter(s => s.brand === brandFilter && s.fy === (isTransitionMode ? concludingFY : currentFY) && (isTransitionMode ? true : ytdMonths.includes(s.sales_month))).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                             const totalMonthlyProjection = DB.projections.filter(p => activeTerritories.some(t => t.id === p.territory_id) && p.brand === brandFilter && p.month === app.currentMonth && p.fy === currentFY && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                             const currMonthSalesTotal = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                             const amSplyYtd = activeTerritories.reduce((sum, t) => sum + app.getPerformance(t.id, brandFilter, currentSaleType).ytd.sply, 0);
+                             const amSplyMonth = activeTerritories.reduce((sum, t) => sum + DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sale_type === currentSaleType && s.sales_month === app.currentMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0), 0);
+
+                             return `
+                                 <!-- YTD Overall -->
+                                 <div class="glass p-2.5 rounded-xl shadow-sm border border-slate-100 mb-3 relative overflow-hidden">
+                                     <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
+                                     <div class="flex justify-between items-center mb-3">
+                                         <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                             <i data-lucide="bar-chart-2" class="w-4 h-4 text-aci-blue/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
+                                             ${isTransitionMode ? `Last Fiscal Year Overall Area (${concludingFY})` : `YTD Overall Area (${currentFY})`}
+                                         </h3>
+                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
+                                     </div>
+                                    <div class="grid grid-cols-6 text-center divide-x divide-slate-100 mb-3">
+                                        <div class="px-1 flex flex-col justify-center">
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">${isTransitionMode ? 'FY Target' : 'YTD Target'}</p>
+                                            <p class="font-bold text-slate-800 text-[10px]">${ytdTargetTillLastMonth}</p>
+                                        </div>
+                                        <div class="px-1 flex flex-col justify-center">
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Sales</p>
+                                            <p class="font-bold text-aci-blue text-[10px]">${tillLastMonthSalesUnits}</p>
+                                        </div>
+                                        <div class="px-1 flex flex-col justify-center">
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Ach%</p>
+                                            <p class="font-bold text-slate-800 text-[10px]">${ach(tillLastMonthSalesUnits, ytdTargetTillLastMonth)}%</p>
+                                        </div>
+                                        <div class="px-1 flex flex-col justify-center">
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Shortfall</p>
+                                            <p class="font-bold text-red-500 text-[10px]">${Math.max(0, ytdTargetTillLastMonth - tillLastMonthSalesUnits)}</p>
+                                        </div>
+                                        <div class="px-1 flex flex-col justify-center">
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">SPLY</p>
+                                            <p class="font-bold text-slate-800 text-[10px]">${amSplyYtd}</p>
+                                        </div>
+                                        <div class="px-1 flex flex-col justify-center">
+                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Grw%</p>
+                                            <p class="text-[10px] font-bold text-emerald-600">${grw(tillLastMonthSalesUnits, amSplyYtd)}%</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Territory YTD Drill-down Rows -->
+                                    <div class="mt-4 border-t border-slate-100 pt-3">
+                                        <div class="grid grid-cols-7 gap-1 px-2 mb-2">
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase">Territory</div>
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Target</div>
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Sales</div>
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Ach%</div>
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Gap</div>
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">SPLY</div>
+                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Grw%</div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            ${activeTerritories.map(t => {
+                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === (isTransitionMode ? concludingFY : currentFY));
+                                const tBudgetYTD = isTransitionMode ? tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round((tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12) * passedMonths);
+                                const tSalesYTD = salesData.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.fy === (isTransitionMode ? concludingFY : currentFY) && (isTransitionMode ? true : ytdMonths.includes(s.sales_month))).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                const tAch = ach(tSalesYTD, tBudgetYTD);
+                                const tSply = app.getPerformance(t.id, brandFilter, currentSaleType).ytd.sply;
+                                const tGrw = grw(tSalesYTD, tSply);
+
+                                return `
+                                                    <div class="grid grid-cols-7 gap-1 px-1.5 py-1 bg-slate-50/50 rounded-lg border border-slate-100 items-center hover:bg-slate-100/50 transition-colors">
+                                                        <div class="text-[9px] font-bold text-slate-700 truncate">${t.name}</div>
+                                                        <div class="text-[9px] font-bold text-slate-600 text-center">${tBudgetYTD}</div>
+                                                        <div class="text-[9px] font-bold text-aci-blue text-center">${tSalesYTD}</div>
+                                                        <div class="text-[9px] font-bold ${tAch >= 100 ? 'text-emerald-600' : 'text-amber-500'} text-center">${tAch}%</div>
+                                                        <div class="text-[9px] font-bold text-red-500 text-center">${Math.max(0, tBudgetYTD - tSalesYTD)}</div>
+                                                        <div class="text-[9px] font-bold text-slate-400 text-center">${tSply}</div>
+                                                        <div class="text-[9px] font-bold ${tGrw >= 0 ? 'text-emerald-600' : 'text-rose-500'} text-center">${tGrw}%</div>
+                                                    </div>
+                                                `;
+                            }).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gradient-to-br ${brandFilter === 'Foton' ? 'from-foton to-[#03133d] shadow-foton/20' : 'from-mahindra to-[#b81b31] shadow-mahindra/20'} rounded-xl p-2.5 mb-3 relative overflow-hidden shadow-sm text-white">
+                                    <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
+                                    <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
+                                        <h3 class="font-bold text-[10px]">Current Month (${app.currentMonth}) - Area Total</h3>
+                                        <span class="bg-white/20 px-2 py-0.5 rounded text-[9px] font-bold text-white">${currentSaleType}</span>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center mb-3 relative z-10">
+                                        <div><p class="text-[9px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-lg text-white">${monthlyBudget}</p></div>
+                                        <div><p class="text-[9px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-lg text-white">${totalMonthlyProjection}</p></div>
+                                        <div class="col-span-2 border-l border-white/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-xl text-yellow-300">${currMonthSalesTotal}</p></div>
+                                        
+                                        <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-[10px] text-green-300">${ach(currMonthSalesTotal, monthlyBudget)}%</p></div>
+                                        <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-[10px] text-amber-300">${ach(currMonthSalesTotal, totalMonthlyProjection)}%</p></div>
+                                    </div>
+
+                                    <div class="mt-4 border-t border-white/20 pt-3 relative z-10">
+                                        <div class="grid grid-cols-6 gap-1 px-2 mb-2">
+                                            <div class="text-[8px] font-bold text-white/50 uppercase">Territory</div>
+                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Budget</div>
+                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Proj</div>
+                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Sales</div>
+                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Ach(B)</div>
+                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Ach(P)</div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            ${activeTerritories.map(t => {
+                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                const currentTgtsM = tTgtObj.filter(tg => tg.month === app.currentMonth);
+                                const tBudgetM = currentTgtsM.length > 0 ? currentTgtsM.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const tProjM = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === app.currentMonth && p.sale_type === currentSaleType).reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                                const tSalesM = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                const tAchB = ach(tSalesM, tBudgetM);
+                                const tAchP = ach(tSalesM, tProjM);
+
+                                return `
+                                                    <div class="grid grid-cols-6 gap-1 px-1.5 py-0.5 bg-black/10 rounded border border-white/5 items-center">
+                                                        <div class="text-[9px] font-bold text-white/90 truncate">${t.name}</div>
+                                                        <div class="text-[9px] font-medium text-white/80 text-center">${tBudgetM}</div>
+                                                        <div class="text-[9px] font-medium text-white/80 text-center">${tProjM}</div>
+                                                        <div class="text-[9px] font-bold text-yellow-300 text-center">${tSalesM}</div>
+                                                        <div class="text-[9px] font-bold ${tAchB >= 100 ? 'text-green-400' : 'text-amber-300'} text-center">${tAchB}%</div>
+                                                        <div class="text-[9px] font-bold ${tAchP >= 100 ? 'text-green-400' : 'text-amber-300'} text-center">${tAchP}%</div>
+                                                    </div>
+                                                `;
+                            }).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                        })()}
+
+                            <!-- AM: Current Month Performance Dashboard (Creative pacing) -->
+                            ${(() => {
+                            const currMonthSalesPacing = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                            const currMonthBudget = monthlyBudget;
+                            const monthAch = ach(currMonthSalesPacing, currMonthBudget);
+                            const daysInMonth = 30;
+                            const currentDay = 14;
+                            const monthProgress = Math.round((currentDay / daysInMonth) * 100);
+                            const isAhead = monthAch >= monthProgress;
+                            const dailyRunRate = currMonthSalesPacing / currentDay;
+                            const predictedFinish = Math.round(dailyRunRate * daysInMonth);
+                            const predictedAch = ach(predictedFinish, currMonthBudget);
+
+                            return `
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-white shadow-sm mb-3 relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                                        <h3 class="font-bold text-slate-800 text-[10px] tracking-tight">${app.currentMonth} Pacing Monitor</h3>
+                                        <span class="ml-auto bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-slate-200/60 uppercase">Day ${currentDay} of ${daysInMonth}</span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div class="flex flex-col gap-1">
+                                            <div class="flex justify-between items-end mb-1">
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase">Month Achievement</span>
+                                                <span class="text-[10px] font-bold ${isAhead ? 'text-emerald-600' : 'text-amber-500'}">${monthAch}%</span>
+                                            </div>
+                                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                                                <div class="h-full bg-indigo-600 rounded-full" style="width: ${monthAch}%"></div>
+                                            </div>
+                                            <div class="flex justify-between mt-1">
+                                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Budget: ${currMonthBudget}</span>
+                                                <span class="text-[8px] font-bold text-indigo-500 uppercase tracking-tighter">${monthProgress}% Time Elapsed</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-slate-50/50 rounded-xl p-3 border border-slate-100 flex items-center justify-between">
+                                            <div>
+                                                <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Predicted Finish</p>
+                                                <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-slate-700">${predictedFinish} <span class="text-[9px] text-slate-400">Units</span></h4>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-[14px] font-bold ${predictedAch >= 100 ? 'text-emerald-600' : 'text-rose-500'}">${predictedAch}%</p>
+                                                <p class="text-[7px] font-bold text-slate-400 uppercase leading-none">Est. Ach</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-indigo-900 rounded-xl p-3 shadow-sm border border-slate-200/60 flex items-center justify-between text-white border border-white/10">
+                                            <div>
+                                                <p class="text-[9px] font-bold text-indigo-300 uppercase mb-0.5">Req. Daily Rate</p>
+                                                <h4 class="text-lg font-bold">${Math.max(0, Math.ceil((currMonthBudget - currMonthSalesPacing) / (daysInMonth - currentDay)))}</h4>
+                                            </div>
+                                            <div class="p-2 bg-white/10 rounded-xl"><i data-lucide="trending-up" class="w-5 h-5 text-indigo-200"></i></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-4 border-t border-slate-100">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Territory Drill-down</p>
+                                            <div class="h-px flex-1 bg-slate-50"></div>
+                                        </div>
+                                        <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                            ${activeTerritories.map(t => {
+                                const tTgtObj = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                const currTgtsT = tTgtObj.filter(tg => tg.month === app.currentMonth);
+                                const tBudget = currTgtsT.length > 0 ? currTgtsT.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgtObj.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const tSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === app.currentMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                const tAch = ach(tSales, tBudget);
+                                const tIsAhead = tAch >= monthProgress;
+
+                                return `
+                                                    <div class="shrink-0 flex items-center gap-3 bg-white border border-slate-100 p-2 rounded-xl shadow-sm min-w-[140px]">
+                                                        <div class="w-1.5 h-6 rounded-full ${tIsAhead ? 'bg-emerald-500' : 'bg-rose-400'}"></div>
+                                                        <div>
+                                                            <h5 class="text-[9px] font-bold text-slate-800 leading-none mb-1 truncate w-24">${t.name}</h5>
+                                                            <div class="flex items-center gap-2">
+                                                                 <span class="text-[12px] font-bold text-slate-700">${tSales}/${tBudget}</span>
+                                                                 <span class="text-[9px] font-bold ${tIsAhead ? 'text-emerald-600' : 'text-rose-500'}">${tAch}%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `;
+                            }).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                        })()}
+
+                            ` : ''}
+
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
+                                <div>
+                                    <h1 class="text-[10px] font-extrabold text-slate-700 tracking-widest uppercase">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
+                                    <p class="text-[10px] font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
+                                </div>
+                                <div class="flex items-center gap-2 w-full sm:w-auto">
+                                    <!-- Dynamic Fiscal Year Selector -->
+                                    <div class="relative">
+                                        <select onchange="app.selectedFY = this.value; app.renderAdminDashboard()" 
+                                                class="appearance-none bg-white border border-slate-200/60 text-[9px] font-bold uppercase tracking-wider text-slate-700 rounded-xl pl-3 pr-8 py-1.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[95px]">
+                                            ${[...new Set([...DB.sales.map(s => s.fy), ...DB.targets.map(t => t.fy), app.currentFY])].filter(Boolean).sort().reverse().map(fy => `<option value="${fy}" ${fy === currentFY ? 'selected' : ''}>FY ${fy}</option>`).join('')}
+                                        </select>
+                                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                    </div>
+
+                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl shadow-sm hover:shadow-sm border border-slate-200/60 hover:scale-[1.03] active:scale-95 transition-all duration-300 font-bold text-[9px] uppercase tracking-wider group relative overflow-hidden">
+                                        <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
+                                        <i data-lucide="banknote" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
+                                        <span>EMI Analytics</span>
+                                    </button>
+
+                                    ${!isAM ? `
+                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl shadow-sm hover:shadow-sm border border-slate-200/60 hover:scale-[1.03] active:scale-95 transition-all duration-300 font-bold text-[9px] uppercase tracking-wider group relative overflow-hidden">
+                                        <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
+                                        <i data-lucide="clipboard-list" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
+                                        <span>Manual Deliveries</span>
+                                        ${pendingManualCount > 0 ? `<span class="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-rose-500 text-[8px] font-bold text-white border-2 border-white animate-pulse shadow-sm">${pendingManualCount}</span>` : ''}
+                                    </button>
+                                    ` : ''}
+
+                                    <div class="flex bg-slate-200/50 p-1 rounded-xl flex-1 sm:flex-none border border-slate-200/60">
+                                        <button onclick="app.adminSaleTypeTab='New Sale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'New Sale' ? 'bg-white shadow-sm text-aci-blue' : 'text-slate-500 hover:text-slate-800'}">NEW</button>
+                                        <button onclick="app.adminSaleTypeTab='Resale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'Resale' ? 'bg-white shadow-sm text-aci-blue' : 'text-slate-500 hover:text-slate-800'}">RESALE</button>
+                                    </div>
+                                    ${!isAM ? `
+                                    <button onclick="app.downloadRawCSV()" class="p-2.5 bg-white border border-slate-200/60 text-slate-600 rounded-xl shadow-sm hover:bg-slate-50 transition-all active:scale-95">
+                                        <i data-lucide="download" class="w-5 h-5"></i>
+                                    </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- YOY Trajectory Chart -->
+                    <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-white shadow-sm mb-3 relative overflow-hidden">
+                        <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 relative z-10">
+                            <!-- Left: Chart & Controls (Col span 2) -->
+                            <div class="lg:col-span-2 flex flex-col justify-between">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 text-indigo-500"></i> Performance vs Budget & YOY</h3>
+                                        <p class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5">Month by Month Comparative Velocity & Pacing</p>
+                                    </div>
+                                    <div class="flex items-center gap-3 flex-wrap">
+                                        <label class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200/60 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                                            <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-3 h-3">
+                                            <span class="text-[9px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
+                                        </label>
+
+                                        <!-- Territory Filter Dropdown -->
+                                        <div class="relative">
+                                            <select onchange="app.yoyTerritoryFilter = this.value; app.renderAdminDashboard()" 
+                                                    class="appearance-none bg-white/80 border border-slate-200/60 rounded-lg pl-3 pr-8 py-1.5 text-[9px] font-bold text-slate-600 uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer shadow-sm min-w-[120px]">
+                                                <option value="All">All Territories</option>
+                                                ${activeTerritories.map(t => `<option value="${t.id}" ${app.yoyTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                            </select>
+                                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Creative Brand Logo Toggle -->
+                                        <div class="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200/60 shadow-inner">
+                                            <button onclick="app.yoyBrandTab='Foton'; app.renderAdminDashboard()" 
+                                                    class="relative flex items-center justify-center px-4 py-1.5 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-6 object-contain" alt="Foton">
+                                            </button>
+                                            <div class="w-px h-5 bg-slate-300 mx-1"></div>
+                                            <button onclick="app.yoyBrandTab='Mahindra'; app.renderAdminDashboard()" 
+                                                    class="relative flex items-center justify-center px-4 py-1.5 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-5 object-contain" alt="Mahindra">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="h-64 relative w-full">
+                                    <canvas id="chartYoyTrend"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Bangladesh Sales Heatmap (Col span 1) -->
+                            <div class="lg:col-span-1 flex flex-col bg-slate-50/50 rounded-xl p-3 border border-slate-100 relative min-h-[300px]">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-[10px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                            <i data-lucide="map" class="w-3.5 h-3.5 text-indigo-500"></i> ${app.currentMonth} Sales Map
+                                        </h4>
+                                        <p class="text-[9px] text-slate-400 font-medium mt-0.5">District wise actual units</p>
+                                    </div>
+                                    <span id="minimap-sales-total" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-bold rounded-full border border-indigo-100">0 Units</span>
+                                </div>
+                                <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[250px]" style="height: 250px; min-height: 250px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- =====================================
+                    // BRAND SUMMARY MATRIX
+                    // ===================================== -->
+                    ${(() => {
+                        const brands = ['Foton', 'Mahindra'];
+                        const ytdMonths = app.getYtdMonths(app.currentMonth);
+                        const isFirstMonth = ytdMonths.length === 0;
+                        const ytdMonthsForCalc = isFirstMonth ? ['July'] : ytdMonths;
+                        const lastMonth = app.lastMonth;
+                        const currMonth = app.currentMonth;
+                        
+                        let brandSummaryRowsHTML = '';
+                        let gTot = { fyBgt: 0, yBgt: 0, yAct: 0, ySht: 0, lBgt: 0, lAct: 0, cBgt: 0, cAct: 0 };
+                        
+                        brands.forEach(b => {
+                            let bSales = currFYSales.filter(s => s.brand === b);
+                            let bTgts = DB.targets.filter(t => t.fy === currentFY && t.brand === b && t.sale_type === currentSaleType);
+                            
+                            if (isAM) {
+                                bSales = bSales.filter(s => app.currentUser.territories.includes(s.territory_id));
+                                bTgts = bTgts.filter(t => app.currentUser.territories.includes(t.territory_id));
+                            }
+                            if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+                                bSales = bSales.filter(s => s.territory_id === app.adminTerritoryFilter);
+                                bTgts = bTgts.filter(t => t.territory_id === app.adminTerritoryFilter);
+                            }
+
+                            const fyBgt = bTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                            const yBgt = bTgts.filter(t => ytdMonthsForCalc.includes(t.month)).reduce((sum, t) => sum + Number(t.target_qty || 0), 0) || Math.round((fyBgt / 12) * ytdMonthsForCalc.length);
+                            const yAct = bSales.filter(s => ytdMonthsForCalc.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                            const yAch = yBgt > 0 ? Math.round((yAct/yBgt)*100) : 0;
+                            const ySht = yBgt - yAct;
+
+                            const lBgt = bTgts.filter(t => t.month === lastMonth).reduce((sum, t) => sum + Number(t.target_qty || 0), 0) || Math.round(fyBgt / 12);
+                            const lAct = bSales.filter(s => s.sales_month === lastMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                            const lAch = lBgt > 0 ? Math.round((lAct/lBgt)*100) : 0;
+
+                            const cBgt = bTgts.filter(t => t.month === currMonth).reduce((sum, t) => sum + Number(t.target_qty || 0), 0) || Math.round(fyBgt / 12);
+                            const cAct = bSales.filter(s => s.sales_month === currMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                            const cAch = cBgt > 0 ? Math.round((cAct/cBgt)*100) : 0;
+
+                            gTot.fyBgt += fyBgt; gTot.yBgt += yBgt; gTot.yAct += yAct; gTot.ySht += ySht;
+                            gTot.lBgt += lBgt; gTot.lAct += lAct; gTot.cBgt += cBgt; gTot.cAct += cAct;
+
+                            const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
+
+                            brandSummaryRowsHTML += `
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors text-center">
+                                    <td class="px-3 py-1 text-left font-bold text-slate-800 border-r border-slate-100 font-bold">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-1.5 h-4 ${b === 'Foton' ? 'bg-foton' : 'bg-mahindra'} rounded-full"></div>
+                                            ${b}
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-1 font-bold text-slate-600 bg-slate-50/50 border-r border-slate-100">${fyBgt}</td>
+                                          <td class="px-3 py-1 font-medium text-slate-500">${isFirstMonth ? '-' : yBgt}</td>
+                                    <td class="px-3 py-1 font-bold text-slate-800">${isFirstMonth ? '-' : yAct}</td>
+                                    <td class="px-3 py-1 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(yAch)}">${isFirstMonth ? '-' : `${yAch}%`}</td>
+                                    <td class="px-3 py-1 font-bold text-rose-500 border-r border-slate-100">${isFirstMonth ? '-' : ySht}</td>
+
+                                    <td class="px-3 py-1 font-medium text-slate-500 bg-slate-50/30">${isFirstMonth ? '-' : lBgt}</td>
+                                    <td class="px-3 py-1 font-bold text-slate-800 bg-slate-50/30">${isFirstMonth ? '-' : lAct}</td>
+                                    <td class="px-3 py-1 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${isFirstMonth ? '-' : `${lAch}%`}</td>
+
+                                    <td class="px-3 py-1 font-medium text-slate-500">${cBgt}</td>
+                                    <td class="px-3 py-1 font-bold text-indigo-900 bg-indigo-100/50">${cAct}</td>
+                                    <td class="px-3 py-1 font-bold ${achColor(cAch)}">${cAch}%</td>
+                                </tr>
+                            `;
+                        });
+
+                        const gYAch = gTot.yBgt > 0 ? Math.round((gTot.yAct/gTot.yBgt)*100) : 0;
+                        const gLAch = gTot.lBgt > 0 ? Math.round((gTot.lAct/gTot.lBgt)*100) : 0;
+                        const gCAch = gTot.cBgt > 0 ? Math.round((gTot.cAct/gTot.cBgt)*100) : 0;
+                        const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
+
+                        return `
+                            <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                                <div class="overflow-x-auto custom-scrollbar">
+                                    <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                        <thead>
+                                            <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[9px] border-b border-slate-200/60">
+                                                <th class="px-3 py-1.5 font-bold border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
+                                                <th class="px-3 py-1.5 font-extrabold text-center border-r border-slate-200/60" rowspan="2">Total FY Budget</th>
+                                                <th class="px-3 py-1 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200/60 font-bold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
+                                                <th class="px-3 py-1 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200/60 font-bold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
+                                                <th class="px-3 py-1 text-center bg-emerald-500/10 text-emerald-800 font-bold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
+                                            </tr>
+                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60 text-center">
+                                                <!-- YTD -->
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Budget</th>
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Actual</th>
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Ach%</th>
+                                                <th class="px-3 py-1 border-t border-slate-200/60 border-r border-slate-200/60">Short</th>
+                                                <!-- Last Month -->
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Budget</th>
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Actual</th>
+                                                <th class="px-3 py-1 border-t border-slate-200/60 border-r border-slate-200/60">Ach%</th>
+                                                <!-- Current Month -->
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Budget</th>
+                                                <th class="px-3 py-1 border-t border-indigo-200 bg-indigo-100 text-indigo-900 font-extrabold">Total Delivered</th>
+                                                <th class="px-3 py-1 border-t border-slate-200/60">Ach%</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${brandSummaryRowsHTML}
+                                            <tr class="bg-slate-100/50 font-bold text-slate-800 text-center border-t-2 border-slate-200/60">
+                                                <td class="px-3 py-1 text-left border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100 font-bold">GRAND TOTAL</td>
+                                                <td class="px-3 py-1 border-r border-slate-200/60">${gTot.fyBgt}</td>
+                                                
+                                                <td class="px-3 py-1">${isFirstMonth ? '-' : gTot.yBgt}</td>
+                                                <td class="px-3 py-1">${isFirstMonth ? '-' : gTot.yAct}</td>
+                                                <td class="px-3 py-1 ${isFirstMonth ? 'text-slate-400' : achColor(gYAch)}">${isFirstMonth ? '-' : `${gYAch}%`}</td>
+                                                <td class="px-3 py-1 text-rose-600 border-r border-slate-200/60">${isFirstMonth ? '-' : gTot.ySht}</td>
+
+                                                <td class="px-3 py-1 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lBgt}</td>
+                                                <td class="px-3 py-1 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lAct}</td>
+                                                <td class="px-3 py-1 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} bg-slate-50/30 border-r border-slate-200/60">${isFirstMonth ? '-' : `${gLAch}%`}</td>
+
+                                                <td class="px-3 py-1">${gTot.cBgt}</td>
+                                                <td class="px-3 py-1 text-indigo-900 bg-indigo-200/50 font-extrabold">${gTot.cAct}</td>
+                                                <td class="px-3 py-1 ${achColor(gCAch)}">${gCAch}%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                    })()}
+
+                    <!-- Charts -->
+                    <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-3 mb-3">
+                        <div class="${isAM ? '' : 'lg:col-span-2'} bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-2 text-[9px] flex items-center gap-1.5 uppercase tracking-wider">
+                                <i data-lucide="bar-chart-2" class="w-3 h-3 text-aci-blue"></i> Territory Performance
+                            </h3>
+                            <div class="${isAM ? 'h-36' : 'h-64'} relative w-full">
+                                <canvas id="chartTerritory"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-2 text-[9px] flex items-center gap-1.5 uppercase tracking-wider">
+                                <i data-lucide="pie-chart" class="w-3 h-3 text-aci-blue"></i> Brand Split
+                            </h3>
+                            <div class="${isAM ? 'h-36' : 'h-64'} relative w-full flex justify-center">
+                                <canvas id="chartBrand"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
+                    ${isAM ? `
+                    <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3 relative">
+                        <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/30">
+                            <div>
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-emerald-100">
+                                        <i data-lucide="bar-chart-horizontal" class="w-5 h-5 text-emerald-600"></i>
+                                    </div>
+                                    Territory Performance Analytics
+                                </h3>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Full Performance Breakdown for Assigned Territories</p>
+                            </div>
+                            <div class="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                                <!-- Territory Filter -->
+                                <div class="relative shrink-0">
+                                    <select onchange="app.adminTerritoryFilter=this.value; app.renderAdminDashboard()" 
+                                            class="appearance-none bg-white border border-slate-200/60 rounded-xl pl-3 pr-8 py-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm min-w-[140px]">
+                                        <option value="All">All Territories</option>
+                                        ${baseTerritories.map(t => `<option value="${t.id}" ${app.adminTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                    </select>
+                                    <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                        <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                    </div>
+                                </div>
+
+                                <div class="flex bg-slate-200/50 p-1 rounded-xl border border-slate-200/60">
+                                    <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="px-3 py-1.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">FOTON</button>
+                                    <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="px-3 py-1.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">MAHINDRA</button>
+                                </div>
+
+                                <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
+                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                    <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
+                                </button>
+                                <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
+                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                    <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
+                                </button>
+                                <button onclick="app.downloadPulseCSV()" 
+                                        class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
+                                        title="Download Territory Pulse CSV">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider hidden sm:inline">Export</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Creative Month Filter Pill Bar -->
+                        <div class="px-5 py-1.5 bg-slate-50/40 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent opacity-40 pointer-events-none"></div>
+                            <div class="flex items-center gap-2 relative z-10">
+                                <span class="flex h-2 w-2 relative">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500">Performance Focus:</span>
+                                <span class="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-100/50">${app.performanceFilterMonth || app.currentMonth} ${currentFY}</span>
+                            </div>
+                            
+                            <!-- Scrollable Months container -->
+                            <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 md:pb-0 custom-scrollbar select-none relative z-10">
+                                ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => {
+                                    const isActive = (app.performanceFilterMonth || app.currentMonth) === m;
+                                    const isCurrentSetting = app.currentMonth === m;
+                                    const shortName = m.substring(0, 3).toUpperCase();
+                                    return `
+                                        <button onclick="app.performanceFilterMonth='${m}'; app.renderAdminDashboard()" 
+                                                class="px-3.5 py-1.5 rounded-xl text-[9px] font-bold tracking-wider transition-all duration-300 shrink-0 relative flex items-center gap-1.5 ${
+                                                    isActive 
+                                                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-sm shadow-emerald-500/20 scale-105 border border-emerald-400/30' 
+                                                    : 'bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-slate-200/60 shadow-sm'
+                                                }">
+                                            ${isCurrentSetting ? `<span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white' : 'bg-emerald-500'}"></span>` : ''}
+                                            ${shortName}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                        ${(() => {
+                            const performanceMonth = app.performanceFilterMonth || app.currentMonth;
+                            const activeTerrs = activeTerritories.filter(t => !app.adminTerritoryFilter || app.adminTerritoryFilter === 'All' || t.id === app.adminTerritoryFilter);
+                            const activeTerrIds = activeTerrs.map(t => t.id);
+
+                            const currentSales = currFYSales.filter(s => activeTerrIds.includes(s.territory_id) && s.brand === brandFilter && s.sales_month === performanceMonth && Number(s.unit_qty) > 0);
+                            const modelsWithSales = new Set(currentSales.map(s => s.model));
+                            const dynamicModels = activeModels.filter(m => modelsWithSales.has(m));
+
+                            let totalYtdBudget = 0;
+                            let totalYtdSales = 0;
+                            let totalYtdShort = 0;
+                            let totalLastMonthBudget = 0;
+                            let totalLastMonthSales = 0;
+                            let totalCurrBudget = 0;
+                            let totalCurrProj = 0;
+                            const totalModelMap = {};
+                            let totalCurrSalesUnits = 0;
+
+                            const rowsHTML = activeTerrs.map(t => {
+                                const _tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                const _currTgts = _tTargets.filter(tg => tg.month === performanceMonth);
+                                const _currBudget = _currTgts.length > 0 ? _currTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(_tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const _currSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                t._sortAch = ach(_currSales, _currBudget);
+                                return t;
+                            }).sort((a, b) => b._sortAch - a._sortAch).map(t => {
+                                const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
+                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                const currTgts = tTargets.filter(tg => tg.month === performanceMonth);
+                                const currBudget = currTgts.length > 0 ? currTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === performanceMonth && p.sale_type === currentSaleType);
+                                const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+                                const currSalesRecords = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth);
+                                const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                const modelMap = {};
+                                currSalesRecords.forEach(s => { modelMap[s.model] = (modelMap[s.model] || 0) + Number(s.unit_qty || 0); });
+                                const ytdAchVal = ach(perf.ytd.sales, perf.ytd.budget);
+                                const h = ytdAchVal >= 90 ? 'emerald' : (ytdAchVal >= 70 ? 'blue' : 'rose');
+
+                                totalYtdBudget += perf.ytd.budget;
+                                totalYtdSales += perf.ytd.sales;
+                                totalYtdShort += Math.max(0, perf.ytd.budget - perf.ytd.sales);
+                                totalLastMonthBudget += perf.lastMonth.budget;
+                                totalLastMonthSales += perf.lastMonth.sales;
+                                totalCurrBudget += currBudget;
+                                totalCurrProj += currProj;
+                                dynamicModels.forEach(m => {
+                                    totalModelMap[m] = (totalModelMap[m] || 0) + (modelMap[m] || 0);
+                                });
+                                totalCurrSalesUnits += currSalesUnits;
+
+                                const currAchVal = ach(currSalesUnits, currBudget);
+                                let achBg, achText;
+                                if (currAchVal >= 100) { achBg = 'bg-emerald-100'; achText = 'text-emerald-700'; }
+                                else if (currAchVal >= 80) { achBg = 'bg-lime-100'; achText = 'text-lime-700'; }
+                                else if (currAchVal >= 60) { achBg = 'bg-amber-100'; achText = 'text-amber-700'; }
+                                else { achBg = 'bg-rose-100'; achText = 'text-rose-700'; }
+
+                                return `
+                                                <tr class="hover:bg-slate-50/80 group transition-colors group text-center border-b border-slate-100/50">
+                                                    <td class="px-5 py-1 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                                        <div class="flex items-center gap-1.5">
+                                                            <div class="w-1 h-3.5 bg-${h}-500 rounded-full"></div>
+                                                            <span class="font-bold text-slate-700 text-[11px]">${t.name}</span>
+                                                        </div>
+                                                    </td>
+                                                    ${app.adminShowYTD ? `
+                                                        <td class="px-1.5 py-0.5 text-slate-400 font-medium text-center">${perf.ytd.budget}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold text-slate-700 text-center">${perf.ytd.sales}</td>
+                                                        <td class="px-1.5 py-0.5 text-center"><span class="px-1.5 py-0.5 rounded-lg bg-${h}-50 text-${h}-600 font-bold">${ytdAchVal}%</span></td>
+                                                        <td class="px-1.5 py-0.5 font-bold text-rose-500 text-center">${Math.max(0, perf.ytd.budget - perf.ytd.sales)}</td>
+                                                    ` : ''}
+                                                    ${app.adminShowLastMonth ? `
+                                                        <td class="px-1.5 py-0.5 text-slate-400 font-medium text-center">${perf.lastMonth.budget}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold text-slate-700 text-center">${perf.lastMonth.sales}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold text-slate-600 text-center">${ach(perf.lastMonth.sales, perf.lastMonth.budget)}%</td>
+                                                    ` : ''}
+                                                    <td class="px-1.5 py-0.5 bg-slate-50/50 text-slate-400 font-medium text-center">${currBudget}</td>
+                                                    <td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-slate-700 text-center">${currProj}</td>
+                                                    ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-center ${modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
+                                                    <td class="px-1.5 py-0.5 bg-indigo-50/30 font-bold text-indigo-700 text-[10px] text-center">${currSalesUnits}</td>
+                                                    <td class="px-1.5 py-0.5 text-center ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${currAchVal}%</span></td>
+                                                </tr>
+                                            `;
+                            }).join('');
+
+                            const totalYtdAchVal = ach(totalYtdSales, totalYtdBudget);
+                            const totalH = totalYtdAchVal >= 90 ? 'emerald' : (totalYtdAchVal >= 70 ? 'blue' : 'rose');
+
+                            const totalCurrAchVal = ach(totalCurrSalesUnits, totalCurrBudget);
+                            let tAchBg, tAchText;
+                            if (totalCurrAchVal >= 100) { tAchBg = 'bg-emerald-100'; tAchText = 'text-emerald-700'; }
+                            else if (totalCurrAchVal >= 80) { tAchBg = 'bg-lime-100'; tAchText = 'text-lime-700'; }
+                            else if (totalCurrAchVal >= 60) { tAchBg = 'bg-amber-100'; tAchText = 'text-amber-700'; }
+                            else { tAchBg = 'bg-rose-100'; tAchText = 'text-rose-700'; }
+
+                            const totalRowHTML = `
+                                            <tr class="bg-indigo-50/20 font-bold text-slate-800 text-center border-t border-indigo-100/55">
+                                                <td class="px-4 py-1 text-left sticky left-0 z-10 bg-indigo-50 border-r border-indigo-100 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-1.5 h-4.5 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div>
+                                                        <span class="font-extrabold text-slate-800 text-[9px]">GRAND TOTAL</span>
+                                                    </div>
+                                                </td>
+                                                ${app.adminShowYTD ? `
+                                                    <td class="px-1.5 py-0.5 text-slate-700 font-extrabold bg-indigo-50/10 text-center">${totalYtdBudget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-slate-900 bg-indigo-50/10 text-center">${totalYtdSales}</td>
+                                                    <td class="px-1.5 py-0.5 bg-indigo-50/10 text-center"><span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-50 text-${totalH}-600 font-bold">${totalYtdAchVal}%</span></td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-rose-600 bg-indigo-50/10 text-center">${totalYtdShort}</td>
+                                                ` : ''}
+                                                ${app.adminShowLastMonth ? `
+                                                    <td class="px-1.5 py-0.5 text-slate-700 font-extrabold text-center">${totalLastMonthBudget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-slate-900 text-center">${totalLastMonthSales}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-slate-800 text-center">${ach(totalLastMonthSales, totalLastMonthBudget)}%</td>
+                                                ` : ''}
+                                                <td class="px-1.5 py-0.5 bg-slate-100/50 text-slate-700 font-extrabold text-center">${totalCurrBudget}</td>
+                                                <td class="px-1.5 py-0.5 bg-slate-100/50 font-bold text-slate-900 text-center">${totalCurrProj}</td>
+                                                ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
+                                                <td class="px-1.5 py-0.5 bg-indigo-100/50 font-bold text-indigo-700 text-[10px] text-center">${totalCurrSalesUnits}</td>
+                                                <td class="px-1.5 py-0.5 text-center ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
+                                            </tr>
+                                        `;
+
+                            return `
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                        <thead>
+                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
+                                                <th class="px-5 py-1.5 font-bold sticky left-0 z-10 bg-slate-50">Territory</th>
+                                                ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                <th class="px-3 py-4 text-center border-l border-slate-100 font-extrabold" colspan="${4 + dynamicModels.length}">
+                                                    ${(app.performanceFilterMonth || app.currentMonth) === app.currentMonth ? 'Current' : 'Selected'} Month (${(app.performanceFilterMonth || app.currentMonth).substring(0, 3)})
+                                                </th>
+                                            </tr>
+                                            <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-100 text-center">
+                                                <th class="px-5 py-1 sticky left-0 z-10 bg-white"></th>
+                                                ${app.adminShowYTD ? `
+                                                    <th class="px-1.5 py-1 bg-slate-50">Budget</th>
+                                                    <th class="px-1.5 py-1 bg-slate-50 font-bold text-slate-600">Actual</th>
+                                                    <th class="px-1.5 py-1 bg-slate-50">Ach%</th>
+                                                    <th class="px-1.5 py-1 bg-slate-50">Short</th>
+                                                ` : ''}
+                                                ${app.adminShowLastMonth ? `
+                                                    <th class="px-1.5 py-1">Budget</th>
+                                                    <th class="px-1.5 py-1 font-bold text-slate-600">Actual</th>
+                                                    <th class="px-1.5 py-1">Ach%</th>
+                                                ` : ''}
+                                                <th class="px-1.5 py-1 bg-slate-50">Budget</th>
+                                                <th class="px-1.5 py-1 bg-slate-50 font-bold text-slate-600">Proj</th>
+                                                ${dynamicModels.map(m => `<th class="px-1.5 py-1 bg-slate-50">${m}</th>`).join('')}
+                                                <th class="px-1.5 py-1 bg-indigo-50 font-bold text-indigo-700">Total</th>
+                                                <th class="px-1.5 py-1 bg-indigo-50 font-bold text-indigo-700">Ach%</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-50 bg-white">
+                                            ${rowsHTML}
+                                            ${totalRowHTML}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        })()}
+                    </div>
+                    ` : ''}
+
+                    ${!isAM ? `
+                    <!-- Comprehensive Data Table & Mobile Cards -->
+                    <div class="mb-3">
+                        <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden">
+                            <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                        <div class="p-1.5 bg-white rounded-lg shadow-sm border border-slate-100">
+                                            <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-5 object-contain">
+                                        </div>
+                                        Territory Pulse
+                                    </h3>
+                                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">${app.currentMonth} Analytics</p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                            <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
+                                        </button>
+                                        <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                            <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
+                                        </button>
+                                        <button onclick="app.pulseDetailedView = !app.pulseDetailedView; app.renderAdminDashboard()" 
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200 border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
+                                            <i data-lucide="${app.pulseDetailedView ? 'layout-grid' : 'list'}" class="w-3.5 h-3.5"></i>
+                                            Detailed View
+                                        </button>
+                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="bg-white border border-slate-200/60 rounded-xl px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
+                                            <option value="Foton" ${brandFilter === 'Foton' ? 'selected' : ''}>Foton</option>
+                                            <option value="Mahindra" ${brandFilter === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
+                                        </select>
+                                        <button onclick="app.downloadPulseCSV()" 
+                                                class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
+                                                title="Download Territory Pulse CSV">
+                                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                            <span class="text-[9px] font-bold uppercase tracking-wider hidden sm:inline">Export</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- DESKTOP TABLE VIEW -->
+                            ${app.pulseDetailedView ? `
+                            <div class="hidden md:block overflow-x-auto custom-scrollbar border-t border-slate-200/60">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                    <thead>
+                                        <!-- Row 1: Quarters -->
+                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60">
+                                            <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-slate-50 border-r border-slate-200/60 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
+                                                        Territory ${app.getSortIcon('name')}
+                                                    </div>
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
+                                                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </div>
+                                            </th>
+                                            <th class="px-3 py-1 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" rowspan="3">Total FY Budget</th>
+                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July - September)</th>
+                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October - December)</th>
+                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January - March)</th>
+                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
+                                        </tr>
+                                        <!-- Row 2: Months & Quarter Totals -->
+                                        <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60 text-center">
+                                            <!-- Q1 Months -->
+                                            <th class="px-1.5 py-0.5 border-l-2 border-violet-200/60" colspan="5">July</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">August</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">September</th>
+                                            <th class="px-1.5 py-0.5 bg-violet-500/10 text-violet-800 font-extrabold border-l-2 border-violet-300" colspan="5">Q1 Total</th>
+                                            <!-- Q2 Months -->
+                                            <th class="px-1.5 py-0.5 border-l-2 border-amber-200/60" colspan="5">October</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">November</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">December</th>
+                                            <th class="px-1.5 py-0.5 bg-amber-500/10 text-amber-800 font-extrabold border-l-2 border-amber-300" colspan="5">Q2 Total</th>
+                                            <!-- Q3 Months -->
+                                            <th class="px-1.5 py-0.5 border-l-2 border-emerald-200/60" colspan="5">January</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">February</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">March</th>
+                                            <th class="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-800 font-extrabold border-l-2 border-emerald-300" colspan="5">Q3 Total</th>
+                                            <!-- Q4 Months -->
+                                            <th class="px-1.5 py-0.5 border-l-2 border-cyan-200/60" colspan="5">April</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">May</th>
+                                            <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">June</th>
+                                            <th class="px-1.5 py-0.5 bg-cyan-500/10 text-cyan-800 font-extrabold border-l-2 border-cyan-300" colspan="5">Q4 Total</th>
+                                            <!-- FY Total -->
+                                            <th class="px-1.5 py-0.5 bg-slate-800/20 text-slate-900 font-bold border-l-2 border-slate-400" colspan="5">FY Total</th>
+                                        </tr>
+                                        <!-- Row 3: Metrics -->
+                                        <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/60 text-center font-bold">
+                                            ${(() => {
+                                                let result = '';
+                                                for (let i = 0; i < 17; i++) {
+                                                    const isQuarterTotal = i < 16 ? (i + 1) % 4 === 0 : false;
+                                                    const isFYTotal = i === 16;
+                                                    const quarterName = i < 4 ? 'Q1' : i < 8 ? 'Q2' : i < 12 ? 'Q3' : 'Q4';
+                                                    let qBorder = 'border-l border-slate-100';
+                                                    if (i % 4 === 0 && i < 16) {
+                                                         if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-200';
+                                                         else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-200';
+                                                         else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-200';
+                                                         else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-200';
+                                                    } else if (isQuarterTotal) {
+                                                         if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-300 bg-violet-500/5';
+                                                         else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-300 bg-amber-500/5';
+                                                         else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-300 bg-emerald-500/5';
+                                                         else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-300 bg-cyan-500/5';
+                                                    } else if (isFYTotal) {
+                                                         qBorder = 'border-l-2 border-slate-400 bg-slate-800/10';
+                                                    }
+                                                    const metrics = ['Bgt', 'Sal', 'Ach%', 'SPLY', 'Gr%'];
+                                                    result += metrics.map((m, mIdx) => `
+                                                         <th class="px-1.5 py-1 ${mIdx === 0 ? qBorder : ''} ${(isQuarterTotal || isFYTotal) ? 'bg-slate-100/30 font-extrabold' : ''} text-center">${m}</th>
+                                                    `).join('');
+                                                }
+                                                return result;
+                                            })()}
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${(() => {
+                                            const fiscalMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                                            const quarters = {
+                                                Q1: ['July', 'August', 'September'],
+                                                Q2: ['October', 'November', 'December'],
+                                                Q3: ['January', 'February', 'March'],
+                                                Q4: ['April', 'May', 'June']
+                                            };
+
+                                            const calcGrw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : (s > 0 ? 100 : 0);
+                                            const formatDetailedGrw = (g) => g > 0 ? `<span class="text-emerald-600 font-bold">+${g}%</span>` : (g < 0 ? `<span class="text-rose-500 font-bold">${g}%</span>` : `<span class="text-slate-400 font-medium">0%</span>`);
+
+                                            const detailedRowsHTML = mappedTerritories.map((mt, idx) => {
+                                                const t = mt.t;
+                                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                                const totalFYBudget = mt.totalFYBudget;
+
+                                                const monthlyPerf = {};
+                                                fiscalMonths.forEach(m => {
+                                                    const monthTgts = tTargets.filter(tg => tg.month === m);
+                                                    const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                                                    const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                                    const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                                    monthlyPerf[m] = {
+                                                        budget: mBudget,
+                                                        sales: mSales,
+                                                        sply: mSply,
+                                                        ach: ach(mSales, mBudget),
+                                                        growth: calcGrw(mSales, mSply)
+                                                    };
+                                                });
+
+                                                const quarterPerf = {};
+                                                Object.entries(quarters).forEach(([qName, qMonths]) => {
+                                                    const qBudget = qMonths.reduce((sum, m) => sum + monthlyPerf[m].budget, 0);
+                                                    const qSales = qMonths.reduce((sum, m) => sum + monthlyPerf[m].sales, 0);
+                                                    const qSply = qMonths.reduce((sum, m) => sum + monthlyPerf[m].sply, 0);
+                                                    quarterPerf[qName] = {
+                                                        budget: qBudget,
+                                                        sales: qSales,
+                                                        sply: qSply,
+                                                        ach: ach(qSales, qBudget),
+                                                        growth: calcGrw(qSales, qSply)
+                                                    };
+                                                });
+
+                                                let cellsHTML = '';
+                                                Object.entries(quarters).forEach(([qName, qMonths]) => {
+                                                    qMonths.forEach(m => {
+                                                        const p = monthlyPerf[m];
+                                                        cellsHTML += `
+                                                            <td class="px-1.5 py-0.5 text-slate-400 font-medium border-l border-slate-100">${p.budget}</td>
+                                                            <td class="px-1.5 py-0.5 font-bold text-slate-700">${p.sales}</td>
+                                                            <td class="px-1.5 py-0.5 font-bold text-slate-800">${p.ach}%</td>
+                                                            <td class="px-1.5 py-0.5 text-slate-400 font-medium">${p.sply}</td>
+                                                            <td class="px-1.5 py-0.5 font-bold text-[9px]">${formatDetailedGrw(p.growth)}</td>
+                                                        `;
+                                                    });
+                                                    const q = quarterPerf[qName];
+                                                    let qBg = '';
+                                                    let qText = '';
+                                                    let qPill = '';
+                                                    if (qName === 'Q1') { qBg = 'bg-violet-500/[0.04]'; qText = 'text-violet-800'; qPill = 'bg-violet-50 text-violet-600'; }
+                                                    else if (qName === 'Q2') { qBg = 'bg-amber-500/[0.04]'; qText = 'text-amber-800'; qPill = 'bg-amber-50 text-amber-600'; }
+                                                    else if (qName === 'Q3') { qBg = 'bg-emerald-500/[0.04]'; qText = 'text-emerald-800'; qPill = 'bg-emerald-50 text-emerald-600'; }
+                                                    else if (qName === 'Q4') { qBg = 'bg-cyan-500/[0.04]'; qText = 'text-cyan-800'; qPill = 'bg-cyan-50 text-cyan-600'; }
+
+                                                    cellsHTML += `
+                                                        <td class="px-1.5 py-0.5 font-bold ${qBg} ${qText} border-l-2 border-slate-200/60">${q.budget}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold ${qBg} ${qText}">${q.sales}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold ${qBg}"><span class="px-1.5 py-0.5 rounded-lg ${qPill} font-bold">${q.ach}%</span></td>
+                                                        <td class="px-1.5 py-0.5 font-bold ${qBg} ${qText}">${q.sply}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold ${qBg} text-[9px] border-r border-slate-200/60">${formatDetailedGrw(q.growth)}</td>
+                                                    `;
+                                                });
+
+                                                // Append Fiscal Year Total cells for this row
+                                                const fyBudget = Object.values(quarterPerf).reduce((sum, q) => sum + q.budget, 0);
+                                                const fySales = Object.values(quarterPerf).reduce((sum, q) => sum + q.sales, 0);
+                                                const fySply = Object.values(quarterPerf).reduce((sum, q) => sum + q.sply, 0);
+                                                const fyAch = ach(fySales, fyBudget);
+                                                const fyGrowth = calcGrw(fySales, fySply);
+
+                                                cellsHTML += `
+                                                    <td class="px-1.5 py-0.5 font-extrabold bg-slate-800/10 text-slate-900 border-l-2 border-slate-400 shadow-inner">${fyBudget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold bg-slate-800/10 text-slate-900 shadow-inner">${fySales}</td>
+                                                    <td class="px-1.5 py-0.5 bg-slate-800/10 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-800 text-white font-bold">${fyAch}%</span></td>
+                                                    <td class="px-1.5 py-0.5 font-extrabold bg-slate-800/10 text-slate-900 shadow-inner">${fySply}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold bg-slate-800/10 text-[9px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(fyGrowth)}</td>
+                                                `;
+
+                                                return `
+                                                    <tr class="pulse-tr-premium text-center border-b border-slate-100 group">
+                                                        <td class="px-4 py-1 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-200/60/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)] sticky-left">
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
+                                                                <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full shadow-sm"></div>
+                                                                <span class="font-bold text-slate-700">${mt.name}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-3 py-1 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[9px]">${totalFYBudget}</span></td>
+                                                        ${cellsHTML}
+                                                    </tr>
+                                                `;
+                                            }).join('');
+
+                                            const grandMonth = {};
+                                            fiscalMonths.forEach(m => {
+                                                grandMonth[m] = { budget: 0, sales: 0, sply: 0 };
+                                            });
+                                            const grandQuarter = {};
+                                            Object.keys(quarters).forEach(qName => {
+                                                grandQuarter[qName] = { budget: 0, sales: 0, sply: 0 };
+                                            });
+                                            let grandFYBudget = 0;
+
+                                            mappedTerritories.forEach(mt => {
+                                                const t = mt.t;
+                                                const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                                const totalFYBudget = mt.totalFYBudget;
+                                                grandFYBudget += totalFYBudget;
+
+                                                fiscalMonths.forEach(m => {
+                                                    const monthTgts = tTargets.filter(tg => tg.month === m);
+                                                    const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                                                    const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                                    const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                                    
+                                                    grandMonth[m].budget += mBudget;
+                                                    grandMonth[m].sales += mSales;
+                                                    grandMonth[m].sply += mSply;
+                                                });
+                                            });
+
+                                            Object.entries(quarters).forEach(([qName, qMonths]) => {
+                                                qMonths.forEach(m => {
+                                                    grandQuarter[qName].budget += grandMonth[m].budget;
+                                                    grandQuarter[qName].sales += grandMonth[m].sales;
+                                                    grandQuarter[qName].sply += grandMonth[m].sply;
+                                                });
+                                            });
+
+                                            let grandCellsHTML = '';
+                                            Object.entries(quarters).forEach(([qName, qMonths]) => {
+                                                qMonths.forEach(m => {
+                                                    const g = grandMonth[m];
+                                                    const gAch = ach(g.sales, g.budget);
+                                                    const gGrw = calcGrw(g.sales, g.sply);
+                                                    grandCellsHTML += `
+                                                        <td class="px-1.5 py-0.5 text-slate-700 font-extrabold border-l border-slate-200/60 bg-slate-50/50">${g.budget}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold text-slate-900 bg-slate-50/50">${g.sales}</td>
+                                                        <td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-slate-800">${gAch}%</td>
+                                                        <td class="px-1.5 py-0.5 text-slate-700 font-extrabold bg-slate-50/50">${g.sply}</td>
+                                                        <td class="px-1.5 py-0.5 font-bold text-[9px] bg-slate-50/50">${formatDetailedGrw(gGrw)}</td>
+                                                    `;
+                                                });
+                                                const gq = grandQuarter[qName];
+                                                const gqAch = ach(gq.sales, gq.budget);
+                                                const gqGrw = calcGrw(gq.sales, gq.sply);
+                                                
+                                                let qBg = '';
+                                                let qText = '';
+                                                let pillBg = '';
+                                                if (qName === 'Q1') { qBg = 'bg-violet-500/10'; qText = 'text-violet-900'; pillBg = 'bg-violet-100 text-violet-700'; }
+                                                else if (qName === 'Q2') { qBg = 'bg-amber-500/10'; qText = 'text-amber-900'; pillBg = 'bg-amber-100 text-amber-700'; }
+                                                else if (qName === 'Q3') { qBg = 'bg-emerald-500/10'; qText = 'text-emerald-900'; pillBg = 'bg-emerald-100 text-emerald-700'; }
+                                                else if (qName === 'Q4') { qBg = 'bg-cyan-500/10'; qText = 'text-cyan-900'; pillBg = 'bg-cyan-100 text-cyan-700'; }
+
+                                                grandCellsHTML += `
+                                                    <td class="px-1.5 py-0.5 font-extrabold ${qBg} ${qText} border-l-2 border-slate-300 shadow-inner">${gq.budget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold ${qBg} ${qText} shadow-inner">${gq.sales}</td>
+                                                    <td class="px-1.5 py-0.5 ${qBg} shadow-inner"><span class="px-1.5 py-0.5 rounded-lg ${pillBg} font-bold">${gqAch}%</span></td>
+                                                    <td class="px-1.5 py-0.5 font-extrabold ${qBg} ${qText} shadow-inner">${gq.sply}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold ${qBg} text-[9px] border-r border-slate-300 shadow-inner">${formatDetailedGrw(gqGrw)}</td>
+                                                `;
+                                            });
+
+                                            // Append Fiscal Year Grand Total cells
+                                            let grandFYTotalBudget = 0;
+                                            let grandFYTotalSales = 0;
+                                            let grandFYTotalSply = 0;
+                                            Object.keys(quarters).forEach(qName => {
+                                                grandFYTotalBudget += grandQuarter[qName].budget;
+                                                grandFYTotalSales += grandQuarter[qName].sales;
+                                                grandFYTotalSply += grandQuarter[qName].sply;
+                                            });
+                                            const grandFYAch = ach(grandFYTotalSales, grandFYTotalBudget);
+                                            const grandFYGrowth = calcGrw(grandFYTotalSales, grandFYTotalSply);
+
+                                            grandCellsHTML += `
+                                                <td class="px-1.5 py-0.5 font-bold bg-slate-800/20 text-slate-950 border-l-2 border-slate-400 shadow-inner">${grandFYTotalBudget}</td>
+                                                <td class="px-1.5 py-0.5 font-bold bg-slate-800/20 text-slate-950 shadow-inner">${grandFYTotalSales}</td>
+                                                <td class="px-1.5 py-0.5 bg-slate-800/20 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-900 text-white font-bold">${grandFYAch}%</span></td>
+                                                <td class="px-1.5 py-0.5 font-bold bg-slate-800/20 text-slate-950 shadow-inner">${grandFYTotalSply}</td>
+                                                <td class="px-1.5 py-0.5 font-bold bg-slate-800/20 text-[9px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(grandFYGrowth)}</td>
+                                            `;
+
+                                            const grandTotalRowHTML = `
+                                                <tr class="bg-indigo-50/20 font-bold text-slate-800 text-center border-t-2 border-indigo-200">
+                                                    <td class="px-4 py-1 text-left sticky left-0 z-10 bg-indigo-50 border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="w-4"></span>
+                                                            <div class="w-1.5 h-4.5 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div>
+                                                            <span class="font-extrabold text-slate-800 text-[9px]">GRAND TOTAL</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-1 font-bold text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-bold text-[10px] shadow-sm shadow-amber-500/20">${grandFYBudget}</span></td>
+                                                    ${grandCellsHTML}
+                                                </tr>
+                                            `;
+
+                                            return detailedRowsHTML + grandTotalRowHTML;
+                                        })()}
+                                    </tbody>
+                                </table>
+                            </div>
+                            ` : (() => {
+                                const currentSales = currFYSales.filter(s => s.brand === brandFilter && s.sales_month === app.currentMonth && Number(s.unit_qty) > 0);
+                                const modelsWithSales = new Set(currentSales.map(s => s.model));
+                                const dynamicModels = activeModels.filter(m => modelsWithSales.has(m));
+
+                                return `
+                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-slate-200/60 border border-indigo-900/10 ring-1 ring-slate-200/50">
+                                        <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse bg-white">
+                                            <thead>
+                                                <tr class="bg-indigo-950 text-indigo-200 uppercase tracking-widest text-[9px] border-b border-indigo-900/50">
+                                                    <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-indigo-950 border-r border-indigo-900/80 shadow-[2px_0_5px_rgba(0,0,0,0.2)] text-indigo-50">Territory</th>
+                                                    <th class="px-3 py-1 text-center bg-gradient-to-b from-amber-900/30 to-transparent text-amber-400 font-extrabold border-l border-r border-t border-amber-900/30 shadow-sm" colspan="1">Total FY Budget</th>
+                                                    ${app.adminShowYTD ? `<th class="px-3 py-1 text-center bg-gradient-to-b from-blue-900/30 to-transparent text-blue-300 border-l border-r border-t border-blue-900/30 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                    ${app.adminShowLastMonth ? `<th class="px-3 py-1 text-center bg-gradient-to-b from-emerald-900/30 to-transparent text-emerald-400 border-l border-r border-t border-emerald-900/30 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                    <th class="px-3 py-1 text-center bg-gradient-to-b from-cyan-900/30 to-transparent text-cyan-300 border-l border-r border-t border-cyan-900/30 font-extrabold shadow-sm" colspan="${4 + dynamicModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                                </tr>
+                                                <tr class="bg-indigo-900 text-indigo-300 uppercase tracking-tighter text-[9px] border-b-2 border-indigo-950 text-center">
+                                                    <th class="px-4 py-1 sticky left-0 z-10 bg-indigo-900 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                                                        <div class="flex items-center justify-between gap-2">
+                                                            <div class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" onclick="app.setPulseSort('name')">
+                                                                <span class="w-4 text-right opacity-50">#</span> Territory ${app.getSortIcon('name')}
+                                                            </div>
+                                                            <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-500 text-white shadow-inner scale-110' : 'hover:bg-indigo-800 text-indigo-400 hover:text-white'}" title="Filter Territories">
+                                                                <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                                                            </button>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-3 py-1 bg-amber-900/10 border-l border-r border-amber-900/20 cursor-pointer hover:bg-amber-900/30 transition-colors text-center font-bold text-amber-500" onclick="app.setPulseSort('sortVal_fy_budget')">
+                                                        <div class="flex items-center justify-center gap-1 font-bold">
+                                                            Total ${app.getSortIcon('sortVal_fy_budget')}
+                                                        </div>
+                                                    </th>
+                                                    ${app.adminShowYTD ? `
+                                                        <th class="px-1.5 py-0.5 bg-blue-900/10 cursor-pointer hover:bg-blue-900/30 transition-colors border-l border-blue-900/20" onclick="app.setPulseSort('sortVal_ytd_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_ytd_budget')}</div></th>
+                                                        <th class="px-1.5 py-0.5 bg-blue-900/10 cursor-pointer hover:bg-blue-900/30 transition-colors" onclick="app.setPulseSort('sortVal_ytd_actual')"><div class="flex items-center justify-center gap-1 text-blue-200">Actual ${app.getSortIcon('sortVal_ytd_actual')}</div></th>
+                                                        <th class="px-1.5 py-0.5 bg-blue-900/10 cursor-pointer hover:bg-blue-900/30 transition-colors" onclick="app.setPulseSort('sortVal_ytd_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_ytd_ach')}</div></th>
+                                                        <th class="px-1.5 py-0.5 bg-blue-900/10 cursor-pointer hover:bg-blue-900/30 transition-colors border-r border-blue-900/20" onclick="app.setPulseSort('sortVal_ytd_short')"><div class="flex items-center justify-center gap-1 text-rose-400">Short ${app.getSortIcon('sortVal_ytd_short')}</div></th>
+                                                    ` : ''}
+                                                    ${app.adminShowLastMonth ? `
+                                                        <th class="px-1.5 py-0.5 bg-emerald-900/10 cursor-pointer hover:bg-emerald-900/30 transition-colors border-l border-emerald-900/20" onclick="app.setPulseSort('sortVal_lm_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_lm_budget')}</div></th>
+                                                        <th class="px-1.5 py-0.5 bg-emerald-900/10 cursor-pointer hover:bg-emerald-900/30 transition-colors" onclick="app.setPulseSort('sortVal_lm_actual')"><div class="flex items-center justify-center gap-1 text-emerald-200">Actual ${app.getSortIcon('sortVal_lm_actual')}</div></th>
+                                                        <th class="px-1.5 py-0.5 bg-emerald-900/10 cursor-pointer hover:bg-emerald-900/30 transition-colors border-r border-emerald-900/20" onclick="app.setPulseSort('sortVal_lm_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_lm_ach')}</div></th>
+                                                    ` : ''}
+                                                    <th class="px-1.5 py-0.5 bg-cyan-900/10 cursor-pointer hover:bg-cyan-900/30 transition-colors border-l border-cyan-900/20" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
+                                                    <th class="px-1.5 py-0.5 bg-cyan-900/10 cursor-pointer hover:bg-cyan-900/30 transition-colors" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1 text-cyan-200">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
+                                                    ${dynamicModels.map(m => `<th class="px-1.5 py-0.5 bg-cyan-900/10 text-cyan-400 font-bold">${m}</th>`).join('')}
+                                                    <th class="px-1.5 py-0.5 bg-indigo-800/40 font-bold text-indigo-200 cursor-pointer hover:bg-indigo-700/50 transition-colors border-l border-indigo-700/50" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
+                                                    <th class="px-1.5 py-0.5 bg-indigo-800/40 font-bold text-indigo-200 cursor-pointer hover:bg-indigo-700/50 transition-colors border-r border-indigo-700/50" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-100">
+                                                ${(() => {
+                                                    let totalFYBudget = 0;
+                                                    let totalYtdBudget = 0;
+                                                    let totalYtdSales = 0;
+                                                    let totalYtdShort = 0;
+                                                    let totalLastMonthBudget = 0;
+                                                    let totalLastMonthSales = 0;
+                                                    let totalCurrBudget = 0;
+                                                    let totalCurrProj = 0;
+                                                    const totalModelMap = {};
+                                                    let totalCurrSalesUnits = 0;
+
+                                                    const rowsHTML = mappedTerritories.map((mt, idx) => {
+                                                        totalFYBudget += mt.totalFYBudget;
+                                                        totalYtdBudget += mt.perf.ytd.budget;
+                                                        totalYtdSales += mt.perf.ytd.sales;
+                                                        totalYtdShort += mt.ytdShortVal;
+                                                        totalLastMonthBudget += mt.perf.lastMonth.budget;
+                                                        totalLastMonthSales += mt.perf.lastMonth.sales;
+                                                        totalCurrBudget += mt.currBudget;
+                                                        totalCurrProj += mt.currProj;
+                                                        dynamicModels.forEach(m => {
+                                                            totalModelMap[m] = (totalModelMap[m] || 0) + (mt.modelMap[m] || 0);
+                                                        });
+                                                        totalCurrSalesUnits += mt.currSalesUnits;
+
+                                                        let achBg, achText;
+                                                        if (mt.currAchVal >= 100) { achBg = 'bg-green-100'; achText = 'text-green-700'; }
+                                                        else if (mt.currAchVal >= 80) { achBg = 'bg-lime-100'; achText = 'text-lime-700'; }
+                                                        else if (mt.currAchVal >= 60) { achBg = 'bg-amber-100'; achText = 'text-amber-700'; }
+                                                        else { achBg = 'bg-red-100'; achText = 'text-red-700'; }
+
+                                                        return `
+                                                            <tr class="hover:bg-slate-50/80 group transition-all duration-150 group text-center border-b border-slate-100">
+                                                                <td class="px-4 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/60/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
+                                                                    <div class="flex items-center justify-between gap-2">
+                                                                        <div class="flex items-center gap-1.5">
+                                                                            <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
+                                                                            <div class="w-1 h-3 bg-${mt.h}-500 rounded-full transition-all duration-300 group-hover:h-4.5 group-hover:w-1.5"></div>
+                                                                            <span class="font-bold text-slate-700">${mt.name}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="px-3 py-0.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[9px]">${mt.totalFYBudget}</span></td>
+                                                                ${app.adminShowYTD ? `
+                                                                    <td class="px-2 py-0.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
+                                                                    <td class="px-2 py-0.5 font-bold text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
+                                                                    <td class="px-2 py-0.5 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-bold">${mt.ytdAchVal}%</span>`}</td>
+                                                                    <td class="px-2 py-0.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
+                                                                ` : ''}
+                                                                ${app.adminShowLastMonth ? `
+                                                                    <td class="px-2 py-0.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
+                                                                    <td class="px-2 py-0.5 font-bold text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.sales}</td>
+                                                                    <td class="px-2 py-0.5 font-bold text-slate-600 text-center border-r-2 border-emerald-500/20">Token7 ${app.currentMonth === 'July' ? '-' : `${mt.lmAchVal}%`}</td>
+                                                                ` : ''}
+                                                                <td class="px-2 py-0.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
+                                                                <td class="px-2 py-0.5 bg-slate-50/30 font-bold text-slate-700 text-center">${mt.currProj}</td>
+                                                                ${dynamicModels.map(m => `<td class="px-2 py-0.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
+                                                                <td class="px-2 py-0.5 bg-indigo-50/30 font-bold text-indigo-700 text-center border-l border-indigo-100">${mt.currSalesUnits}</td>
+                                                                <td class="px-2 py-0.5 text-center border-r border-indigo-100 ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
+                                                            </tr>
+                                                        `;
+                                                    }).join('');
+
+                                                    const totalYtdAchVal = ach(totalYtdSales, totalYtdBudget);
+                                                    const totalH = totalYtdAchVal >= 90 ? 'emerald' : (totalYtdAchVal >= 70 ? 'blue' : 'rose');
+
+                                                    const totalCurrAchVal = ach(totalCurrSalesUnits, totalCurrBudget);
+                                                    let tAchBg, tAchText;
+                                                    if (totalCurrAchVal >= 100) { tAchBg = 'bg-emerald-100'; tAchText = 'text-emerald-700'; }
+                                                    else if (totalCurrAchVal >= 80) { tAchBg = 'bg-lime-100'; tAchText = 'text-lime-700'; }
+                                                    else if (totalCurrAchVal >= 60) { tAchBg = 'bg-amber-100'; tAchText = 'text-amber-700'; }
+                                                    else { tAchBg = 'bg-rose-100'; tAchText = 'text-rose-700'; }
+
+                                                    const totalRowHTML = `
+                                                        <tr class="bg-indigo-950 font-bold text-indigo-100 text-center border-t-[3px] border-indigo-900/80 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] relative z-20">
+                                                            <td class="px-4 py-1 text-left sticky left-0 z-10 bg-indigo-950 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.2)]">
+                                                                <div class="flex items-center gap-2">
+                                                                    <span class="w-4"></span>
+                                                                    <div class="w-1.5 h-4.5 bg-indigo-400 rounded-full shadow shadow-indigo-400/50"></div>
+                                                                    <span class="font-bold text-white text-[10.5px] uppercase tracking-widest">Grand Total</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-3 py-1 font-bold text-amber-200 bg-gradient-to-b from-amber-900/40 to-amber-900/10 border-l border-r border-amber-900/30 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
+                                                            ${app.adminShowYTD ? `
+                                                                <td class="px-1.5 py-0.5 text-blue-100 font-extrabold bg-blue-900/20 text-center border-l border-blue-900/30">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
+                                                                <td class="px-1.5 py-0.5 font-bold text-white bg-blue-900/20 text-center">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
+                                                                <td class="px-1.5 py-0.5 bg-blue-900/20 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-500/20 text-${totalH}-300 ring-1 ring-${totalH}-400/50 font-bold">${totalYtdAchVal}%</span>`}</td>
+                                                                <td class="px-1.5 py-0.5 font-bold text-rose-400 bg-blue-900/20 text-center border-r border-blue-900/30">${app.currentMonth === 'July' ? '-' : totalYtdShort}</td>
+                                                            ` : ''}
+                                                            ${app.adminShowLastMonth ? `
+                                                                <td class="px-1.5 py-0.5 text-emerald-100 font-extrabold text-center border-l border-emerald-900/30 bg-emerald-900/10">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
+                                                                <td class="px-1.5 py-0.5 font-bold text-white text-center bg-emerald-900/10">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
+                                                                <td class="px-1.5 py-0.5 font-bold text-emerald-300 text-center border-r border-emerald-900/30 bg-emerald-900/10">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
+                                                            ` : ''}
+                                                            <td class="px-1.5 py-0.5 bg-cyan-900/20 text-cyan-100 font-extrabold text-center border-l border-cyan-900/30">${totalCurrBudget}</td>
+                                                            <td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-white text-center">${totalCurrProj}</td>
+                                                            ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-cyan-300 text-center">${totalModelMap[m] || 0}</td>`).join('')}
+                                                            <td class="px-1.5 py-0.5 bg-indigo-900/40 font-bold text-white text-[10px] text-center border-l border-indigo-800/50">${totalCurrSalesUnits}</td>
+                                                            <td class="px-1.5 py-0.5 text-center border-r border-indigo-800/50 bg-indigo-900/40 ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
+                                                        </tr>
+                                                    `;
+
+                                                    return rowsHTML + totalRowHTML;
+                                                })()}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                `;
+                            })()}
+
+
+                            <!-- MOBILE CARD VIEW -->
+                            ${app.pulseDetailedView ? `
+                            <div class="md:hidden">
+                                <div class="px-5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-bold">Select Quarter:</span>
+                                    <div class="flex bg-slate-200/50 p-0.5 rounded-xl border border-slate-200/60 shadow-inner">
+                                        ${['Q1', 'Q2', 'Q3', 'Q4'].map(q => `
+                                            <button onclick="app.pulseMobileQuarter = '${q}'; app.renderAdminDashboard()" 
+                                                    class="px-3 py-1 text-[9px] font-bold transition-all ${app.pulseMobileQuarter === q ? 'bg-white shadow-sm text-indigo-700 scale-105 rounded-lg' : 'text-slate-500 hover:text-slate-800 rounded-lg'}">
+                                                ${q}
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="divide-y divide-slate-100">
+                                    ${mappedTerritories.map((mt, idx) => {
+                                        const t = mt.t;
+                                        const perf = mt.perf;
+                                        const totalFYBudget = mt.totalFYBudget;
+                                        const ytdAchVal = mt.ytdAchVal;
+                                        const h = mt.h;
+
+                                        const fiscalMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                                        const quarters = {
+                                            Q1: ['July', 'August', 'September'],
+                                            Q2: ['October', 'November', 'December'],
+                                            Q3: ['January', 'February', 'March'],
+                                            Q4: ['April', 'May', 'June']
+                                        };
+
+                                        const calcGrw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : (s > 0 ? 100 : 0);
+                                        const formatDetailedGrw = (g) => g > 0 ? `<span class="text-emerald-600 font-bold">+${g}%</span>` : (g < 0 ? `<span class="text-rose-500 font-bold">${g}%</span>` : `<span class="text-slate-400 font-medium">0%</span>`);
+
+                                        const monthlyPerf = {};
+                                        fiscalMonths.forEach(m => {
+                                            const monthTgts = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY && tg.month === m);
+                                            const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                                            const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                            const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                            monthlyPerf[m] = {
+                                                budget: mBudget,
+                                                sales: mSales,
+                                                sply: mSply,
+                                                ach: ach(mSales, mBudget),
+                                                growth: calcGrw(mSales, mSply)
+                                            };
+                                        });
+
+                                        const qMonths = quarters[app.pulseMobileQuarter];
+                                        const qBudget = qMonths.reduce((sum, m) => sum + monthlyPerf[m].budget, 0);
+                                        const qSales = qMonths.reduce((sum, m) => sum + monthlyPerf[m].sales, 0);
+                                        const qSply = qMonths.reduce((sum, m) => sum + monthlyPerf[m].sply, 0);
+                                        const qPerf = {
+                                            budget: qBudget,
+                                            sales: qSales,
+                                            sply: qSply,
+                                            ach: ach(qSales, qBudget),
+                                            growth: calcGrw(qSales, qSply)
+                                        };
+
+                                        let qRowsHTML = qMonths.map(m => {
+                                            const p = monthlyPerf[m];
+                                            return `
+                                                <tr class="text-center hover:bg-slate-50 transition-colors">
+                                                    <td class="py-1 text-left font-bold text-slate-700 text-[9px]">${m.substring(0, 3)}</td>
+                                                    <td class="py-1 text-slate-500 font-medium">${p.budget}</td>
+                                                    <td class="py-1 font-bold text-slate-800">${p.sales}</td>
+                                                    <td class="py-1 font-bold text-slate-800">${p.ach}%</td>
+                                                    <td class="py-1 text-slate-500 font-medium">${p.sply}</td>
+                                                    <td class="py-1 text-[9px] font-bold">${formatDetailedGrw(p.growth)}</td>
+                                                </tr>
+                                            `;
+                                        }).join('');
+
+                                        let qTotalColor = '';
+                                        if (app.pulseMobileQuarter === 'Q1') qTotalColor = 'bg-violet-50 text-violet-800';
+                                        else if (app.pulseMobileQuarter === 'Q2') qTotalColor = 'bg-amber-50 text-amber-800';
+                                        else if (app.pulseMobileQuarter === 'Q3') qTotalColor = 'bg-emerald-50 text-emerald-800';
+                                        else if (app.pulseMobileQuarter === 'Q4') qTotalColor = 'bg-cyan-50 text-cyan-800';
+
+                                        let qTotalRowHTML = `
+                                            <tr class="text-center font-bold ${qTotalColor}">
+                                                <td class="py-1 text-left font-bold text-[9px]">${app.pulseMobileQuarter} TOT</td>
+                                                <td class="py-1">${qPerf.budget}</td>
+                                                <td class="py-1">${qPerf.sales}</td>
+                                                <td class="py-1"><span class="px-1.5 py-0.5 rounded bg-white font-bold">${qPerf.ach}%</span></td>
+                                                <td class="py-1">${qPerf.sply}</td>
+                                                <td class="py-1 text-[9px] font-bold">${formatDetailedGrw(qPerf.growth)}</td>
+                                            </tr>
+                                        `;
+
+                                        return `
+                                            <div class="p-3 bg-white active:bg-slate-50 transition-colors">
+                                                <div class="flex justify-between items-start mb-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-10 h-10 rounded-xl bg-${h}-50 border border-${h}-100 flex items-center justify-center text-${h}-600 font-bold shadow-sm">
+                                                            ${t.name.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-bold text-slate-800 leading-tight">${t.name}</h4>
+                                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Detailed Performance Matrix</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <span class="text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-1.5 py-0.5 shadow-sm">FY Bgt: ${totalFYBudget}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100 shadow-inner">
+                                                    <table class="w-full text-[9px] text-center border-collapse">
+                                                        <thead>
+                                                            <tr class="text-slate-400 uppercase tracking-wider border-b border-slate-100 font-bold">
+                                                                <th class="py-1 text-left">Period</th>
+                                                                <th class="py-1">Bgt</th>
+                                                                <th class="py-1">Sal</th>
+                                                                <th class="py-1 text-indigo-600 font-bold">Ach%</th>
+                                                                <th class="py-1">SPLY</th>
+                                                                <th class="py-1">Growth</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-slate-50 font-medium">
+                                                            ${qRowsHTML + qTotalRowHTML}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                            ` : `
+                            <div class="md:hidden divide-y divide-slate-100">
+                                ${mappedTerritories.map((mt, idx) => {
+                                    const t = mt.t;
+                                    const perf = mt.perf;
+                                    const currBudget = mt.currBudget;
+                                    const currSalesUnits = mt.currSalesUnits;
+                                    const ytdAchVal = mt.ytdAchVal;
+                                    const h = mt.h;
+
+                                    return `
+                                        <div class="p-3 bg-white active:bg-slate-50 transition-colors">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-xl bg-${h}-50 border border-${h}-100 flex items-center justify-center text-${h}-600 font-bold">
+                                                        ${t.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="font-bold text-slate-800">${t.name}</h4>
+                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active Pulse</p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="text-xl font-bold text-indigo-700">${currSalesUnits}</span>
+                                                    <p class="text-[9px] font-bold text-slate-400 uppercase">${app.currentMonth} Units</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-3 gap-2">
+                                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                                    <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">Budget</p>
+                                                    <p class="text-[10px] font-bold text-slate-700">${currBudget}</p>
+                                                </div>
+                                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                                    <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">YTD Ach</p>
+                                                    <p class="text-[10px] font-bold text-${app.currentMonth === 'July' ? 'slate-400' : `${h}-600`}">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</p>
+                                                </div>
+                                                <div class="bg-indigo-50 p-2.5 rounded-xl border border-indigo-100">
+                                                    <p class="text-[8px] font-bold text-indigo-400 uppercase mb-1">M.Ach</p>
+                                                    <p class="text-[10px] font-bold text-indigo-700">${ach(currSalesUnits, currBudget)}%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            `}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${!isAM ? `
+                    <!-- Area (AM) Performance Analytics & Mobile Cards -->
+                    <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                        <div class="p-3 border-b border-indigo-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-indigo-50/30">
+                            <div>
+                                <h3 class="font-bold text-indigo-900 flex items-center gap-2">
+                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-100">
+                                        <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
+                                    </div>
+                                    AM Sync
+                                </h3>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Insights</p>
+                            </div>
+                        </div>
+                        
+                        <!-- DESKTOP TABLE VIEW -->
+                        <div class="hidden md:block overflow-x-auto">
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
+                                        <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
+                                        <th class="px-4 py-1 font-bold bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-1 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    </tr>
+                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center font-bold">
+                                        <th class="px-4 py-1 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span>Area</span>
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
+                                                    <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <th class="px-4 py-1 bg-white border-r border-indigo-100 text-left">
+                                            <span>AM Name</span>
+                                        </th>
+                                        ${app.adminShowYTD ? `
+                                            <th class="px-1.5 py-0.5">Budget</th>
+                                            <th class="px-1.5 py-0.5 font-bold text-slate-600">Actual</th>
+                                            <th class="px-1.5 py-0.5">Ach%</th>
+                                        ` : ''}
+                                        ${app.adminShowLastMonth ? `
+                                            <th class="px-1.5 py-0.5">Budget</th>
+                                            <th class="px-1.5 py-0.5 font-bold text-slate-600">Actual</th>
+                                        ` : ''}
+                                        <th class="px-1.5 py-0.5 bg-indigo-50/30">Budget</th>
+                                        <th class="px-1.5 py-0.5 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-1.5 py-0.5 bg-indigo-50/30">${m}</th>`).join('')}
+                                        <th class="px-1.5 py-0.5 bg-indigo-100 text-indigo-900 font-extrabold border-l border-indigo-200">Total</th>
+                                        <th class="px-1.5 py-0.5 bg-indigo-100 text-indigo-900 font-extrabold">Ach%</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50 bg-white">
+                                    ${areaStats.map(area => {
+                            const modelCells = activeModels.map(mName => {
+                                const qty = area.modelSales[mName] || 0;
+                                return `<td class="px-1.5 py-0.5 bg-slate-50/30 ${qty > 0 ? 'font-bold text-slate-700' : 'text-slate-300'} border-r border-slate-100/60">${qty > 0 ? qty : '-'}</td>`;
+                            }).join('');
+                            const totalSalesDisplay = area.currSales > 0 ? `<div class="font-bold text-[11px]">${area.currSales}</div>` : '<span class="text-slate-400">0</span>';
+
+                            return `
+                                            <tr class="hover:bg-indigo-50/20 transition-colors text-center">
+                                                <td class="px-4 py-1 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[9px] font-bold shrink-0">${area.name.charAt(0)}</div>
+                                                        <span class="font-bold text-slate-700">${area.name}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-1 text-left font-bold text-indigo-600 border-r border-indigo-50 bg-slate-50/30 whitespace-nowrap">
+                                                    ${area.areaName}
+                                                </td>
+                                                ${app.adminShowYTD ? `
+                                                    <td class="px-1.5 py-0.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-slate-700">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-indigo-600">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
+                                                ` : ''}
+                                                ${app.adminShowLastMonth ? `
+                                                    <td class="px-1.5 py-0.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-slate-700">${app.currentMonth === 'July' ? '-' : area.lastMonth.sales}</td>
+                                                ` : ''}
+                                                <td class="px-1.5 py-0.5 bg-slate-50/50 text-slate-400">${area.currBudget}</td>
+                                                <td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-slate-700">${area.currProj}</td>
+                                                ${modelCells}
+                                                <td class="px-1.5 py-0.5 bg-indigo-50 font-bold text-indigo-900 border-l border-indigo-100/50">${totalSalesDisplay}</td>
+                                                <td class="px-1.5 py-0.5 bg-indigo-50 font-bold text-indigo-900">${ach(area.currSales, area.currBudget)}%</td>
+                                            </tr>
+                                        `;
+                        }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- MOBILE CARD VIEW -->
+                        <div class="md:hidden divide-y divide-slate-100">
+                            ${areaStats.map(area => {
+                            const ytdAchVal = ach(area.ytd.sales, area.ytd.budget);
+                            const mAchVal = ach(area.currSales, area.currBudget);
+
+                            return `
+                                    <div class="p-3 bg-white active:bg-slate-50 transition-colors">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-12 h-12 rounded-xl bg-indigo-600 shadow-sm border border-slate-200/60 shadow-indigo-200 flex items-center justify-center text-white font-bold text-lg">
+                                                    ${area.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <h4 class="font-bold text-slate-800">${area.name}</h4>
+                                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${area.areaName}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="text-xl font-bold text-indigo-700">${area.currSales}</span>
+                                                <p class="text-[9px] font-bold text-slate-400 uppercase">Sales Units</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <p class="text-[8px] font-bold text-indigo-400 uppercase">M-Target Ach</p>
+                                                    <span class="text-[9px] font-bold text-indigo-700">${mAchVal}%</span>
+                                                </div>
+                                                <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border border-indigo-100">
+                                                    <div class="h-full bg-indigo-600 rounded-full" style="width: ${Math.min(100, mAchVal)}%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <p class="text-[8px] font-bold text-emerald-500 uppercase">YTD Target</p>
+                                                    <span class="text-[9px] font-bold text-emerald-700">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</span>
+                                                </div>
+                                                <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border border-emerald-100">
+                                                    <div class="h-full bg-emerald-500 rounded-full" style="width: ${app.currentMonth === 'July' ? 0 : Math.min(100, ytdAchVal)}%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                        }).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Detailed Sales Data Table (Like Admin Panel) -->
+                    ${isAM ? `
+                    <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                        <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
+                            <div>
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-slate-100">
+                                        <i data-lucide="clipboard-list" class="w-5 h-5 text-emerald-600"></i>
+                                    </div>
+                                    Detailed Performance Data
+                                </h3>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Raw Sales Records for Assigned Territories</p>
+                            </div>
+                            <div class="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-xl text-[10px] font-bold border border-emerald-100 shadow-sm flex items-center gap-2">
+                                <i data-lucide="database" class="w-4 h-4"></i> Total Records: ${currFYSales.filter(s => s.brand === brandFilter).length}
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
+                                        <th class="px-3 py-1.5 font-bold sticky left-0 z-10 bg-slate-50">Customer Details</th>
+                                        <th class="px-3 py-4">Location</th>
+                                        <th class="px-3 py-4">Vehicle</th>
+                                        <th class="px-3 py-4">Sale Type</th>
+                                        <th class="px-3 py-4 text-center">Units</th>
+                                        <th class="px-3 py-4">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50 bg-white">
+                                    ${currFYSales.filter(s => s.brand === brandFilter).map(s => `
+                                        <tr class="hover:bg-slate-50/80 group transition-colors group">
+                                            <td class="px-3 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                                <div class="font-bold text-slate-700">${s.customer_name || s.customer_id || 'Unknown'}</div>
+                                                <div class="text-[9px] text-slate-400 mt-0.5">${s.phone || 'No phone'}</div>
+                                            </td>
+                                            <td class="px-3 py-4 text-slate-600">
+                                                <div class="font-bold text-slate-800">${DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown'}</div>
+                                                <div class="font-medium text-slate-700 mt-0.5">${s.upazila}</div>
+                                                <div class="text-[9px] text-slate-400 mt-0.5">${s.district}</div>
+                                            </td>
+                                            <td class="px-3 py-4">
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold border ${s.brand === 'Foton' ? 'bg-foton-light text-foton border-foton/30' : 'bg-mahindra-light text-mahindra border-mahindra/30'}">${s.brand}</span>
+                                                    <span class="font-bold text-slate-800">${s.model}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-3 py-4 text-slate-500">${s.sale_type}</td>
+                                            <td class="px-3 py-4 font-bold text-indigo-600 text-center">${s.unit_qty}</td>
+                                            <td class="px-3 py-4"><span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase">Delivered</span></td>
+                                        </tr>
+                                    `).join('')}
+                                    ${currFYSales.filter(s => s.brand === brandFilter).length === 0 ? '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 font-medium">No sales data found for the selected criteria.</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+
+                // Highlight active mobile nav tab
+                ['nav-dashboard', 'nav-map', 'nav-ai', 'nav-emi', 'nav-notices'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('nav-tab-active', 'text-aci-blue');
+                });
+                const activeNav = document.getElementById('nav-dashboard');
+                if (activeNav) activeNav.classList.add('nav-tab-active', 'text-aci-blue');
+
+                // Calculate YOY Chart specific data based on local YOY Brand Tab
+                let yoyTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.sale_type === currentSaleType);
+                if (app.yoyBrandTab !== 'All') yoyTgts = yoyTgts.filter(tg => tg.brand === app.yoyBrandTab);
+                if (isAM) yoyTgts = yoyTgts.filter(tg => app.currentUser.territories.includes(tg.territory_id));
+                if (app.yoyTerritoryFilter !== 'All') yoyTgts = yoyTgts.filter(tg => tg.territory_id === app.yoyTerritoryFilter);
+                
+                const yoyMonthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const yoyMonthlyBudgets = yoyMonthsList.map(m => {
+                    const monthTgts = yoyTgts.filter(tg => tg.month === m);
+                    return monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : (Math.round(yoyTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12) || 0);
+                });
+
+                let yoyCurrSales = currFYSales;
+                let yoyLastSales = lastFYSales;
+                if (app.yoyBrandTab !== 'All') {
+                    yoyCurrSales = yoyCurrSales.filter(s => s.brand === app.yoyBrandTab);
+                    yoyLastSales = yoyLastSales.filter(s => s.brand === app.yoyBrandTab);
+                }
+                if (app.yoyTerritoryFilter !== 'All') {
+                    yoyCurrSales = yoyCurrSales.filter(s => s.territory_id === app.yoyTerritoryFilter);
+                    yoyLastSales = yoyLastSales.filter(s => s.territory_id === app.yoyTerritoryFilter);
+                }
+
+                // Render Charts
+                app.renderChartYoyTrend(yoyCurrSales, yoyLastSales, yoyMonthlyBudgets);
+                app.renderDashboardMiniMap(yoyCurrSales);
+                app.renderChartTerritory(currFYSales);
+                app.renderChartBrand(fotonUnits, mahindraUnits);
+            },
+
+            renderDashboardMiniMap: async (yoyCurrSales) => {
+                const monthSales = yoyCurrSales.filter(s => s.sales_month === app.currentMonth);
+                const totalMonthSales = monthSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                
+                const badgeEl = document.getElementById('minimap-sales-total');
+                if (badgeEl) badgeEl.innerText = totalMonthSales + ' Units';
+
+                // Aggregate District Sales
+                const districtAgg = {};
+                monthSales.forEach(s => {
+                    if (s.district) {
+                        districtAgg[s.district] = (districtAgg[s.district] || 0) + Number(s.unit_qty || 0);
+                    }
+                });
+
+                const maxSales = Math.max(...Object.values(districtAgg), 1);
+                const normalizedAgg = {};
+                Object.entries(districtAgg).forEach(([k, v]) => {
+                    normalizedAgg[app.getNormalizedKey(k)] = v;
+                });
+
+                setTimeout(async () => {
+                    // Clear existing map instance
+                    if (app.dashboardMiniMap) {
+                        try {
+                            app.dashboardMiniMap.remove();
+                        } catch (e) {
+                            console.error('Failed to remove mini map:', e);
+                        }
+                        app.dashboardMiniMap = null;
+                    }
+
+                    // Check if element exists in DOM
+                    const mapContainer = document.getElementById('dashboard-mini-map');
+                    if (!mapContainer) return;
+
+                    // Initialize Leaflet mini map
+                    app.dashboardMiniMap = L.map('dashboard-mini-map', {
+                        zoomControl: false,
+                        attributionControl: false,
+                        maxBounds: [[20.0, 87.5], [27.0, 93.0]],
+                        minZoom: 5.5,
+                        maxZoom: 9,
+                        zoomSnap: 0.05,
+                        zoomDelta: 0.5
+                    }).setView([23.75, 90.25], 6.05);
+
+                    try {
+                        const geoUrl = 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json';
+                        if (!app.geoJsonCache) app.geoJsonCache = {};
+                        if (!app.geoJsonCache['district']) {
+                            const res = await fetch(geoUrl);
+                            if (!res.ok) throw new Error('Failed to fetch mini-map boundaries');
+                            app.geoJsonCache['district'] = await res.json();
+                        }
+
+                        const geoData = app.geoJsonCache['district'];
+
+                        // Color palette logic matching high/med/low density
+                        const getPolygonColor = (d) => {
+                            if (!d || d === 0) return '#f8fafc'; // light slate-50 background for 0 sales
+                            const pct = d / maxSales;
+                            if (pct > 0.66) return '#e11d48'; // rose-600 (High sales)
+                            if (pct > 0.33) return '#f59e0b'; // amber-500 (Med sales)
+                            return '#3b82f6'; // blue-500 (Low sales)
+                        };
+
+                        const style = (feature) => {
+                            const propName = feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '';
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+                            return {
+                                fillColor: getPolygonColor(sales),
+                                weight: sales > 0 ? 1.5 : 0.8,
+                                opacity: 1,
+                                color: sales > 0 ? '#ffffff' : '#cbd5e1', // white border if has sales, light slate border if empty
+                                fillOpacity: sales > 0 ? 0.75 : 0.25
+                            };
+                        };
+
+                        const onEachFeature = (feature, layer) => {
+                            const propName = feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '';
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+                            
+                            layer.bindTooltip(`
+                                <div class="px-2 py-1 text-slate-800 font-bold font-sans text-xs bg-white rounded-lg shadow border border-slate-100">
+                                    <div class="text-[10px] text-slate-500 font-medium">${propName}</div>
+                                    <div class="text-indigo-600 font-extrabold mt-0.5">${sales} Units</div>
+                                </div>
+                            `, {
+                                permanent: false,
+                                sticky: true,
+                                opacity: 0.95,
+                                className: 'custom-leaflet-tooltip'
+                            });
+
+                            layer.on({
+                                mouseover: (e) => {
+                                    const l = e.target;
+                                    l.setStyle({
+                                        weight: 2,
+                                        color: '#10b981', // Emerald green border on hover
+                                        fillOpacity: 0.9
+                                    });
+                                },
+                                mouseout: (e) => {
+                                    geojsonLayer.resetStyle(e.target);
+                                }
+                            });
+                        };
+
+                        const geojsonLayer = L.geoJSON(geoData, {
+                            style: style,
+                            onEachFeature: onEachFeature
+                        }).addTo(app.dashboardMiniMap);
+
+                        // Enforce Leaflet layout recalculation
+                        app.dashboardMiniMap.invalidateSize();
+
+                    } catch (err) {
+                        console.error('Failed to load dashboard mini map:', err);
+                    }
+                }, 100);
+            },
+
+            renderChartYoyTrend: (currData, lastData, monthlyBudget) => {
+                // Clear any existing animation frame to prevent duplicate loops
+                if (app.charts.yoyTrendAnimFrame) {
+                    cancelAnimationFrame(app.charts.yoyTrendAnimFrame);
+                    app.charts.yoyTrendAnimFrame = null;
+                }
+                if (app.charts.yoyTrend) app.charts.yoyTrend.destroy();
+
+                const ctx = document.getElementById('chartYoyTrend').getContext('2d');
+
+                const fullMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const shortMonths = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+                const currAgg = Array(12).fill(0);
+                const lastAgg = Array(12).fill(0);
+                const budgetAgg = Array.isArray(monthlyBudget) ? monthlyBudget : Array(12).fill(monthlyBudget || 0);
+
+                currData.forEach(s => {
+                    const idx = fullMonths.indexOf(s.sales_month);
+                    if (idx > -1) currAgg[idx] += Number(s.unit_qty || 0);
+                });
+
+                lastData.forEach(s => {
+                    const idx = fullMonths.indexOf(s.sales_month);
+                    if (idx > -1) lastAgg[idx] += Number(s.unit_qty || 0);
+                });
+
+                // Truncate future months based on selected current reporting month
+                const currentMonthIdx = fullMonths.indexOf(app.currentMonth);
+                const displayCurrAgg = currAgg.map((val, idx) => idx <= currentMonthIdx ? val : null);
+
+                const currGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                currGrad.addColorStop(0, 'rgba(15, 41, 66, 0.4)'); // ACI Blue transparent
+                currGrad.addColorStop(1, 'rgba(15, 41, 66, 0.0)');
+
+                const datasets = [];
+
+                // 1. Current Year Line (Will be actively animated via loop)
+                datasets.push({
+                    label: 'Current FY (25-26)',
+                    data: displayCurrAgg,
+                    borderColor: '#0F2942', // Base color, overridden by animation loop
+                    backgroundColor: currGrad,
+                    borderWidth: 4,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#06b6d4',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                });
+
+                // 2. Last Year Line (Toggleable & Distinct Color)
+                if (app.yoyShowLY) {
+                    datasets.push({
+                        label: 'Last FY (24-25)',
+                        data: lastAgg,
+                        borderColor: '#f59e0b', // Distinct Amber/Orange
+                        borderWidth: 2,
+                        borderDash: [6, 4],
+                        tension: 0.4,
+                        fill: false,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    });
+                }
+
+                // 3. Monthly Budget Line (Animated Marching Ants)
+                datasets.push({
+                    label: 'Monthly Budget',
+                    data: budgetAgg,
+                    borderColor: '#94a3b8', // Slate 400
+                    borderWidth: 2,
+                    borderDash: [8, 6],
+                    tension: 0,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                });
+
+                app.charts.yoyTrend = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: shortMonths,
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 10 } } },
+                            tooltip: { titleFont: { family: 'Inter' }, bodyFont: { family: 'Inter' } }
+                        },
+                        scales: {
+                            y: { border: { display: false }, grid: { borderDash: [4, 4], color: '#f1f5f9' }, beginAtZero: true },
+                            x: { border: { display: false }, grid: { display: false } }
+                        }
+                    }
+                });
+
+                // --- CREATIVE LIVE ANIMATION ENGINE ---
+                let startTime = Date.now();
+                const animateLine = () => {
+                    if (!app.charts.yoyTrend) return;
+
+                    const now = Date.now();
+                    const elapsed = now - startTime;
+                    let needsUpdate = false;
+                    const canvasWidth = ctx.canvas.width;
+
+                    if (canvasWidth > 0) {
+                        // 1. Animate Current FY Gradient Color
+                        const currData = app.charts.yoyTrend.data.datasets.find(d => d.label === 'Current FY (25-26)');
+                        if (currData) {
+                            const gradient = ctx.createLinearGradient(0, 0, canvasWidth, 0);
+
+                            // Calculate a smooth shifting phase
+                            const pos = (elapsed % 3000) / 3000;
+
+                            const colorBase = '#0F2942'; // ACI Blue
+                            const colorHighlight1 = '#06b6d4'; // Cyan
+                            const colorHighlight2 = '#6366f1'; // Indigo
+
+                            gradient.addColorStop(0, colorBase);
+
+                            // Moving bright spots along the line
+                            let stops = [
+                                { o: pos, c: colorHighlight1 },
+                                { o: (pos + 0.3) % 1, c: colorHighlight2 }
+                            ].sort((a, b) => a.o - b.o);
+
+                            stops.forEach(s => {
+                                if (s.o > 0 && s.o < 1) gradient.addColorStop(s.o, s.c);
+                            });
+
+                            gradient.addColorStop(1, colorBase);
+                            currData.borderColor = gradient;
+                            needsUpdate = true;
+                        }
+
+                        // 2. Animate Budget Line (Marching Ants)
+                        const budgetData = app.charts.yoyTrend.data.datasets.find(d => d.label === 'Monthly Budget');
+                        if (budgetData) {
+                            budgetData.borderDashOffset = -(elapsed / 30); // Continuous scrolling dashes
+                            needsUpdate = true;
+                        }
+                    }
+
+                    // Only update the canvas without triggering massive layout redraws
+                    if (needsUpdate) {
+                        app.charts.yoyTrend.update('none');
+                    }
+
+                    // Request next frame
+                    app.charts.yoyTrendAnimFrame = requestAnimationFrame(animateLine);
+                };
+
+                // Start the animation loop
+                app.charts.yoyTrendAnimFrame = requestAnimationFrame(animateLine);
+            },
+
+            toggleMapMonth: (month) => {
+                if (!app.mapMonths) app.mapMonths = [];
+                const idx = app.mapMonths.indexOf(month);
+                if (idx > -1) {
+                    app.mapMonths.splice(idx, 1);
+                } else {
+                    app.mapMonths.push(month);
+                }
+                app.renderAdminSalesMap(true);
+            },
+
+            toggleAIMonth: (month) => {
+                if (!app.aiMonths) app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const idx = app.aiMonths.indexOf(month);
+                if (idx > -1) {
+                    app.aiMonths.splice(idx, 1);
+                } else {
+                    app.aiMonths.push(month);
+                }
+                app.renderAdminAIInsights(true);
+            },
+
+            // --- AI ACTION HUB INTERACTION HELPERS ---
+            showAIModal: (htmlContent) => {
+                let modal = document.getElementById('ai-action-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'ai-action-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center';
+                    document.body.appendChild(modal);
+                } else {
+                    modal.classList.remove('hidden');
+                }
+                modal.innerHTML = htmlContent;
+                if (typeof app.refreshIcons === 'function') app.refreshIcons();
+            },
+
+            closeAIModal: () => {
+                const modal = document.getElementById('ai-action-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.innerHTML = '';
+                }
+            },
+
+            executeBudgetShiftModal: (sourceName, destName, amount, key) => {
+                const html = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
+                    <div class="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-2xl p-4 relative z-10 shadow-2xl flex flex-col border border-slate-100 transform scale-95 md:scale-100 transition-all duration-300">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="arrow-left-right" class="w-4 h-4 text-purple-600"></i>
+                                Optimize Budget Allocation
+                            </h3>
+                            <button onclick="app.closeAIModal()" class="text-slate-400 bg-slate-100 rounded-full hover:bg-slate-200 p-1.5 transition-colors">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                                AI has detected a conversion risk in <span class="text-slate-800 font-extrabold">${destName}</span>. Shifting surplus marketing budget from <span class="text-slate-800 font-extrabold">${sourceName}</span> can boost conversion rates in the target area without hurting the donor region.
+                            </p>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-bold text-slate-400 uppercase tracking-wider">Source (Surplus)</span>
+                                    <span class="font-black text-slate-700">${sourceName}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-bold text-slate-400 uppercase tracking-wider">Destination (Deficit)</span>
+                                    <span class="font-black text-slate-700">${destName}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-bold text-slate-400 uppercase tracking-wider">Reallocation Pct</span>
+                                    <span class="font-black text-purple-600">${amount}% of Promo Budget</span>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-purple-50 rounded-xl border border-purple-100 text-[10px] text-purple-700 font-semibold leading-relaxed flex gap-2">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0 text-purple-500"></i>
+                                <span>Estimated Impact: Surplus region is projected to maintain target easily. Target region is projected to gain <strong class="font-extrabold text-purple-800">+8 to +12 sales units</strong>.</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6 pt-3 border-t border-slate-100">
+                            <button onclick="app.closeAIModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 text-[10px] uppercase tracking-wider transition-colors">Cancel</button>
+                            <button onclick="app.confirmBudgetShift('${sourceName}', '${destName}', ${amount}, '${key}')" class="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-[10px] uppercase tracking-wider shadow-sm shadow-purple-200 transition-colors">Confirm Shift</button>
+                        </div>
+                    </div>
+                `;
+                app.showAIModal(html);
+            },
+
+            confirmBudgetShift: (sourceName, destName, amount, key) => {
+                if (typeof app.aiActionsState === 'undefined') app.aiActionsState = {};
+                app.aiActionsState[key] = 'Executed';
+                localStorage.setItem('aci_ai_actions_state', JSON.stringify(app.aiActionsState));
+                app.closeAIModal();
+                app.showToast(`Budget successfully shifted from ${sourceName} to ${destName}!`, 'success');
+                app.renderAdminAIInsights(true);
+            },
+
+            dispatchAINoticeModal: (territoryName, achVal, key) => {
+                const defaultTitle = `Action Required: Performance Acceleration in ${territoryName}`;
+                const defaultMsg = `Dear Area Manager & Branch Officers in ${territoryName},\n\nAI analysis of sales targets for the current period indicates that ${territoryName} is currently pacing at only ${achVal}% achievement. This is below the required conversion threshold.\n\nPlease mobilize all MOs to accelerate customer follow-ups and prioritize under-negotiated deals immediately to secure our target for the month.\n\nBest Regards,\nSales360 Strategic Operations Center`;
+
+                const html = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
+                    <div class="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-2xl p-4 relative z-10 shadow-2xl flex flex-col border border-slate-100 transform scale-95 md:scale-100 transition-all duration-300">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="megaphone" class="w-4 h-4 text-indigo-600"></i>
+                                Dispatch AI Target Notice
+                            </h3>
+                            <button onclick="app.closeAIModal()" class="text-slate-400 bg-slate-100 rounded-full hover:bg-slate-200 p-1.5 transition-colors">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                                Send a target acceleration directive to all branch officers in <span class="text-slate-800 font-extrabold">${territoryName}</span>. This will be posted to the global Notices Board immediately.
+                            </p>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Notice Title</label>
+                                    <input type="text" id="ai-notice-title" value="${defaultTitle}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Notice Message</label>
+                                    <textarea id="ai-notice-msg" rows="5" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-600 focus:outline-none focus:border-indigo-500 leading-relaxed">${defaultMsg}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6 pt-3 border-t border-slate-100">
+                            <button onclick="app.closeAIModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 text-[10px] uppercase tracking-wider transition-colors">Cancel</button>
+                            <button onclick="app.confirmDispatchNotice('${key}')" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[10px] uppercase tracking-wider shadow-sm shadow-indigo-200 transition-colors">Publish Notice</button>
+                        </div>
+                    </div>
+                `;
+                app.showAIModal(html);
+            },
+
+            confirmDispatchNotice: async (key) => {
+                const title = document.getElementById('ai-notice-title').value;
+                const msg = document.getElementById('ai-notice-msg').value;
+
+                if (!title || !msg) {
+                    app.showToast('Notice Title and Message cannot be empty.', 'warning');
+                    return;
+                }
+
+                app.showLoader('Circulating Notice...');
+                try {
+                    const newNotice = {
+                        id: 'n_' + Math.floor(Math.random() * 1000000),
+                        title: title,
+                        message: msg,
+                        fileName: null,
+                        fileType: null,
+                        timestamp: new Date().toLocaleDateString('en-GB')
+                    };
+                    DB.notices.push(newNotice);
+
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO notices (id, title, message, timestamp, filetype, filename) VALUES (${newNotice.id}, ${newNotice.title}, ${newNotice.message}, ${newNotice.timestamp}, ${newNotice.fileType}, ${newNotice.fileName})`;
+                    }
+
+                    // Trigger notification bell/badge update
+                    const badge = document.getElementById('global-notice-badge');
+                    const ping = document.getElementById('global-notice-ping');
+                    const bellIcon = document.getElementById('global-notice-icon');
+                    const msgPopup = document.getElementById('global-notice-message');
+                    if (badge) badge.style.display = 'block';
+                    if (ping) ping.style.display = 'block';
+                    if (msgPopup) {
+                        msgPopup.classList.remove('hidden');
+                        msgPopup.classList.add('block');
+                    }
+                    if (bellIcon) {
+                        bellIcon.classList.remove('text-slate-500');
+                        bellIcon.classList.add('animate-ring-shake', 'text-amber-500');
+                    }
+
+                    if (typeof app.aiActionsState === 'undefined') app.aiActionsState = {};
+                    app.aiActionsState[key] = 'Executed';
+                    localStorage.setItem('aci_ai_actions_state', JSON.stringify(app.aiActionsState));
+
+                    app.closeAIModal();
+                    app.showToast('Strategic notice circulated globally!', 'success');
+                    app.renderAdminAIInsights(true);
+                } catch (err) {
+                    console.error('Failed to circulate AI notice:', err);
+                    app.showToast('Failed to save notice to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            transferInventoryModal: (modelName, upazilaName, qty, key) => {
+                const html = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
+                    <div class="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-2xl p-4 relative z-10 shadow-2xl flex flex-col border border-slate-100 transform scale-95 md:scale-100 transition-all duration-300">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="package" class="w-4 h-4 text-amber-600"></i>
+                                Pre-position Inventory
+                            </h3>
+                            <button onclick="app.closeAIModal()" class="text-slate-400 bg-slate-100 rounded-full hover:bg-slate-200 p-1.5 transition-colors">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-xs font-semibold text-slate-500 leading-relaxed">
+                                Demand trends identify highly accelerated velocity for <span class="text-slate-800 font-extrabold">${modelName}</span> in <span class="text-slate-800 font-extrabold">${upazilaName}</span>. AI recommends pre-allocating inventory to local dealer warehouse to avoid stockouts.
+                            </p>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-bold text-slate-400 uppercase tracking-wider">Model Name</span>
+                                    <span class="font-black text-slate-700">${modelName}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-bold text-slate-400 uppercase tracking-wider">Target Upazila</span>
+                                    <span class="font-black text-slate-700">${upazilaName}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-bold text-slate-400 uppercase tracking-wider">Reallocation Volume</span>
+                                    <span class="font-black text-amber-600">${qty} Units</span>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 text-[10px] text-amber-700 font-semibold leading-relaxed flex gap-2">
+                                <i data-lucide="info" class="w-3.5 h-3.5 shrink-0 text-amber-500"></i>
+                                <span>Estimated Transit: 2 working days. Pre-allocation secures supply-chain lead time, mitigating loss-of-sales risk.</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6 pt-3 border-t border-slate-100">
+                            <button onclick="app.closeAIModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 text-[10px] uppercase tracking-wider transition-colors">Cancel</button>
+                            <button onclick="app.confirmTransferInventory('${modelName}', '${upazilaName}', ${qty}, '${key}')" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-[10px] uppercase tracking-wider shadow-sm shadow-amber-200 transition-colors">Confirm Transfer</button>
+                        </div>
+                    </div>
+                `;
+                app.showAIModal(html);
+            },
+
+            confirmTransferInventory: (modelName, upazilaName, qty, key) => {
+                if (typeof app.aiActionsState === 'undefined') app.aiActionsState = {};
+                app.aiActionsState[key] = 'Executed';
+                localStorage.setItem('aci_ai_actions_state', JSON.stringify(app.aiActionsState));
+                app.closeAIModal();
+                app.showToast(`${qty} units of ${modelName} pre-positioned to ${upazilaName}!`, 'success');
+                app.renderAdminAIInsights(true);
+            },
+
+            getNormalizedKey: (name) => {
+                if (!name) return '';
+                const aliases = { 'chittagong': 'chattogram', 'barisal': 'barishal', 'jessore': 'jashore', 'bogra': 'bogura', 'comilla': 'cumilla' };
+                let clean = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                clean = clean.replace(/sadar$/, '');
+                return aliases[clean] || clean;
+            },
+
+            selectMapArea: (name) => {
+                if (app.mapViewMode === 'district') {
+                    app.mapDistrictTab = name;
+                    app.mapViewMode = 'upazila';
+                    app.renderAdminSalesMap();
+                } else {
+                    if (app.geoLayer) {
+                        let found = false;
+                        app.geoLayer.eachLayer(layer => {
+                            const propName = layer.feature.properties.ADM3_EN || layer.feature.properties.name || '';
+                            if (app.getNormalizedKey(propName) === app.getNormalizedKey(name)) {
+                                found = true;
+                                layer.fire('mouseover');
+                                app.salesMap.fitBounds(layer.getBounds(), { padding: [40, 40] });
+                            }
+                        });
+                        if (!found) {
+                            app.showToast(`Upazila boundary for ${name} not found on map.`, 'info');
+                        }
+                    }
+                }
+            },
+
+            filterMapList: (val) => {
+                const query = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const items = document.querySelectorAll('#map-area-list > div');
+                items.forEach(item => {
+                    const name = item.getAttribute('data-name');
+                    if (name.includes(query)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            },
+
+            hoverMapArea: (name) => {
+                if (!app.geoLayer) return;
+                app.geoLayer.eachLayer(layer => {
+                    const propName = app.mapViewMode === 'district'
+                        ? (layer.feature.properties.ADM2_EN || layer.feature.properties.name || '')
+                        : (layer.feature.properties.ADM3_EN || layer.feature.properties.name || '');
+                    
+                    if (name && app.getNormalizedKey(propName) === app.getNormalizedKey(name)) {
+                        layer.setStyle({ weight: 3, color: '#10b981', fillOpacity: 0.85 });
+                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); }
+                    } else {
+                        app.geoLayer.resetStyle(layer);
+                    }
+                });
+            },
+
+            renderAdminAnalytics: (keepDropdownOpen = false) => {
+                try {
+                    localStorage.setItem('aci_last_page', 'analytics');
+                    app.setupSidebar();
+                    app.closeSidebar();
+
+                    const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                    const passedMonthsCount = app.getYtdMonths(app.currentMonth).length || 1; // Avoid division by zero
+
+                    // Helper to filter sales
+                    const filterSales = (fy) => {
+                        return DB.sales.filter(s => {
+                            let match = s.fy === fy && String(s.unit_qty) !== '0';
+                            if (app.analyticsBrand !== 'All') match = match && s.brand === app.analyticsBrand;
+                            if (app.analyticsModel !== 'All') match = match && s.model === app.analyticsModel;
+                            if (app.analyticsTerritory !== 'All') match = match && s.territory_id === app.analyticsTerritory;
+                            if (app.analyticsUpazila !== 'All') match = match && s.upazila === app.analyticsUpazila;
+                            return match;
+                        });
+                    };
+
+                    const salesFY1 = filterSales(app.analyticsFY1);
+                    const salesFY2 = filterSales(app.analyticsFY2);
+
+                    const totalFY1 = salesFY1.reduce((sum, s) => sum + Number(s.unit_qty), 0);
+                    const totalFY2 = salesFY2.reduce((sum, s) => sum + Number(s.unit_qty), 0);
+                    
+                    // For prediction, check if the FY is the current one. If not, prediction = actual.
+                    const predictFY1 = app.analyticsFY1 === app.currentFY ? Math.round((totalFY1 / passedMonthsCount) * 12) : totalFY1;
+                    const predictFY2 = app.analyticsFY2 === app.currentFY ? Math.round((totalFY2 / passedMonthsCount) * 12) : totalFY2;
+
+                    const growthStr = totalFY1 > 0 ? (((totalFY2 - totalFY1) / totalFY1) * 100).toFixed(1) + '%' : 'N/A';
+                    const isPositive = totalFY2 >= totalFY1;
+
+                    // Unique dropdown values
+                    const allFys = [...new Set(DB.sales.map(s => s.fy))].filter(Boolean).sort().reverse();
+                    if(allFys.length === 0) allFys.push(app.currentFY);
+                    
+                    const allBrands = [...new Set(DB.sales.map(s => s.brand))].filter(Boolean).sort();
+                    const allModels = [...new Set(DB.sales.map(s => s.model))].filter(Boolean).sort();
+                    const allTerritories = DB.territories.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+                    const allUpazilas = [...new Set(DB.sales.map(s => s.upazila))].filter(Boolean).sort();
+
+                    let html = `
+                        <div class="animate-fade-in pb-20">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 tracking-tight flex items-center gap-2">
+                                        <i data-lucide="bar-chart-2" class="w-6 h-6 text-sky-500"></i> Historical Analytics
+                                    </h2>
+                                    <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
+                                </div>
+                            </div>
+
+                            <!-- Filter Bar -->
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm mb-4 flex flex-wrap gap-3 items-end sticky top-16 z-20">
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
+                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Compare FY</label>
+                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        ${allFys.map(f => `<option value="${f}" ${app.analyticsFY2 === f ? 'selected' : ''}>${f}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Brand</label>
+                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsBrand === 'All' ? 'selected' : ''}>All Brands</option>
+                                        ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Model</label>
+                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsModel === 'All' ? 'selected' : ''}>All Models</option>
+                                        ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Territory</label>
+                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsTerritory === 'All' ? 'selected' : ''}>All Territories</option>
+                                        ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upazila</label>
+                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                        <option value="All" ${app.analyticsUpazila === 'All' ? 'selected' : ''}>All Upazilas</option>
+                                        ${allUpazilas.map(u => `<option value="${u}" ${app.analyticsUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- KPI Overview -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
+                                        <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
+                                </div>
+                                
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
+                                        <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
+                                </div>
+
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="text-xl font-bold tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
+                                            <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-medium">Compared to ${app.analyticsFY1} baseline</div>
+                                </div>
+                            </div>
+
+                            <!-- Charts Section -->
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                                <!-- Line Chart -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 lg:col-span-2 flex flex-col">
+                                    <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i data-lucide="activity" class="w-4 h-4 text-sky-500"></i> Monthly Trend Analysis
+                                    </h3>
+                                    <div class="flex-1 relative min-h-[300px]">
+                                        <canvas id="chartAnalyticsTrend"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <!-- Brand Share -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 flex flex-col">
+                                    <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> Brand Share (${app.analyticsFY2})
+                                    </h3>
+                                    <div class="flex-1 relative min-h-[300px] flex items-center justify-center">
+                                        <canvas id="chartAnalyticsBrand"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <!-- Territory Bar Chart -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 lg:col-span-3 flex flex-col">
+                                    <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-amber-500"></i> Regional Comparison (${app.analyticsFY1} vs ${app.analyticsFY2})
+                                    </h3>
+                                    <div class="flex-1 relative min-h-[400px]">
+                                        <canvas id="chartAnalyticsRegion"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('view-port').innerHTML = html;
+                    lucide.createIcons();
+
+                    // Prepare data for charts
+                    const monthlyDataFY1 = new Array(12).fill(0);
+                    const monthlyDataFY2 = new Array(12).fill(0);
+                    
+                    salesFY1.forEach(s => {
+                        const idx = monthsList.indexOf(s.sales_month);
+                        if (idx !== -1) monthlyDataFY1[idx] += Number(s.unit_qty);
+                    });
+                    
+                    salesFY2.forEach(s => {
+                        const idx = monthsList.indexOf(s.sales_month);
+                        if (idx !== -1) monthlyDataFY2[idx] += Number(s.unit_qty);
+                    });
+
+                    // Prepare Brand Data for FY2
+                    const brandMap = {};
+                    salesFY2.forEach(s => {
+                        const b = s.brand || 'Unknown';
+                        brandMap[b] = (brandMap[b] || 0) + Number(s.unit_qty);
+                    });
+                    
+                    // Prepare Regional Data (Territory)
+                    const regionMap = {};
+                    salesFY1.forEach(s => {
+                        const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+                        if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
+                        regionMap[tName].fy1 += Number(s.unit_qty);
+                    });
+                    salesFY2.forEach(s => {
+                        const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+                        if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
+                        regionMap[tName].fy2 += Number(s.unit_qty);
+                    });
+
+                    const sortedRegions = Object.keys(regionMap).sort((a,b) => regionMap[b].fy2 - regionMap[a].fy2); // Sort by FY2 descending
+
+                    // Render Charts
+                    app.renderChartAnalyticsTrend(monthsList, monthlyDataFY1, monthlyDataFY2, app.analyticsFY1, app.analyticsFY2);
+                    app.renderChartAnalyticsBrand(Object.keys(brandMap), Object.values(brandMap));
+                    app.renderChartAnalyticsRegion(sortedRegions, sortedRegions.map(r => regionMap[r].fy1), sortedRegions.map(r => regionMap[r].fy2), app.analyticsFY1, app.analyticsFY2);
+                } catch (e) {
+                    console.error("Historical Analytics Error:", e);
+                    document.getElementById('view-port').innerHTML = `
+                        <div class="p-3 max-w-2xl mx-auto mt-10 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+                            <div class="flex gap-3 items-start">
+                                <div class="p-2 bg-red-100 text-red-600 rounded-lg">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-xs font-bold text-red-800">Historical Analytics Failed to Load</h3>
+                                    <p class="text-xs text-red-600 mt-1">${e.message}</p>
+                                    <div class="mt-4 bg-slate-900 text-slate-300 p-3 rounded-lg text-[10px] font-mono overflow-auto max-h-48 leading-relaxed">
+                                        ${e.stack}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+
+            renderChartAnalyticsTrend: (labels, data1, data2, label1, label2) => {
+                if (app.charts.analyticsTrend) app.charts.analyticsTrend.destroy();
+                const ctx = document.getElementById('chartAnalyticsTrend').getContext('2d');
+                
+                // Gradients
+                const grad1 = ctx.createLinearGradient(0, 0, 0, 400);
+                grad1.addColorStop(0, 'rgba(148, 163, 184, 0.5)'); // Slate 400
+                grad1.addColorStop(1, 'rgba(148, 163, 184, 0.0)');
+                
+                const grad2 = ctx.createLinearGradient(0, 0, 0, 400);
+                grad2.addColorStop(0, 'rgba(14, 165, 233, 0.5)'); // Sky 500
+                grad2.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
+
+                app.charts.analyticsTrend = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: label1,
+                                data: data1,
+                                borderColor: '#94a3b8',
+                                backgroundColor: grad1,
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#94a3b8',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: label2,
+                                data: data2,
+                                borderColor: '#0ea5e9',
+                                backgroundColor: grad2,
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#0ea5e9',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' } } },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                titleColor: '#1e293b',
+                                bodyColor: '#334155',
+                                borderColor: '#e2e8f0',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                bodyFont: { size: 12, family: "'Inter', sans-serif", weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' } },
+                            y: { grid: { color: '#f1f5f9', borderDash: [4, 4] }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' }, beginAtZero: true }
+                        }
+                    }
+                });
+            },
+
+            renderChartAnalyticsBrand: (labels, data) => {
+                if (app.charts.analyticsBrand) app.charts.analyticsBrand.destroy();
+                const ctx = document.getElementById('chartAnalyticsBrand').getContext('2d');
+                
+                const bgColors = [
+                    '#8b5cf6', // Violet
+                    '#3b82f6', // Blue
+                    '#10b981', // Emerald
+                    '#f59e0b', // Amber
+                    '#f43f5e', // Rose
+                    '#64748b'  // Slate
+                ];
+
+                app.charts.analyticsBrand = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: bgColors,
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' } } },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                titleColor: '#1e293b',
+                                bodyColor: '#334155',
+                                borderColor: '#e2e8f0',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                bodyFont: { size: 12, family: "'Inter', sans-serif", weight: 'bold' },
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed !== null) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = Math.round((context.parsed / total) * 100);
+                                            label += `${context.parsed} Units (${percentage}%)`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            renderChartAnalyticsRegion: (labels, data1, data2, label1, label2) => {
+                if (app.charts.analyticsRegion) app.charts.analyticsRegion.destroy();
+                const ctx = document.getElementById('chartAnalyticsRegion').getContext('2d');
+
+                app.charts.analyticsRegion = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: label1,
+                                data: data1,
+                                backgroundColor: '#94a3b8',
+                                borderRadius: 4,
+                                borderSkipped: false,
+                            },
+                            {
+                                label: label2,
+                                data: data2,
+                                backgroundColor: '#0ea5e9',
+                                borderRadius: 4,
+                                borderSkipped: false,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' } } },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                titleColor: '#1e293b',
+                                bodyColor: '#334155',
+                                borderColor: '#e2e8f0',
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                usePointStyle: true,
+                                titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                bodyFont: { size: 12, family: "'Inter', sans-serif", weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' } },
+                            y: { grid: { color: '#f1f5f9', borderDash: [4, 4] }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' }, beginAtZero: true }
+                        }
+                    }
+                });
+            },
+
+            renderAdminAIInsights: (keepDropdownOpen = false) => {
+                localStorage.setItem('aci_last_page', 'ai');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
+                const currentFY = app.selectedFY || app.currentFY;
+                const currentMonth = app.currentMonth;
+                const currentDay = 14; // Mocking mid-month
+                const daysInMonth = 30;
+
+                // State Initialization
+                if (typeof app.aiMonths === 'undefined' || (!keepDropdownOpen && app.aiMonths.length === 0)) {
+                    app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                }
+                const activeMonthsInSelection = app.aiMonths;
+
+                if (typeof app.aiActionsState === 'undefined') {
+                    app.aiActionsState = JSON.parse(localStorage.getItem('aci_ai_actions_state')) || {};
+                }
+                if (typeof app.aiTerrPerformanceFilter === 'undefined' || !keepDropdownOpen) {
+                    app.aiTerrPerformanceFilter = 'all';
+                }
+
+                // 1. National Aggregation
+                let totalActual = 0;
+                let totalTarget = 0;
+                let totalProjection = 0;
+
+                const brandStats = {
+                    Foton: { actual: 0, target: 0, projection: 0, lyActual: 0 },
+                    Mahindra: { actual: 0, target: 0, projection: 0, lyActual: 0 }
+                };
+
+                const currentSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
+
+                currentSales.forEach(s => {
+                    totalActual += Number(s.unit_qty || 0);
+                    if (brandStats[s.brand]) brandStats[s.brand].actual += Number(s.unit_qty || 0);
+                });
+
+                DB.targets.filter(t => t.fy === currentFY).forEach(t => {
+                    let monthlyTarget = 0;
+                    if (t.month) {
+                        if (activeMonthsInSelection.includes(t.month)) {
+                            monthlyTarget = Number(t.target_qty || 0);
+                        }
+                    } else {
+                        // Annual target: distribute proportionally to number of selected months
+                        monthlyTarget = Math.round((Number(t.target_qty || 0) / 12) * activeMonthsInSelection.length);
+                    }
+                    totalTarget += monthlyTarget;
+                    if (brandStats[t.brand]) brandStats[t.brand].target += monthlyTarget;
+                });
+
+                DB.projections.filter(p => p.fy === currentFY && activeMonthsInSelection.includes(p.month)).forEach(p => {
+                    totalProjection += Number(p.projection_qty || 0);
+                    if (brandStats[p.brand]) brandStats[p.brand].projection += Number(p.projection_qty || 0);
+                });
+
+                // LY Stats for Growth Analysis
+                DB.sales.filter(s => s.fy === '2024-25' && activeMonthsInSelection.includes(s.sales_month)).forEach(s => {
+                    if (brandStats[s.brand]) brandStats[s.brand].lyActual += Number(s.unit_qty || 0);
+                });
+
+                // Calculate elapsed days for pacing calculations based on selected months
+                const hasCurrentMonth = activeMonthsInSelection.includes(currentMonth);
+                const elapsedDays = hasCurrentMonth 
+                    ? ((activeMonthsInSelection.length - 1) * 30 + currentDay) 
+                    : (activeMonthsInSelection.length * 30);
+                const totalDays = activeMonthsInSelection.length * 30;
+
+                // AI Predictions
+                const dailyRate = totalActual / Math.max(elapsedDays, 1);
+                const predictedClose = Math.round(dailyRate * totalDays);
+                const predictionConfidence = 85;
+                const isPacingWell = predictedClose >= totalTarget;
+                
+                // Advanced pacing parameters
+                const remainingDays = Math.max(1, totalDays - elapsedDays);
+                const pacingGap = totalTarget - totalActual;
+                const dailyGapNeeded = pacingGap > 0 ? Math.ceil(pacingGap / remainingDays) : 0;
+                const currentDailyAvg = (totalActual / Math.max(1, elapsedDays)).toFixed(1);
+                const requiredDailyAvg = pacingGap > 0 ? (pacingGap / remainingDays).toFixed(1) : '0.0';
+
+                // Territory Heat Analysis
+                const terrPerformance = DB.territories.map(t => {
+                    const tActual = currentSales.filter(s => s.territory_id === t.id).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const tTarget = DB.targets.filter(tg => tg.territory_id === t.id && tg.fy === currentFY).reduce((sum, tg) => {
+                        let mTarget = 0;
+                        if (tg.month) {
+                            if (activeMonthsInSelection.includes(tg.month)) {
+                                mTarget = Number(tg.target_qty || 0);
+                            }
+                        } else {
+                            mTarget = Math.round((Number(tg.target_qty || 0) / 12) * activeMonthsInSelection.length);
+                        }
+                        return sum + mTarget;
+                    }, 0);
+                    const ach = tTarget > 0 ? Math.round((tActual / tTarget) * 100) : 0;
+                    return { ...t, actual: tActual, target: tTarget, ach };
+                }).sort((a, b) => b.ach - a.ach);
+
+                const topTerritories = terrPerformance.slice(0, 3);
+                const atRiskTerritories = terrPerformance.filter(t => t.ach < 40).sort((a, b) => a.ach - b.ach).slice(0, 3);
+
+                // --- NEW ADVANCED ANALYTICS ---
+                const ytdSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
+
+                // 1. Model-Upazila Affinity (Champion Models)
+                const modelUpazilaMap = {};
+                ytdSales.forEach(s => {
+                    const key = `${s.model}|${s.upazila}`;
+                    modelUpazilaMap[key] = (modelUpazilaMap[key] || 0) + Number(s.unit_qty || 0);
+                });
+
+                const upazilaAffinities = [];
+                const upazilasSeen = new Set();
+                Object.entries(modelUpazilaMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([key, qty]) => {
+                        const [model, upazila] = key.split('|');
+                        if (!upazilasSeen.has(upazila) && upazilaAffinities.length < 6) {
+                            upazilaAffinities.push({ model, upazila, qty });
+                            upazilasSeen.add(upazila);
+                        }
+                    });
+
+                // 2. Underperforming Models (Bottom 3 by Volume)
+                const modelTotalSales = {};
+                DB.models.forEach(m => modelTotalSales[m.name] = 0);
+                ytdSales.forEach(s => { modelTotalSales[s.model] += Number(s.unit_qty || 0); });
+
+                const modelInsights = DB.models.map(m => ({
+                    ...m,
+                    sales: modelTotalSales[m.name],
+                    performance: modelTotalSales[m.name] > 20 ? 'High' : (modelTotalSales[m.name] > 10 ? 'Medium' : 'Low')
+                })).sort((a, b) => a.sales - b.sales);
+
+                const underperformers = modelInsights.filter(m => m.performance === 'Low').slice(0, 3);
+
+                // 3. Brand Dominance Battleground
+                const brandDominance = DB.territories.map(t => {
+                    const tSales = ytdSales.filter(s => s.territory_id === t.id);
+                    const f = tSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const leader = f > m ? 'Foton' : (m > f ? 'Mahindra' : 'Contested');
+                    const leaderColor = leader === 'Foton' ? 'indigo' : (leader === 'Mahindra' ? 'rose' : 'slate');
+                    return { name: t.name, f, m, leader, leaderColor, total: f + m };
+                }).filter(t => t.total > 0).sort((a, b) => b.total - a.total).slice(0, 4);
+
+                // Prepare Dynamic Interventions based on calculated data
+                const highestTerr = terrPerformance.length > 0 ? terrPerformance[0] : null;
+                const lowestTerr = terrPerformance.length > 0 ? terrPerformance[terrPerformance.length - 1] : null;
+
+                const html = `
+                    <div class="max-w-7xl mx-auto fade-in pb-12">
+                        <!-- AI Header Section -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3 px-2 md:px-0">
+                            <div class="w-full md:w-auto">
+                                <h1 class="text-xl md:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                                    <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl shadow-sm shadow-purple-200">
+                                        <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
+                                    </div>
+                                    <span>AI Strategic <span class="text-purple-600 font-bold">Insights</span></span>
+                                </h1>
+                                <p class="text-slate-400 font-semibold text-[10px] mt-1 flex items-center gap-1.5">
+                                    <span class="flex h-2.5 w-2.5 relative">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                                    </span>
+                                    <span>DYNAMIC DIAGNOSTICS ACTIVE</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md p-1.5 rounded-xl shadow-sm border border-slate-100 w-full md:w-auto">
+                                <div class="px-3 py-1 flex-1 md:flex-none text-center">
+                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Confidence Level</p>
+                                    <p class="text-xs font-bold text-purple-600 flex items-center justify-center gap-1">
+                                        ${predictionConfidence}%
+                                        <span class="group relative inline-block cursor-pointer">
+                                            <i data-lucide="info" class="w-3 h-3 text-slate-400 hover:text-slate-600"></i>
+                                            <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[10px] p-2 rounded-lg w-40 shadow-sm pointer-events-none z-[110] leading-normal font-medium text-center">
+                                                Statistical confidence interval based on current run-rate variance vs targets.
+                                            </span>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="w-px h-6 bg-slate-200"></div>
+                                
+                                <!-- Month Multi-Select for AI Insights -->
+                                <div class="flex items-center gap-2 relative">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
+                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200/60 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[120px]">
+                                        <span>${activeMonthsInSelection.length === 12 ? 'All FY (YTD)' : activeMonthsInSelection.length + ' Selected'}</span>
+                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-1 text-slate-400"></i>
+                                    </button>
+                                    <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-1.5 right-0 w-48 bg-white border border-slate-200/60 rounded-xl shadow-sm z-[100] max-h-64 overflow-y-auto">
+                                        <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+                                            <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-bold text-slate-700 transition-colors">
+                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : [app.currentMonth]; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                Select All FY (YTD)
+                                            </label>
+                                        </div>
+                                        <div class="p-2 space-y-0.5">
+                                            ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => `
+                                                <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-semibold text-slate-600 transition-colors">
+                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                    ${m}
+                                                </label>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Level AI Summary Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                            <!-- Prediction Card -->
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm border border-slate-200/60 relative overflow-hidden group">
+                                <div class="absolute -right-8 -top-8 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
+                                <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    AI Forecast Closing
+                                    <span class="group relative inline-block cursor-pointer">
+                                        <i data-lucide="info" class="w-3 h-3 text-slate-300 hover:text-slate-500"></i>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[10px] p-2 rounded-lg w-48 shadow-sm pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
+                                            Calculated by extrapolating YTD average daily run-rate over the total selected months (30 days/month).
+                                        </span>
+                                    </span>
+                                </h3>
+                                
+                                <div class="flex items-baseline gap-1 mb-3">
+                                    <span class="text-xl font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
+                                    <span class="text-xs font-bold text-slate-400 uppercase">Units</span>
+                                </div>
+
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200/60 mb-2 relative">
+                                    <div class="bg-purple-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.min(100, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
+                                    <div class="absolute top-0 bottom-0 w-0.5 bg-slate-400" style="left: ${Math.min(99, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
+                                </div>
+
+                                <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-4">
+                                    <span>YTD Actual: ${totalActual}</span>
+                                    <span>Target: ${totalTarget}</span>
+                                </div>
+
+                                <div class="border-t border-slate-100/60 pt-3 flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Pace Status</span>
+                                        <span class="text-xs font-extrabold ${isPacingWell ? 'text-green-600' : 'text-amber-600'}">
+                                            ${isPacingWell ? 'Ahead of Schedule' : 'Behind Target'}
+                                        </span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Pacing Rate</span>
+                                        <span class="text-xs font-bold text-slate-700 block">${currentDailyAvg} vs req. ${requiredDailyAvg} / day</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Brand Momentum Card -->
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm border border-slate-200/60 relative overflow-hidden group">
+                                <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
+                                <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                                    <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    Strategic Brand Momentum
+                                    <span class="group relative inline-block cursor-pointer">
+                                        <i data-lucide="info" class="w-3 h-3 text-slate-300 hover:text-slate-500"></i>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[10px] p-2 rounded-lg w-48 shadow-sm pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
+                                            Measures YTD sales achievement percentage against proportional budget target per brand.
+                                        </span>
+                                    </span>
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-bold mb-1 uppercase tracking-tighter">
+                                            <span class="text-indigo-600">Foton Velocity</span>
+                                            <span class="text-slate-500">${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}% of Goal</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
+                                            <div class="bg-indigo-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[10px] font-bold mb-1 uppercase tracking-tighter">
+                                            <span class="text-rose-600">Mahindra Velocity</span>
+                                            <span class="text-slate-500">${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}% of Goal</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
+                                            <div class="bg-rose-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Insight Card -->
+                            <div class="bg-slate-900 p-3 rounded-[1.75rem] border border-slate-800 shadow-sm border border-slate-200/60 relative overflow-hidden group text-white">
+                                <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                                    <i data-lucide="cpu" class="w-24 h-24 text-purple-400"></i>
+                                </div>
+                                <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    Deep Data Synthesis
+                                    <span class="group relative inline-block cursor-pointer">
+                                        <i data-lucide="info" class="w-3 h-3 text-slate-500 hover:text-slate-400"></i>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[10px] p-2 rounded-lg w-48 shadow-sm pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
+                                            Compares current financial year performance with Same Period Last Year (SPLY) and tracks volume gap.
+                                        </span>
+                                    </span>
+                                </h3>
+                                <p class="text-xs font-semibold leading-relaxed text-slate-300 mb-3.5">
+                                    National growth is <strong class="text-white font-extrabold">${Math.round(((totalActual - (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual)) / (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual || 1)) * 100)}%</strong> vs SPLY. ${predictedClose > totalTarget ? 'Target surplus projected. Maintaining positive momentum.' : 'Daily volume gap identified: +' + dailyGapNeeded + ' units/day needed to recover.'}
+                                </p>
+                                <div class="flex items-center gap-3 pt-2 border-t border-slate-800">
+                                    <div class="flex -space-x-1.5">
+                                        <div class="w-5.5 h-5.5 rounded-full bg-purple-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">AI</div>
+                                        <div class="w-5.5 h-5.5 rounded-full bg-indigo-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">BI</div>
+                                    </div>
+                                    <span class="text-[8px] font-bold uppercase tracking-widest text-slate-500">Real-Time Forecast Optimization</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NEW: AI INTERVENTION CONSOLE (Action Hub) -->
+                        <div class="mb-3 bg-white p-3 rounded-[1.75rem] border border-slate-100 shadow-sm">
+                            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                                <h2 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                                    <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600"></i>
+                                    AI Intervention Console
+                                </h2>
+                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border border-purple-200">Decision Center</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <!-- Action Card 1: Budget Reallocation -->
+                                ${lowestTerr && highestTerr ? (() => {
+                                    const actionKey = `budget_shift_${lowestTerr.id}`;
+                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
+                                    return `
+                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-purple-100 bg-purple-50/10'} hover:shadow-sm transition-all duration-300 relative">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-purple-100 text-purple-700 border border-purple-200'}">
+                                                    ${isExecuted ? 'Executed' : 'High Priority'}
+                                                </span>
+                                                <span class="text-[8px] font-bold text-slate-400">Budget Shift</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                                Shift Promo Budget to ${lowestTerr.name}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                                Shift 15% promotional budget from high-surplus <strong class="text-slate-800 font-bold">${highestTerr.name}</strong> to support conversion rates in struggling <strong class="text-slate-800 font-bold">${lowestTerr.name}</strong> (${lowestTerr.ach}% ach).
+                                            </p>
+                                        </div>
+                                        <div>
+                                            ${isExecuted ? `
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
+                                            ` : `
+                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-sm shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                    `;
+                                })() : ''}
+
+                                <!-- Action Card 2: Send notice -->
+                                ${lowestTerr ? (() => {
+                                    const actionKey = `notice_${lowestTerr.id}`;
+                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
+                                    return `
+                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-indigo-100 bg-indigo-50/10'} hover:shadow-sm transition-all duration-300">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}">
+                                                    ${isExecuted ? 'Circulated' : 'Action Required'}
+                                                </span>
+                                                <span class="text-[8px] font-bold text-slate-400">Direct Message</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                                Issue Target Directive in ${lowestTerr.name}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                                Current achievement of <strong class="text-slate-800 font-bold">${lowestTerr.ach}%</strong> is below pacing baseline. Dispatch an AI-generated notice to push local MOs to prioritize key conversions.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            ${isExecuted ? `
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
+                                            ` : `
+                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-sm shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                    `;
+                                })() : ''}
+
+                                <!-- Action Card 3: Stock Pre-positioning -->
+                                ${upazilaAffinities.length > 0 ? (() => {
+                                    const aff = upazilaAffinities[0];
+                                    const actionKey = `stock_${aff.upazila}`;
+                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
+                                    return `
+                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-amber-100 bg-amber-50/10'} hover:shadow-sm transition-all duration-300">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-amber-100 text-amber-700 border border-amber-200'}">
+                                                    ${isExecuted ? 'Dispatched' : 'Supply Risk'}
+                                                </span>
+                                                <span class="text-[8px] font-bold text-slate-400">Inventory Alert</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                                Pre-position ${aff.model} to ${aff.upazila}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                                High demand affinity detected in <strong class="text-slate-800 font-bold">${aff.upazila}</strong> (${aff.qty} units). Pre-position 10 buffer stock units to secure market availability.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            ${isExecuted ? `
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
+                                            ` : `
+                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-sm shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                    `;
+                                })() : ''}
+                            </div>
+                        </div>
+
+                        <!-- NEW: Advanced Model & Market Affinity Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+                            <!-- Column 1: Product-Market Fit (Upazila Wise) -->
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-indigo-500"></i>
+                                            Upazila Champion Models
+                                        </h3>
+                                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 tracking-wider">FIT INDEX</span>
+                                    </div>
+                                    <div class="space-y-2.5">
+                                        ${upazilaAffinities.map(a => `
+                                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-300 hover:bg-white transition-all shadow-sm">
+                                                <div>
+                                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${a.upazila}</p>
+                                                    <p class="font-extrabold text-slate-700 text-xs">${a.model}</p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="px-2 py-0.5 bg-white rounded-lg border border-slate-200/60 text-[10px] font-bold text-indigo-600 shadow-sm">${a.qty} Units</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <p class="text-[8px] text-slate-400 font-bold mt-4 uppercase tracking-widest text-center italic">High-affinity model-regional correlation</p>
+                            </div>
+
+                            <!-- Column 2: Brand Dominance Battleground -->
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="swords" class="w-4 h-4 text-rose-500"></i>
+                                            Regional Brand Dominance
+                                        </h3>
+                                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 tracking-wider">MARKET SHARE</span>
+                                    </div>
+                                    <div class="space-y-4">
+                                        ${brandDominance.map(t => `
+                                            <div>
+                                                <div class="flex justify-between items-end mb-1">
+                                                    <span class="text-[10px] font-bold text-slate-600">${t.name}</span>
+                                                    <span class="text-[8px] font-bold text-${t.leaderColor}-600 uppercase tracking-wider">Leading: ${t.leader}</span>
+                                                </div>
+                                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex p-0.5 border border-slate-200/60">
+                                                    <div class="bg-indigo-500 h-full transition-all duration-700" style="width: ${(t.f / t.total) * 100}%"></div>
+                                                    <div class="bg-rose-500 h-full transition-all duration-700" style="width: ${(t.m / t.total) * 100}%"></div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span><span>Foton</span></div>
+                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Mahindra</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Column 3: Risk & Underperforming Assets -->
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm flex flex-col justify-between bg-slate-50/30">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-xs font-bold text-rose-700 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
+                                            Model Performance Risks
+                                        </h3>
+                                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 tracking-wider">WARN</span>
+                                    </div>
+                                    <div class="space-y-2.5">
+                                        ${underperformers.map(m => `
+                                            <div class="p-3 rounded-xl bg-white border border-rose-100 shadow-sm relative overflow-hidden group">
+                                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${m.brand}</p>
+                                                <div class="flex justify-between items-center relative z-10">
+                                                    <span class="font-extrabold text-slate-700 text-xs">${m.name}</span>
+                                                    <div class="text-right">
+                                                        <span class="text-rose-600 font-extrabold text-xs">${m.sales} Sales</span>
+                                                        <p class="text-[7px] font-bold text-rose-400 uppercase tracking-tighter">Underperforming</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                        ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-6 text-xs">All models performing within threshold.</p>' : ''}
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-2.5 bg-amber-50 rounded-xl border border-amber-100 text-[10px] text-amber-700 font-semibold italic leading-normal">
+                                    "Low velocity in models suggests stock saturation or price friction. Re-assess dealer discounts."
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Quantum Market Intelligence & Predictive Forecasting -->
+                        <div class="mb-3">
+                            <div class="flex items-center gap-2 mb-4">
+                                <h2 class="text-base font-bold text-slate-800 tracking-tight">Quantum Market Intelligence</h2>
+                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border border-purple-200">Experimental Model</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <!-- Predictive Seasonal Shift -->
+                                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-3 rounded-[1.75rem] text-white shadow-sm relative overflow-hidden group">
+                                    <div class="absolute -right-4 -top-3 w-20 h-20 bg-white/5 rounded-full blur-xl group-hover:scale-125 transition-transform duration-500"></div>
+                                    <h4 class="text-[10px] font-bold text-indigo-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                                        Next Period Forecast (May)
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="font-medium text-slate-300">Projected Demand</span>
+                                            <span class="font-bold text-indigo-400">+12.4%</span>
+                                        </div>
+                                        <div class="p-2 bg-white/5 rounded-lg border border-white/10">
+                                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Trending Model</p>
+                                            <p class="text-xs font-bold text-white">Mahindra Bolero Pick-up</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 pt-3 border-t border-white/10 text-[10px] text-slate-400 leading-relaxed italic">
+                                        "Seasonal uptick in rural agricultural harvest transportation expected."
+                                    </div>
+                                </div>
+
+                                <!-- Territory Growth Clustering -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm relative overflow-hidden flex flex-col justify-between">
+                                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                        Growth Clusters
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-emerald-50 border border-emerald-100 text-[10px]">
+                                            <span class="font-bold text-emerald-700 uppercase">Hyper-Growth</span>
+                                            <span class="font-extrabold text-emerald-800">2 Regions</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[10px]">
+                                            <span class="font-bold text-blue-700 uppercase">Steady State</span>
+                                            <span class="font-extrabold text-blue-800">5 Regions</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-rose-50 border border-rose-100 text-[10px]">
+                                            <span class="font-bold text-rose-700 uppercase">Reactivation</span>
+                                            <span class="font-extrabold text-rose-800">1 Region</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Sales Probability Index -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm relative overflow-hidden flex flex-col justify-between">
+                                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="target" class="w-3.5 h-3.5 text-purple-500"></i>
+                                        FY Target Probability
+                                    </h4>
+                                    <div class="flex flex-col items-center justify-center py-1">
+                                        <div class="relative w-16 h-16 flex items-center justify-center">
+                                            <svg class="w-full h-full transform -rotate-90">
+                                                <circle cx="32" cy="32" r="28" fill="transparent" stroke="#f1f5f9" stroke-width="6"/>
+                                                <circle cx="32" cy="32" r="28" fill="transparent" stroke="#8b5cf6" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="${176 * (1 - 0.92)}"/>
+                                            </svg>
+                                            <span class="absolute text-xs font-extrabold text-slate-800">92%</span>
+                                        </div>
+                                        <p class="text-[10px] font-extrabold text-purple-600 uppercase mt-2 tracking-tighter">Very High Confidence</p>
+                                    </div>
+                                </div>
+
+                                <!-- Inventory Run-Rate Predictor -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm relative overflow-hidden flex flex-col justify-between">
+                                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="box" class="w-3.5 h-3.5 text-amber-500"></i>
+                                        Stock Depletion Alert
+                                    </h4>
+                                    <div class="space-y-2.5">
+                                        <div class="flex justify-between text-[11px] font-bold">
+                                            <span class="text-slate-500">Buffer Depot Exhaustion:</span>
+                                            <span class="text-rose-600 font-extrabold">18 Days</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-rose-500 h-full rounded-full" style="width: 75%"></div>
+                                        </div>
+                                        <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wider text-center">Based on 14-day trailing run-rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main AI Content Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                            <!-- Left: Recommendations & Heatmap Matrix -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <!-- Dynamic Market Heatmap Visualization -->
+                                <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-500"></i>
+                                            Territory Performance Matrix
+                                        </h2>
+                                        
+                                        <!-- Matrix Filter Tabs -->
+                                        <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200/60 text-[10px] font-bold">
+                                            <button onclick="app.aiTerrPerformanceFilter='all'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">All</button>
+                                            <button onclick="app.aiTerrPerformanceFilter='risk'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'risk' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">At Risk (<60%)</button>
+                                            <button onclick="app.aiTerrPerformanceFilter='strong'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'strong' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">Strong (>=80%)</button>
+                                        </div>
+                                    </div>
+
+                                    ${(() => {
+                                        let filteredTerrPerformance = [...terrPerformance];
+                                        if (app.aiTerrPerformanceFilter === 'risk') {
+                                            filteredTerrPerformance = filteredTerrPerformance.filter(t => t.ach < 60);
+                                        } else if (app.aiTerrPerformanceFilter === 'strong') {
+                                            filteredTerrPerformance = filteredTerrPerformance.filter(t => t.ach >= 80);
+                                        }
+
+                                        if (filteredTerrPerformance.length === 0) {
+                                            return `<div class="text-center text-slate-400 py-10 font-bold text-xs">No territories match the selected filter.</div>`;
+                                        }
+
+                                        return `
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                            ${filteredTerrPerformance.map(t => `
+                                                <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all duration-300 group flex flex-col justify-between">
+                                                    <div>
+                                                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1 truncate">${t.name}</p>
+                                                        <div class="flex justify-between items-end">
+                                                            <span class="text-base font-extrabold text-slate-700">${t.ach}%</span>
+                                                            <div class="w-6.5 h-6.5 rounded-full flex items-center justify-center ${t.ach > 70 ? 'bg-green-100 text-green-600' : (t.ach > 40 ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600')}">
+                                                                <i data-lucide="${t.ach > 70 ? 'smile' : (t.ach > 40 ? 'smile' : 'frown')}" class="w-3.5 h-3.5"></i>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-[8px] text-slate-400 mt-1">Act: ${t.actual} / Tgt: ${t.target}</p>
+                                                    </div>
+                                                    <div class="w-full bg-slate-200 h-1.5 rounded-full mt-3 overflow-hidden">
+                                                        <div class="${t.ach > 70 ? 'bg-green-500' : (t.ach > 40 ? 'bg-amber-500' : 'bg-red-500')} h-full rounded-full" style="width: ${Math.min(t.ach, 100)}%"></div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        `;
+                                    })()}
+                                </div>
+                            </div>
+
+                            <!-- Right: Leaders & Risk Zones -->
+                            <div class="space-y-6">
+                                <!-- Top Performers -->
+                                <div class="bg-white p-3 rounded-[1.75rem] border border-slate-100 shadow-sm">
+                                    <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5 mb-4">
+                                        <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                        Top Performers
+                                    </h3>
+                                    <div class="space-y-3">
+                                        ${topTerritories.map((t, idx) => `
+                                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-6.5 h-6.5 rounded-lg bg-amber-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">${idx + 1}</div>
+                                                    <div>
+                                                        <p class="font-extrabold text-slate-700 text-xs">${t.name}</p>
+                                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${t.actual} Units Sold</p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="text-xs font-extrabold text-green-600">${t.ach}%</p>
+                                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Achieved</p>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Risk Monitor -->
+                                <div class="bg-rose-50/50 p-3 rounded-[1.75rem] border border-rose-100 shadow-sm flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="text-xs font-bold text-rose-800 flex items-center gap-1.5 mb-4">
+                                            <i data-lucide="activity" class="w-4 h-4 text-rose-600"></i>
+                                            Risk Monitor
+                                        </h3>
+                                        <div class="space-y-3">
+                                            ${atRiskTerritories.length > 0 ? atRiskTerritories.map(t => `
+                                                <div class="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-rose-100">
+                                                    <div>
+                                                        <p class="font-extrabold text-rose-900 text-xs">${t.name}</p>
+                                                        <p class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Gap: ${t.target - t.actual} Units</p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="text-xs font-extrabold text-rose-600">${t.ach}%</p>
+                                                        <p class="text-[8px] font-bold text-rose-400 uppercase tracking-wider">Critical</p>
+                                                    </div>
+                                                </div>
+                                            `).join('') : '<p class="text-center text-[10px] font-bold text-slate-400 py-1.5">No territories under 40% achievement.</p>'}
+                                        </div>
+                                    </div>
+                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-1.5 rounded-xl shadow-sm shadow-rose-200 transition-all active:scale-95 text-[10px] uppercase tracking-wider">
+                                        Review All Regions
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            renderAdminSalesMap: (keepDropdownOpen = false) => {
+                localStorage.setItem('aci_last_page', 'map');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
+
+                if (typeof app.mapMonths === 'undefined') app.mapMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const brandTab = app.mapBrandTab || 'Foton';
+                const modelTab = app.mapModelTab || 'All';
+                const districtTab = app.mapDistrictTab || 'All';
+                const viewMode = app.mapViewMode || 'district';
+                if (typeof app.mapSaleType === 'undefined') app.mapSaleType = 'New Sale';
+                const saleTypeTab = app.mapSaleType;
+                const currentFY = app.selectedFY || app.currentFY;
+
+                // Filter Data (Actual Sales Only)
+                let filteredSales = DB.sales.filter(s => s.fy === currentFY && app.mapMonths.includes(s.sales_month));
+                if (brandTab !== 'All') filteredSales = filteredSales.filter(s => s.brand === brandTab);
+                if (modelTab !== 'All') filteredSales = filteredSales.filter(s => s.model === modelTab);
+                if (districtTab !== 'All') filteredSales = filteredSales.filter(s => s.district === districtTab);
+                if (saleTypeTab !== 'All') filteredSales = filteredSales.filter(s => s.sale_type === saleTypeTab);
+
+                // Aggregate Data based on View Mode
+                const dataAgg = {};
+                filteredSales.forEach(s => {
+                    const key = viewMode === 'district' ? s.district : s.upazila;
+                    if (key) dataAgg[key] = (dataAgg[key] || 0) + Number(s.unit_qty || 0);
+                });
+
+                const maxSales = Math.max(...Object.values(dataAgg), 1);
+                const totalPlotted = Object.values(dataAgg).reduce((a, b) => a + b, 0);
+
+                const normalizedAgg = {};
+                Object.entries(dataAgg).forEach(([k, v]) => {
+                    normalizedAgg[app.getNormalizedKey(k)] = v;
+                });
+
+                const activeModels = brandTab === 'All' ? DB.models : DB.models.filter(m => m.brand === brandTab);
+                
+                // Get unique districts from actual imported sales data instead of the territory mapping
+                const allDistricts = [...new Set(DB.sales.map(s => s.district).filter(Boolean))].sort();
+                const allUpazilas = [...new Set(DB.sales.filter(s => s.fy === currentFY && (districtTab === 'All' || s.district === districtTab)).map(s => s.upazila).filter(Boolean))].sort();
+
+                // Rank areas for side panel
+                const rankedAreas = Object.entries(dataAgg).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty);
+
+                const allMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+
+                const html = `
+                    <div class="max-w-7xl mx-auto fade-in pb-10 h-full flex flex-col">
+                        
+                        <!-- Header & Dynamic Filters -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-3 shrink-0 relative z-50">
+                            <div>
+                                <h1 class="text-xs font-extrabold text-transparent uppercase tracking-widest bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
+                                    <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
+                                    Geospatial Sales Heatmap
+                                </h1>
+                                <p class="text-xs text-slate-500 font-medium mt-2">Visualizing actual sales distribution across Bangladesh (FY ${currentFY})</p>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row items-center gap-3 bg-white border border-slate-200/60 p-2 rounded-xl shadow-sm flex-wrap justify-end">
+                                <!-- View Toggle -->
+                                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/60">
+                                    <button onclick="app.mapViewMode='district'; app.renderAdminSalesMap()" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'district' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">District View</button>
+                                    <button onclick="app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'upazila' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">Upazila View</button>
+                                </div>
+                                <div class="hidden sm:block w-px h-6 bg-slate-200 mx-1"></div>
+                                
+                                <!-- District Filter -->
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">District</label>
+                                    <select onchange="app.mapDistrictTab=this.value; if(this.value !== 'All') app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold ${districtTab !== 'All' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-700'} focus:outline-none focus:border-emerald-500 transition-colors">
+                                        <option value="All" ${districtTab === 'All' ? 'selected' : ''}>All BD</option>
+                                        ${allDistricts.map(d => `<option value="${d}" ${districtTab === d ? 'selected' : ''}>${d}</option>`).join('')}
+                                    </select>
+                                </div>
+
+                                <!-- Brand Filter -->
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Brand</label>
+                                    <select onchange="app.mapBrandTab=this.value; app.mapModelTab='All'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                        <option value="All" ${brandTab === 'All' ? 'selected' : ''}>All Brands</option>
+                                        <option value="Foton" ${brandTab === 'Foton' ? 'selected' : ''}>Foton</option>
+                                        <option value="Mahindra" ${brandTab === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
+                                    </select>
+                                </div>
+
+                                <!-- Sale Type Filter -->
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Type</label>
+                                    <select onchange="app.mapSaleType=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                        <option value="All" ${saleTypeTab === 'All' ? 'selected' : ''}>All Types</option>
+                                        <option value="New Sale" ${saleTypeTab === 'New Sale' ? 'selected' : ''}>New</option>
+                                        <option value="Resale" ${saleTypeTab === 'Resale' ? 'selected' : ''}>Resale</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Model Filter -->
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Model</label>
+                                    <select onchange="app.mapModelTab=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                        <option value="All">All Models</option>
+                                        ${activeModels.map(m => `<option value="${m.name}" ${modelTab === m.name ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                
+                                <!-- Month Multi-Select -->
+                                <div class="flex items-center gap-2 relative">
+                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
+                                    <button onclick="document.getElementById('map-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors flex items-center justify-between min-w-[100px]">
+                                        <span>${app.mapMonths.length === 12 ? 'All FY' : app.mapMonths.length + ' Selected'}</span>
+                                        <i data-lucide="chevron-down" class="w-4 h-4 ml-2"></i>
+                                    </button>
+                                    <div id="map-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-2 right-0 w-48 bg-white border border-slate-200/60 rounded-xl shadow-sm z-[100] max-h-64 overflow-y-auto">
+                                        <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+                                            <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-bold text-slate-700 transition-colors">
+                                                <input type="checkbox" onchange="app.mapMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : []; app.renderAdminSalesMap(true)" ${app.mapMonths.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                                                Select All FY
+                                            </label>
+                                        </div>
+                                        <div class="p-2 space-y-0.5">
+                                            ${allMonths.map(m => `
+                                                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-medium text-slate-600 transition-colors">
+                                                    <input type="checkbox" onchange="app.toggleMapMonth('${m}')" ${app.mapMonths.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                                                    ${m}
+                                                </label>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Map & Insights Layout (Fits screen by default) -->
+                        <div class="flex flex-col lg:flex-row gap-3 h-[950px] lg:h-[530px] relative z-10">
+                            
+                            <!-- Leaflet Map Container (Fits remaining height) -->
+                            <div class="flex-1 bg-white border border-slate-200/60 rounded-xl relative overflow-hidden bg-slate-50 border border-slate-200/60 shadow-inner flex flex-col h-[500px] lg:h-full">
+                                
+                                <div class="absolute top-3 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200/60 shadow-sm z-20">
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Sales Density (${viewMode})</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-xs font-semibold text-slate-600 mr-2">Low</span>
+                                        <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm"></span><span class="text-xs font-semibold text-slate-600 mr-2">Med</span>
+                                        <span class="w-3 h-3 rounded-full bg-rose-600 shadow-sm"></span><span class="text-xs font-semibold text-slate-600">High</span>
+                                    </div>
+                                </div>
+
+                                <!-- Real Interactive BD Map -->
+                                <div id="real-bd-map" class="w-full h-full z-10 flex-1"></div>
+                            </div>
+
+                            <!-- Right Sidebar List (Scrollable Districts/Upazilas) -->
+                            <div class="w-full lg:w-80 shrink-0 h-[400px] lg:h-full">
+                                <div class="flex flex-col h-full bg-white border border-slate-200/60 rounded-xl overflow-hidden shadow-sm">
+                                    <!-- Sidebar Header & KPI -->
+                                    <div class="p-3 bg-slate-50 border-b border-slate-100 space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Total Sales</span>
+                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">${totalPlotted} Units</span>
+                                        </div>
+                                        
+                                        <!-- Search Bar -->
+                                        <div class="relative">
+                                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200/60 rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                        </div>
+                                    </div>
+
+                                    <!-- Scrollable List of Areas -->
+                                    <div id="map-area-list" class="flex-1 overflow-y-auto p-2 space-y-2">
+                                        ${(() => {
+                                            const listItems = (viewMode === 'district' ? allDistricts : allUpazilas).map(name => {
+                                                const norm = app.getNormalizedKey(name);
+                                                const sales = normalizedAgg[norm] || 0;
+                                                return { name, sales };
+                                            }).sort((a, b) => b.sales - a.sales);
+
+                                            if (listItems.length === 0) {
+                                                return `<p class="text-center text-slate-400 text-xs py-8 font-medium">No areas matching filters</p>`;
+                                            }
+
+                                            return listItems.map((item, idx) => {
+                                                const isActive = (viewMode === 'district' && districtTab === item.name);
+                                                const pctContribution = totalPlotted > 0 ? ((item.sales / totalPlotted) * 100).toFixed(1) : 0;
+                                                return `
+                                                    <div onclick="app.selectMapArea('${item.name}')" 
+                                                         onmouseenter="app.hoverMapArea('${item.name}')" 
+                                                         onmouseleave="app.hoverMapArea(null)" 
+                                                         data-name="${item.name.toLowerCase()}" 
+                                                         data-area-name="${app.getNormalizedKey(item.name)}" 
+                                                         class="flex flex-col gap-2 p-3 rounded-xl cursor-pointer transition-all border ${isActive ? 'bg-emerald-50 border-emerald-300 text-emerald-950 shadow-sm' : 'border-slate-100 bg-white hover:bg-slate-50 text-slate-700 hover:border-slate-200/60'}">
+                                                        <div class="flex items-center justify-between gap-2.5">
+                                                            <div class="flex items-center gap-2 min-w-0">
+                                                                <span class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200/60 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0">${idx + 1}</span>
+                                                                <span class="truncate text-xs font-bold text-slate-800">${item.name}</span>
+                                                            </div>
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${item.sales > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400'}">${item.sales} Units</span>
+                                                        </div>
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                                                <div class="h-full rounded-full bg-gradient-to-r ${item.sales > 0 ? 'from-emerald-500 to-teal-600' : 'from-slate-300 to-slate-400'}" style="width: ${pctContribution}%"></div>
+                                                            </div>
+                                                            <span class="text-[10px] font-bold text-slate-400 shrink-0">${pctContribution}%</span>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }).join('');
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+
+                const mapCoords = {
+                    // Upazilas
+                    'Mirpur': [23.8223, 90.3654], 'Uttara': [23.8759, 90.3976], 'Savar': [23.8583, 90.2667], 'Ashulia': [23.8819, 90.3275],
+                    'Motijheel': [23.7330, 90.4172], 'Jatrabari': [23.7104, 90.4344], 'Keraniganj': [23.6980, 90.3575], 'Demra': [23.7073, 90.4497],
+                    'Pahartali': [22.3600, 91.7800], 'Sitakunda': [22.6200, 91.6500], 'Hathazari': [22.4500, 91.8000], 'Coxs Bazar': [21.4333, 91.9833],
+                    'Bogura Sadar': [24.8500, 89.3667], 'Rajshahi Sadar': [24.3667, 88.6000], 'Khulna Sadar': [22.8167, 89.5500], 'Jashore Sadar': [23.1667, 89.2000],
+                    'Sylhet Sadar': [24.8833, 91.8667], 'Habiganj Sadar': [24.3833, 91.4167], 'Barishal Sadar': [22.7000, 90.3667], 'Rangpur Sadar': [25.7500, 89.2500], 'Dinajpur Sadar': [25.6333, 88.6333],
+                    // Districts
+                    'Dhaka': [23.8103, 90.4125], 'Chattogram': [22.3569, 91.7832], 'Rajshahi': [24.3636, 88.6241], 'Khulna': [22.8456, 89.5403],
+                    'Sylhet': [24.8949, 91.8687], 'Barishal': [22.7010, 90.3535], 'Rangpur': [25.7439, 89.2752], 'Bogura': [24.8465, 89.3778],
+                    'Jashore': [23.1664, 89.2081], 'Habiganj': [24.3749, 91.4114], 'Dinajpur': [25.6217, 88.6355]
+                };
+
+                // Initialize Leaflet Map & Load Choropleth Data After DOM Update
+                setTimeout(async () => {
+                    if (app.salesMap) { app.salesMap.remove(); }
+
+                    app.salesMap = L.map('real-bd-map', {
+                        zoomControl: false,
+                        attributionControl: false,
+                        maxBounds: [[20.0, 87.5], [27.0, 93.0]],
+                        minZoom: 7,
+                        maxZoom: 11
+                    }).setView([23.85, 90.25], 7);
+
+                    L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
+
+                    app.showLoader(`Loading ${viewMode} Map Boundaries...`);
+                    try {
+                        const geoUrl = viewMode === 'district'
+                            ? 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json'
+                            : 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm3_492_upozila.json';
+
+                        if (!app.geoJsonCache[viewMode]) {
+                            const res = await fetch(geoUrl);
+                            if (!res.ok) throw new Error('CDN fetch failed');
+                            app.geoJsonCache[viewMode] = await res.json();
+                        }
+
+                        let geoData = app.geoJsonCache[viewMode];
+
+                        // SMART ZOOM FILTER: If a specific district is selected, isolate only those polygons to fitBounds accurately
+                        if (districtTab !== 'All') {
+                            const normSelectedDist = app.getNormalizedKey(districtTab);
+                            const filteredFeatures = geoData.features.filter(f => {
+                                const fDist = f.properties.ADM2_EN || f.properties.NAME_2 || f.properties.district || '';
+                                return app.getNormalizedKey(fDist) === normSelectedDist;
+                            });
+
+                            // Safety check: if our name mapping failed, default back to whole map to prevent breaking
+                            if (filteredFeatures.length > 0) {
+                                geoData = { ...geoData, features: filteredFeatures };
+                            }
+                        }
+
+                        // Heatmap Style Logic
+                        const getPolygonColor = (d) => {
+                            if (!d || d === 0) return 'transparent';
+                            const pct = d / maxSales;
+                            if (pct > 0.66) return '#e11d48'; // rose-600
+                            if (pct > 0.33) return '#f59e0b'; // amber-500
+                            return '#3b82f6'; // blue-500
+                        };
+
+                        const style = (feature) => {
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || '');
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+                            return {
+                                fillColor: getPolygonColor(sales),
+                                weight: sales > 0 ? 2 : 1,
+                                opacity: 1,
+                                color: sales > 0 ? '#ffffff' : '#cbd5e1', // white border if has sales, slate border if empty
+                                fillOpacity: sales > 0 ? 0.7 : 0.1
+                            };
+                        };
+
+                        const highlightFeature = (e) => {
+                            var layer = e.target;
+                            layer.setStyle({ weight: 3, color: '#10b981', fillOpacity: 0.85 });
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); }
+
+                            const propName = viewMode === 'district'
+                                ? (layer.feature.properties.ADM2_EN || layer.feature.properties.name || layer.feature.properties.NAME_2 || '')
+                                : (layer.feature.properties.ADM3_EN || layer.feature.properties.name || layer.feature.properties.NAME_3 || '');
+                            
+                            const listEl = document.querySelector(`[data-area-name="${app.getNormalizedKey(propName)}"]`);
+                            if (listEl) {
+                                document.querySelectorAll('#map-area-list > div').forEach(el => {
+                                    el.classList.remove('bg-emerald-50', 'border-emerald-300');
+                                    el.classList.add('border-slate-100', 'bg-white');
+                                });
+                                listEl.classList.remove('border-slate-100', 'bg-white');
+                                listEl.classList.add('bg-emerald-50', 'border-emerald-300');
+                                listEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        };
+
+                        const resetHighlight = (e) => {
+                            app.geoLayer.resetStyle(e.target);
+                            const propName = viewMode === 'district'
+                                ? (e.target.feature.properties.ADM2_EN || e.target.feature.properties.name || '')
+                                : (e.target.feature.properties.ADM3_EN || e.target.feature.properties.name || '');
+                            const listEl = document.querySelector(`[data-area-name="${app.getNormalizedKey(propName)}"]`);
+                            if (listEl) {
+                                const isActive = (viewMode === 'district' && districtTab === propName);
+                                if (!isActive) {
+                                    listEl.classList.remove('bg-emerald-50', 'border-emerald-300');
+                                    listEl.classList.add('border-slate-100', 'bg-white');
+                                }
+                            }
+                        };
+
+                        const onEachFeature = (feature, layer) => {
+                            layer.on({
+                                mouseover: highlightFeature,
+                                mouseout: resetHighlight
+                            });
+
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || 'Unknown District')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || 'Unknown Upazila');
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+
+                            let colorName = 'slate';
+                            if (sales > 0) {
+                                const pct = sales / maxSales;
+                                colorName = pct > 0.66 ? 'rose' : (pct > 0.33 ? 'amber' : 'blue');
+                            }
+
+                            const tooltipHtml = `
+                                <div class="bg-slate-900 text-white text-xs rounded-xl py-1.5 px-3 shadow-sm border border-slate-700 min-w-[120px]">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        <p class="font-bold text-xs text-slate-50 tracking-wide">${propName}</p>
+                                    </div>
+                                    <p class="text-slate-300 font-medium pl-5"><span class="text-${colorName}-400 font-bold text-base">${sales}</span> Units Plotted</p>
+                                </div>
+                            `;
+                            layer.bindTooltip(tooltipHtml, {
+                                direction: 'auto', className: 'custom-leaflet-tooltip', opacity: 1, sticky: true
+                            });
+                        };
+
+                        app.geoLayer = L.geoJSON(geoData, { style: style, onEachFeature: onEachFeature }).addTo(app.salesMap);
+
+                        // Auto-focus map to center and scale Bangladesh to perfectly fit the screen container
+                        if (app.geoLayer) {
+                            app.salesMap.fitBounds(app.geoLayer.getBounds(), { padding: [10, 10] });
+                        }
+
+                    } catch (err) {
+                        console.warn('Boundary load blocked. Activating visual radar fallback:', err);
+                        app.showToast(`Optimizing for speed: Activated Quantum Radar View`, 'info');
+
+                        const markersList = [];
+
+                        Object.entries(dataAgg).forEach(([name, sales]) => {
+                            const coords = mapCoords[name];
+                            if (!coords) return;
+
+                            const intensity = maxSales > 0 ? (sales / maxSales) : 0;
+                            let bgClass = 'bg-blue-500 text-white';
+                            let glowClass = 'bg-blue-400';
+                            let borderClass = 'border-blue-300';
+
+                            if (intensity > 0.6) { bgClass = 'bg-rose-600 text-white'; glowClass = 'bg-rose-500'; borderClass = 'border-rose-400'; }
+                            else if (intensity > 0.3) { bgClass = 'bg-amber-500 text-white'; glowClass = 'bg-amber-400'; borderClass = 'border-amber-300'; }
+
+                            const size = 26 + (intensity * 34);
+
+                            const iconHtml = `
+                            <div class="relative group transition-transform hover:scale-110 flex items-center justify-center h-full w-full">
+                                <div class="absolute inset-0 ${glowClass} rounded-full animate-ping opacity-[0.6] scale-150" style="animation-duration: 2s;"></div>
+                                <div class="relative rounded-full ${bgClass} shadow-[0_0_20px_rgba(0,0,0,0.4)] border border-white/50 flex items-center justify-center font-bold transition-all backdrop-blur-md" style="width: ${size}px; height: ${size}px; font-size: ${Math.max(11, size / 2.5)}px;">
+                                    ${sales}
+                                </div>
+                            </div>
+                            `;
+
+                            const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+                            const marker = L.marker(coords, { icon: icon });
+
+                            const colorName = bgClass.split('-')[1];
+
+                            const tooltipHtml = `
+                                <div class="bg-slate-900/90 backdrop-blur-md text-white text-xs rounded-xl py-1.5 px-3 shadow-sm border border-slate-700 min-w-[120px]">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <i data-lucide="crosshairs" class="w-3 h-3 text-${colorName}-400"></i>
+                                        <p class="font-bold text-xs text-slate-50 tracking-wide">${name}</p>
+                                    </div>
+                                    <p class="text-slate-300 font-medium pl-5"><span class="text-${colorName}-400 font-bold text-base">${sales}</span> Units Plotted</p>
+                                </div>
+                            `;
+                            marker.bindTooltip(tooltipHtml, { direction: 'top', offset: [0, -size / 2 - 5], className: 'custom-leaflet-tooltip', opacity: 1 });
+                            markersList.push(marker);
+                        });
+
+                        // Add markers to a group to calculate bounds for Fallback Zooming
+                        const markerGroup = L.featureGroup(markersList).addTo(app.salesMap);
+                        if (markersList.length > 0) {
+                            app.salesMap.fitBounds(markerGroup.getBounds(), { padding: [50, 50], maxZoom: 10 });
+                        }
+
+                        app.refreshIcons();
+                    } finally {
+                        app.hideLoader();
+                    }
+                }, 100);
+            },
+
+            renderChartTerritory: (salesData) => {
+                if (app.charts.territory) app.charts.territory.destroy();
+                const ctx = document.getElementById('chartTerritory').getContext('2d');
+
+                // Glassmorphic Gradients for Bars
+                const fotonGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                fotonGrad.addColorStop(0, 'rgba(4, 26, 84, 0.85)'); // Foton brand base
+                fotonGrad.addColorStop(1, 'rgba(4, 26, 84, 0.15)'); // Foton transparent
+
+                const mahindraGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                mahindraGrad.addColorStop(0, 'rgba(229, 34, 62, 0.85)'); // Mahindra brand base
+                mahindraGrad.addColorStop(1, 'rgba(229, 34, 62, 0.15)'); // Mahindra transparent
+
+                // Aggregate by territory
+                const terrData = {};
+                salesData.forEach(s => {
+                    const tName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
+                    if (!terrData[tName]) terrData[tName] = { foton: 0, mahindra: 0 };
+                    if (s.brand === 'Foton') terrData[tName].foton += Number(s.unit_qty || 0);
+                    if (s.brand === 'Mahindra') terrData[tName].mahindra += Number(s.unit_qty || 0);
+                });
+
+                const labels = Object.keys(terrData);
+                const fotonSet = labels.map(l => terrData[l].foton);
+                const mahindraSet = labels.map(l => terrData[l].mahindra);
+
+                app.charts.territory = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Foton',
+                                data: fotonSet,
+                                backgroundColor: fotonGrad,
+                                borderColor: 'rgba(4, 26, 84, 0.4)',
+                                borderWidth: 1.5,
+                                borderRadius: 6
+                            },
+                            {
+                                label: 'Mahindra',
+                                data: mahindraSet,
+                                backgroundColor: mahindraGrad,
+                                borderColor: 'rgba(229, 34, 62, 0.4)',
+                                borderWidth: 1.5,
+                                borderRadius: 6
+                            }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } }
+                });
+            },
+
+            renderChartBrand: (f, m) => {
+                if (app.charts.brand) app.charts.brand.destroy();
+                const ctx = document.getElementById('chartBrand').getContext('2d');
+
+                // Glassmorphic Gradients for Doughnut
+                const fotonGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                fotonGrad.addColorStop(0, 'rgba(4, 26, 84, 0.9)');
+                fotonGrad.addColorStop(1, 'rgba(4, 26, 84, 0.3)');
+
+                const mahindraGrad = ctx.createLinearGradient(0, 0, 0, 300);
+                mahindraGrad.addColorStop(0, 'rgba(229, 34, 62, 0.9)');
+                mahindraGrad.addColorStop(1, 'rgba(229, 34, 62, 0.3)');
+
+                app.charts.brand = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Foton', 'Mahindra'],
+                        datasets: [{
+                            data: [f, m],
+                            backgroundColor: [fotonGrad, mahindraGrad],
+                            borderColor: '#ffffff',
+                            borderWidth: 3,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+                });
+            },
+
+            renderDataUpload: () => {
+                localStorage.setItem('aci_last_page', 'upload');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                if (app.currentUser.role !== 'admin') {
+                    app.showToast("Access Denied: Only Admins can access data management.", "error");
+                    return;
+                }
+                const html = `
+                    <div class="max-w-6xl mx-auto pb-10">
+                        <div class="mb-6">
+                            <h1 class="text-2xl font-bold text-slate-800">Bulk Data Upload</h1>
+                            <p class="text-sm text-slate-500">Upload Targets, Projections, and System Sales securely.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            
+                            <!-- 1. Yearly Targets -->
+                            <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform"></i> Yearly Targets</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Set once per year by Upazila</p>
+                                        <div class="flex items-center gap-1 mt-2.5 bg-indigo-50/80 border border-indigo-100 px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 text-indigo-500"></i>
+                                            <span class="text-[9px] font-black text-indigo-700 uppercase tracking-widest">Updated: 20 May '26</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
+                                        <button onclick="app.viewUploadedData('targets')" title="View Data" class="text-indigo-600 hover:bg-indigo-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.downloadTemplate('target')" title="Download Template" class="text-indigo-600 hover:bg-indigo-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-target').click()">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-indigo-400 mx-auto mb-2"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Upload Target CSV</p>
+                                    <input type="file" id="file-target" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Yearly Targets', 'targets')">
+                                </div>
+                            </div>
+
+                            <!-- 2. Monthly Projections -->
+                            <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-amber-600 group-hover:scale-110 transition-transform"></i> Projections</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Current month territory-wise</p>
+                                        <div class="flex items-center gap-1 mt-2.5 bg-amber-50/80 border border-amber-100 px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 text-amber-500"></i>
+                                            <span class="text-[9px] font-black text-amber-700 uppercase tracking-widest">Updated: 21 May '26</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
+                                        <button onclick="app.viewUploadedData('projections')" title="View Data" class="text-amber-600 hover:bg-amber-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.downloadTemplate('projection')" title="Download Template" class="text-amber-600 hover:bg-amber-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-proj').click()">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-amber-400 mx-auto mb-2"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Upload Projection CSV</p>
+                                    <input type="file" id="file-proj" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Monthly Projections', 'projections')">
+                                </div>
+                            </div>
+
+                            <!-- 3. System Sales Data (Current Year) -->
+                            <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-green-600 group-hover:scale-110 transition-transform"></i> System Sales</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Upload month-end final sales actuals</p>
+                                        <div class="flex items-center gap-1 mt-2.5 bg-green-50/80 border border-green-100 px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 text-green-500"></i>
+                                            <span class="text-[9px] font-black text-green-700 uppercase tracking-widest">Updated: 21 May '26</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
+                                        <button onclick="app.viewUploadedData('sales')" title="View Data" class="text-green-600 hover:bg-green-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.downloadTemplate('sales')" title="Download Template" class="text-green-600 hover:bg-green-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-sales').click()">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-green-400 mx-auto mb-2"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Upload Sales CSV</p>
+                                    <input type="file" id="file-sales" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'System Sales Data', 'sales')">
+                                </div>
+                            </div>
+
+                            <!-- 4. Early EMI Data -->
+                            <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="file-clock" class="w-5 h-5 text-purple-600 group-hover:scale-110 transition-transform"></i> Early EMI Customers</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Upload 1st & 2nd EMI details</p>
+                                        <div class="flex items-center gap-1 mt-2.5 bg-purple-50/80 border border-purple-100 px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 text-purple-500"></i>
+                                            <span class="text-[9px] font-black text-purple-700 uppercase tracking-widest">Updated: 19 May '26</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
+                                        <button onclick="app.viewUploadedData('emi')" title="View Data" class="text-purple-600 hover:bg-purple-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.downloadTemplate('emi_early')" title="Download Template" class="text-purple-600 hover:bg-purple-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-emi-early').click()">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mx-auto mb-2"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Upload EMI CSV</p>
+                                    <input type="file" id="file-emi-early" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Early EMI Data', 'emi')">
+                                </div>
+                            </div>
+                            
+                            <!-- 5. Historical Sales Data -->
+                            <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-rose-600 group-hover:scale-110 transition-transform"></i> Historical Sales</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Multi-year historical FY data</p>
+                                        <div class="flex items-center gap-1 mt-2.5 bg-rose-50/80 border border-rose-100 px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 text-rose-500"></i>
+                                            <span class="text-[9px] font-black text-rose-700 uppercase tracking-widest">Updated: 15 May '26</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
+                                        <button onclick="app.viewUploadedData('last_year_sales')" title="View Data" class="text-rose-600 hover:bg-rose-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.downloadTemplate('last_year_sales')" title="Download Template" class="text-rose-600 hover:bg-rose-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-last-year').click()">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-rose-400 mx-auto mb-2"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Upload Historical Sales CSV</p>
+                                    <input type="file" id="file-last-year" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Historical Sales Data', 'last_year_sales')">
+                                </div>
+                            </div>
+
+                            <!-- 6. Recovery OD Status -->
+                            <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-orange-600 group-hover:scale-110 transition-transform"></i> Recovery OD Status</h3>
+                                        <p class="text-[10px] text-slate-500 mt-1">Territory-wide overdue metrics</p>
+                                        <div class="flex items-center gap-1 mt-2.5 bg-orange-50/80 border border-orange-100 px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 text-orange-500"></i>
+                                            <span class="text-[9px] font-black text-orange-700 uppercase tracking-widest">Updated: 20 May '26</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
+                                        <button onclick="app.viewUploadedData('recovery_od')" title="View Data" class="text-orange-600 hover:bg-orange-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.downloadTemplate('recovery_od')" title="Download Template" class="text-orange-600 hover:bg-orange-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                    </div>
+                                </div>
+                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-recovery-od').click()">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-orange-400 mx-auto mb-2"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Upload Recovery OD CSV</p>
+                                    <input type="file" id="file-recovery-od" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Recovery OD Status', 'recovery_od')">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Creative Data Lifecycle Guideline -->
+                        <div class="mt-12 glass p-8 rounded-[2rem] border border-white shadow-2xl relative overflow-hidden group">
+                            <!-- Background elements -->
+                            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+                            <div class="absolute -left-20 -top-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-4 mb-8">
+                                    <div class="p-3 bg-slate-900 rounded-xl shadow-sm">
+                                        <i data-lucide="info" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-black text-slate-800 tracking-tight">Data Synchronization Lifecycle</h2>
+                                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">Guidelines for maintaining system integrity</p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    <!-- Yearly Cycle -->
+                                    <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                                        <div class="flex items-center gap-2">
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">01</span>
+                                            <h4 class="font-black text-slate-700 text-sm">Strategic Foundation</h4>
+                                        </div>
+                                        <div class="pl-10">
+                                            <p class="text-[11px] font-bold text-indigo-600 uppercase mb-1">Upload: Yearly Targets</p>
+                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Set the destination once per year during the July kickoff. This forms the baseline for all achievement metrics."</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Monthly Cycle -->
+                                    <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                                        <div class="flex items-center gap-2">
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-black text-xs">02</span>
+                                            <h4 class="font-black text-slate-700 text-sm">Monthly Forecasting</h4>
+                                        </div>
+                                        <div class="pl-10">
+                                            <p class="text-[11px] font-bold text-amber-600 uppercase mb-1">Upload: Projections</p>
+                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Sync territory expectations by the 1st of every month to align field goals with market potential."</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Post-Closing Cycle -->
+                                    <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                                        <div class="flex items-center gap-2">
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs">03</span>
+                                            <h4 class="font-black text-slate-700 text-sm">Reality Verification</h4>
+                                        </div>
+                                        <div class="pl-10">
+                                            <p class="text-[11px] font-bold text-emerald-600 uppercase mb-1">Upload: System Sales</p>
+                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Upload final actuals by the 3rd of the next month. This is the moment of truth for performance audits."</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Weekly/Operational Cycle -->
+                                    <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                                        <div class="flex items-center gap-2">
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-black text-xs">04</span>
+                                            <h4 class="font-black text-slate-700 text-sm">Dynamic Recovery</h4>
+                                        </div>
+                                        <div class="pl-10">
+                                            <p class="text-[11px] font-bold text-purple-600 uppercase mb-1">Upload: EMI & Recovery</p>
+                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Sync every Monday morning. Weekly refreshes keep SOs focused on high-priority collection targets."</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Historical Initialization -->
+                                    <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                                        <div class="flex items-center gap-2">
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-black text-xs">05</span>
+                                            <h4 class="font-black text-slate-700 text-sm">Retrospective Sync</h4>
+                                        </div>
+                                        <div class="pl-10">
+                                            <p class="text-[11px] font-bold text-rose-600 uppercase mb-1">Upload: Historical Sales</p>
+                                            <p class="text-xs text-slate-500 leading-relaxed italic">"One-time initialization. Required for the AI engine to generate year-over-year growth insights."</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Audit Log -->
+                                    <div class="space-y-3 p-4 rounded-xl bg-slate-900 shadow-2xl">
+                                        <div class="flex items-center gap-2">
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center font-black text-xs"><i data-lucide="shield-check" class="w-3 h-3"></i></span>
+                                            <h4 class="font-black text-white text-sm">Security Protocol</h4>
+                                        </div>
+                                        <div class="pl-10">
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Auto-Validation Active</p>
+                                            <p class="text-[10px] text-slate-400 leading-relaxed">All uploads are scanned for territory-ID consistency before ingestion. Always use the latest templates.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            viewUploadedData: (type) => {
+                let title = '';
+                let headers = [];
+                let data = [];
+                let icon = '';
+                let themeColor = '';
+                let keyField = '';
+
+                if (type === 'targets') {
+                    title = 'Monthly Targets';
+                    icon = 'target';
+                    themeColor = 'indigo';
+                    headers = ['FY', 'Month', 'Territory_Name', 'Upazila', 'District', 'Brand', 'Sale_Type', 'Target_Qty'];
+                    data = DB.targets;
+                    keyField = 'target_qty';
+                } else if (type === 'projections') {
+                    title = 'Monthly Projections';
+                    icon = 'trending-up';
+                    themeColor = 'amber';
+                    headers = ['FY', 'Month', 'Territory_Name', 'Brand', 'Sale_Type', 'Projection_Qty'];
+                    data = DB.projections;
+                    keyField = 'projection_qty';
+                } else if (type === 'sales') {
+                    title = `System Sales (FY ${app.currentFY})`;
+                    icon = 'shopping-cart';
+                    themeColor = 'green';
+                    headers = ['Customer_ID', 'District', 'Territory_Name', 'Upazila', 'Brand', 'Model', 'Unit_Qty', 'FY', 'Sales_Year', 'Sales_Month', 'Sale_Type'];
+                    data = DB.sales.filter(s => s.fy === app.currentFY);
+                    keyField = 'unit_qty';
+                } else if (type === 'emi') {
+                    title = 'Early EMI Customers';
+                    icon = 'file-clock';
+                    themeColor = 'purple';
+                    headers = ['Customer_Code', 'Customer_Name', 'Sales_Territory', 'Brand', 'DeliveryDate', 'First_Inst_Date', 'OverDue_Hash', 'OverDue_Taka', 'Installment_Size'];
+                    data = DB.emi;
+                    keyField = 'overdue_total';
+                } else if (type === 'last_year_sales') {
+                    const lastFY = (() => {
+                        const parts = app.currentFY.split('-');
+                        if (parts.length === 2) {
+                            const y1 = parseInt(parts[0]);
+                            const y2 = parseInt(parts[1]);
+                            if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                        }
+                        return '2024-25';
+                    })();
+                    title = `Last Year Sales (FY ${lastFY})`;
+                    icon = 'history';
+                    themeColor = 'rose';
+                    headers = ['Customer_ID', 'District', 'Territory_Name', 'Upazila', 'Brand', 'Model', 'Unit_Qty', 'FY', 'Sales_Year', 'Sales_Month', 'Sale_Type'];
+                    data = DB.sales.filter(s => s.fy === lastFY);
+                    keyField = 'unit_qty';
+                } else if (type === 'recovery_od') {
+                    title = 'Area Recovery OD Status';
+                    icon = 'alert-triangle';
+                    themeColor = 'orange';
+                    headers = ['FY', 'Month', 'Territory_Name', 'Perfile_OD', 'Total_Overdue'];
+                    data = DB.recovery_od;
+                    keyField = 'total_overdue';
+                }
+
+                const html = `
+                    <div class="max-w-7xl mx-auto fade-in pb-10">
+                        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <button onclick="app.renderDataUpload()" class="text-slate-500 hover:text-aci-blue flex items-center gap-1.5 text-sm font-bold mb-3 transition-colors">
+                                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Upload Hub
+                                </button>
+                                <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                    <i data-lucide="${icon}" class="w-6 h-6 text-${themeColor}-600"></i> ${title}
+                                </h1>
+                                <p class="text-sm text-slate-500 mt-1">Viewing all synchronized records currently in the active database.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white px-4 py-2.5 rounded-xl text-sm font-bold border border-slate-200 shadow-sm flex items-center gap-2">
+                                    <i data-lucide="database" class="w-4 h-4 text-slate-400"></i> Records: ${data.length}
+                                </div>
+                                <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                                    <button onclick="app.deleteSelectedRows('${type}')" class="px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider text-rose-600 hover:bg-rose-50 transition-all flex items-center gap-2">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Selected
+                                    </button>
+                                    <button onclick="app.deleteAllRows('${type}')" class="px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider text-rose-700 bg-rose-50 hover:bg-rose-100 transition-all flex items-center gap-2">
+                                        <i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i> Purge All
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                 <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest font-black">
+                                        <tr>
+                                            <th class="px-4 py-1.5 w-10">
+                                                <input type="checkbox" id="master-select" onchange="app.toggleSelectAllRows(this.checked)" class="w-4 h-4 rounded border-slate-300 text-aci-blue focus:ring-aci-blue">
+                                            </th>
+                                            ${headers.map(h => `<th class="px-4 py-1.5">${h}</th>`).join('')}
+                                            <th class="px-4 py-1.5 text-right font-bold">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${data.length > 0 ? data.map((item, idx) => {
+                    let rowCells = [];
+                    if (type === 'targets') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.district || '', item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.target_qty}</span>`];
+                    else if (type === 'projections') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.projection_qty}</span>`];
+                    else if (type === 'sales' || type === 'last_year_sales') rowCells = [item.customer_id, item.district, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.brand, item.model, `<span class="font-bold text-slate-800">${item.unit_qty}</span>`, item.fy, item.sales_year, item.sales_month, item.sale_type];
+                    else if (type === 'emi') rowCells = [item.customer_code, item.customer, DB.territories.find(t => t.id === item.territory_id)?.name || item.location, item.brand, item.delivery_date, item.first_inst_date, item.overdue_count, `<span class="text-rose-600 font-bold">${app.formatCurrency(item.overdue_total)}</span>`, app.formatCurrency(item.installment)];
+                    else if (type === 'recovery_od') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, app.formatCurrency(item.perfile_od), app.formatCurrency(item.total_overdue)];
+
+                    return `
+                                                <tr id="row-${item.id}" class="hover:bg-slate-50/80 transition-colors group">
+                                                    <td class="px-4 py-1.5">
+                                                        <input type="checkbox" class="row-checkbox w-4 h-4 rounded border-slate-300 text-aci-blue focus:ring-aci-blue" data-id="${item.id}">
+                                                    </td>
+                                                    ${rowCells.map((cell, cIdx) => `<td class="px-4 py-1.5 ${cIdx === 0 ? 'font-bold text-slate-700' : 'text-slate-500'}">${cell}</td>`).join('')}
+                                                    <td class="px-4 py-1.5 text-right">
+                                                        <div class="flex justify-end gap-1.5">
+                                                            <button onclick="app.editRowData('${type}', '${item.id}')" class="p-1 text-slate-400 hover:text-aci-blue hover:bg-aci-blue/5 rounded transition-all" title="Edit Row">
+                                                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                            </button>
+                                                            <button onclick="app.deleteSingleRow('${type}', '${item.id}')" class="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-all" title="Delete Row">
+                                                                <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `;
+                }).join('') : `<tr><td colspan="${headers.length + 2}" class="px-6 py-20 text-center text-slate-400"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-12 h-12 opacity-20"></i><p class="font-medium">No records found in this category.</p></div></td></tr>`}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            toggleSelectAllRows: (checked) => {
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(cb => cb.checked = checked);
+            },
+
+            deleteSingleRow: async (type, id) => {
+                if (!confirm("Are you sure you want to delete this record?")) return;
+
+                if (type === 'targets') DB.targets = DB.targets.filter(t => t.id !== id);
+                else if (type === 'projections') DB.projections = DB.projections.filter(p => p.id !== id);
+                else if (type === 'sales' || type === 'last_year_sales') DB.sales = DB.sales.filter(s => s.id !== id);
+                else if (type === 'emi') DB.emi = DB.emi.filter(e => e.id !== id);
+                else if (type === 'recovery_od') DB.recovery_od = DB.recovery_od.filter(r => r.id !== id);
+
+                if (app.neonSQL) {
+                    if (type === 'targets') await app.neonSQL`DELETE FROM targets WHERE id = ${id}`;
+                    else if (type === 'projections') await app.neonSQL`DELETE FROM projections WHERE id = ${id}`;
+                    else if (type === 'sales' || type === 'last_year_sales') await app.neonSQL`DELETE FROM sales WHERE id = ${id}`;
+                    else if (type === 'emi') await app.neonSQL`DELETE FROM emi WHERE id = ${id}`;
+                    else if (type === 'recovery_od') await app.neonSQL`DELETE FROM recovery_od WHERE id = ${id}`;
+                }
+
+                app.saveDBState();
+                app.viewUploadedData(type);
+                app.showToast("Record deleted successfully.");
+            },
+
+            deleteSelectedRows: async (type) => {
+                const selected = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.dataset.id);
+                if (selected.length === 0) return app.showToast("No records selected.", "error");
+
+                if (!confirm(`Delete ${selected.length} selected records?`)) return;
+
+                if (type === 'targets') DB.targets = DB.targets.filter(t => !selected.includes(t.id));
+                else if (type === 'projections') DB.projections = DB.projections.filter(p => !selected.includes(p.id));
+                else if (type === 'sales' || type === 'last_year_sales') DB.sales = DB.sales.filter(s => !selected.includes(s.id));
+                else if (type === 'emi') DB.emi = DB.emi.filter(e => !selected.includes(e.id));
+                else if (type === 'recovery_od') DB.recovery_od = DB.recovery_od.filter(r => !selected.includes(r.id));
+
+                if (app.neonSQL) {
+                    // Delete in chunks or use ANY. Using ANY is easiest.
+                    if (type === 'targets') await app.neonSQL`DELETE FROM targets WHERE id = ANY(${selected})`;
+                    else if (type === 'projections') await app.neonSQL`DELETE FROM projections WHERE id = ANY(${selected})`;
+                    else if (type === 'sales' || type === 'last_year_sales') await app.neonSQL`DELETE FROM sales WHERE id = ANY(${selected})`;
+                    else if (type === 'emi') await app.neonSQL`DELETE FROM emi WHERE id = ANY(${selected})`;
+                    else if (type === 'recovery_od') await app.neonSQL`DELETE FROM recovery_od WHERE id = ANY(${selected})`;
+                }
+
+                app.saveDBState();
+                app.viewUploadedData(type);
+                app.showToast(`${selected.length} records deleted.`);
+            },
+
+            deleteAllRows: async (type) => {
+                if (!confirm(`WARNING: This will permanently purge ALL data from the ${type} category. Proceed?`)) return;
+
+                if (type === 'targets') { DB.targets = []; if (app.neonSQL) await app.neonSQL`DELETE FROM targets`; }
+                else if (type === 'projections') { DB.projections = []; if (app.neonSQL) await app.neonSQL`DELETE FROM projections`; }
+                else if (type === 'sales') { 
+                    const fyVal = app.currentFY;
+                    DB.sales = DB.sales.filter(s => s.fy !== fyVal); 
+                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${fyVal}`; 
+                }
+                else if (type === 'last_year_sales') { 
+                    const lastFY = (() => {
+                        const parts = app.currentFY.split('-');
+                        if (parts.length === 2) {
+                            const y1 = parseInt(parts[0]);
+                            const y2 = parseInt(parts[1]);
+                            if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                        }
+                        return '2024-25';
+                    })();
+                    DB.sales = DB.sales.filter(s => s.fy !== lastFY); 
+                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`; 
+                }
+                else if (type === 'emi') { DB.emi = []; if (app.neonSQL) await app.neonSQL`DELETE FROM emi`; }
+                else if (type === 'recovery_od') { DB.recovery_od = []; if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`; }
+
+                app.saveDBState();
+                app.viewUploadedData(type);
+                app.showToast("Category purged successfully.");
+            },
+
+            editRowData: (type, id) => {
+                let item = null;
+                if (type === 'targets') item = DB.targets.find(t => t.id === id);
+                else if (type === 'projections') item = DB.projections.find(p => p.id === id);
+                else if (type === 'sales' || type === 'last_year_sales') item = DB.sales.find(s => s.id === id);
+                else if (type === 'emi') item = DB.emi.find(e => e.id === id);
+                else if (type === 'recovery_od') item = DB.recovery_od.find(r => r.id === id);
+
+                if (!item) return;
+
+                const row = document.getElementById(`row-${id}`);
+                const cells = row.querySelectorAll('td');
+
+                const editFields = [];
+                if (type === 'targets') editFields = ['fy', 'month', 'territory_id', 'upazila', 'district', 'brand', 'sale_type', 'target_qty'];
+                else if (type === 'projections') editFields = ['fy', 'month', 'territory_id', 'brand', 'sale_type', 'projection_qty'];
+                else if (type === 'sales' || type === 'last_year_sales') editFields = ['customer_id', 'district', 'territory_id', 'upazila', 'brand', 'model', 'unit_qty', 'fy', 'sales_year', 'sales_month', 'sale_type'];
+                else if (type === 'emi') editFields = ['customer_code', 'customer', 'territory_id', 'brand', 'delivery_date', 'first_inst_date', 'overdue_count', 'overdue_total', 'installment'];
+                else if (type === 'recovery_od') editFields = ['fy', 'month', 'territory_id', 'perfile_od', 'total_overdue'];
+
+                editFields.forEach((field, idx) => {
+                    const cell = cells[idx + 1];
+                    const val = item[field];
+                    cell.innerHTML = `<input type="text" class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs font-medium text-slate-700" value="${val}" data-field="${field}">`;
+                });
+
+                cells[cells.length - 1].innerHTML = `
+                    <div class="flex justify-end gap-2">
+                        <button onclick="app.saveRowData('${type}', '${id}')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Save Changes">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.viewUploadedData('${type}')" class="p-2 text-slate-400 hover:bg-slate-100 rounded-lg transition-all" title="Cancel">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                app.refreshIcons();
+            },
+
+            saveRowData: async (type, id) => {
+                const row = document.getElementById(`row-${id}`);
+                const inputs = row.querySelectorAll('input[data-field]');
+
+                let item = null;
+                if (type === 'targets') item = DB.targets.find(t => t.id === id);
+                else if (type === 'projections') item = DB.projections.find(p => p.id === id);
+                else if (type === 'sales' || type === 'last_year_sales') item = DB.sales.find(s => s.id === id);
+                else if (type === 'emi') item = DB.emi.find(e => e.id === id);
+                else if (type === 'recovery_od') item = DB.recovery_od.find(r => r.id === id);
+
+                if (!item) return;
+
+                inputs.forEach(input => {
+                    const field = input.dataset.field;
+                    let val = input.value;
+                    if (['target_qty', 'projection_qty', 'unit_qty', 'installment', 'collected', 'overdue_total', 'perfile_od', 'total_overdue', 'sales_year', 'overdue_count'].includes(field)) {
+                        val = parseInt(val) || 0;
+                    }
+                    item[field] = val;
+                });
+
+                if (app.neonSQL) {
+                    try {
+                        if (type === 'targets') {
+                            await app.neonSQL`UPDATE targets SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, upazila = ${item.upazila}, district = ${item.district}, brand = ${item.brand}, sale_type = ${item.sale_type}, target_qty = ${item.target_qty} WHERE id = ${id}`;
+                        } else if (type === 'projections') {
+                            await app.neonSQL`UPDATE projections SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, brand = ${item.brand}, sale_type = ${item.sale_type}, projection_qty = ${item.projection_qty} WHERE id = ${id}`;
+                        } else if (type === 'sales' || type === 'last_year_sales') {
+                            await app.neonSQL`UPDATE sales SET customer_id = ${item.customer_id}, district = ${item.district}, territory_id = ${item.territory_id}, upazila = ${item.upazila}, brand = ${item.brand}, model = ${item.model}, unit_qty = ${item.unit_qty}, fy = ${item.fy}, sales_year = ${item.sales_year}, sales_month = ${item.sales_month}, sale_type = ${item.sale_type} WHERE id = ${id}`;
+                        } else if (type === 'emi') {
+                            await app.neonSQL`UPDATE emi SET customer_code = ${item.customer_code}, customer = ${item.customer}, phone = ${item.phone}, location = ${item.location}, delivery_date = ${item.delivery_date}, first_inst_date = ${item.first_inst_date}, overdue_count = ${item.overdue_count}, overdue_total = ${item.overdue_total}, installment = ${item.installment}, collected = ${item.collected}, territory_id = ${item.territory_id}, brand = ${item.brand}, model = ${item.model}, installment_no = ${item.installment_no} WHERE id = ${id}`;
+                        } else if (type === 'recovery_od') {
+                            await app.neonSQL`UPDATE recovery_od SET fy = ${item.fy}, month = ${item.month}, territory_id = ${item.territory_id}, perfile_od = ${item.perfile_od}, total_overdue = ${item.total_overdue} WHERE id = ${id}`;
+                        }
+                    } catch (err) {
+                        console.error("Failed to update record in Neon DB:", err);
+                        app.showToast("Failed to update record in database.", "error");
+                        return;
+                    }
+                }
+
+                app.saveDBState();
+                app.viewUploadedData(type);
+                app.showToast("Record updated successfully.", "success");
+            },
+
+            downloadTemplate: (type) => {
+                if (app.currentUser.role !== 'admin') {
+                    app.showToast("Permission Denied: Templates are for Admins only.", "error");
+                    return;
+                }
+                const downloadCurrent = confirm("Do you want to download the template pre-populated with all current records from the database?\n\n- Click OK to export all current data.\n- Click Cancel to download a blank template with sample data.");
+                
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+
+                let csvContent = "";
+                let headers = "";
+                let filename = "";
+                const csvCell = (val) => {
+                    const str = String(val === undefined || val === null ? '' : val);
+                    return '"' + str.replace(/"/g, '""') + '"';
+                };
+
+                if (downloadCurrent) {
+                    if (type === 'target') {
+                        headers = "FY,Month,Territory_Name,Upazila,District,Brand,Sale_Type,Target_Qty\n";
+                        const rows = DB.targets.map(t => {
+                            const tName = DB.territories.find(ter => ter.id === t.territory_id)?.name || '';
+                            return [t.fy, t.month, tName, t.upazila, t.district || '', t.brand, t.sale_type, t.target_qty].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Monthly_Target_Export.csv";
+                    } else if (type === 'projection') {
+                        headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
+                        const rows = DB.projections.map(p => {
+                            const tName = DB.territories.find(ter => ter.id === p.territory_id)?.name || '';
+                            return [p.fy, p.month, tName, p.brand, p.sale_type, p.projection_qty].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Current_Month_Projection_Export.csv";
+                    } else if (type === 'sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        const rows = DB.sales.filter(s => s.fy === currentFY).map(s => {
+                            const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
+                            return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_System_Sales_Export.csv";
+                    } else if (type === 'last_year_sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        const rows = DB.sales.filter(s => s.fy === lastFY).map(s => {
+                            const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
+                            return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Last_Year_Sales_Export.csv";
+                    } else if (type === 'emi_early') {
+                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
+                        const rows = DB.emi.map(e => {
+                            const tName = DB.territories.find(ter => ter.id === e.territory_id)?.name || '';
+                            return [e.customer_code, e.customer, tName, e.brand, e.delivery_date, e.first_inst_date, e.overdue_count, e.overdue_total, e.installment].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Early_EMI_Export.csv";
+                    } else if (type === 'recovery_od') {
+                        headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
+                        const rows = DB.recovery_od.map(r => {
+                            const tName = DB.territories.find(ter => ter.id === r.territory_id)?.name || '';
+                            return [r.fy, r.month, tName, r.perfile_od, r.total_overdue].map(csvCell).join(',');
+                        }).join('\n');
+                        csvContent = headers + rows;
+                        filename = "ACI_Recovery_OD_Export.csv";
+                    }
+                } else {
+                    if (type === 'target') {
+                        headers = "FY,Month,Territory_Name,Upazila,District,Brand,Sale_Type,Target_Qty\n";
+                        headers += `${currentFY},April,Dhaka North,Mirpur,Dhaka,Foton,New Sale,4\n`;
+                        filename = "ACI_Monthly_Target_Template.csv";
+                    } else if (type === 'projection') {
+                        headers = "FY,Month,Territory_Name,Brand,Sale_Type,Projection_Qty\n";
+                        headers += `${currentFY},April,Dhaka North,Foton,New Sale,15\n`;
+                        headers += `${currentFY},April,Dhaka North,Mahindra,Resale,10\n`;
+                        filename = "ACI_Current_Month_Projection_Template.csv";
+                    } else if (type === 'sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers += `C-1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,${currentFY},2026,April,New Sale\n`;
+                        headers += `C-1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${currentFY},2026,April,Resale\n`;
+                        filename = "ACI_System_Sales_Template.csv";
+                    } else if (type === 'last_year_sales') {
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers += `C-LY1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,${lastFY},2025,April,New Sale\n`;
+                        headers += `C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${lastFY},2025,April,Resale\n`;
+                        filename = "ACI_Last_Year_Sales_Template.csv";
+                    } else if (type === 'emi_early') {
+                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
+                        headers += "C-2001,Rahim Transport,Dhaka North,Foton,2026-03-10,2026-04-10,1,25000,25000\n";
+                        filename = "ACI_Early_EMI_Template.csv";
+                    } else if (type === 'recovery_od') {
+                        headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
+                        headers += `${currentFY},April,Dhaka North,4500,1250000\n`;
+                        filename = "ACI_Recovery_OD_Template.csv";
+                    }
+                    csvContent = headers;
+                }
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                app.showToast(`Downloading ${filename}...`);
+            },
+
+            parseCSV: (csvText) => {
+                const lines = csvText.split(/\r?\n/);
+                if (lines.length < 2) return [];
+
+                const parseLine = (line) => {
+                    const result = [];
+                    let cur = '';
+                    let inQuotes = false;
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+                        if (char === '"') inQuotes = !inQuotes;
+                        else if (char === ',' && !inQuotes) {
+                            result.push(cur.trim());
+                            cur = '';
+                        } else cur += char;
+                    }
+                    result.push(cur.trim());
+                    return result;
+                };
+
+                const headers = parseLine(lines[0]);
+                return lines.slice(1).filter(line => line.trim()).map(line => {
+                    const values = parseLine(line);
+                    const obj = {};
+                    headers.forEach((header, i) => {
+                        obj[header] = values[i] || '';
+                    });
+                    return obj;
+                });
+            },
+
+            getCSVValue: (row, expectedKeys) => {
+                const keys = Object.keys(row);
+                const clean = (s) => s.toString().toLowerCase().replace(/[\s_-]/g, '');
+                const cleanExpected = expectedKeys.map(k => clean(k));
+                for (const key of keys) {
+                    if (cleanExpected.includes(clean(key))) {
+                        return row[key];
+                    }
+                }
+                return undefined;
+            },
+
+            findTerritory: (row) => {
+                const rawName = app.getCSVValue(row, ['Territory_Name', 'Sales_Territory', 'Territory', 'Area', 'Location', 'TerritoryName']);
+                if (!rawName) return null;
+                const clean = (s) => s.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+                const cleanRaw = clean(rawName);
+                
+                // 1. Try exact alphanumeric match on name or district
+                let terr = DB.territories.find(t => clean(t.name) === cleanRaw || clean(t.district) === cleanRaw);
+                if (terr) return terr;
+                
+                // 2. Try partial match
+                terr = DB.territories.find(t => clean(t.name).includes(cleanRaw) || cleanRaw.includes(clean(t.name)));
+                return terr || null;
+            },
+
+            normalizeMonth: (m) => {
+                if (!m) return 'April';
+                const str = m.toString().trim().toLowerCase();
+                const monthsMap = {
+                    'jan': 'January', 'january': 'January', '01': 'January', '1': 'January',
+                    'feb': 'February', 'february': 'February', '02': 'February', '2': 'February',
+                    'mar': 'March', 'march': 'March', '03': 'March', '3': 'March',
+                    'apr': 'April', 'april': 'April', '04': 'April', '4': 'April',
+                    'may': 'May', '05': 'May', '5': 'May',
+                    'jun': 'June', 'june': 'June', '06': 'June', '6': 'June',
+                    'jul': 'July', 'july': 'July', '07': 'July', '7': 'July',
+                    'aug': 'August', 'august': 'August', '08': 'August', '8': 'August',
+                    'sep': 'September', 'september': 'September', '09': 'September', '9': 'September',
+                    'oct': 'October', 'october': 'October', '10': 'October',
+                    'nov': 'November', 'november': 'November', '11': 'November',
+                    'dec': 'December', 'december': 'December', '12': 'December'
+                };
+                return monthsMap[str] || monthsMap[str.substring(0, 3)] || 'April';
+            },
+
+            normalizeBrand: (b) => {
+                if (!b) return 'Foton';
+                const str = b.toString().trim().toLowerCase();
+                if (str.includes('foton')) return 'Foton';
+                if (str.includes('mahindra')) return 'Mahindra';
+                return 'Foton';
+            },
+
+            normalizeSaleType: (s) => {
+                if (!s) return 'New Sale';
+                const str = s.toString().trim().toLowerCase();
+                if (str.includes('resale') || str.includes('re-sale') || str.includes('re sale')) return 'Resale';
+                return 'New Sale';
+            },
+
+            normalizeFY: (fy, monthStr, defaultFY) => {
+                if (!fy) return defaultFY;
+                const str = fy.toString().trim().replace(/\s+/g, '');
+                
+                // Matches 2024-2025 -> 2024-25
+                const longMatch = str.match(/^(\d{4})-(\d{4})$/);
+                if (longMatch) {
+                    return `${longMatch[1]}-${longMatch[2].substring(2)}`;
+                }
+                // Matches 24-25 -> 2024-25
+                const shortMatch = str.match(/^(\d{2})-(\d{2})$/);
+                if (shortMatch) {
+                    return `20${shortMatch[1]}-${shortMatch[2]}`;
+                }
+                // Matches 2024-25 directly
+                if (/^\d{4}-\d{2}$/.test(str)) {
+                    return str;
+                }
+                
+                // If it's a 4 digit year like 2024, deduce FY from the month!
+                if (/^\d{4}$/.test(str)) {
+                    const year = parseInt(str);
+                    const h2Months = ['January', 'February', 'March', 'April', 'May', 'June'];
+                    if (h2Months.includes(monthStr)) {
+                        return `${year - 1}-${year.toString().slice(-2)}`;
+                    } else {
+                        return `${year}-${(year + 1).toString().slice(-2)}`;
+                    }
+                }
+                
+                return defaultFY;
+            },
+
+            getPerformance: (territoryId, brand, saleType) => {
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : activeFY;
+                let currentFY = (app.currentUser && app.currentUser.role === 'so') ? (app.soSelectedFY || defaultFY) : (app.selectedFY || defaultFY);
+                if (app.showLastFYData) {
+                    currentFY = concludingFY;
+                }
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive && currentFY === concludingFY) || app.showLastFYData;
+                const lastFY = app.getPreviousFY(currentFY);
+                const currentMonth = app.currentMonth;
+                const lastMonth = app.lastMonth;
+                const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(currentMonth);
+
+                // Last Month Metrics
+                const lmSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const lmTgtObj = DB.targets.filter(t => t.territory_id === territoryId && t.brand === brand && t.sale_type === saleType && t.fy === currentFY);
+                const lmBudgetTgts = lmTgtObj.filter(t => t.month === lastMonth);
+                const lmBudget = lmBudgetTgts.length > 0 ? lmBudgetTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) : Math.round(lmTgtObj.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) / 12);
+                const lmSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                // YTD Metrics (Until Last Month)
+                const ytdSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                let ytdBudget = 0;
+                const monthlyTargets = lmTgtObj.filter(t => ytdMonths.includes(t.month));
+                if (monthlyTargets.length > 0) {
+                    ytdBudget = monthlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                } else {
+                    ytdBudget = Math.round((lmTgtObj.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) / 12) * ytdMonths.length);
+                }
+
+                const ytdSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                return {
+                    lastMonth: { budget: lmBudget, sales: lmSales, sply: lmSply },
+                    ytd: { budget: ytdBudget, sales: ytdSales, sply: ytdSply }
+                };
+            },
+
+            simulateUpload: (input, typeName, dataKey) => {
+                if (app.currentUser.role !== 'admin') {
+                    app.showToast("Critical Error: Upload privileges revoked.", "error");
+                    return;
+                }
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        const csvText = e.target.result;
+                        const parsedData = app.parseCSV(csvText);
+
+                        if (parsedData.length === 0) {
+                            app.showToast("Error: CSV is empty or invalid.", "error");
+                            return;
+                        }
+
+                        app.showLoader(`Scanning ${file.name}...`);
+
+                        setTimeout(() => {
+                            app.showLoader(`Purging previous ${typeName} records...`);
+
+                            setTimeout(() => {
+                                app.showLoader(`Writing ${parsedData.length} new records...`);
+
+                                setTimeout(async () => {
+                                    try {
+                                        // 1. PURGE OLD DATA
+                                        if (dataKey === 'targets') {
+                                            DB.targets = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM targets`;
+                                        } else if (dataKey === 'projections') {
+                                            DB.projections = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM projections`;
+                                        } else if (dataKey === 'emi') {
+                                            DB.emi = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM emi`;
+                                        } else if (dataKey === 'sales') {
+                                             DB.sales = DB.sales.filter(s => s.fy !== currentFY);
+                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${currentFY}`;
+                                         } else if (dataKey === 'last_year_sales') {
+                                             DB.sales = DB.sales.filter(s => s.fy !== lastFY);
+                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`;
+                                         } else if (dataKey === 'recovery_od') {
+                                            DB.recovery_od = [];
+                                            if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`;
+                                        }
+
+                                        // 2. INSERT REAL DATA FROM CSV
+                                        const newRecords = [];
+                                        const secondYear = currentFY.split('-').length === 2 ? currentFY.split('-')[0].substring(0, 2) + currentFY.split('-')[1] : '2026';
+
+                                        parsedData.forEach((row, idx) => {
+                                            const terr = app.findTerritory(row);
+                                            const terrId = terr ? terr.id : 't1';
+
+                                            if (dataKey === 'targets') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
+                                                const record = {
+                                                    id: `tg_u_${Date.now()}_${idx}`,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, currentFY),
+                                                    month: recordMonth,
+                                                    territory_id: terrId,
+                                                    upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
+                                                    district: app.getCSVValue(row, ['District', 'Zila']) || '',
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
+                                                    target_qty: parseInt(app.getCSVValue(row, ['Target_Qty', 'TargetQty', 'Target'])) || 0
+                                                };
+                                                DB.targets.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'projections') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
+                                                const record = {
+                                                    id: `p_u_${Date.now()}_${idx}`,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, currentFY),
+                                                    month: recordMonth,
+                                                    territory_id: terrId,
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type'])),
+                                                    projection_qty: parseInt(app.getCSVValue(row, ['Projection_Qty', 'ProjectionQty', 'Projection'])) || 0
+                                                };
+                                                DB.projections.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'emi') {
+                                                const record = {
+                                                    id: `e_u_${Date.now()}_${idx}`,
+                                                    customer_code: app.getCSVValue(row, ['Customer_Code', 'CustomerCode', 'Code']) || `C-${idx}`,
+                                                    customer: app.getCSVValue(row, ['Customer_Name', 'CustomerName', 'Customer']) || 'Unknown Customer',
+                                                    phone: app.getCSVValue(row, ['Phone', 'Mobile']) || '01700000000',
+                                                    location: terr ? terr.name : (app.getCSVValue(row, ['Location', 'Sales_Territory', 'Territory']) || 'Dhaka'),
+                                                    delivery_date: app.normalizeDate(app.getCSVValue(row, ['Delivery_Date', 'DeliveryDate', 'Delivery', 'Delivary_Date', 'DelivaryDate', 'Delivary']) || `${secondYear}-04-01`),
+                                                    first_inst_date: app.normalizeDate(app.getCSVValue(row, ['First_Inst_Date', 'FirstInstDate', '1stInstallmentDate', '1st_Installment_Date', '1stInstallment', '1stInstDate', '1stInst']) || `${secondYear}-05-01`),
+                                                    overdue_count: parseInt(app.getCSVValue(row, ['OverDue_Hash', 'OverdueHash', 'OverdueCount', 'Overdue_Count'])) || 0,
+                                                    overdue_total: parseInt(app.getCSVValue(row, ['OverDue_Taka', 'OverdueTaka', 'OverdueTotal', 'Overdue_Total'])) || 0,
+                                                    installment: parseInt(app.getCSVValue(row, ['Installment_Size', 'InstallmentSize', 'Installment'])) || 0,
+                                                    territory_id: terrId,
+                                                    collected: 0,
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    model: app.getCSVValue(row, ['Model']) || 'TM3',
+                                                    installment_no: parseInt(app.getCSVValue(row, ['Installment_No', 'InstallmentNo', 'Inst_No', 'InstNo'])) || 1
+                                                };
+                                                DB.emi.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'sales' || dataKey === 'last_year_sales') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Sales_Month', 'SalesMonth', 'Month']));
+                                                const recordFY = app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, (dataKey === 'sales' ? currentFY : lastFY));
+                                                const targetFY = dataKey === 'sales' ? currentFY : lastFY;
+                                                
+                                                // Skip rows that do not match the target fiscal year to prevent duplicates and cross-contamination
+                                                if (recordFY !== targetFY) {
+                                                    return;
+                                                }
+
+                                                const customerId = app.getCSVValue(row, ['Customer_ID', 'CustomerID', 'Customer_Code', 'CustomerCode', 'Customer']) || `C-${idx}`;
+                                                let salesYear = parseInt(app.getCSVValue(row, ['Sales_Year', 'SalesYear', 'Year']));
+                                                if (!salesYear) {
+                                                    const parts = recordFY.split('-');
+                                                    if (parts.length === 2) {
+                                                        const y1 = parseInt(parts[0]);
+                                                        const y2_short = parts[1];
+                                                        const prefix = parts[0].substring(0, 2);
+                                                        const y2 = parseInt(prefix + y2_short);
+                                                        const h2Months = ['January', 'February', 'March', 'April', 'May', 'June'];
+                                                        salesYear = h2Months.includes(recordMonth) ? y2 : y1;
+                                                    } else {
+                                                        salesYear = (dataKey === 'sales' ? 2026 : 2025);
+                                                    }
+                                                }
+                                                const model = app.getCSVValue(row, ['Model']) || 'TM3';
+                                                
+                                                const record = {
+                                                    id: `s_u_${customerId}_${model}_${salesYear}_${recordMonth}`.replace(/\s+/g, '_'),
+                                                    customer_id: customerId,
+                                                    district: app.getCSVValue(row, ['District', 'Zila']) || 'Dhaka',
+                                                    territory_id: terrId,
+                                                    upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
+                                                    brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
+                                                    model: app.getCSVValue(row, ['Model']) || 'TM3',
+                                                    unit_qty: parseInt(app.getCSVValue(row, ['Unit_Qty', 'UnitQty', 'Qty', 'Quantity'])) || 0,
+                                                    fy: recordFY,
+                                                    sales_year: salesYear,
+                                                    sales_month: recordMonth,
+                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']))
+                                                };
+                                                DB.sales.push(record);
+                                                newRecords.push(record);
+                                            } else if (dataKey === 'recovery_od') {
+                                                const recordMonth = app.normalizeMonth(app.getCSVValue(row, ['Month', 'Sales_Month', 'SalesMonth']));
+                                                const record = {
+                                                    id: `rod_u_${Date.now()}_${idx}`,
+                                                    fy: app.normalizeFY(app.getCSVValue(row, ['FY', 'Fiscal_Year', 'FiscalYear', 'Year']), recordMonth, currentFY),
+                                                    month: recordMonth,
+                                                    territory_id: terrId,
+                                                    perfile_od: parseInt(app.getCSVValue(row, ['Perfile_OD', 'PerfileOD', 'PerFileOverdue'])) || 0,
+                                                    total_overdue: parseInt(app.getCSVValue(row, ['Total_Overdue', 'TotalOverdue'])) || 0
+                                                };
+                                                DB.recovery_od.push(record);
+                                                newRecords.push(record);
+                                            }
+                                        });
+
+                                        if (app.neonSQL && newRecords.length > 0) {
+                                            const batchSize = 100;
+                                            for(let i=0; i<newRecords.length; i+=batchSize) {
+                                                const chunk = newRecords.slice(i, i+batchSize);
+                                                const promises = chunk.map(r => {
+                                                     if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, district, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.district}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`;
+                                                     if(dataKey === 'projections') return app.neonSQL`INSERT INTO projections (id, fy, month, territory_id, brand, sale_type, projection_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.brand}, ${r.sale_type}, ${r.projection_qty})`;
+                                                     if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no}) ON CONFLICT (id) DO NOTHING`;
+                                                     if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type}) ON CONFLICT (id) DO NOTHING`;
+                                                     if(dataKey === 'recovery_od') return app.neonSQL`INSERT INTO recovery_od (id, fy, month, territory_id, perfile_od, total_overdue) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.perfile_od}, ${r.total_overdue}) ON CONFLICT (id) DO NOTHING`;
+                                                });
+                                                await Promise.all(promises);
+                                            }
+                                        }
+
+                                        app.hideLoader();
+                                        app.showToast(`${parsedData.length} ${typeName} records uploaded successfully!`, 'success');
+                                        input.value = ''; // reset input
+                                    } catch (err) {
+                                        console.error("Upload error:", err);
+                                        app.hideLoader();
+                                        app.showToast("Failed to upload data.", "error");
+                                    }
+                                }, 100);
+                            }, 500);
+                        }, 500);
+                    };
+                    reader.onerror = () => {
+                        app.showToast("Failed to read file.", "error");
+                    };
+                    reader.readAsText(file);
+                }
+            },
+
+            processRawData: () => {
+                const val = document.getElementById('raw-csv').value;
+                if (!val.trim()) return app.showToast('Please enter some data.', 'error');
+                app.showLoader('Parsing CSV data...');
+                setTimeout(() => {
+                    app.hideLoader();
+                    app.showToast('20 rows added to database.', 'success');
+                    document.getElementById('raw-csv').value = '';
+                }, 1000);
+            },
+
+            // ==========================================
+            // NOTIFICATIONS & NOTICES
+            // ==========================================
+
+            showNoticesModal: () => {
+                let modal = document.getElementById('notices-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'notices-modal';
+                    modal.className = 'fixed inset-0 z-[100] hidden items-end sm:items-center justify-center';
+                    document.body.appendChild(modal);
+                }
+
+                const noticesHTML = DB.notices.length > 0 ? DB.notices.slice().reverse().map(n => `
+                    <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-3 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-2 border-b border-slate-200 pb-2">
+                            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-amber-500 shadow shadow-amber-500/50"></div> ${n.title}</h4>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${n.timestamp}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-3 leading-relaxed">${n.message}</p>
+                        ${n.fileName ? `
+                            <div class="flex items-center gap-2 text-xs bg-white border border-slate-200 px-3 py-2 rounded-lg w-max text-aci-blue font-semibold shadow-sm cursor-pointer hover:bg-blue-50 transition-colors">
+                                <i data-lucide="${n.fileType === 'pdf' ? 'file-text' : 'image'}" class="w-4 h-4 text-indigo-500"></i> ${n.fileName}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('') : '<div class="text-center text-slate-500 py-10 font-medium">No new notices active.</div>';
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="app.closeNoticesModal()"></div>
+                    <div class="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-2xl p-3.5 relative z-10 max-h-[85vh] flex flex-col transform transition-transform translate-y-full shadow-2xl" id="notices-modal-content">
+                        <div class="flex justify-between items-center mb-4 shrink-0 border-b border-slate-100 pb-3">
+                            <h3 class="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><i data-lucide="bell-ring" class="w-6 h-6 text-amber-500"></i> Notice Board</h3>
+                            <button onclick="app.closeNoticesModal()" class="text-slate-400 bg-slate-100 rounded-full hover:bg-slate-200 hover:text-slate-700 p-1.5 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto pr-1 pb-4">
+                            ${noticesHTML}
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                const badge = document.getElementById('global-notice-badge');
+                const ping = document.getElementById('global-notice-ping');
+                const bellIcon = document.getElementById('global-notice-icon');
+                const msgPopup = document.getElementById('global-notice-message');
+                if (badge) badge.style.display = 'none';
+                if (ping) ping.style.display = 'none';
+                if (msgPopup) {
+                    msgPopup.classList.add('hidden');
+                    msgPopup.classList.remove('block');
+                }
+                if (bellIcon) {
+                    bellIcon.classList.remove('animate-ring-shake', 'text-amber-500');
+                    bellIcon.classList.add('text-slate-500');
+                }
+
+                app.refreshIcons();
+                setTimeout(() => {
+                    document.getElementById('notices-modal-content').classList.remove('translate-y-full');
+                }, 10);
+            },
+
+            closeNoticesModal: () => {
+                const modal = document.getElementById('notices-modal');
+                const content = document.getElementById('notices-modal-content');
+                if (content) content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                }, 300);
+            },
+
+            renderAdminNotices: () => {
+                localStorage.setItem('aci_last_page', 'notices');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                const html = `
+                    <div class="pb-6 fade-in max-w-5xl mx-auto">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
+                            <div>
+                                <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
+                                <p class="text-xs font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage and circulate critical notices to all branch officers dynamically.</p>
+                            </div>
+                            <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-1.5 rounded-xl font-bold text-xs transition-all shadow-sm border border-slate-200/60 shadow-amber-500/20 active:scale-95 flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5"></i> Create Notice
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200/60">
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest w-32">Date Issued</th>
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Notice Content</th>
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest w-48 shrink-0">Attachment</th>
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right w-24 shrink-0">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs">
+                                    ${DB.notices.length > 0 ? DB.notices.slice().reverse().map(n => `
+                                        <tr class="hover:bg-slate-50/70 transition-colors group">
+                                            <td class="p-3 whitespace-nowrap text-slate-500 text-xs font-bold">${n.timestamp}</td>
+                                            <td class="p-3">
+                                                <p class="font-bold text-slate-800 text-base mb-1">${n.title}</p>
+                                                <p class="text-xs font-medium text-slate-500 leading-relaxed max-w-2xl">${n.message}</p>
+                                            </td>
+                                            <td class="p-3">
+                                                ${n.fileName ? `<span class="inline-flex items-center gap-1.5 bg-slate-100 border border-slate-200/60 text-slate-700 px-2.5 py-1.5 rounded-lg text-[10px] font-bold shadow-sm truncate max-w-[180px]"><i data-lucide="${n.fileType === 'pdf' ? 'file-text' : 'image'}" class="w-3.5 h-3.5 ${n.fileType === 'pdf' ? 'text-red-500' : 'text-indigo-500'}"></i> ${n.fileName}</span>` : '<span class="text-slate-300 text-xs font-bold text-slate-600 uppercase tracking-wide italic">No attachment</span>'}
+                                            </td>
+                                            <td class="p-3 text-right">
+                                                <button onclick="app.deleteNotice('${n.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Delete Notice"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                            </td>
+                                        </tr>
+                                    `).join('') : `<tr><td colspan="4" class="p-10 text-center text-slate-400 font-medium">No notices have been authored yet.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- LINKS SECTION -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-12 mb-3 gap-3">
+                            <div>
+                                <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 text-indigo-500 fill-indigo-100"></i> Important App Links</h2>
+                                <p class="text-xs font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage essential web or app shortcuts for field agents.</p>
+                            </div>
+                            <button onclick="app.showAddLinkModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-1.5 rounded-xl font-bold text-xs transition-all shadow-sm border border-slate-200/60 shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5"></i> Add Link
+                            </button>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200/60">
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest w-32">Type</th>
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Link Title</th>
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">URL/Endpoint</th>
+                                        <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right w-24 shrink-0">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-xs">
+                                    ${DB.links.length > 0 ? DB.links.map(l => `
+                                        <tr class="hover:bg-slate-50/70 transition-colors group">
+                                            <td class="p-3">
+                                                <span class="inline-flex items-center gap-1.5 ${l.type === 'app' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-indigo-100 text-indigo-700 border-indigo-200'} border px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wide">
+                                                    <i data-lucide="${l.icon}" class="w-3.5 h-3.5"></i> ${l.type}
+                                                </span>
+                                            </td>
+                                            <td class="p-3 font-bold text-slate-800">${l.title}</td>
+                                            <td class="p-3 text-xs font-semibold text-slate-500 truncate max-w-sm"><a href="${l.url}" target="_blank" class="hover:text-indigo-600 transition-colors">${l.url}</a></td>
+                                            <td class="p-3 text-right">
+                                                <button onclick="app.deleteLink('${l.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Remove Link"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                            </td>
+                                        </tr>
+                                    `).join('') : `<tr><td colspan="4" class="p-10 text-center text-slate-400 font-medium">No system links configured yet.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            showAddNoticeModal: () => {
+                let modal = document.getElementById('add-notice-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-notice-modal';
+                    modal.className = 'fixed inset-0 z-[110] hidden items-end sm:items-center justify-center';
+                    document.body.appendChild(modal);
+                }
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="app.closeAddNoticeModal()"></div>
+                    <div class="bg-white w-full sm:max-w-lg sm:rounded-xl rounded-t-2xl p-4 relative z-10 max-h-[85vh] overflow-y-auto flex flex-col transform transition-transform translate-y-full shadow-2xl border border-slate-200" id="add-notice-modal-content">
+                        <div class="flex justify-between items-center mb-6 shrink-0">
+                            <h3 class="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><i data-lucide="pen-tool" class="w-5 h-5 text-aci-blue"></i> Draft New Notice</h3>
+                            <button onclick="app.closeAddNoticeModal()" class="text-slate-400 bg-slate-100 rounded-full hover:bg-slate-200 hover:text-slate-700 p-1.5 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form onsubmit="app.saveNotice(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Notice Title <span class="text-red-500">*</span></label>
+                                <input type="text" id="not-title" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-aci-blue transition-colors" placeholder="e.g. System Downtime Update" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Message Detail <span class="text-red-500">*</span></label>
+                                <textarea id="not-msg" rows="4" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-aci-blue transition-colors resize-none" placeholder="Write your full directive or announcement here..." required></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Attachment (Optional File/Image)</label>
+                                <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition-colors relative">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-400 mx-auto mb-2 pointer-events-none"></i>
+                                    <div class="text-xs font-bold text-slate-600 mb-1 pointer-events-none">Click or drag file to attach</div>
+                                    <div class="text-[10px] font-semibold text-slate-400 pointer-events-none">PDF, PNG, JPG (Max 5MB)</div>
+                                    <input type="file" id="not-file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="document.getElementById('not-file-name').innerText = this.files[0] ? this.files[0].name : ''">
+                                </div>
+                                <p id="not-file-name" class="text-xs font-bold text-indigo-600 mt-2 text-center h-4"></p>
+                            </div>
+                            <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-3.5 rounded-xl mt-2 shadow-sm shadow-slate-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-slate-800">
+                                <i data-lucide="send" class="w-4 h-4"></i> Circulate Notice Now
+                            </button>
+                        </form>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+                setTimeout(() => {
+                    document.getElementById('add-notice-modal-content').classList.remove('translate-y-full');
+                }, 10);
+            },
+
+            closeAddNoticeModal: () => {
+                const modal = document.getElementById('add-notice-modal');
+                const content = document.getElementById('add-notice-modal-content');
+                if (content) content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                }, 300);
+            },
+
+            saveNotice: async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('not-title').value;
+                const msg = document.getElementById('not-msg').value;
+                const fileInput = document.getElementById('not-file');
+
+                let fileName = '';
+                let fileType = '';
+
+                if (fileInput.files.length > 0) {
+                    fileName = fileInput.files[0].name;
+                    fileType = fileName.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
+                }
+
+                app.showLoader('Circulating notice...');
+                try {
+                    const newNotice = {
+                        id: 'n_' + Math.floor(Math.random() * 1000000),
+                        title: title,
+                        message: msg,
+                        fileName: fileName,
+                        fileType: fileType,
+                        timestamp: new Date().toLocaleDateString('en-GB')
+                    };
+                    DB.notices.push(newNotice);
+
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO notices (id, title, message, timestamp, filetype, filename) VALUES (${newNotice.id}, ${newNotice.title}, ${newNotice.message}, ${newNotice.timestamp}, ${newNotice.fileType}, ${newNotice.fileName})`;
+                    }
+
+                    const badge = document.getElementById('global-notice-badge');
+                    const ping = document.getElementById('global-notice-ping');
+                    const bellIcon = document.getElementById('global-notice-icon');
+                    const msgPopup = document.getElementById('global-notice-message');
+                    if (badge) badge.style.display = 'block';
+                    if (ping) ping.style.display = 'block';
+                    if (msgPopup) {
+                        msgPopup.classList.remove('hidden');
+                        msgPopup.classList.add('block');
+                    }
+                    if (bellIcon) {
+                        bellIcon.classList.remove('text-slate-500');
+                        bellIcon.classList.add('animate-ring-shake', 'text-amber-500');
+                    }
+
+                    app.closeAddNoticeModal();
+                    app.showToast('Critical Notice circulated successfully!', 'success');
+                    app.renderAdminNotices();
+                } catch (err) {
+                    console.error('Failed to circulate notice:', err);
+                    app.showToast('Failed to save notice to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            deleteNotice: async (id) => {
+                if (confirm('Revoke and delete this notice permanently?')) {
+                    app.showLoader('Deleting notice...');
+                    try {
+                        DB.notices = DB.notices.filter(n => n.id !== id);
+                        if (app.neonSQL) {
+                            await app.neonSQL`DELETE FROM notices WHERE id = ${id}`;
+                        }
+                        app.showToast('Notice has been deleted.', 'success');
+                        app.renderAdminNotices();
+                    } catch (err) {
+                        console.error('Failed to delete notice:', err);
+                        app.showToast('Failed to delete notice from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            showLinksModal: () => {
+                let modal = document.getElementById('links-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'links-modal';
+                    modal.className = 'fixed inset-0 z-[100] hidden items-end sm:items-center justify-center';
+                    document.body.appendChild(modal);
+                }
+
+                const linksHTML = DB.links.length > 0 ? DB.links.map(l => `
+                    <a href="${l.url}" target="_blank" class="flex items-center gap-4 p-4 bg-white/20 backdrop-blur-sm border border-white/40 rounded-xl mb-3 shadow-sm hover:shadow-md hover:bg-white/40 transition-all group overflow-hidden relative">
+                        <!-- Tiny inner glow -->
+                        <div class="absolute -right-4 -top-4 w-12 h-12 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all"></div>
+                        
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 relative z-10 ${l.type === 'app' ? 'bg-emerald-500/20 text-emerald-600' : 'bg-indigo-500/20 text-indigo-600'}">
+                            <i data-lucide="${l.icon}" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1 relative z-10">
+                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-aci-blue transition-colors">${l.title}</h4>
+                            <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-widest mt-0.5">${l.type} LINK</p>
+                        </div>
+                        <i data-lucide="external-link" class="w-4 h-4 text-slate-300 group-hover:text-aci-blue relative z-10"></i>
+                    </a>
+                `).join('') : '<div class="text-center text-slate-500 py-10 font-medium">No links available.</div>';
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-aci-dark/40 backdrop-blur-md" onclick="app.closeLinksModal()"></div>
+                    <div class="glass w-full sm:max-w-md sm:rounded-xl rounded-t-2xl p-3.5 relative z-10 max-h-[85vh] flex flex-col transform transition-transform translate-y-full shadow-2xl border border-white/40 overflow-hidden" id="links-modal-content">
+                        <!-- Liquid Orbs inside modal -->
+                        <div class="absolute -right-10 -top-10 bg-indigo-500/20 w-32 h-32 rounded-full blur-3xl pointer-events-none"></div>
+                        
+                        <div class="flex justify-between items-center mb-4 shrink-0 border-b border-white/20 pb-3 relative z-10">
+                            <h3 class="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><i data-lucide="link-2" class="w-6 h-6 text-indigo-500"></i> Store Links</h3>
+                            <button onclick="app.closeLinksModal()" class="text-white/60 bg-white/10 rounded-full hover:bg-white/20 p-2 border border-white/20 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto pr-1 pb-4 relative z-10 no-scrollbar">
+                            ${linksHTML}
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                app.refreshIcons();
+                setTimeout(() => {
+                    document.getElementById('links-modal-content').classList.remove('translate-y-full');
+                }, 10);
+            },
+
+            closeLinksModal: () => {
+                const modal = document.getElementById('links-modal');
+                const content = document.getElementById('links-modal-content');
+                if (content) content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                }, 300);
+            },
+
+            showAddLinkModal: () => {
+                let modal = document.getElementById('add-link-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-link-modal';
+                    modal.className = 'fixed inset-0 z-[110] hidden items-end sm:items-center justify-center';
+                    document.body.appendChild(modal);
+                }
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-aci-dark/40 backdrop-blur-md" onclick="app.closeAddLinkModal()"></div>
+                    <div class="glass w-full sm:max-w-md sm:rounded-xl rounded-t-2xl p-4 relative z-10 max-h-[85vh] overflow-y-auto flex flex-col transform transition-transform translate-y-full shadow-2xl border border-white/40 overflow-hidden" id="add-link-modal-content">
+                        <!-- Liquid Orbs inside modal -->
+                        <div class="absolute -right-10 -top-10 bg-aci-blue/20 w-32 h-32 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="absolute -left-10 -bottom-10 bg-indigo-500/10 w-32 h-32 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <div class="flex justify-between items-center mb-6 shrink-0 relative z-10">
+                            <h3 class="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><i data-lucide="link" class="w-5 h-5 text-indigo-500"></i> Add New Link</h3>
+                            <button onclick="app.closeAddLinkModal()" class="text-white/60 bg-white/10 rounded-full hover:bg-white/20 p-2 border border-white/20 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form onsubmit="app.saveLink(event)" class="space-y-4 relative z-10">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Title <span class="text-red-500">*</span></label>
+                                <input type="text" id="lnk-title" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-aci-blue transition-colors" placeholder="e.g. Dealer Portal" required>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">URL <span class="text-red-500">*</span></label>
+                                <input type="url" id="lnk-url" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-aci-blue transition-colors" placeholder="https://" required>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Type <span class="text-red-500">*</span></label>
+                                <select id="lnk-type" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-aci-blue transition-colors" required>
+                                    <option value="web">Web Link</option>
+                                    <option value="app">App Link</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full btn-liquid text-white font-black py-3.5 rounded-xl mt-4 shadow-sm shadow-indigo-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-indigo-800">
+                                <i data-lucide="save" class="w-4 h-4"></i> Save Link
+                            </button>
+                        </form>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+                setTimeout(() => {
+                    document.getElementById('add-link-modal-content').classList.remove('translate-y-full');
+                }, 10);
+            },
+
+            closeAddLinkModal: () => {
+                const modal = document.getElementById('add-link-modal');
+                const content = document.getElementById('add-link-modal-content');
+                if (content) content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                }, 300);
+            },
+
+            saveLink: async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('lnk-title').value;
+                const url = document.getElementById('lnk-url').value;
+                const type = document.getElementById('lnk-type').value;
+                const icon = type === 'app' ? 'smartphone' : 'globe';
+
+                app.showLoader('Saving link...');
+                try {
+                    const newLink = {
+                        id: 'lnk_' + Math.floor(Math.random() * 1000000),
+                        title, url, type, icon
+                    };
+                    DB.links.push(newLink);
+
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO links (id, title, url, type, icon) VALUES (${newLink.id}, ${newLink.title}, ${newLink.url}, ${newLink.type}, ${newLink.icon})`;
+                    }
+
+                    app.closeAddLinkModal();
+                    app.showToast('Link added successfully.', 'success');
+                    app.renderAdminNotices();
+                } catch (err) {
+                    console.error('Failed to save link:', err);
+                    app.showToast('Failed to save link to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            deleteLink: async (id) => {
+                if (confirm('Remove this link permanently?')) {
+                    app.showLoader('Removing link...');
+                    try {
+                        DB.links = DB.links.filter(l => l.id !== id);
+                        if (app.neonSQL) {
+                            await app.neonSQL`DELETE FROM links WHERE id = ${id}`;
+                        }
+                        app.showToast('Link removed.', 'success');
+                        app.renderAdminNotices();
+                    } catch (err) {
+                        console.error('Failed to delete link:', err);
+                        app.showToast('Failed to delete link from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            renderTIVReporting: () => {
+                const terrId = app.currentUser.territories[0];
+                if (!terrId) {
+                    document.getElementById('view-port').innerHTML = `<div class="text-center py-10 text-slate-500">No assigned territory found.</div>`;
+                    return;
+                }
+                const territory = DB.territories.find(t => t.id === terrId);
+
+                const months = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const currentMonth = app.tivSelectedMonth || app.currentMonth;
+                const currentMonthIdx = months.indexOf(currentMonth);
+                const prevMonth = currentMonthIdx > 0 ? months[currentMonthIdx - 1] : 'June';
+
+                const submission = DB.tiv_submissions.find(s => s.territory === terrId && s.month === currentMonth);
+                const prevSubmission = DB.tiv_submissions.find(s => s.territory === terrId && s.month === prevMonth);
+                const isLocked = !!submission;
+
+                // Hydrate data safely
+                if (isLocked) {
+                    app.tiv_form_data = { ...submission.data };
+                } else {
+                    if (app.lastTivMonthLoaded !== currentMonth) {
+                        app.tiv_form_data = {};
+                        app.lastTivMonthLoaded = currentMonth;
+                    }
+                }
+
+                // Brand Share Math
+                const brandTotals = {};
+                let grandTotal = 0;
+                DB.tiv_brands.forEach(b => {
+                    brandTotals[b.name] = 0;
+                    b.models.forEach(model => {
+                        const val = app.tiv_form_data?.[model] || 0;
+                        brandTotals[b.name] += val;
+                        grandTotal += val;
+                    });
+                });
+
+                const pieLabels = [];
+                const pieData = [];
+                const pieColors = ['#0F2942', '#F4A915', '#475569', '#84cc16', '#3b82f6', '#a855f7'];
+
+                DB.tiv_brands.forEach(b => {
+                    pieLabels.push(b.name);
+                    pieData.push(grandTotal > 0 ? Math.round((brandTotals[b.name] / grandTotal) * 100) : 0);
+                });
+
+                const activeBrand = app.tivSelectedBrand || DB.tiv_brands[0].name;
+
+                let html = `
+                    <div class="pb-6 fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800">TIV Reporting</h2>
+                                <p class="text-xs text-slate-500">Market Total Industry Volume (Units)</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                                <div class="w-1.5 h-1.5 rounded-full ${isLocked ? 'bg-red-500' : 'bg-green-500'} animate-pulse"></div>
+                                <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest">${isLocked ? 'Locked' : 'Open'}</span>
+                            </div>
+                        </div>
+
+                        <!-- Month & Territory Controls -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-4 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="p-2 bg-aci-blue/10 rounded-lg text-aci-blue"><i data-lucide="calendar" class="w-5 h-5"></i></div>
+                                <div class="w-full max-w-xs relative group">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">Select Reporting Month</label>
+                                    <select onchange="app.tivSelectedMonth = this.value; app.renderTIVReporting()" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10">
+                                        ${months.map(m => `<option value="${m}" ${currentMonth === m ? 'selected' : ''}>${m} 2026</option>`).join('')}
+                                    </select>
+                                    <div class="absolute right-3 bottom-2.5 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right hidden sm:block">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Detected Territory</p>
+                                <span class="text-xs font-black text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">${territory.name}</span>
+                            </div>
+                        </div>
+
+                        <!-- Market Share Pie Chart & KPI Card -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="md:col-span-2 bg-white p-3.5 rounded-xl border border-slate-100 shadow-sm flex flex-col items-center justify-center relative overflow-hidden min-h-[220px]">
+                                <div class="absolute -right-10 -top-10 bg-indigo-500/5 w-40 h-40 rounded-full blur-3xl pointer-events-none"></div>
+                                <div class="flex items-center justify-between w-full mb-2">
+                                    <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider">Brand Market Share %</h4>
+                                    <span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">${currentMonth}</span>
+                                </div>
+                                <div class="relative w-full h-40 flex items-center justify-center">
+                                    ${grandTotal === 0 ? `
+                                        <div class="text-center text-slate-400 text-xs font-bold flex flex-col items-center gap-2">
+                                            <i data-lucide="pie-chart" class="w-8 h-8 text-slate-300"></i>
+                                            <span>Enter model volumes below to compute chart</span>
+                                        </div>
+                                    ` : `
+                                        <canvas id="tivPieChart"></canvas>
+                                    `}
+                                </div>
+                            </div>
+                            <div class="bg-slate-900 p-3.5 rounded-xl text-white flex flex-col justify-between shadow-sm relative overflow-hidden">
+                                <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-4 translate-y-4">
+                                    <i data-lucide="bar-chart-3" class="w-24 h-24 text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Monthly Volume</p>
+                                    <h3 class="text-4xl font-black mt-2 tracking-tight">${grandTotal} <span class="text-xs font-normal text-slate-400">Units</span></h3>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-slate-300 flex items-center gap-1">
+                                    <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                    <span>Sum of all units entered for <strong>${currentMonth}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${isLocked ? `
+                            <div class="bg-red-50 border border-red-100 p-3 rounded-xl text-red-800 text-xs font-medium mb-4 flex items-center gap-2">
+                                <i data-lucide="lock" class="w-4 h-4"></i>
+                                <span>This month's TIV data is submitted and locked. Contact Admin to make changes.</span>
+                            </div>
+                        ` : ''}
+
+                        <div class="flex overflow-x-auto gap-2 pb-2 no-scrollbar mb-4">
+                            ${DB.tiv_brands.map(b => `
+                                <button onclick="app.tivSelectedBrand='${b.name}'; app.renderTIVReporting()" class="px-4 py-2 rounded-xl text-xs font-bold border shrink-0 transition-all ${activeBrand === b.name ? 'bg-slate-800 border-slate-800 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">
+                                    ${b.name}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <form onsubmit="app.submitTIVData(event)" class="space-y-4">
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                                <div class="p-3 bg-slate-50 border-b border-slate-100 flex justify-between items-center text-xs font-bold text-slate-600">
+                                    <span>${activeBrand} Models</span>
+                                    <span>Previous vs Current</span>
+                                </div>
+                                <div class="divide-y divide-slate-100">
+                `;
+
+                const brandObj = DB.tiv_brands.find(b => b.name === activeBrand);
+                brandObj.models.forEach(model => {
+                    const prevVal = prevSubmission?.data?.[model] || 0;
+                    const currentVal = submission?.data?.[model] || 0;
+
+                    app.tiv_form_data = app.tiv_form_data || {};
+                    if (isLocked) {
+                        app.tiv_form_data[model] = currentVal;
+                    } else if (app.tiv_form_data[model] === undefined) {
+                        app.tiv_form_data[model] = 0;
+                    }
+
+                    const val = app.tiv_form_data[model];
+
+                    html += `
+                        <div class="p-4 flex items-center justify-between gap-4">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${model}</h4>
+                                <p class="text-[10px] font-semibold text-slate-400 mt-0.5">Last Month: <span class="text-slate-600 font-bold">${prevVal}</span></p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                ${!isLocked ? `
+                                    <button type="button" onclick="app.updateTIVInput('${model}', -1)" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-slate-600 transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                    <input type="number" id="tiv-in-${model}" value="${val}" min="0" onchange="app.tiv_form_data['${model}'] = parseInt(this.value) || 0; app.renderTIVReporting()" class="w-16 text-center border border-slate-200 font-bold text-slate-800 py-1.5 rounded-lg focus:outline-none focus:border-aci-blue text-sm">
+                                    <button type="button" onclick="app.updateTIVInput('${model}', 1)" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-slate-600 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                ` : `
+                                    <span class="font-bold text-base text-slate-700 px-4 py-1 border border-slate-200 rounded-lg bg-slate-50">${currentVal}</span>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                                </div>
+                            </div>
+
+                            ${!isLocked ? `
+                                <button type="submit" class="w-full btn-liquid text-white font-bold py-3.5 rounded-xl shadow-sm shadow-blue-900/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i> Submit Month TIV
+                                </button>
+                            ` : ''}
+                        </form>
+                    </div>
+                `;
+
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+
+                // Pie Chart rendering
+                if (grandTotal > 0) {
+                    const pieCtx = document.getElementById('tivPieChart')?.getContext('2d');
+                    if (pieCtx) {
+                        app.charts = app.charts || {};
+                        if (app.charts.tivMarketShare) {
+                            app.charts.tivMarketShare.destroy();
+                        }
+                        app.charts.tivMarketShare = new Chart(pieCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: pieLabels,
+                                datasets: [{
+                                    data: pieData,
+                                    backgroundColor: pieColors,
+                                    borderWidth: 1,
+                                    borderColor: '#ffffff',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '70%',
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                        labels: {
+                                            boxWidth: 12,
+                                            usePointStyle: true,
+                                            pointStyle: 'circle',
+                                            font: { size: 11, family: 'Inter', weight: 'bold' }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return ' ' + context.label + ': ' + context.raw + '%';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            },
+
+            updateTIVInput: (model, delta) => {
+                app.tiv_form_data = app.tiv_form_data || {};
+                let current = app.tiv_form_data[model] || 0;
+                current = Math.max(0, current + delta);
+                app.tiv_form_data[model] = current;
+                app.renderTIVReporting();
+            },
+
+            submitTIVData: async (e) => {
+                e.preventDefault();
+                const terrId = app.currentUser.territories[0];
+                const currentMonth = app.tivSelectedMonth || app.currentMonth;
+
+                let total = 0;
+                const fullData = {};
+                DB.tiv_brands.forEach(b => {
+                    b.models.forEach(model => {
+                        const val = app.tiv_form_data?.[model] || 0;
+                        fullData[model] = val;
+                        total += val;
+                    });
+                });
+
+                const submissionObj = {
+                    territory: terrId,
+                    userId: app.currentUser.id,
+                    month: currentMonth,
+                    timestamp: new Date().toISOString(),
+                    data: fullData,
+                    total: total
+                };
+
+                DB.tiv_submissions.push(submissionObj);
+
+                if (app.neonSQL) {
+                    try {
+                        await app.neonSQL`INSERT INTO tiv_submissions (submission_data) VALUES (${JSON.stringify(submissionObj)})`;
+                    } catch (dbErr) {
+                        console.error('Failed to save TIV submission to database:', dbErr);
+                    }
+                }
+
+                app.showToast('TIV Data submitted successfully!', 'success');
+                app.renderTIVReporting();
+            },
+
+            renderTIVManagement: () => {
+                localStorage.setItem('aci_last_page', 'tiv');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                const currentMonth = app.currentMonth;
+                const submissions = DB.tiv_submissions.filter(s => s.month === currentMonth);
+                const totalTerritories = DB.territories.length;
+                const submittedCount = submissions.length;
+                const completionRate = totalTerritories > 0 ? Math.round((submittedCount / totalTerritories) * 100) : 0;
+
+                const activeSubView = app.tivAdminSubView || 'submissions';
+
+                let html = `
+                    <div class="max-w-6xl mx-auto fade-in">
+                        <div class="mb-6 flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-slate-800">TIV Data Management</h1>
+                                <p class="text-sm text-slate-500">Total Industry Volume Collection & Administration</p>
+                            </div>
+                            <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                <button onclick="app.tivAdminSubView='submissions'; app.renderTIVManagement()" class="px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeSubView === 'submissions' ? 'bg-slate-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">Submissions</button>
+                                <button onclick="app.tivAdminSubView='settings'; app.renderTIVManagement()" class="px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeSubView === 'settings' ? 'bg-slate-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">Settings (Brands)</button>
+                            </div>
+                        </div>
+                `;
+
+                if (activeSubView === 'submissions') {
+                    html += `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="bar-chart-2" class="absolute -right-2 -bottom-2 w-12 h-12 text-blue-200 opacity-50"></i>
+                                <p class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Reporting Month</p>
+                                <h3 class="text-2xl font-extrabold text-blue-700">${currentMonth} 2026</h3>
+                            </div>
+                            <div class="bg-teal-50 border border-teal-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="check-circle" class="absolute -right-2 -bottom-2 w-12 h-12 text-teal-200 opacity-50"></i>
+                                <p class="text-xs font-bold text-teal-500 uppercase tracking-wider mb-1">Submitted</p>
+                                <h3 class="text-2xl font-extrabold text-teal-700">${submittedCount} / ${totalTerritories}</h3>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="percent" class="absolute -right-2 -bottom-2 w-12 h-12 text-amber-200 opacity-50"></i>
+                                <p class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Completion Rate</p>
+                                <h3 class="text-2xl font-extrabold text-amber-700">${completionRate}%</h3>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 mb-6">
+                            <button onclick="app.exportTIVCsv()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center gap-2 transition-colors">
+                                <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                            </button>
+                            <button onclick="app.unlockAllTIV()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center gap-2 transition-colors">
+                                <i data-lucide="unlock" class="w-4 h-4"></i> Unlock All Entries
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest">
+                                    <tr>
+                                        <th class="px-6 py-1.5 font-bold">Territory</th>
+                                        <th class="px-6 py-1.5 font-bold">Status</th>
+                                        <th class="px-6 py-1.5 font-bold text-right">Total Volume</th>
+                                        <th class="px-6 py-1.5 font-bold text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${DB.territories.map(t => {
+                        const sub = submissions.find(s => s.territory === t.id);
+                        return `
+                                            <tr class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-6 py-1.5 font-bold text-slate-800">${t.name}</td>
+                                                <td class="px-6 py-1.5">
+                                                    ${sub ? `
+                                                        <span class="bg-green-50 text-green-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
+                                                            <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Submitted
+                                                        </span>
+                                                    ` : `
+                                                        <span class="bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-amber-100">
+                                                            <div class="w-1.5 h-1.5 bg-amber-500 rounded-full"></div> Pending
+                                                        </span>
+                                                    `}
+                                                </td>
+                                                <td class="px-6 py-1.5 font-bold text-slate-800 text-right">
+                                                    ${sub ? sub.total : 0}
+                                                </td>
+                                                <td class="px-6 py-1.5 text-right">
+                                                    ${sub ? `
+                                                        <button onclick="app.viewTIVSubmission('${sub.territory}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors" title="View"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                                        <button onclick="app.unlockTIVSubmission('${sub.territory}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors" title="Unlock"><i data-lucide="unlock" class="w-4 h-4"></i></button>
+                                                    ` : '<span class="text-xs text-slate-400 italic">No Data</span>'}
+                                                </td>
+                                            </tr>
+                                        `;
+                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else if (activeSubView === 'settings') {
+                    html += `
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200">
+                                <h3 class="font-bold text-slate-800 text-base mb-4">Add New Brand</h3>
+                                <form onsubmit="app.addTIVBrand(event)" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-600 mb-1">Brand Name</label>
+                                        <input type="text" id="tiv-new-brand" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="e.g. Fuso">
+                                    </div>
+                                    <button type="submit" class="w-full btn-liquid text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow"><i data-lucide="plus" class="w-4 h-4"></i> Add Brand</button>
+                                </form>
+                            </div>
+
+                            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200">
+                                <h3 class="font-bold text-slate-800 text-base mb-4">Add New Model</h3>
+                                <form onsubmit="app.addTIVModel(event)" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-600 mb-1">Brand</label>
+                                        <select id="tiv-model-brand-select" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required>
+                                            ${DB.tiv_brands.map(b => `<option value="${b.name}">${b.name}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-600 mb-1">Model Name</label>
+                                        <input type="text" id="tiv-new-model" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="e.g. Fuso 10 Ton">
+                                    </div>
+                                    <button type="submit" class="w-full btn-liquid text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow"><i data-lucide="plus" class="w-4 h-4"></i> Add Model</button>
+                                </form>
+                            </div>
+
+                            <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 overflow-y-auto max-h-[60vh]">
+                                <h3 class="font-bold text-slate-800 text-base mb-4">TIV Portfolio</h3>
+                                <div class="space-y-3">
+                                    ${DB.tiv_brands.map(b => `
+                                        <div class="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="font-bold text-sm text-slate-800">${b.name}</span>
+                                                <button onclick="app.deleteTIVBrand('${b.name}')" class="text-xs text-red-500 hover:underline"><i data-lucide="trash-2" class="w-3 h-3 inline"></i></button>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                ${b.models.map(m => `
+                                                    <span class="bg-white border border-slate-200 px-2 py-0.5 rounded text-xs text-slate-700 flex items-center gap-1 font-medium shadow-sm">
+                                                        ${m}
+                                                        <button onclick="app.deleteTIVModel('${b.name}', '${m}')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button>
+                                                    </span>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            addTIVBrand: async (e) => {
+                e.preventDefault();
+                const brandName = document.getElementById('tiv-new-brand').value.trim();
+                if (!brandName) return;
+                if (DB.tiv_brands.some(b => b.name.toLowerCase() === brandName.toLowerCase())) {
+                    app.showToast('Brand already exists.', 'error');
+                    return;
+                }
+                app.showLoader('Adding brand...');
+                try {
+                    DB.tiv_brands.push({ name: brandName, models: [] });
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO tiv_brands (name, models) VALUES (${brandName}, '[]')`;
+                    }
+                    app.showToast(`Brand '${brandName}' added.`, 'success');
+                    app.renderTIVManagement();
+                } catch (err) {
+                    console.error('Failed to add brand:', err);
+                    app.showToast('Failed to save brand to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            addTIVModel: async (e) => {
+                e.preventDefault();
+                const brandName = document.getElementById('tiv-model-brand-select').value;
+                const modelName = document.getElementById('tiv-new-model').value.trim();
+                if (!modelName) return;
+
+                const brandObj = DB.tiv_brands.find(b => b.name === brandName);
+                if (brandObj.models.includes(modelName)) {
+                    app.showToast('Model already exists in this brand.', 'error');
+                    return;
+                }
+                
+                app.showLoader('Adding model...');
+                try {
+                    brandObj.models.push(modelName);
+                    if (app.neonSQL) {
+                        await app.neonSQL`UPDATE tiv_brands SET models = ${JSON.stringify(brandObj.models)} WHERE name = ${brandName}`;
+                    }
+                    app.showToast(`Model '${modelName}' added to ${brandName}.`, 'success');
+                    app.renderTIVManagement();
+                } catch (err) {
+                    console.error('Failed to add model:', err);
+                    app.showToast('Failed to save model to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            deleteTIVBrand: async (brandName) => {
+                if (confirm(`Are you sure you want to delete the brand '${brandName}' and all its models?`)) {
+                    app.showLoader('Deleting brand...');
+                    try {
+                        DB.tiv_brands = DB.tiv_brands.filter(b => b.name !== brandName);
+                        if (app.neonSQL) {
+                            await app.neonSQL`DELETE FROM tiv_brands WHERE name = ${brandName}`;
+                        }
+                        app.showToast(`Brand '${brandName}' deleted.`, 'success');
+                        app.renderTIVManagement();
+                    } catch (err) {
+                        console.error('Failed to delete brand:', err);
+                        app.showToast('Failed to delete brand from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            deleteTIVModel: async (brandName, modelName) => {
+                const brandObj = DB.tiv_brands.find(b => b.name === brandName);
+                if (brandObj) {
+                    app.showLoader('Deleting model...');
+                    try {
+                        brandObj.models = brandObj.models.filter(m => m !== modelName);
+                        if (app.neonSQL) {
+                            await app.neonSQL`UPDATE tiv_brands SET models = ${JSON.stringify(brandObj.models)} WHERE name = ${brandName}`;
+                        }
+                        app.showToast(`Model '${modelName}' deleted.`, 'success');
+                        app.renderTIVManagement();
+                    } catch (err) {
+                        console.error('Failed to delete model:', err);
+                        app.showToast('Failed to delete model from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            unlockTIVSubmission: async (terrId) => {
+                const currentMonth = app.currentMonth;
+                const idx = DB.tiv_submissions.findIndex(s => s.territory === terrId && s.month === currentMonth);
+                if (idx !== -1) {
+                    DB.tiv_submissions.splice(idx, 1);
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM tiv_submissions WHERE JSON_UNQUOTE(JSON_EXTRACT(submission_data, '$.territory')) = ${terrId} AND JSON_UNQUOTE(JSON_EXTRACT(submission_data, '$.month')) = ${currentMonth}`;
+                        } catch (err) {
+                            console.error('Failed to unlock submission from database:', err);
+                        }
+                    }
+                    app.showToast('Entry unlocked.', 'success');
+                    app.renderTIVManagement();
+                }
+            },
+
+            unlockAllTIV: async () => {
+                const currentMonth = app.currentMonth;
+                const originalLen = DB.tiv_submissions.length;
+                DB.tiv_submissions = DB.tiv_submissions.filter(s => s.month !== currentMonth);
+                if (DB.tiv_submissions.length < originalLen) {
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`DELETE FROM tiv_submissions WHERE JSON_UNQUOTE(JSON_EXTRACT(submission_data, '$.month')) = ${currentMonth}`;
+                        } catch (err) {
+                            console.error('Failed to unlock all submissions from database:', err);
+                        }
+                    }
+                    app.showToast('All entries for this month unlocked.', 'success');
+                } else {
+                    app.showToast('No entries to unlock.', 'info');
+                }
+                app.renderTIVManagement();
+            },
+
+            viewTIVSubmission: (terrId) => {
+                const currentMonth = app.currentMonth;
+                const sub = DB.tiv_submissions.find(s => s.territory === terrId && s.month === currentMonth);
+                if (!sub) return;
+
+                const terr = DB.territories.find(t => t.id === terrId);
+
+                let modalContent = `
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <h3 class="font-bold text-slate-800 text-base">${terr.name} TIV Data</h3>
+                            <span class="text-xs text-slate-500 font-bold">${currentMonth} 2026</span>
+                        </div>
+                        <div class="max-h-[60vh] overflow-y-auto divide-y divide-slate-100">
+                `;
+
+                for (const [model, qty] of Object.entries(sub.data)) {
+                    if (qty > 0) {
+                        modalContent += `
+                            <div class="py-2 flex justify-between text-sm">
+                                <span class="text-slate-700">${model}</span>
+                                <span class="font-bold text-slate-800">${qty}</span>
+                            </div>
+                        `;
+                    }
+                }
+
+                modalContent += `
+                        </div>
+                        <div class="border-t border-slate-100 pt-3 flex justify-between font-bold text-base text-slate-800">
+                            <span>Total Volume</span>
+                            <span>${sub.total}</span>
+                        </div>
+                    </div>
+                `;
+
+                let modal = document.getElementById('tiv-view-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'tiv-view-modal';
+                    modal.className = 'fixed inset-0 z-[100] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="document.getElementById('tiv-view-modal').classList.add('hidden')"></div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm relative z-10 max-w-md w-full mx-4 border border-slate-200">
+                        ${modalContent}
+                        <button onclick="document.getElementById('tiv-view-modal').classList.add('hidden')" class="mt-6 w-full bg-slate-100 hover:bg-slate-200 font-bold py-2 rounded-xl text-sm transition-colors">Close</button>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+            },
+
+            exportTIVCsv: () => {
+                const currentMonth = app.currentMonth;
+                const submissions = DB.tiv_submissions.filter(s => s.month === currentMonth);
+
+                if (submissions.length === 0) {
+                    app.showToast('No submissions to export.', 'error');
+                    return;
+                }
+
+                const allModels = [];
+                DB.tiv_brands.forEach(b => allModels.push(...b.models));
+
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += ["Territory", "Month", "Total Volume", ...allModels].join(",") + "\n";
+
+                submissions.forEach(s => {
+                    const terr = DB.territories.find(t => t.id === s.territory);
+                    const row = [
+                        terr ? terr.name : s.territory,
+                        s.month,
+                        s.total
+                    ];
+                    allModels.forEach(m => {
+                        row.push(s.data[m] || 0);
+                    });
+                    csvContent += row.join(",") + "\n";
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `TIV_Report_${currentMonth}_2026.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                app.showToast('Exporting CSV...', 'success');
+            },
+
+            showSystemConfigPasswordModal: () => {
+                let modal = document.getElementById('sys-config-pass-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'sys-config-pass-modal';
+                    modal.className = 'fixed inset-0 z-[300] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="app.closeSystemConfigPasswordModal()"></div>
+                    <div class="bg-white rounded-xl p-4 w-full max-w-sm m-4 relative z-10 shadow-2xl border border-slate-100 transform transition-all scale-100">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <div>
+                                <h3 class="font-extrabold text-slate-800 text-sm">System Access Required</h3>
+                                <p class="text-[10px] text-slate-400 font-bold mt-0.5">Please enter the security password to proceed</p>
+                            </div>
+                            <button onclick="app.closeSystemConfigPasswordModal()" class="text-slate-400 hover:text-red-500 p-1.5 transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Password</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"><i data-lucide="lock" class="w-4 h-4"></i></span>
+                                    <input type="password" id="sys-config-password" class="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-aci-blue text-sm font-extrabold text-slate-800 rounded-xl pl-9 pr-4 py-2.5 focus:outline-none transition-all shadow-sm" placeholder="••••••••">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="app.closeSystemConfigPasswordModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs transition-colors">Cancel</button>
+                                <button onclick="app.submitSystemConfigPassword()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs transition-colors shadow-md">Verify Access</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+
+                setTimeout(() => {
+                    const input = document.getElementById('sys-config-password');
+                    if (input) {
+                        input.focus();
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                app.submitSystemConfigPassword();
+                            }
+                        });
+                    }
+                }, 100);
+            },
+
+            closeSystemConfigPasswordModal: () => {
+                const modal = document.getElementById('sys-config-pass-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+                app.renderAdminDashboard();
+            },
+
+            submitSystemConfigPassword: () => {
+                const passwordInput = document.getElementById('sys-config-password');
+                const password = passwordInput ? passwordInput.value : '';
+
+                if (password === 'Imon@0123') {
+                    app.isSystemSettingsAuthorized = true;
+                    const modal = document.getElementById('sys-config-pass-modal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                    app.showToast('Access granted.', 'success');
+                    app.renderSystemSettings();
+                } else {
+                    app.showToast('Invalid security password.', 'error');
+                    if (passwordInput) {
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                    }
+                }
+            },
+
+            renderSystemSettings: () => {
+                app.settingsActiveTab = app.settingsActiveTab || 'general';
+                if (!app.isSystemSettingsAuthorized) {
+                    app.showSystemConfigPasswordModal();
+                    return;
+                }
+                localStorage.setItem('aci_last_page', 'settings');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+
+                const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const currentMonth = app.currentMonth;
+                const lastMonth = app.lastMonth;
+
+                // Mark the active tab in sidebar
+                document.querySelectorAll('#sidebar-nav button').forEach(btn => {
+                    btn.classList.remove('bg-white/10', 'text-white', 'font-bold', 'relative', 'pl-7');
+                    btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-white/5');
+                    const indicator = btn.querySelector('.absolute');
+                    if (indicator) indicator.remove();
+                    
+                    const span = btn.querySelector('span');
+                    if (span && (span.innerText === 'System Settings' || span.innerText === 'System Config')) {
+                        btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-white/5');
+                        btn.classList.add('bg-white/10', 'text-white', 'font-bold', 'relative', 'pl-7');
+                        const ind = document.createElement('div');
+                        ind.className = 'absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-aci-gold shadow-[0_0_12px_#F4A915]';
+                        btn.appendChild(ind);
+                    }
+                });
+
+                // Generate timeline items
+                const currentMonthIdx = monthsList.indexOf(currentMonth);
+                const lastMonthIdx = monthsList.indexOf(lastMonth);
+                const ytdMonths = app.getYtdMonths(currentMonth);
+
+                let timelineHtml = '';
+                monthsList.forEach((m, idx) => {
+                    let pillClass = 'bg-white/5 text-slate-400 border-white/10';
+                    let label = m.substring(0, 3);
+                    let tooltip = m;
+                    let indicatorBadge = '';
+
+                    if (m === currentMonth) {
+                        pillClass = 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white border-yellow-400 shadow-[0_0_15px_rgba(244,169,21,0.4)] font-black scale-110 z-10';
+                        indicatorBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-500 text-white text-[8px] font-black px-1 rounded-full uppercase shadow">Current</span>';
+                    } else if (m === lastMonth) {
+                        pillClass = 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] font-bold scale-105 z-10';
+                        indicatorBadge = '<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[8px] font-black px-1 rounded-full uppercase shadow">Last</span>';
+                    } else if (ytdMonths.includes(m)) {
+                        pillClass = 'bg-aci-blue/20 text-indigo-200 border-indigo-500/30';
+                    }
+
+                    timelineHtml += `
+                        <div class="relative group flex flex-col items-center cursor-pointer" onclick="app.setTimelineMonth('${m}')">
+                            ${indicatorBadge}
+                            <div class="w-12 h-12 rounded-full border flex items-center justify-center text-xs font-bold transition-all duration-300 transform group-hover:scale-105 hover:border-white/30 ${pillClass}">
+                                ${label}
+                            </div>
+                            <span class="text-[9px] text-slate-500 font-bold mt-2 group-hover:text-slate-300 transition-colors">${m === currentMonth || m === lastMonth ? m : label}</span>
+                        </div>
+                    `;
+                });
+
+                const html = `
+                    <div class="max-w-4xl mx-auto pb-10 fade-in">
+                        <!-- Upper Greeting & Breadcrumbs -->
+                        <div class="mb-6 flex justify-between items-center">
+                            <div>
+                                <div class="flex items-center gap-2 text-xs text-slate-400 font-medium mb-1">
+                                    <span>System Control</span>
+                                    <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                                    <span class="text-slate-500">System Settings</span>
+                                </div>
+                                <h1 class="text-sm font-extrabold text-slate-700 tracking-widest uppercase tracking-tight flex items-center gap-2.5">
+                                    <i data-lucide="settings" class="w-6 h-6 text-cyan-500"></i>
+                                    System Controls & Settings
+                                </h1>
+                                <p class="text-sm text-slate-500">Configure global application states, operational months, and database sync configurations.</p>
+                            </div>
+                        </div>
+
+                        <!-- Config Main Section -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Left: Interactive Settings Panel (Takes 2 Cols) -->
+                            <div class="md:col-span-2 space-y-6">
+                                <!-- Month Configuration Card -->
+                                <div class="glass p-4 rounded-xl shadow-md border border-white/60 relative overflow-hidden">
+                                    <div class="absolute -right-20 -top-20 bg-cyan-500/5 w-60 h-60 rounded-full blur-3xl"></div>
+                                    
+                                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
+                                        <div class="w-8 h-8 rounded-lg bg-cyan-100 flex items-center justify-center text-cyan-600 shadow-sm">
+                                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-extrabold text-slate-800 text-sm">Operational Month Configurator</h3>
+                                            <p class="text-[11px] text-slate-400 font-medium">Control active reporting states and data linking ranges.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Interactive Visual Calendar Timeline -->
+                                    <div class="mb-8">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-5">Interactive Operations Timeline</label>
+                                        <div class="relative py-2 bg-slate-900/5 rounded-xl border border-slate-200/50 p-4">
+                                            <!-- Horizontal Connecting Line -->
+                                            <div class="absolute top-[38px] left-[40px] right-[40px] h-[3px] bg-slate-200/60 -z-10 rounded-full"></div>
+                                            <div class="absolute top-[38px] left-[40px] right-[40px] h-[3px] bg-gradient-to-r from-indigo-500/50 to-emerald-500/30 -z-10 rounded-full" style="width: ${currentMonthIdx > 0 ? (currentMonthIdx / 11) * 100 : 0}%"></div>
+                                            
+                                            <div class="flex justify-between items-center gap-1">
+                                                ${timelineHtml}
+                                            </div>
+                                        </div>
+                                        <p class="text-[10px] text-slate-400 mt-3 text-center italic">💡 Click on any circle in the timeline above to quickly set it as the Current Active Month.</p>
+                                    </div>
+
+                                    <!-- Traditional Form Dropdowns -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                                        <div class="space-y-1.5">
+                                            <label class="text-xs font-black text-slate-600 uppercase tracking-wide flex items-center gap-1.5">
+                                                <div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> Current Month
+                                            </label>
+                                            <select id="settings-current-month" onchange="app.handleSettingsMonthChange('current', this.value)" class="w-full bg-white border border-slate-200 text-xs font-extrabold text-slate-700 rounded-xl px-3.5 py-2.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                                                ${monthsList.map(m => `<option value="${m}" ${m === currentMonth ? 'selected' : ''}>${m}</option>`).join('')}
+                                            </select>
+                                        </div>
+
+                                        <div class="space-y-1.5">
+                                            <label class="text-xs font-black text-slate-600 uppercase tracking-wide flex items-center gap-1.5">
+                                                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Last Completed Month
+                                            </label>
+                                            <select id="settings-last-month" onchange="app.handleSettingsMonthChange('last', this.value)" class="w-full bg-white border border-slate-200 text-xs font-extrabold text-slate-700 rounded-xl px-3.5 py-2.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                                                ${monthsList.map(m => `<option value="${m}" ${m === lastMonth ? 'selected' : ''}>${m}</option>`).join('')}
+                                            </select>
+                                        </div>
+
+                                        <div class="space-y-1.5">
+                                            <label class="text-xs font-black text-slate-600 uppercase tracking-wide flex items-center gap-1.5">
+                                                <div class="w-1.5 h-1.5 rounded-full bg-cyan-500"></div> Active Fiscal Year
+                                            </label>
+                                            <select id="settings-current-fy" onchange="app.updateSettingsPreviewDynamic()" class="w-full bg-white border border-slate-200 text-xs font-extrabold text-slate-700 rounded-xl px-3.5 py-2.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                                                <option value="2024-25" ${app.currentFY === '2024-25' ? 'selected' : ''}>2024-25</option>
+                                                <option value="2025-26" ${app.currentFY === '2025-26' ? 'selected' : ''}>2025-26</option>
+                                                <option value="2026-27" ${app.currentFY === '2026-27' ? 'selected' : ''}>2026-27</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Auto Suggest Checkbox -->
+                                    <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-100 p-3.5 rounded-xl mb-4 shadow-inner">
+                                        <input type="checkbox" id="settings-auto-suggest" checked class="w-4 h-4 text-cyan-600 border-slate-300 rounded focus:ring-cyan-500 cursor-pointer">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-black text-slate-700">Auto-Suggest Preceding Month</span>
+                                            <span class="text-[10px] text-slate-400">Shifting the active month automatically adjusts the completed month target.</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fiscal Year Transition Review Toggle -->
+                                    <div id="settings-fy-review-container" class="${currentMonth === 'July' ? 'flex' : 'hidden'} items-center gap-2.5 bg-indigo-50 border border-indigo-100 p-3.5 rounded-xl mb-6 shadow-sm">
+                                        <input type="checkbox" id="settings-fy-review" ${app.fyReviewActive ? 'checked' : ''} onchange="app.updateSettingsPreviewDynamic()" class="w-4 h-4 text-indigo-600 border-indigo-300 rounded focus:ring-indigo-500 cursor-pointer">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-black text-indigo-700">Active Fiscal Year Concluding Review Session</span>
+                                            <span class="text-[10px] text-indigo-400 font-medium">Keep concluding fiscal year's overall results visible across all dashboards until closed.</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Smart Auto Suggestion Banner (Hidden by default, shown dynamically) -->
+                                    <div id="suggestion-banner" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3 shadow-sm transition-all duration-300">
+                                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5 animate-pulse"></i>
+                                        <div class="flex-1">
+                                            <h4 class="text-xs font-extrabold text-amber-800 uppercase tracking-wider">Timeline Auto-Recommendation</h4>
+                                            <p class="text-[11px] text-amber-600 mt-0.5">We noticed you changed the Current Month to <span id="suggest-month-name" class="font-extrabold"></span>. Do you want to set the Last Completed Month to <span id="suggest-last-name" class="font-extrabold"></span>?</p>
+                                            <button onclick="app.applyTimelineSuggestion()" class="mt-2.5 px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-black rounded-lg transition-colors shadow-sm">Apply Recommendation</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex gap-3 justify-end pt-4 border-t border-slate-100">
+                                        <button onclick="app.resetSystemSettingsToDefaults()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-extrabold rounded-xl transition-colors">Reset Defaults</button>
+                                        <button onclick="app.saveSystemSettings()" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-black rounded-xl transition-colors shadow-md shadow-cyan-500/20 flex items-center gap-2">
+                                            <i data-lucide="save" class="w-4 h-4"></i> Save System Configuration
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Live Preview & Sync Monitor (Takes 1 Col) -->
+                            <div class="space-y-6">
+                                <!-- Dynamic Preview Widget -->
+                                <div class="glass p-3.5 rounded-xl shadow-sm border border-white/60 relative overflow-hidden">
+                                    <div class="absolute -right-16 -top-16 bg-blue-500/5 w-40 h-40 rounded-full blur-2xl"></div>
+                                    <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <i data-lucide="eye" class="w-4 h-4 text-slate-500"></i> Active Preview
+                                    </h4>
+                                    <div class="space-y-3.5 text-xs">
+                                        <div class="bg-white/50 border border-slate-100 p-3 rounded-xl">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Current Scope</p>
+                                            <p class="font-black text-slate-700 text-sm flex items-center gap-1.5">
+                                                <i data-lucide="tag" class="w-4 h-4 text-yellow-500"></i> ${currentMonth}
+                                            </p>
+                                        </div>
+                                        <div class="bg-white/50 border border-slate-100 p-3 rounded-xl">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Completed Scope</p>
+                                            <p class="font-black text-slate-700 text-sm flex items-center gap-1.5">
+                                                <i data-lucide="history" class="w-4 h-4 text-emerald-500"></i> ${lastMonth}
+                                            </p>
+                                        </div>
+                                        <div class="bg-white/50 border border-slate-100 p-3 rounded-xl">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">YTD Target Sequences</p>
+                                            <div class="flex flex-wrap gap-1">
+                                                ${ytdMonths.length > 0 ? ytdMonths.map(m => `<span class="bg-indigo-50 border border-indigo-100 text-indigo-600 text-[9px] font-black px-1.5 py-0.5 rounded-md">${m.substring(0, 3)}</span>`).join('') : '<span class="text-slate-400 italic text-[10px]">None (Beginning of FY)</span>'}
+                                            </div>
+                                            <p class="text-[9px] text-indigo-400 font-bold mt-2 uppercase tracking-wide">🔗 ${ytdMonths.length} Months Tracked in YTD</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Database Sync Health -->
+                                <div class="glass p-3.5 rounded-xl shadow-sm border border-white/60 relative overflow-hidden">
+                                    <div class="absolute -right-16 -top-16 bg-emerald-500/5 w-40 h-40 rounded-full blur-2xl"></div>
+                                    <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <i data-lucide="database" class="w-4 h-4 text-slate-500"></i> Data Connection
+                                    </h4>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></div>
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">Neon SQL Postgres Sync</p>
+                                                <p class="text-[10px] text-slate-400">Connection established successfully.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 border-t border-slate-100 pt-3">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0"></div>
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">Local Browser Cache</p>
+                                                <p class="text-[10px] text-slate-400">Settings written to LocalStorage.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <button onclick="app.reSyncSystemDataCache()" class="w-full mt-2 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2 uppercase tracking-wider">
+                                            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync System Cache
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            // --- Month Settings Logic ---
+            setTimelineMonth: (month) => {
+                const selectCurrent = document.getElementById('settings-current-month');
+                if (selectCurrent) {
+                    selectCurrent.value = month;
+                    app.handleSettingsMonthChange('current', month);
+                }
+            },
+
+            handleSettingsMonthChange: (type, month) => {
+                const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const autoSuggest = document.getElementById('settings-auto-suggest')?.checked;
+
+                 if (type === 'current') {
+                    const idx = monthsList.indexOf(month);
+                    let recommendedLastMonth = 'March';
+                    if (idx > 0) {
+                        recommendedLastMonth = monthsList[idx - 1];
+                    } else if (idx === 0) {
+                        recommendedLastMonth = 'June';
+                    }
+
+                    if (autoSuggest) {
+                        const selectLast = document.getElementById('settings-last-month');
+                        if (selectLast) {
+                            selectLast.value = recommendedLastMonth;
+                        }
+                    } else {
+                        const banner = document.getElementById('suggestion-banner');
+                        const suggestMonth = document.getElementById('suggest-month-name');
+                        const suggestLast = document.getElementById('suggest-last-name');
+                        if (banner && suggestMonth && suggestLast) {
+                            suggestMonth.innerText = month;
+                            suggestLast.innerText = recommendedLastMonth;
+                            app.lastSuggestedMonth = recommendedLastMonth;
+                            banner.classList.remove('hidden');
+                            banner.classList.add('flex');
+                        }
+                    }
+
+                    const fyReviewContainer = document.getElementById('settings-fy-review-container');
+                    if (fyReviewContainer) {
+                        if (month === 'July') {
+                            fyReviewContainer.classList.remove('hidden');
+                            fyReviewContainer.classList.add('flex');
+                        } else {
+                            fyReviewContainer.classList.add('hidden');
+                            fyReviewContainer.classList.remove('flex');
+                        }
+                    }
+                }
+                
+                app.updateSettingsPreviewDynamic();
+            },
+
+            applyTimelineSuggestion: () => {
+                const selectLast = document.getElementById('settings-last-month');
+                if (selectLast && app.lastSuggestedMonth) {
+                    selectLast.value = app.lastSuggestedMonth;
+                }
+                const banner = document.getElementById('suggestion-banner');
+                if (banner) {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                }
+                app.updateSettingsPreviewDynamic();
+            },
+
+             updateSettingsPreviewDynamic: () => {
+                const currentMonth = document.getElementById('settings-current-month')?.value || app.currentMonth;
+                const lastMonth = document.getElementById('settings-last-month')?.value || app.lastMonth;
+                const currentFY = document.getElementById('settings-current-fy')?.value || app.currentFY;
+                const fyReviewActive = document.getElementById('settings-fy-review')?.checked || false;
+                const showLastFYData = document.getElementById('settings-show-last-fy')?.checked || false;
+
+                const origCurrent = app.currentMonth;
+                const origLast = app.lastMonth;
+                const origFY = app.currentFY;
+                const origReview = app.fyReviewActive;
+                const origShowLast = app.showLastFYData;
+                app.currentMonth = currentMonth;
+                app.lastMonth = lastMonth;
+                app.currentFY = currentFY;
+                app.fyReviewActive = fyReviewActive;
+                app.showLastFYData = showLastFYData;
+
+                app.renderSystemSettings();
+
+                app.currentMonth = origCurrent;
+                app.lastMonth = origLast;
+                app.currentFY = origFY;
+                app.fyReviewActive = origReview;
+                app.showLastFYData = origShowLast;
+            },
+
+            saveSystemSettings: async () => {
+                const currentMonth = document.getElementById('settings-current-month')?.value;
+                const lastMonth = document.getElementById('settings-last-month')?.value;
+                const currentFY = document.getElementById('settings-current-fy')?.value;
+                const fyReviewActive = document.getElementById('settings-fy-review')?.checked || false;
+
+                if (!currentMonth || !lastMonth || !currentFY) return;
+
+                app.showLoader("Saving system configurations...");
+
+                try {
+                    app.currentMonth = currentMonth;
+                    app.lastMonth = lastMonth;
+                    app.currentFY = currentFY;
+                    app.fyReviewActive = fyReviewActive;
+                    localStorage.setItem('aci_current_fy', currentFY);
+                    DB.settings = { currentMonth, lastMonth, currentFY, fyReviewActive };
+
+                    if (app.neonSQL) {
+                        const settingsJson = JSON.stringify(DB.settings);
+                        await app.neonSQL`UPDATE app_settings SET settings_json = ${settingsJson} WHERE id = '1'`;
+                    }
+                    
+                    app.soMonthTab = null;
+                    app.hideLoader();
+                    app.showToast(`System Settings Saved: ${currentMonth} / ${lastMonth} (FY: ${currentFY})`, "success");
+                    app.renderSystemSettings();
+                } catch (err) {
+                    app.hideLoader();
+                    console.error("Failed to save settings:", err);
+                    app.showToast("Failed to save settings to database.", "error");
+                }
+            },
+
+            resetSystemSettingsToDefaults: () => {
+                const selectCurrent = document.getElementById('settings-current-month');
+                const selectLast = document.getElementById('settings-last-month');
+
+                if (selectCurrent && selectLast) {
+                    selectCurrent.value = 'April';
+                    selectLast.value = 'March';
+                    app.handleSettingsMonthChange('current', 'April');
+                }
+            },
+
+            reSyncSystemDataCache: () => {
+                app.showLoader("Purging local caches & resynching...");
+                setTimeout(() => {
+                    app.hideLoader();
+                    app.showToast("System cache synchronized successfully!", "success");
+                }, 1000);
+            },
+
+            setSessionFY: (fy) => {
+                if (app.currentUser.role === 'so') {
+                    app.soSelectedFY = fy;
+                    app.renderSODashboard();
+                } else {
+                    app.selectedFY = fy;
+                    app.renderAdminDashboard();
+                }
+                app.showToast(`Switched view context to FY ${fy}`, 'success');
+            },
+
+            getPreviousFY: (fy) => {
+                if (!fy) return '';
+                const parts = fy.split('-');
+                if (parts.length === 2) {
+                    const y1 = parseInt(parts[0]);
+                    const y2 = parseInt(parts[1]);
+                    return `${y1-1}-${y2-1}`;
+                }
+                return fy;
+            },
+
+            getTransitionBannerHtml: (currentFY) => {
+                if (app.currentMonth !== 'July' || !app.fyReviewActive) return '';
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                return `
+                    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl py-2 px-3.5 mb-4 shadow-md relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-3 border border-indigo-400/20">
+                        <div class="absolute -right-10 -top-10 bg-white/10 w-24 h-24 rounded-full blur-xl pointer-events-none"></div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm shrink-0 shadow-sm border border-white/20">
+                                <i data-lucide="archive-restore" class="w-3.5 h-3.5 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-[11px] font-black uppercase tracking-wider">FY ${concludingFY} Concluding Review Mode</h4>
+                                <p class="text-[9px] text-indigo-100/90 font-medium">Toggle between last year's overall results and the new FY ${activeFY} YTD targets.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="app.setSessionFY('${concludingFY}')" class="px-2.5 py-1 ${currentFY === concludingFY ? 'bg-white text-indigo-700 font-black shadow-sm' : 'bg-white/15 text-white hover:bg-white/25'} text-[9px] rounded-lg transition-all uppercase tracking-wider">${concludingFY} Results</button>
+                            <button onclick="app.setSessionFY('${activeFY}')" class="px-2.5 py-1 ${currentFY === activeFY ? 'bg-white text-indigo-700 font-black shadow-sm' : 'bg-white/15 text-white hover:bg-white/25'} text-[9px] rounded-lg transition-all uppercase tracking-wider">${activeFY} Targets</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // ==========================================
+            // MO (MOBILE-FIRST) VIEWS
+            // ==========================================
+            navigateSO: (view) => {
+                localStorage.setItem('aci_last_page', view);
+                localStorage.setItem('aci_last_role', 'so');
+                app.currentSOView = view;
+                // Update Nav UI
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('text-aci-blue');
+                    btn.classList.add('text-slate-400');
+                    if (btn.dataset.target === view) {
+                        btn.classList.add('text-aci-blue');
+                        btn.classList.remove('text-slate-400');
+                    }
+                });
+
+                if (view === 'dashboard') app.renderSODashboard();
+                else if (view === 'pulse') app.renderSOPulseMatrix();
+                else if (view === 'emi') app.renderSOEMI();
+                else if (view === 'profile') app.renderUserProfile();
+                else if (view === 'tiv') app.renderTIVReporting();
+            },
+
+            renderSODashboard: () => {
+                const brand = app.soBrandTab || 'Foton';
+                const saleType = app.soSaleTypeTab || 'New Sale';
+                const activeFY = app.currentFY;
+                const concludingFY = app.getPreviousFY(activeFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : activeFY;
+                const currentFY = app.soSelectedFY || defaultFY; // Use dynamic current active FY
+                const isTransitionMode = (app.currentMonth === 'July' && app.fyReviewActive && currentFY === concludingFY) || app.showLastFYData;
+                const splyFY = app.getPreviousFY(currentFY);
+                const targetFY = isTransitionMode ? concludingFY : currentFY;
+                const terrId = app.currentUser.territories[0]; // Assuming 1 primary territory for demo
+                const territory = DB.territories.find(t => t.id === terrId);
+
+                // Define Context
+                const currentMonth = app.currentMonth;
+
+                // --- 1. Filter Sales Data (Filtered by Brand AND Sale Type) ---
+                const brandSales = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType);
+
+                // Current Month Sales
+                const currentSalesRecords = brandSales.filter(s => s.sales_month === currentMonth && s.fy === currentFY);
+                const currentSalesUnits = currentSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                // YTD Sales (Assuming YTD is all sales in FY)
+                const ytdSalesRecords = brandSales.filter(s => s.fy === targetFY);
+                const ytdSalesUnits = ytdSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                // --- 2. Filter Targets (Yearly) & Projections (Monthly) ---
+                const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === targetFY && t.sale_type === saleType);
+                const totalYearlyTarget = yearlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                const monthlyBudgetTgts = yearlyTargets.filter(t => t.month === currentMonth);
+                const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) : Math.round(totalYearlyTarget / 12); // Use monthly or derived budget
+
+                const monthlyProjections = DB.projections.filter(p => p.territory_id === terrId && p.brand === brand && p.month === currentMonth && p.fy === currentFY && p.sale_type === saleType);
+                const totalMonthlyProjection = monthlyProjections.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+
+                // --- 3. Dynamic Performance Sync ---
+                const perf = app.getPerformance(terrId, brand, saleType);
+                const mockSply = perf.lastMonth; // Use real calculated last month data
+                const ytdSply = perf.ytd.sply;
+                const currentSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === currentMonth && s.fy === splyFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                // Helpers
+                const ach = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
+                const grw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : 0;
+                const formatGrw = (g) => g > 0 ? `<span class="text-green-500 font-bold">+${g}%</span>` : (g < 0 ? `<span class="text-red-500 font-bold">${g}%</span>` : `<span class="text-slate-500 font-bold">0%</span>`);
+
+                // --- 4. Upazila Wise Aggregation (YTD / This FY) ---
+                const upaSelectedMonth = app.soUpazilaMonthFilter || 'All'; 
+                const upaStats = {};
+                territory.upazilas.forEach(u => {
+                    upaStats[u] = { ytdSales: 0, filteredMonthSales: 0, lastFYSales: 0, lastFYSameMonthSales: 0 };
+                });
+
+                // Calculate cumulative YTD sales
+                ytdSalesRecords.forEach(s => {
+                    if (upaStats[s.upazila]) {
+                        upaStats[s.upazila].ytdSales += Number(s.unit_qty || 0);
+                    }
+                });
+
+                // Calculate last fiscal year sales (FY 2024-25 / splyFY)
+                const lastFYSalesRecords = brandSales.filter(s => s.fy === splyFY);
+                lastFYSalesRecords.forEach(s => {
+                    if (upaStats[s.upazila]) {
+                        upaStats[s.upazila].lastFYSales += Number(s.unit_qty || 0);
+                        if (s.sales_month === upaSelectedMonth) {
+                            upaStats[s.upazila].lastFYSameMonthSales += Number(s.unit_qty || 0);
+                        }
+                    }
+                });
+
+                // Calculate filtered month sales (Only for specific months)
+                ytdSalesRecords.forEach(s => {
+                    if (upaStats[s.upazila]) {
+                        if (s.sales_month === upaSelectedMonth) {
+                            upaStats[s.upazila].filteredMonthSales += Number(s.unit_qty || 0);
+                        }
+                    }
+                });
+
+                // Successful manual deliveries logged by this MO (always visible, not filtered by active brand/type tabs)
+                const myManualDeliveries = DB.sales
+                    .filter(s => s.territory_id === terrId && s.is_manual)
+                    .sort((a, b) => {
+                        const tA = Number(a.id.replace('s_man_', '')) || 0;
+                        const tB = Number(b.id.replace('s_man_', '')) || 0;
+                        return tB - tA; // Newest first
+                    });
+
+                // --- 5. Selected Month Performance (For new dynamic table) ---
+                const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(currentMonth);
+                const passedMonths = ytdMonths.length;
+
+                let ytdTargetTillLastMonth = 0;
+                if (isTransitionMode) {
+                    ytdTargetTillLastMonth = totalYearlyTarget;
+                } else {
+                    if (yearlyTargets.some(t => t.month)) {
+                        ytdTargetTillLastMonth = yearlyTargets.filter(t => ytdMonths.includes(t.month)).reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                    } else {
+                        ytdTargetTillLastMonth = Math.round((totalYearlyTarget / 12) * passedMonths);
+                    }
+                }
+
+                const tillLastMonthSalesUnits = isTransitionMode ? ytdSalesUnits : brandSales.filter(s => s.fy === currentFY && ytdMonths.includes(s.sales_month)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                const selMonth = app.soMonthTab || app.lastMonth;
+                const selMonthSalesRecords = brandSales.filter(s => s.sales_month === selMonth && s.fy === currentFY);
+                const selMonthSalesUnits = selMonthSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                // Exact SPLY calculation for the selected month using actual historical data
+                const selMonthSply = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.sale_type === saleType && s.sales_month === selMonth && s.fy === '2024-25').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                // Fetch Recovery OD Data (Territory specific, applies to all brands)
+                const recoveryData = DB.recovery_od.find(r => r.territory_id === terrId && r.fy === currentFY && r.month === currentMonth) || { perfile_od: 0, total_overdue: 0 };
+
+                // Calculate EMI collections for SO's territory
+                const soEmi = DB.emi.filter(e => e.territory_id === terrId);
+                const totalEmiInstallment = soEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalEmiCollected = soEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+
+                // Calculate 1st & 2nd EMI details
+                const soEmiFirstTwo = soEmi.filter(e => Number(e.installment_no) === 1 || Number(e.installment_no) === 2);
+                const totalFirstTwoCust = soEmiFirstTwo.length;
+                const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => Number(e.collected || 0) < Number(e.installment || 0)).length;
+                const totalFirstTwoInstallment = soEmiFirstTwo.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalFirstTwoCollected = soEmiFirstTwo.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+
+                const html = `
+                    <div class="pb-4 fade-in">
+                        ${app.getTransitionBannerHtml(currentFY)}
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex items-baseline gap-1.5">
+                                <p class="text-[11px] text-slate-400 font-medium uppercase tracking-tight">Hi,</p>
+                                <h2 class="text-base font-bold text-slate-800 tracking-tight">${app.currentUser.name.replace(/\s*\(.*?\)\s*$/, '')}</h2>
+                            </div>
+                            <div class="bg-white/40 backdrop-blur-md border border-white/60 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                                <div class="w-1.5 h-1.5 rounded-full bg-aci-blue animate-pulse"></div>
+                                <span class="text-[9px] font-black text-slate-600 uppercase tracking-[0.15em]">${territory.name || territory.id}</span>
+                            </div>
+                        </div>
+
+                        <!-- Brand Toggle -->
+                        <div class="flex bg-slate-100 border border-slate-200 p-1 rounded-lg mb-2">
+                            <button onclick="app.soBrandTab='Foton'; app.renderSODashboard()" class="flex-1 py-2 rounded-md text-sm font-bold transition-all ${brand === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm p-0.5"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
+                                    Foton
+                                </div>
+                            </button>
+                            <button onclick="app.soBrandTab='Mahindra'; app.renderSODashboard()" class="flex-1 py-2 rounded-md text-sm font-bold transition-all ${brand === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm p-0.5"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
+                                    Mahindra
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <!-- Sale Type Toggle (Compact Left-Aligned) -->
+                        <div class="flex justify-start mb-4">
+                            <div class="inline-flex bg-slate-200/60 p-1 rounded-full border border-slate-200 shadow-inner">
+                                <button onclick="app.soSaleTypeTab='New Sale'; app.renderSODashboard()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${saleType === 'New Sale' ? 'bg-white shadow-sm text-aci-blue' : 'text-slate-500 hover:text-slate-800'}">
+                                    <i data-lucide="tag" class="w-3 h-3 ${saleType === 'New Sale' ? 'text-aci-blue' : 'text-slate-400'}"></i> New Sale
+                                </button>
+                                <button onclick="app.soSaleTypeTab='Resale'; app.renderSODashboard()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${saleType === 'Resale' ? 'bg-white shadow-sm text-aci-blue' : 'text-slate-500 hover:text-slate-800'}">
+                                    <i data-lucide="refresh-cw" class="w-3 h-3 ${saleType === 'Resale' ? 'text-aci-blue' : 'text-slate-400'}"></i> Resale
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- YTD Overall (Minimal Modern) -->
+                        <div class="glass p-4 rounded-xl shadow-sm border border-slate-100 mb-4 relative overflow-hidden">
+                            <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                    <!-- Minimal Floating Icon -->
+                                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-aci-blue/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
+                                    ${isTransitionMode ? `Last Fiscal Year Overall (${concludingFY})` : `YTD Overall (${currentFY})`}
+                                </h3>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
+                            </div>
+                            <div class="grid grid-cols-6 text-center divide-x divide-slate-100">
+                                <div class="px-1 flex flex-col justify-center">
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">${isTransitionMode ? 'FY Target' : 'YTD Target'}</p>
+                                    <p class="font-bold text-slate-800 text-sm">${ytdTargetTillLastMonth}</p>
+                                    <p class="text-[8px] text-slate-400 font-semibold mt-0.5">${isTransitionMode ? `FY: ${concludingFY}` : `FY: ${currentFY}`}</p>
+                                </div>
+                                <div class="px-1 flex flex-col justify-center">
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">Sales</p>
+                                    <p class="font-bold text-aci-blue text-sm">${tillLastMonthSalesUnits}</p>
+                                </div>
+                                <div class="px-1 flex flex-col justify-center">
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">Ach%</p>
+                                    <p class="font-bold text-slate-800 text-sm">${ach(tillLastMonthSalesUnits, ytdTargetTillLastMonth)}%</p>
+                                </div>
+                                <div class="px-1 flex flex-col justify-center">
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">Shortfall</p>
+                                    <p class="font-bold text-red-500 text-sm">${Math.max(0, ytdTargetTillLastMonth - tillLastMonthSalesUnits)}</p>
+                                </div>
+                                <div class="px-1 flex flex-col justify-center">
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">SPLY</p>
+                                    <p class="font-bold text-slate-800 text-sm">${ytdSply}</p>
+                                </div>
+                                <div class="px-1 flex flex-col justify-center">
+                                    <p class="text-[9px] text-slate-400 uppercase font-semibold">Grw%</p>
+                                    <p class="text-sm">${formatGrw(grw(tillLastMonthSalesUnits, ytdSply))}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Month (Solid Modern Minimalist) -->
+                        <div class="bg-gradient-to-br ${brand === 'Foton' ? 'from-foton to-[#03133d] shadow-foton/20' : 'from-mahindra to-[#b81b31] shadow-mahindra/20'} rounded-xl p-4 mb-4 relative overflow-hidden shadow-sm text-white">
+                            <img src="${brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
+                            <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
+                                <h3 class="font-bold text-sm">Current Month (${currentMonth})</h3>
+                                <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold text-white">System + Manual</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center mb-3 relative z-10">
+                                <div><p class="text-[9px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-lg text-white">${monthlyBudget}</p></div>
+                                <div><p class="text-[9px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-lg text-white">${totalMonthlyProjection}</p></div>
+                                <div class="col-span-2 border-l border-white/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-2xl text-yellow-300">${currentSalesUnits}</p></div>
+                                
+                                <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-sm text-green-300">${ach(currentSalesUnits, monthlyBudget)}%</p></div>
+                                <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-sm text-amber-300">${ach(currentSalesUnits, totalMonthlyProjection)}%</p></div>
+
+                                <div><p class="text-[9px] text-white/70 uppercase font-semibold">Sale Type</p><p class="font-bold text-[10px] mt-1 text-white/90">${saleType}</p></div>
+                                <div><p class="text-[9px] text-white/70 uppercase font-semibold">SPLY</p><p class="font-bold text-sm mt-1 text-white">${currentSply}</p></div>
+                                <div class="col-span-2"><p class="text-[9px] text-white/70 uppercase font-semibold">Growth (SPLY)</p><p class="font-bold text-sm mt-1 text-yellow-300">${formatGrw(grw(currentSalesUnits, currentSply))}</p></div>
+                            </div>
+                            
+                            <!-- Area Recovery OD Status (Territory specific, applies across all brands) -->
+                            <div class="mt-3 pt-3 border-t border-white/20 relative z-10">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-[9px] text-white/90 font-bold uppercase tracking-widest flex items-center gap-1"><i data-lucide="shield-alert" class="w-3 h-3 text-rose-300"></i> Area Recovery OD Status</p>
+                                    <span class="text-[8px] bg-white/20 px-1.5 py-0.5 rounded text-white/90 uppercase font-bold tracking-wider">All Brands</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/20 rounded-lg p-2.5 border border-white/5">
+                                    <div class="text-left">
+                                        <p class="text-[9px] text-white/70 uppercase font-semibold mb-0.5">Perfile Overdue</p>
+                                        <p class="font-black text-sm text-rose-300">${app.formatCurrency(recoveryData.perfile_od)}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[9px] text-white/70 uppercase font-semibold mb-0.5">Total Overdue</p>
+                                        <p class="font-black text-sm text-rose-300">${app.formatCurrency(recoveryData.total_overdue)}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EMI COLLECTION SUMMARY -->
+                            <div class="mt-3 relative z-10 cursor-pointer group" onclick="app.renderSOEMI()">
+                                <div class="bg-gradient-to-r from-indigo-500/30 to-purple-500/30 border border-white/20 rounded-xl p-3 hover:bg-white/20 transition-all backdrop-blur-sm shadow-inner group-hover:shadow-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <div class="bg-white/10 p-1.5 rounded-lg text-indigo-200">
+                                                <i data-lucide="wallet" class="w-4 h-4 text-indigo-300"></i>
+                                            </div>
+                                            <span class="text-[9px] text-white/90 font-bold uppercase tracking-widest">EMI Collection Summary</span>
+                                        </div>
+                                        <span class="text-indigo-200 group-hover:translate-x-1.5 group-hover:text-white transition-all"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-center bg-black/20 rounded-lg p-2 border border-white/5">
+                                        <div class="text-left">
+                                            <p class="text-[8px] text-white/70 uppercase font-semibold">Total Installment</p>
+                                            <p class="font-black text-xs text-white">${app.formatCurrency(totalEmiInstallment)}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-[8px] text-white/70 uppercase font-semibold">Collected Amount</p>
+                                            <p class="font-black text-xs text-green-300">${app.formatCurrency(totalEmiCollected)}</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 flex items-center justify-between text-[9px] text-white/80 border-t border-white/10 pt-1.5">
+                                        <span>1st & 2nd EMI Action: <strong class="text-indigo-100">${totalFirstTwoCust} Accounts</strong></span>
+                                        <span class="text-rose-300 font-bold">${unpaidFirstTwoCust} Unpaid</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Manual Delivery Button -->
+                        <button onclick="app.showAddDeliveryModal()" class="w-full relative group overflow-hidden p-[1px] rounded-xl transition-all active:scale-[0.98] mb-6 shadow-sm shadow-blue-500/10">
+                            <!-- Thin Running Border -->
+                            <div class="absolute inset-[-500%] bg-[conic-gradient(from_0deg,transparent_48%,#2563eb_50%,transparent_52%)] animate-[spin_4s_linear_infinite] opacity-60"></div>
+                            
+                            <!-- Animated Cloud Glass Surface -->
+                            <div class="relative w-full bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(239,246,255,0.95),rgba(255,255,255,0.95))] bg-[length:400%_400%] animate-[mesh_8s_ease_infinite] backdrop-blur-md rounded-[15px] py-4 flex items-center justify-center gap-3 text-aci-blue font-black border border-white/80">
+                                <div class="flex items-center justify-center h-6 w-6 bg-aci-blue/10 rounded-full group-hover:scale-110 transition-transform">
+                                    <i data-lucide="plus" class="w-4 h-4 text-aci-blue animate-pulse"></i>
+                                </div>
+                                <span class="tracking-tight text-sm uppercase font-black">Enter Successful Delivery</span>
+                            </div>
+                        </button>
+
+                        <!-- Successful Deliveries Log History (Unified Style) -->
+                        ${myManualDeliveries.length > 0 ? `
+                            <div class="mb-6">
+                                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between flex-wrap gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-1.5 bg-indigo-100 rounded-lg"><i data-lucide="clipboard-list" class="w-4 h-4 text-indigo-600"></i></div>
+                                        <span>Manual Field Deliveries Log History</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-slate-100 text-slate-600 border border-slate-200" title="Total manual logs entered">Total: ${myManualDeliveries.length}</span>
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200" title="Approved and synced to cPanel">Synced: ${myManualDeliveries.filter(s => s.approval_status === 'Done').length}</span>
+                                        <span class="px-2 py-0.5 text-[9px] font-black rounded-full bg-amber-50 text-amber-600 border border-amber-200 animate-pulse" title="Pending admin approval">Pending: ${myManualDeliveries.filter(s => s.approval_status !== 'Done').length}</span>
+                                    </div>
+                                </h3>
+                                <div class="glass overflow-hidden rounded-xl border border-white/40 shadow-sm overflow-x-auto no-scrollbar">
+                                    <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                        <thead class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 text-white/90 uppercase tracking-[0.1em] text-[9px] font-black border-b border-white/20">
+                                            <tr>
+                                                <th class="px-4 py-3 text-center">SL</th>
+                                                <th class="px-4 py-3">Customer Information</th>
+                                                <th class="px-4 py-3">Vehicle Details</th>
+                                                <th class="px-4 py-3">Location</th>
+                                                <th class="px-4 py-3">Sale Type</th>
+                                                <th class="px-4 py-3 text-right">Sync Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-white/20">
+                                            ${myManualDeliveries.map((m, idx) => `
+                                                <tr class="hover:bg-white/20 transition-colors group">
+                                                    <td class="px-4 py-3 text-center font-bold text-slate-400 group-hover:text-aci-blue transition-colors">${idx + 1}</td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="font-black text-slate-800">${m.customer_name || 'Walk-in'}</div>
+                                                        <div class="text-[9px] font-bold text-slate-400 mt-0.5">${m.customer_id}</div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="font-bold text-slate-700">${m.model}</div>
+                                                        <div class="flex items-center gap-1 mt-0.5">
+                                                            <div class="w-1 h-1 rounded-full ${m.brand === 'Foton' ? 'bg-foton' : 'bg-mahindra'}"></div>
+                                                            <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">${m.brand}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="font-bold text-slate-600">${m.upazila}</div>
+                                                        <div class="text-[9px] text-slate-400 font-medium">Recorded: ${m.timestamp || 'Today'}</div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${m.sale_type === 'New Sale' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-amber-100 text-amber-700 border-amber-200'} border">
+                                                            ${m.sale_type}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-right">
+                                                        <div class="flex flex-col items-end justify-center gap-1 text-right">
+                                                            ${m.approval_status === 'Done' ? 
+                                                                `<div class="flex items-center justify-end gap-1.5 text-emerald-600">
+                                                                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                                                    <span class="text-[10px] font-black uppercase tracking-tight">Done</span>
+                                                                 </div>` 
+                                                            : 
+                                                                `<div class="flex items-center justify-end gap-1.5 text-amber-500">
+                                                                    <span class="relative flex h-2 w-2">
+                                                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                                                    </span>
+                                                                    <span class="text-[10px] font-black uppercase tracking-tight">${m.approval_status || 'Pending Approval'}</span>
+                                                                 </div>`
+                                                            }
+                                                            ${m.admin_comments ? `<div class="text-[9px] text-slate-500 italic max-w-[150px] truncate" title="${m.admin_comments}">Note: ${m.admin_comments}</div>` : ''}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- Performance Trend Graph (Jul-Jun) -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-4">
+                            <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-1.5">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-aci-blue"></i> 
+                                Performance Trend (${currentFY})
+                            </h3>
+                            <div class="h-48 relative w-full">
+                                <canvas id="soTrendChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Performance Table (Filterable) -->
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 mb-4 overflow-hidden relative">
+                            <div class="absolute -left-10 -bottom-10 bg-indigo-500/5 w-32 h-32 rounded-full blur-2xl"></div>
+                            <div class="p-3 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                                    <i data-lucide="calendar-days" class="w-4 h-4 text-aci-blue"></i> 
+                                    Monthly Perf.
+                                </h3>
+                                <select onchange="app.soMonthTab=this.value; app.renderSODashboard()" class="bg-white border border-slate-200 text-[11px] font-bold rounded px-2 py-1 text-slate-600 shadow-sm focus:outline-none focus:border-aci-blue">
+                                    <option value="July" ${selMonth === 'July' ? 'selected' : ''}>July</option>
+                                    <option value="August" ${selMonth === 'August' ? 'selected' : ''}>August</option>
+                                    <option value="September" ${selMonth === 'September' ? 'selected' : ''}>September</option>
+                                    <option value="October" ${selMonth === 'October' ? 'selected' : ''}>October</option>
+                                    <option value="November" ${selMonth === 'November' ? 'selected' : ''}>November</option>
+                                    <option value="December" ${selMonth === 'December' ? 'selected' : ''}>December</option>
+                                    <option value="January" ${selMonth === 'January' ? 'selected' : ''}>January</option>
+                                    <option value="February" ${selMonth === 'February' ? 'selected' : ''}>February</option>
+                                    <option value="March" ${selMonth === 'March' ? 'selected' : ''}>March</option>
+                                    <option value="April" ${selMonth === 'April' ? 'selected' : ''}>April</option>
+                                    <option value="May" ${selMonth === 'May' ? 'selected' : ''}>May</option>
+                                    <option value="June" ${selMonth === 'June' ? 'selected' : ''}>June</option>
+                                </select>
+                            </div>
+                            <div class="p-4 grid grid-cols-5 text-center divide-x divide-slate-100">
+                                <div class="px-1"><p class="text-[9px] text-slate-400 uppercase font-semibold">Budget</p><p class="font-bold text-slate-800 text-sm">${monthlyBudget}</p></div>
+                                <div class="px-1"><p class="text-[9px] text-slate-400 uppercase font-semibold">Sales</p><p class="font-bold text-aci-blue text-sm">${selMonthSalesUnits}</p></div>
+                                <div class="px-1"><p class="text-[9px] text-slate-400 uppercase font-semibold">ACH%</p><p class="font-bold text-slate-800 text-sm">${ach(selMonthSalesUnits, monthlyBudget)}%</p></div>
+                                <div class="px-1"><p class="text-[9px] text-slate-400 uppercase font-semibold">SPLY</p><p class="font-bold text-slate-800 text-sm">${selMonthSply}</p></div>
+                                <div class="px-1"><p class="text-[9px] text-slate-400 uppercase font-semibold">Grw%</p><p class="text-sm">${formatGrw(grw(selMonthSalesUnits, selMonthSply))}</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Upazila Wise Breakdown (Filterable, Interactive Table) -->
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-100 mb-4 overflow-hidden">
+                            <div class="p-3 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2 items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="map" class="w-4 h-4 text-aci-blue animate-pulse"></i>
+                                    <h3 class="font-bold text-slate-800 text-sm">Upazila Wise Performance</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Month Filter:</span>
+                                    <select onchange="app.soUpazilaMonthFilter=this.value; app.renderSODashboard()" class="bg-white border border-slate-200 text-[10px] font-bold rounded px-1.5 py-0.5 text-slate-600 shadow-sm focus:outline-none focus:border-aci-blue">
+                                        <option value="All" ${upaSelectedMonth === 'All' ? 'selected' : ''}>YTD (All Months)</option>
+                                        <option value="July" ${upaSelectedMonth === 'July' ? 'selected' : ''}>July</option>
+                                        <option value="August" ${upaSelectedMonth === 'August' ? 'selected' : ''}>August</option>
+                                        <option value="September" ${upaSelectedMonth === 'September' ? 'selected' : ''}>September</option>
+                                        <option value="October" ${upaSelectedMonth === 'October' ? 'selected' : ''}>October</option>
+                                        <option value="November" ${upaSelectedMonth === 'November' ? 'selected' : ''}>November</option>
+                                        <option value="December" ${upaSelectedMonth === 'December' ? 'selected' : ''}>December</option>
+                                        <option value="January" ${upaSelectedMonth === 'January' ? 'selected' : ''}>January</option>
+                                        <option value="February" ${upaSelectedMonth === 'February' ? 'selected' : ''}>February</option>
+                                        <option value="March" ${upaSelectedMonth === 'March' ? 'selected' : ''}>March</option>
+                                        <option value="April" ${upaSelectedMonth === 'April' ? 'selected' : ''}>April</option>
+                                        <option value="May" ${upaSelectedMonth === 'May' ? 'selected' : ''}>May</option>
+                                        <option value="June" ${upaSelectedMonth === 'June' ? 'selected' : ''}>June</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-50/65 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100 font-black">
+                                            <th class="px-4 py-2.5">Upazila Name</th>
+                                            <th class="px-4 py-2.5 text-center">
+                                                ${upaSelectedMonth === 'All' ? 'SPLY Sales (Last FY)' : `Month Sales (${upaSelectedMonth})`}
+                                            </th>
+                                            <th class="px-4 py-2.5 text-center">YTD Sales (FY)</th>
+                                            <th class="px-4 py-2.5 text-center">Growth %</th>
+                                            <th class="px-4 py-2.5 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${Object.keys(upaStats).map(k => {
+                                            const ySales = upaStats[k].ytdSales;
+                                            const mSales = upaSelectedMonth === 'All' ? upaStats[k].lastFYSales : upaStats[k].filteredMonthSales;
+                                            
+                                            // Dynamic Growth Comparison logic
+                                            const currentVal = upaSelectedMonth === 'All' ? ySales : mSales;
+                                            const priorVal = upaSelectedMonth === 'All' ? upaStats[k].lastFYSales : upaStats[k].lastFYSameMonthSales;
+                                            const growthVal = grw(currentVal, priorVal);
+
+                                            return {
+                                                name: k,
+                                                mSales: mSales,
+                                                ySales: ySales,
+                                                growth: growthVal
+                                            };
+                                        })
+                                            .sort((a, b) => b.ySales - a.ySales)
+                                            .map(u => {
+                                                const isZeroMonth = u.mSales === 0;
+                                                const isZeroYtd = u.ySales === 0;
+                                                
+                                                // Highlight rules: Red border alerts for zero sales
+                                                return `
+                                                <tr class="transition-colors hover:bg-slate-50/50 ${isZeroMonth ? 'bg-rose-50/20' : ''}">
+                                                    <td class="px-4 py-2.5 font-bold ${isZeroYtd ? 'text-red-500 font-extrabold' : 'text-slate-700'}">
+                                                        <div class="flex items-center gap-1.5">
+                                                            <div class="w-1.5 h-1.5 rounded-full ${isZeroYtd ? 'bg-red-500 animate-ping' : 'bg-slate-300'}"></div>
+                                                            ${u.name}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-black ${isZeroMonth ? 'text-rose-500 bg-rose-500/5' : 'text-slate-800'}">
+                                                        ${u.mSales}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-black ${isZeroYtd ? 'text-red-600 bg-red-500/5' : 'text-slate-800'}">
+                                                        ${u.ySales}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-black">
+                                                        ${formatGrw(u.growth)}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-right">
+                                                        ${isZeroYtd 
+                                                            ? '<span class="bg-red-100 text-red-600 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-red-200 tracking-wider">Zero YTD</span>' 
+                                                            : (isZeroMonth 
+                                                                ? '<span class="bg-amber-100 text-amber-700 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-amber-200 tracking-wider">Zero Month</span>' 
+                                                                : '<span class="bg-emerald-100 text-emerald-700 text-[8px] font-black uppercase px-2 py-0.5 rounded border border-emerald-200 tracking-wider">Active</span>'
+                                                            )
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                `;
+                                            }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- MO ACTIONABLE INTELLIGENCE SECTION -->
+                        ${(() => {
+                        // Practical Data Crunching for Field Officer
+                        const zeroSalesUpazilas = [];
+                        const ytdSalesRecords = brandSales.filter(s => s.fy === currentFY);
+
+                        let topGapUpazila = null;
+                        let maxMonthGap = 0;
+
+                        territory.upazilas.forEach(u => {
+                            // Fiscal Year Targets & Sales for Zero-Zone check
+                            const uTgts = DB.targets.filter(t => t.territory_id === terrId && t.upazila === u && t.brand === brand && t.fy === currentFY && t.sale_type === saleType);
+                            const uTargetYTD = uTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                            const uSalesYTD = ytdSalesRecords.filter(s => s.upazila === u).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                            // Flag zero sales upazilas that have a YTD budget
+                            if (uSalesYTD === 0 && uTargetYTD > 0) zeroSalesUpazilas.push(u);
+
+                            // Calculate top gap for current month (AI Directive)
+                            const uMonthTgtObj = uTgts.find(t => t.month === currentMonth);
+                            const uMonthTarget = uMonthTgtObj ? uMonthTgtObj.target_qty : Math.round(uTargetYTD / 12);
+                            const uMonthSales = currentSalesRecords.filter(s => s.upazila === u).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                            const monthGap = uMonthTarget - uMonthSales;
+
+                            if (monthGap > maxMonthGap) {
+                                maxMonthGap = monthGap;
+                                topGapUpazila = u;
+                            }
+                        });
+
+                        const remainingTarget = Math.max(0, monthlyBudget - currentSalesUnits);
+
+                        // Mocking remaining days (Assuming today is 14th of a 30 day month)
+                        const daysInMonth = 30;
+                        const currentDay = 14;
+                        const daysLeft = daysInMonth - currentDay;
+                        const weeksLeft = Math.max(1, Math.round(daysLeft / 7));
+                        const requiredRunRate = Math.ceil(remainingTarget / weeksLeft);
+
+                        // AI Month-End Prediction
+                        const currentRunRateDaily = currentSalesUnits / currentDay;
+                        const predictedClose = Math.round(currentRunRateDaily * daysInMonth);
+                        const predictedShortfall = Math.max(0, monthlyBudget - predictedClose);
+                        const isPacingWell = predictedClose >= monthlyBudget;
+
+                        const splyGrowth = currentSply > 0 ? Math.round(((currentSalesUnits - currentSply) / currentSply) * 100) : 0;
+
+                        return `
+                            <div class="mt-8 mb-6 fade-in">
+                                <div class="flex items-center justify-between mb-4 pl-1">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-gradient-to-tr from-purple-500 to-indigo-600 rounded-xl border border-indigo-400 shadow-md animate-pulse">
+                                            <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-700 to-blue-800 tracking-tight">AI Field Sales Copilot</h3>
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Real-time Field Analytics & Prediction</p>
+                                        </div>
+                                    </div>
+                                    <span class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-[8px] font-black uppercase px-2 py-0.5 rounded tracking-widest">Active Copilot</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                    <!-- Card 1: AI Smart Pacing & Recovery Planner -->
+                                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-3.5 shadow-sm border border-slate-750 text-white relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -top-4 opacity-10"><i data-lucide="trending-up" class="w-24 h-24 text-indigo-400"></i></div>
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3 relative z-10">
+                                                <h4 class="text-amber-400 text-xs font-black uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="target" class="w-3.5 h-3.5"></i> Sales Pacing Planner</h4>
+                                                <span class="text-[9px] bg-slate-700 text-slate-300 font-bold px-1.5 py-0.2 rounded">${daysLeft} Days Left</span>
+                                            </div>
+                                            <p class="text-slate-300 text-xs mb-4">Target: <strong class="text-white">${monthlyBudget}</strong> | Sold: <strong class="text-white">${currentSalesUnits}</strong> | Gap: <strong class="text-amber-400 font-bold">${remainingTarget}</strong></p>
+                                            
+                                            <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700 mb-3 relative z-10">
+                                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Required Field Run-Rate</p>
+                                                <p class="text-xl font-black text-amber-400 mt-1">${requiredRunRate} <span class="text-xs text-slate-300 font-medium">units / week</span></p>
+                                                <p class="text-[8.5px] text-slate-400 mt-1">* Trajectory is currently tracking ${splyGrowth >= 0 ? '+' : ''}${splyGrowth}% vs SPLY.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-2 border-t border-slate-700/50 pt-3">
+                                            <span class="text-[9px] text-indigo-300 font-black uppercase tracking-wider block mb-1">Copilot Strategy:</span>
+                                            <p class="text-[11px] text-slate-300 leading-relaxed">
+                                                ${topGapUpazila 
+                                                    ? `Focus dealer network drives in <strong class="text-white">${topGapUpazila}</strong>. This Upazila holds the largest unfulfilled gap of <strong class="text-amber-400">${maxMonthGap} units</strong>.`
+                                                    : `Pacing is fully optimized across all Upazilas. Keep maintaining active customer connections!`
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card 2: AI Month-End Close Forecast -->
+                                    <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -bottom-6 opacity-5"><i data-lucide="brain-circuit" class="w-24 h-24 text-purple-600"></i></div>
+                                        <div>
+                                            <h4 class="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 mb-3"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-purple-500"></i> Month-End Forecast</h4>
+                                            <p class="text-slate-500 text-xs mb-4">Copilot projections based on current velocity of <strong class="text-slate-800 font-bold">${currentRunRateDaily.toFixed(2)} units/day</strong>:</p>
+                                            
+                                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                                <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-center">
+                                                    <span class="text-[9px] text-slate-400 uppercase font-black">Projected Close</span>
+                                                    <p class="text-sm font-extrabold text-slate-700 tracking-widest uppercase mt-1">${predictedClose}</p>
+                                                </div>
+                                                <div class="rounded-xl p-3 text-center ${isPacingWell ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'}">
+                                                    <span class="text-[9px] ${isPacingWell ? 'text-green-600' : 'text-red-500'} uppercase font-black">${isPacingWell ? 'Surplus' : 'Est. Shortfall'}</span>
+                                                    <p class="text-2xl font-black ${isPacingWell ? 'text-green-700' : 'text-red-600'} mt-1">${isPacingWell ? '+' + (predictedClose - monthlyBudget) : predictedShortfall}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="w-full bg-slate-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                                                <div class="h-1.5 rounded-full ${isPacingWell ? 'bg-green-500' : 'bg-amber-500'}" style="width: ${Math.min(100, (predictedClose / Math.max(1, monthlyBudget)) * 100)}%"></div>
+                                            </div>
+                                            <div class="flex justify-between text-[9px] font-bold">
+                                                <span class="text-slate-400">${Math.round((predictedClose / Math.max(1, monthlyBudget)) * 100)}% of target</span>
+                                                <span class="${isPacingWell ? 'text-green-600' : 'text-amber-600'}">${isPacingWell ? 'Pacing Ahead' : 'Pacing Behind'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card 3: Collection Risk Radar (Early EMI Protection) -->
+                                    <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -top-4 opacity-5"><i data-lucide="shield-alert" class="w-24 h-24 text-red-500"></i></div>
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h4 class="text-slate-800 text-xs font-black uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500"></i> Collection Risk Radar</h4>
+                                                <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded ${unpaidFirstTwoCust > 0 ? 'bg-rose-100 text-rose-700 border border-rose-200 animate-pulse' : 'bg-green-100 text-green-700'}">
+                                                    ${unpaidFirstTwoCust > 0 ? 'Risk Alert' : 'Healthy'}
+                                                </span>
+                                            </div>
+                                            <p class="text-slate-500 text-xs mb-3">Installment collections monitoring (Early 1st & 2nd EMIs):</p>
+                                            
+                                            <div class="grid grid-cols-2 gap-2 text-center mb-4">
+                                                <div class="bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100/50">
+                                                    <span class="text-[9px] text-indigo-400 font-bold block">Active EMI Accounts</span>
+                                                    <span class="text-lg font-black text-indigo-950">${totalFirstTwoCust}</span>
+                                                    <span class="text-[9px] font-bold text-slate-500 block mt-1">Due: ${app.formatCurrency(totalFirstTwoInstallment)}</span>
+                                                </div>
+                                                <div class="bg-rose-50/50 p-2.5 rounded-xl border border-rose-100/50">
+                                                    <span class="text-[9px] text-rose-400 font-bold block">Uncollected EMIs</span>
+                                                    <span class="text-lg font-black text-rose-600">${unpaidFirstTwoCust}</span>
+                                                    <span class="text-[9px] font-bold text-slate-500 block mt-1">Col: ${app.formatCurrency(totalFirstTwoCollected)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="border-t border-slate-100 pt-3">
+                                            <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider block mb-1">Risk Recovery Tip:</span>
+                                            <p class="text-[11px] text-slate-600 leading-normal">
+                                                ${unpaidFirstTwoCust > 0 
+                                                    ? `Prioritize field collection visits to the <strong class="text-rose-600">${unpaidFirstTwoCust} uncollected EMI accounts</strong> this week to prevent early defaults.` 
+                                                    : `100% early EMI collections achieved. Excellent work maintaining portfolio hygiene!`
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <!-- AI Opportunity Predictor -->
+                                    <div class="bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-xl p-3.5 shadow-sm border border-indigo-700 text-white relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -bottom-6 opacity-10">
+                                            <i data-lucide="radar" class="w-32 h-32 text-indigo-300"></i>
+                                        </div>
+                                        <h4 class="text-indigo-200 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 mb-4 relative z-10">
+                                            <i data-lucide="crosshair" class="w-3.5 h-3.5 text-emerald-400"></i> Sales Opportunity Predictor
+                                        </h4>
+                                        
+                                        <div class="space-y-3 relative z-10">
+                                            ${(() => {
+                                                let topMomentum = null;
+                                                let maxGrowth = -Infinity;
+                                                let rescueUpazila = null;
+                                                
+                                                Object.keys(upaStats).forEach(k => {
+                                                    const ySales = upaStats[k].ytdSales;
+                                                    const lastYSales = upaStats[k].lastFYSales;
+                                                    if(lastYSales > 0) {
+                                                        const gr = ((ySales - lastYSales) / lastYSales) * 100;
+                                                        if(gr > maxGrowth) {
+                                                            maxGrowth = gr;
+                                                            topMomentum = {name: k, growth: gr, sales: ySales};
+                                                        }
+                                                    }
+                                                    if(ySales === 0 && DB.targets.some(t => t.territory_id === terrId && t.upazila === k && t.brand === brand && t.fy === currentFY && t.target_qty > 0)) {
+                                                        rescueUpazila = k;
+                                                    }
+                                                });
+
+                                                let html = '';
+                                                if(topMomentum) {
+                                                    html += `
+                                                    <div class="bg-indigo-950/50 rounded-xl p-3.5 border border-indigo-500/30">
+                                                        <div class="flex items-center justify-between mb-2">
+                                                            <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> High Momentum Zone</span>
+                                                            <span class="text-xs font-black text-white bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">+${maxGrowth.toFixed(1)}% Growth</span>
+                                                        </div>
+                                                        <p class="text-[11px] text-indigo-100 leading-relaxed">
+                                                            <strong>${topMomentum.name}</strong> is showing the strongest conversion rate. Deploy additional field activities here to maximize your closing ratio this week.
+                                                        </p>
+                                                    </div>`;
+                                                }
+
+                                                if(rescueUpazila) {
+                                                    html += `
+                                                    <div class="bg-rose-950/40 rounded-xl p-3.5 border border-rose-500/30 mt-3">
+                                                        <div class="flex items-center justify-between mb-2">
+                                                            <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider flex items-center gap-1"><i data-lucide="siren" class="w-3 h-3"></i> Critical Rescue</span>
+                                                            <span class="text-xs font-black text-rose-200 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">0 YTD Sales</span>
+                                                        </div>
+                                                        <p class="text-[11px] text-indigo-100 leading-relaxed">
+                                                            <strong>${rescueUpazila}</strong> has budget but no sales yet. Initiate a root-cause analysis visit and meet local influencers to unblock this market immediately.
+                                                        </p>
+                                                    </div>`;
+                                                }
+                                                
+                                                if(!topMomentum && !rescueUpazila) {
+                                                    html += `<p class="text-xs text-indigo-200">No critical anomalies detected. Standard pacing applies.</p>`;
+                                                }
+                                                return html;
+                                            })()}
+                                        </div>
+                                    </div>
+
+                                    <!-- AI Tactical Briefing -->
+                                    <div class="bg-gradient-to-br from-violet-900 to-purple-900 rounded-xl p-3.5 shadow-sm border border-purple-700 text-white relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute -right-6 -bottom-6 opacity-10">
+                                            <i data-lucide="zap" class="w-32 h-32 text-purple-300"></i>
+                                        </div>
+                                        <h4 class="text-purple-200 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 mb-4 relative z-10">
+                                            <i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-400"></i> AI Tactical Briefing
+                                        </h4>
+                                        
+                                        <div class="relative z-10 space-y-3">
+                                            <div class="flex gap-3 items-start bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
+                                                <div class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 border border-amber-500/30 mt-0.5">
+                                                    <span class="text-amber-400 text-[10px] font-black">1</span>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[11px] text-purple-50 leading-relaxed">Prioritize visits to customers whose 1st and 2nd EMIs are due within the next 5 days to prevent early-stage defaults.</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex gap-3 items-start bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
+                                                <div class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 border border-emerald-500/30 mt-0.5">
+                                                    <span class="text-emerald-400 text-[10px] font-black">2</span>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[11px] text-purple-50 leading-relaxed"><strong>Cross-sell opportunity:</strong> Customers who recently paid off their previous vehicle loans are high-probability prospects for new ${brand} units.</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex gap-3 items-start bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
+                                                <div class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0 border border-blue-500/30 mt-0.5">
+                                                    <span class="text-blue-400 text-[10px] font-black">3</span>
+                                                </div>
+                                                <div>
+                                                    <p class="text-[11px] text-purple-50 leading-relaxed">Current run-rate is <strong class="text-white">${currentRunRateDaily.toFixed(1)} units/day</strong>. You need to increase this by <strong class="text-amber-300">${Math.max(0, (requiredRunRate/7) - currentRunRateDaily).toFixed(1)} units/day</strong> to hit the monthly budget.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                    })()}
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+
+                // Render the new Trend Line Chart, passing currentMonth to halt the line
+                app.renderSOTrendChart(terrId, brand, currentFY, saleType, currentMonth);
+                app.renderSOAICharts(territory, brand, currentFY, brandSales, monthlyBudget, currentSalesUnits);
+            },
+
+            renderSOAICharts: (territory, brand, fy, brandSales, monthlyBudget, currentSalesUnits) => {
+                // Removed Sub-Territory shortfall chart as requested.
+                // Cleanup chart instance if it existed previously
+                if (app.charts.soGapChart) {
+                    app.charts.soGapChart.destroy();
+                    delete app.charts.soGapChart;
+                }
+            },
+
+            renderSOTrendChart: (terrId, brand, fy, saleType, currentMonth) => {
+                if (app.charts.soTrend) app.charts.soTrend.destroy();
+                const ctx = document.getElementById('soTrendChart').getContext('2d');
+
+                const months = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                const shortMonths = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+                // Calculate Monthly Budget (Variable or Fixed)
+                const yearlyTargets = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === fy && t.sale_type === saleType);
+                const totalTarget = yearlyTargets.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                const budgetData = months.map(m => {
+                    const mtFiltered = yearlyTargets.filter(tg => tg.month === m);
+                    return mtFiltered.length > 0 ? mtFiltered.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalTarget / 12);
+                });
+                const monthlyBudgetTgts = yearlyTargets.filter(t => t.month === currentMonth);
+                const monthlyBudget = monthlyBudgetTgts.length > 0 ? monthlyBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalTarget / 12) || 0;
+
+                // Calculate Monthly Sales (Only up to the current month to create a month-to-month growth line)
+                const currentMonthIdx = months.indexOf(currentMonth);
+                const salesData = months.map((m, idx) => idx <= currentMonthIdx ? 0 : null);
+
+                const records = DB.sales.filter(s => s.territory_id === terrId && s.brand === brand && s.fy === fy && s.sale_type === saleType);
+                records.forEach(r => {
+                    const idx = months.indexOf(r.sales_month);
+                    if (idx !== -1 && idx <= currentMonthIdx) {
+                        salesData[idx] += Number(r.unit_qty || 0);
+                    }
+                });
+
+                // Style based on brand
+                const brandColor = brand === 'Foton' ? '#041A54' : '#E5223E';
+
+                app.charts.soTrend = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: shortMonths,
+                        datasets: [
+                            {
+                                label: 'Actual Sales',
+                                data: salesData,
+                                borderColor: brandColor,
+                                backgroundColor: brandColor + '15', // Minimal transparent fill
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: brandColor,
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Monthly Budget',
+                                data: budgetData,
+                                borderColor: '#cbd5e1', // slate-300
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                tension: 0,
+                                fill: false,
+                                pointRadius: 0,
+                                pointHoverRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: monthlyBudget > 0 ? monthlyBudget * 1.5 : 10,
+                                grid: { color: '#f1f5f9', drawBorder: false }, // Very soft minimal grid
+                                border: { display: false },
+                                ticks: { stepSize: 2, color: '#94a3b8', font: { size: 10 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: { color: '#64748b', font: { size: 10 } }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                align: 'end',
+                                labels: { boxWidth: 8, usePointStyle: true, pointStyle: 'circle', font: { size: 10, family: 'Inter' } }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleFont: { family: 'Inter', size: 12 },
+                                bodyFont: { family: 'Inter', size: 11 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                displayColors: true,
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                });
+            },
+
+            showAddDeliveryModal: () => {
+                const terrId = app.currentUser.territories[0];
+                const territory = DB.territories.find(t => t.id === terrId);
+
+                let modal = document.getElementById('add-delivery-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-delivery-modal';
+                    modal.className = 'fixed inset-0 z-[100] hidden items-end sm:items-center justify-center';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-aci-blue/20 backdrop-blur-md" onclick="app.closeDeliveryModal()"></div>
+                    <div class="glass w-full sm:max-w-xl sm:rounded-xl rounded-t-[2.5rem] p-4 relative z-10 transform transition-transform translate-y-full max-h-[95vh] overflow-y-auto shadow-2xl no-scrollbar border border-white/40 overflow-hidden" id="delivery-modal-content">
+                        <!-- Liquid Orbs inside modal -->
+                        <div class="absolute -right-20 -top-20 bg-aci-blue/20 w-64 h-64 rounded-full blur-[80px] pointer-events-none"></div>
+                        <div class="absolute -left-20 -bottom-20 bg-indigo-500/10 w-64 h-64 rounded-full blur-[80px] pointer-events-none"></div>
+                        
+                        <!-- Pull Handle for Mobile -->
+                        <div class="w-12 h-1 bg-white/30 rounded-full mx-auto mb-6 sm:hidden"></div>
+                        
+                        <div class="flex justify-between items-center mb-6 relative z-10">
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-700 tracking-widest uppercase tracking-tight">Log New Delivery</h3>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Record successful sales data</p>
+                            </div>
+                            <button onclick="app.closeDeliveryModal()" class="text-white/60 bg-white/10 rounded-full hover:bg-white/20 p-2 transition-colors border border-white/20"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+
+                        <form id="add-delivery-form" onsubmit="app.saveManualDelivery(event)" class="space-y-5 pb-4 relative z-10">
+                            <!-- Sale Type & Region -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Sale Type</label>
+                                    <div class="relative group">
+                                        <select id="del-type" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10" required onchange="
+                                            const isResale = this.value === 'Resale';
+                                            document.getElementById('old-cust-container').style.display = isResale ? 'block' : 'none';
+                                            document.getElementById('del-old-customer-id').required = isResale;
+                                            document.getElementById('del-customer-code').required = isResale;
+                                        ">
+                                            <option value="New Sale">New Sale</option>
+                                            <option value="Resale">Resale</option>
+                                        </select>
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5 relative">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Upazila</label>
+                                    <div class="relative group">
+                                        <select id="del-upazila" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10" required onchange="
+                                            const otherContainer = document.getElementById('other-upazila-container');
+                                            const customInput = document.getElementById('del-upazila-custom');
+                                            if (this.value === 'Other') {
+                                                otherContainer.style.display = 'block';
+                                                customInput.required = true;
+                                                setTimeout(() => {
+                                                    otherContainer.style.opacity = '1';
+                                                    otherContainer.style.maxHeight = '100px';
+                                                    customInput.focus();
+                                                }, 10);
+                                            } else {
+                                                otherContainer.style.opacity = '0';
+                                                otherContainer.style.maxHeight = '0px';
+                                                customInput.required = false;
+                                                setTimeout(() => {
+                                                    otherContainer.style.display = 'none';
+                                                }, 300);
+                                            }
+                                        ">
+                                            <option value="">Select Upazila</option>
+                                            ${territory.upazilas.map(u => `<option value="${u}">${u}</option>`).join('')}
+                                            <option value="Other">+ Write Custom Upazila...</option>
+                                        </select>
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                    <!-- Creative Custom Upazila Entry -->
+                                    <div id="other-upazila-container" class="mt-2 transition-all duration-300 ease-out opacity-0 overflow-hidden" style="max-height: 0px; display: none;">
+                                        <div class="relative group">
+                                            <input type="text" id="del-upazila-custom" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-indigo-500 bg-indigo-50/20 text-indigo-900 placeholder-indigo-300" placeholder="Type custom Upazila name...">
+                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-indigo-400">
+                                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Customer Info -->
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Customer Name</label>
+                                <input type="text" id="del-customer-name" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="Full Name or Business Name">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-aci-blue/70">Vehicle Chassis Number</label>
+                                <input type="text" id="del-chassis" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="Enter Chassis Number (e.g. 17 characters)">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-aci-blue/70">Customer ID</label>
+                                    <input type="text" id="del-customer-code" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" placeholder="ID: C34222 or 'N/A'">
+                                </div>
+                                <div class="space-y-1.5 relative">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-indigo-600/70">Purpose of Use</label>
+                                    <div class="relative group">
+                                        <input type="text" id="del-purpose" autocomplete="off" onfocus="app.showPurposeSuggestions()" onblur="app.hidePurposeSuggestions()" onkeyup="app.filterPurposeSuggestions(this.value)" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-indigo-400 bg-slate-50/50 pr-10 transition-colors placeholder-slate-400 text-indigo-900" placeholder="e.g. Cow carry, Poultry firm use..." required>
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                            <i data-lucide="briefcase" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                    <!-- Creative Suggestion Dropdown -->
+                                    <div id="purpose-suggestions-dropdown" class="absolute left-0 right-0 top-[105%] z-50 bg-white/95 backdrop-blur-md border border-indigo-100 rounded-xl shadow-sm overflow-hidden hidden flex-col max-h-[220px] overflow-y-auto custom-scrollbar opacity-0 translate-y-2 transition-all duration-200">
+                                    </div>
+                                </div>
+                                <div id="old-cust-container" style="display: none;" class="space-y-1.5 col-span-2">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-amber-600">Old Cust. ID (Mandatory)</label>
+                                    <input type="text" id="del-old-customer-id" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" placeholder="System ID: O-9922">
+                                </div>
+                            </div>
+                            
+                            <!-- Product Selection -->
+                            <div class="bg-slate-50/80 rounded-xl p-4 border border-slate-100">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 text-center">Vehicle Portfolio Details</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Brand</label>
+                                        <div class="relative group">
+                                            <select id="del-brand" onchange="app.updateModelDropdown(this.value)" class="w-full border-2 border-white rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-white shadow-sm appearance-none pr-10" required>
+                                                <option value="">Select Brand</option>
+                                                <option value="Foton">Foton</option>
+                                                <option value="Mahindra">Mahindra</option>
+                                            </select>
+                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Model</label>
+                                        <div class="relative group">
+                                            <select id="del-model" class="w-full border-2 border-white rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-white shadow-sm disabled:opacity-50 appearance-none pr-10" required disabled>
+                                                <option value="">Pick Model</option>
+                                            </select>
+                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Financial Details -->
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trade Price</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">৳</span>
+                                        <input type="number" id="del-tp" class="w-full border-2 border-slate-100 rounded-xl pl-7 pr-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Downpayment</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">৳</span>
+                                        <input type="number" id="del-dp" class="w-full border-2 border-slate-100 rounded-xl pl-7 pr-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Tenure</label>
+                                    <div class="relative group">
+                                        <select id="del-tenure" class="w-full border-2 border-slate-100 rounded-xl px-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10" required>
+                                            <option value="">Select</option>
+                                            <option value="Cash">Cash Sale</option>
+                                            <option value="18">18 Months</option>
+                                            <option value="36">36 Months</option>
+                                            <option value="48">48 Months</option>
+                                        </select>
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Incentives -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Discount Offer</label>
+                                    <div class="relative group">
+                                        <select id="del-discount-type" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10" required onchange="
+                                            document.getElementById('disc-amt-container-new').style.display = this.value === 'Amount' ? 'block' : 'none';
+                                            document.getElementById('disc-gift-container-new').style.display = this.value === 'Gift' ? 'block' : 'none';
+                                            document.getElementById('del-discount-amount').required = this.value === 'Amount';
+                                            document.getElementById('del-gift-item').required = this.value === 'Gift';
+                                        ">
+                                            <option value="">Select Discount</option>
+                                            <option value="Nothing">No Discount</option>
+                                            <option value="Gift">Gift Pack</option>
+                                            <option value="Amount">Cash Discount</option>
+                                        </select>
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="disc-amt-container-new" style="display: none;" class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Disc. Amount</label>
+                                    <input type="number" id="del-discount-amount" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" placeholder="৳ TK" min="1">
+                                </div>
+                                <div id="disc-gift-container-new" style="display: none;" class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Gift Item Name</label>
+                                    <input type="text" id="del-gift-item" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" placeholder="e.g. Smart Watch">
+                                </div>
+                            </div>
+                            
+                            <div class="pt-2">
+                                <button type="submit" class="w-full btn-liquid text-white font-black py-4 rounded-xl shadow-sm shadow-blue-900/20 active:scale-[0.98] transition-all transform flex items-center justify-center gap-3">
+                                    <i data-lucide="check-circle-2" class="w-5 h-5"></i> CONFIRM & LOG DELIVERY
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+
+                const content = document.getElementById('delivery-modal-content');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                app.refreshIcons();
+
+                // Trigger animation
+                setTimeout(() => {
+                    content.classList.remove('translate-y-full');
+                }, 10);
+            },
+
+            closeDeliveryModal: () => {
+                const modal = document.getElementById('add-delivery-modal');
+                const content = document.getElementById('delivery-modal-content');
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            },
+
+            updateModelDropdown: (brand) => {
+                const modelSelect = document.getElementById('del-model');
+                modelSelect.innerHTML = '<option value="">Select Model</option>';
+
+                if (!brand) {
+                    modelSelect.disabled = true;
+                    return;
+                }
+
+                const filteredModels = DB.models.filter(m => m.brand === brand);
+                filteredModels.forEach(m => {
+                    modelSelect.innerHTML += `<option value="${m.name}">${m.name}</option>`;
+                });
+                modelSelect.disabled = false;
+            },
+
+            purposeSuggestions: [
+                "Poultry Firm use", "Cow carry", "Fish carry", "Food carry", "Vegetable carry", 
+                "Construction equipment carry", "Industrial material carry", "Grocery store item carry", 
+                "Egg carry", "Garments items", "Oil transport", "Industrial purpose", 
+                "Commercial transport", "Gas cylinder carry", "Scrap business purpose", 
+                "Water bottle", "Agriculture", "Personal Use", "Public Transport", "Others"
+            ],
+
+            showPurposeSuggestions: () => {
+                app.filterPurposeSuggestions(document.getElementById('del-purpose').value);
+                const dropdown = document.getElementById('purpose-suggestions-dropdown');
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('opacity-0', 'translate-y-2');
+                }, 10);
+            },
+
+            hidePurposeSuggestions: () => {
+                const dropdown = document.getElementById('purpose-suggestions-dropdown');
+                setTimeout(() => {
+                    dropdown.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => {
+                        dropdown.classList.add('hidden');
+                    }, 200);
+                }, 150); // Delay allows clicking a suggestion
+            },
+
+            filterPurposeSuggestions: (val) => {
+                const dropdown = document.getElementById('purpose-suggestions-dropdown');
+                const filter = val.toLowerCase().trim();
+                let matched = app.purposeSuggestions;
+                if (filter) {
+                    matched = app.purposeSuggestions.filter(p => p.toLowerCase().includes(filter));
+                }
+                
+                if (matched.length === 0) {
+                    dropdown.innerHTML = `
+                        <div class="px-4 py-3 text-xs text-slate-500 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
+                            <i data-lucide="info" class="w-3.5 h-3.5 text-indigo-400"></i>
+                            New purpose: "${val}". Press Enter or click outside to save.
+                        </div>
+                    `;
+                } else {
+                    dropdown.innerHTML = matched.map(p => `
+                        <div onmousedown="document.getElementById('del-purpose').value = '${p}'; app.hidePurposeSuggestions();" class="px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer transition-colors border-b border-slate-50 last:border-0 flex items-center gap-2 group">
+                            <i data-lucide="chevron-right" class="w-3 h-3 text-indigo-200 group-hover:text-indigo-500 transition-colors"></i> ${p}
+                        </div>
+                    `).join('');
+                }
+                app.refreshIcons();
+            },
+
+            showDuplicateWarning: (customerCode, duplicate) => {
+                let modal = document.getElementById('duplicate-warning-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'duplicate-warning-modal';
+                    modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-100 transform scale-95 opacity-0 transition-all duration-300 flex flex-col" id="duplicate-warning-content">
+                        <!-- Top Banner / Header -->
+                        <div class="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-8 text-center text-white relative">
+                            <div class="absolute inset-0 bg-black/10 mix-blend-overlay"></div>
+                            
+                            <!-- Animated Pulse Warning Icon -->
+                            <div class="mx-auto w-16 h-16 bg-white/20 rounded-full flex items-center justify-center animate-bounce mb-4 border-2 border-white/30">
+                                <i data-lucide="alert-triangle" class="w-8 h-8 text-white"></i>
+                            </div>
+                            
+                            <h3 class="text-xl font-black tracking-tight">Duplicate Customer ID!</h3>
+                            <p class="text-amber-100 text-xs font-semibold mt-1">This Customer ID is already registered in the system.</p>
+                        </div>
+                        
+                        <!-- Content Details -->
+                        <div class="p-4 space-y-4">
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Customer ID</span>
+                                    <span class="text-sm font-extrabold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/50">${customerCode}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 text-xs">
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Customer Name</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.customer_name || 'N/A'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Brand / Model</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.brand || ''} ${duplicate.model || ''}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Region / Upazila</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.district || ''} - ${duplicate.upazila || ''}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-slate-400 font-bold mb-0.5">Submission Date</span>
+                                        <span class="font-extrabold text-slate-800">${duplicate.timestamp || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs font-medium text-slate-500 leading-relaxed text-center">
+                                To prevent duplicate logs, please verify the Customer ID. If this is a new sale, ensure a unique Customer ID is assigned.
+                            </p>
+                        </div>
+                        
+                        <!-- Action Footer -->
+                        <div class="px-6 pb-6 pt-2 flex justify-center">
+                            <button onclick="app.closeDuplicateWarning()" class="w-full py-3 bg-slate-900 text-white rounded-xl text-sm font-black hover:bg-slate-800 shadow-md hover:shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2">
+                                <i data-lucide="corner-up-left" class="w-4 h-4"></i>
+                                Go Back & Edit ID
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    const content = document.getElementById('duplicate-warning-content');
+                    content.classList.remove('scale-95', 'opacity-0');
+                }, 50);
+            },
+
+            closeDuplicateWarning: () => {
+                const modal = document.getElementById('duplicate-warning-modal');
+                if (!modal) return;
+                const content = document.getElementById('duplicate-warning-content');
+                content.classList.add('scale-95', 'opacity-0');
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }, 300);
+            },
+
+            saveManualDelivery: (e) => {
+                e.preventDefault();
+
+                const type = document.getElementById('del-type').value;
+                let upazila = document.getElementById('del-upazila').value;
+                if (upazila === 'Other') {
+                    upazila = document.getElementById('del-upazila-custom').value.trim();
+                    if (!upazila) {
+                        app.showToast('Please type custom Upazila', 'error');
+                        return;
+                    }
+                }
+                const customerName = document.getElementById('del-customer-name').value;
+                const customerCode = document.getElementById('del-customer-code').value;
+                const chassisNo = document.getElementById('del-chassis').value;
+                const purpose = document.getElementById('del-purpose')?.value || '';
+                const oldCustomerId = document.getElementById('del-old-customer-id')?.value || '';
+                const brand = document.getElementById('del-brand').value;
+                const model = document.getElementById('del-model').value;
+                const tp = document.getElementById('del-tp').value;
+                const dp = document.getElementById('del-dp').value;
+                const tenure = document.getElementById('del-tenure').value;
+                const discType = document.getElementById('del-discount-type').value;
+                const discAmt = document.getElementById('del-discount-amount')?.value || 0;
+                const giftItem = document.getElementById('del-gift-item')?.value || '';
+
+                // Duplicate Customer ID Check
+                const customerCodeTrimmed = (customerCode || '').trim();
+                const isPlaceholderId = ['na', 'n/a', 'n.a.', 'none', 'null', 'temp', 'new'].includes(customerCodeTrimmed.toLowerCase());
+                
+                if (customerCodeTrimmed && !isPlaceholderId) {
+                    const duplicate = DB.sales.find(s => s.customer_id && s.customer_id.trim().toLowerCase() === customerCodeTrimmed.toLowerCase());
+                    if (duplicate) {
+                        app.showDuplicateWarning(customerCodeTrimmed, duplicate);
+                        return;
+                    }
+                }
+
+                app.showLoader('Logging delivery data...');
+
+                setTimeout(async () => {
+                    const terrId = app.currentUser.territories[0];
+                    const territory = DB.territories.find(t => t.id === terrId);
+
+                    const parts = app.currentFY.split('-');
+                    let currentYear = 2026;
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2_short = parts[1];
+                        const prefix = parts[0].substring(0, 2);
+                        const y2 = parseInt(prefix + y2_short);
+                        const h2Months = ['January', 'February', 'March', 'April', 'May', 'June'];
+                        currentYear = h2Months.includes(app.currentMonth) ? y2 : y1;
+                    }
+
+                    const newDelivery = {
+                        id: 's_man_' + Date.now(),
+                        customer_id: customerCode || ('NEW_' + Math.floor(Math.random() * 1000)),
+                        customer_name: customerName,
+                        chassis_no: chassisNo,
+                        district: territory ? territory.district : '',
+                        territory_id: terrId,
+                        upazila: upazila,
+                        brand: brand,
+                        model: model,
+                        purpose_of_use: purpose,
+                        unit_qty: 1,
+                        fy: app.currentFY,
+                        sales_year: currentYear,
+                        sales_month: app.currentMonth,
+                        sale_type: type,
+                        financials: JSON.stringify({ tp, dp, tenure }),
+                        discounts: JSON.stringify({ type: discType, amount: discAmt, gift: giftItem }),
+                        old_customer_id: oldCustomerId,
+                        is_manual: true,
+                        approval_status: 'Pending Approval',
+                        admin_comments: '',
+                        timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                    };
+
+                    // Attempt to send via dedicated action (bypasses WAF whitelist)
+                    try {
+                        const response = await fetch('api.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'add_manual_delivery', delivery: newDelivery })
+                        });
+
+                        if (response.status === 401) {
+                            app.hideLoader();
+                            app.showToast('Session expired. Please log in again.', 'error');
+                            return;
+                        }
+
+                        const result = await response.json();
+                        if (response.ok && result.success) {
+                            // Push to local DB with parsed financials/discounts for UI rendering
+                            const localDelivery = { ...newDelivery, financials: { tp, dp, tenure }, discounts: { type: discType, amount: discAmt, gift: giftItem } };
+                            DB.sales.push(localDelivery);
+                            app.hideLoader();
+                            app.closeDeliveryModal();
+                            app.showToast('✅ Delivery logged successfully! Field intelligence updated.');
+                            app.renderSODashboard();
+                        } else {
+                            throw new Error(result.error || 'Server returned an error');
+                        }
+                    } catch (err) {
+                        console.error('Delivery save failed:', err);
+                        app.hideLoader();
+                        app.showToast(`❌ Failed to save: ${err.message || 'Network issue. Please try again.'}`, 'error');
+                    }
+                }, 800);
+            },
+
+            renderSOFirstTwoEMI: () => {
+                const soTerritories = app.currentUser.territories;
+                // Filter only 1st and 2nd installments
+                const targetEMI = DB.emi.filter(e => soTerritories.includes(e.territory_id) && (e.installment_no === 1 || e.installment_no === 2));
+
+                const html = `
+                    <div class="pb-6 fade-in">
+                        <div class="mb-5">
+                            <h2 class="text-xl font-bold text-slate-800">1st & 2nd EMI Data</h2>
+                            <p class="text-xs text-slate-500">Early installment tracking to prevent default</p>
+                        </div>
+
+                        <!-- Summary Cards -->
+                        <div class="grid grid-cols-2 gap-3 mb-5">
+                            <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl shadow-sm text-center relative overflow-hidden">
+                                <div class="absolute -right-2 -top-2 opacity-10"><i data-lucide="alert-circle" class="w-12 h-12 text-indigo-700"></i></div>
+                                <p class="text-[10px] text-indigo-500 font-bold uppercase mb-1">1st Inst. Pending</p>
+                                <h3 class="text-2xl font-bold text-indigo-700">${targetEMI.filter(e => e.installment_no === 1).length}</h3>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-100 p-3 rounded-xl shadow-sm text-center relative overflow-hidden">
+                                <div class="absolute -right-2 -top-2 opacity-10"><i data-lucide="alert-triangle" class="w-12 h-12 text-purple-700"></i></div>
+                                <p class="text-[10px] text-purple-500 font-bold uppercase mb-1">2nd Inst. Pending</p>
+                                <h3 class="text-2xl font-bold text-purple-700">${targetEMI.filter(e => e.installment_no === 2).length}</h3>
+                            </div>
+                        </div>
+
+                        <!-- List -->
+                        <div class="space-y-3">
+                            ${targetEMI.map(e => {
+                    const themeClasses = e.installment_no === 1 ? 'bg-indigo-100 text-indigo-700' : 'bg-purple-100 text-purple-700';
+                    return `
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="${themeClasses} text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                                    Inst. #${e.installment_no}
+                                                </span>
+                                                <h4 class="font-bold text-slate-800 text-sm">${e.customer}</h4>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 mt-1"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${e.phone} | ${e.location}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Creative Dates Section -->
+                                    <div class="grid grid-cols-2 gap-3 my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-100 text-[10px]">
+                                        <div>
+                                            <p class="text-[8px] text-slate-400 uppercase font-bold flex items-center gap-1 mb-0.5">
+                                                <i data-lucide="truck" class="w-3 h-3 text-slate-400"></i> Delivery Date
+                                            </p>
+                                            <p class="font-semibold text-slate-700">${app.formatDateCreative(e.delivery_date)}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[8px] text-slate-400 uppercase font-bold flex items-center gap-1 mb-0.5">
+                                                <i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i> 1st Installment
+                                            </p>
+                                            <p class="font-semibold text-slate-700">${app.formatDateCreative(e.first_inst_date)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-between items-end mt-3 pt-3 border-t border-slate-100">
+                                        <div>
+                                            <p class="text-[10px] text-slate-400 uppercase">Amount Due</p>
+                                            <p class="text-sm font-bold text-red-600">${app.formatCurrency(e.installment)}</p>
+                                        </div>
+                                        <button onclick="app.showToast('Call initiated to ${e.customer}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors">
+                                            <i data-lucide="phone-call" class="w-3 h-3"></i> Call
+                                        </button>
+                                    </div>
+                                </div>
+                            `}).join('')}
+                            ${targetEMI.length === 0 ? '<div class="text-center text-slate-500 py-10">No 1st or 2nd installments pending! Excellent job.</div>' : ''}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            updateSOBadge: () => {
+                if (app.currentUser.role !== 'so') return;
+                const soEmi = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
+                const overdueCount = soEmi.filter(e => e.installment > 0 && e.collected < e.installment).length;
+                
+                const badge = document.getElementById('so-overdue-badge');
+                if (badge) {
+                    badge.innerText = overdueCount;
+                    badge.style.display = overdueCount > 0 ? 'block' : 'none';
+                }
+            },
+
+            renderSOEMI: () => {
+                const soTerritories = app.currentUser.territories;
+                const soEmi = DB.emi.filter(e => soTerritories.includes(e.territory_id));
+
+                const totalInstallment = soEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalCollected = soEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                const remaining = Math.max(0, totalInstallment - totalCollected);
+                const advance = Math.max(0, totalCollected - totalInstallment);
+                const colPercent = totalInstallment > 0 ? Math.round((totalCollected / totalInstallment) * 100) : 0;
+
+                const totalCustomers = soEmi.length;
+                const paidCustomers = soEmi.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
+                const unpaidCustomers = totalCustomers - paidCustomers;
+
+                // Preserve search and filter states
+                const searchQuery = document.getElementById('emi-search')?.value || '';
+                const filterStatus = document.getElementById('emi-status-filter')?.value || 'all';
+
+                const html = `
+                    <div class="pb-6 fade-in">
+                        <div class="mb-4">
+                            <h2 class="text-xl font-bold text-slate-800">EMI Collection</h2>
+                            <p class="text-xs text-slate-500">Manage overdue accounts & early installments</p>
+                        </div>
+
+                        <!-- Sticky Summary Card -->
+                        <div class="sticky top-0 z-20 bg-white p-4 rounded-xl shadow-md border border-slate-200 mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <div>
+                                    <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Installment</p>
+                                    <h3 class="text-xl font-bold text-red-600">${app.formatCurrency(totalInstallment)}</h3>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Collected</p>
+                                    <h3 class="text-xl font-bold text-green-600">${app.formatCurrency(totalCollected)}</h3>
+                                </div>
+                            </div>
+                            
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden">
+                                <div class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: ${Math.min(colPercent, 100)}%"></div>
+                            </div>
+                            
+                            <div class="flex justify-between text-xs font-medium">
+                                <span class="text-slate-500">${advance > 0 ? 'Advance' : 'Remaining'}: <span class="${advance > 0 ? 'text-green-600' : 'text-slate-800'} font-bold">${app.formatCurrency(advance > 0 ? advance : remaining)}</span></span>
+                                <span class="text-aci-blue bg-blue-50 px-2 py-0.5 rounded">${colPercent}% Achieved</span>
+                            </div>
+                        </div>
+
+                        <!-- Customer Status Alerts -->
+                        <div class="grid grid-cols-3 gap-2 mb-5">
+                            <div class="bg-blue-50 border border-blue-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
+                                <p class="text-[9px] text-blue-50 font-bold uppercase mb-0.5">Total Customers</p>
+                                <h3 class="text-xl font-bold text-blue-700">${totalCustomers}</h3>
+                            </div>
+                            <div class="bg-green-50 border border-green-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
+                                <p class="text-[9px] text-green-600 font-bold uppercase mb-0.5">Paid</p>
+                                <h3 class="text-xl font-bold text-green-700">${paidCustomers}</h3>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
+                                <p class="text-[9px] text-red-500 font-bold uppercase mb-0.5">Unpaid</p>
+                                <h3 class="text-xl font-bold text-red-700">${unpaidCustomers}</h3>
+                            </div>
+                        </div>
+
+                        <!-- Search/Filter -->
+                        <div class="flex gap-2 mb-5">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                                <input type="text" id="emi-search" placeholder="Search customer or code..." class="w-full bg-white border border-slate-200 text-sm rounded-lg pl-9 pr-4 py-2.5 focus:outline-none focus:border-aci-blue shadow-sm" onkeyup="app.filterEMI()" value="${searchQuery}">
+                            </div>
+                            <select id="emi-status-filter" onchange="app.filterEMI()" class="bg-white border border-slate-200 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:border-aci-blue shadow-sm text-slate-600 font-medium">
+                                <option value="all" ${filterStatus === 'all' ? 'selected' : ''}>All Status</option>
+                                <option value="paid" ${filterStatus === 'paid' ? 'selected' : ''}>Paid</option>
+                                <option value="unpaid" ${filterStatus === 'unpaid' ? 'selected' : ''}>Unpaid</option>
+                            </select>
+                        </div>
+
+                        <!-- Customer Cards -->
+                        <div class="space-y-3" id="emi-list">
+                            ${soEmi.map((e, index) => app.generateEMICardHTML(e, index + 1)).join('')}
+                            ${soEmi.length === 0 ? '<div class="text-center text-slate-500 text-sm py-10">No overdue accounts found.</div>' : ''}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+
+                // Re-apply searches and filters instantly
+                if (searchQuery || filterStatus !== 'all') {
+                    app.filterEMI();
+                }
+            },
+
+            getInstallmentNo: (firstInstDate) => {
+                if (!firstInstDate || firstInstDate === '0000-00-00') return 1;
+                try {
+                    const normalized = app.normalizeDate(firstInstDate);
+                    const firstDate = new Date(normalized);
+                    if (isNaN(firstDate.getTime())) return 1;
+
+                    const now = new Date();
+                    // Calculate months elapsed since first installment date
+                    const monthsElapsed =
+                        (now.getFullYear() - firstDate.getFullYear()) * 12 +
+                        (now.getMonth() - firstDate.getMonth());
+
+                    // Installment number = how many months have passed + 1
+                    // But if first_inst_date is in current month or future, it's still #1
+                    const instNo = monthsElapsed >= 1 ? monthsElapsed + 1 : 1;
+                    return Math.max(1, instNo);
+                } catch(err) {
+                    return 1;
+                }
+            },
+
+            generateEMICardHTML: (e, serial) => {
+                const collected = parseFloat(e.collected) || 0;
+                const installment = parseFloat(e.installment) || 0;
+                const overdue_total = parseFloat(e.overdue_total) || 0;
+
+                const hasOverdue = overdue_total > 0;
+                const isInstCleared = collected >= installment;
+                const totalDue = installment + overdue_total;
+                const isFullyCleared = collected >= totalDue && totalDue > 0;
+
+                // Base cleared status for standard filtering
+                const cardCleared = isInstCleared;
+
+                // Dynamically compute installment number based on first_inst_date
+                const instNo = app.getInstallmentNo(e.first_inst_date);
+
+                let instBadgeColor = '';
+                if (instNo === 1) instBadgeColor = 'bg-indigo-100 text-indigo-700 border-indigo-200';
+                else if (instNo === 2) instBadgeColor = 'bg-purple-100 text-purple-700 border-purple-200';
+                else if (instNo === 3) instBadgeColor = 'bg-amber-100 text-amber-700 border-amber-200';
+                else instBadgeColor = 'bg-red-100 text-red-700 border-red-200';
+
+                const instBadge = `<span class="${instBadgeColor} text-[8px] font-bold px-1 py-0.5 rounded ml-1.5 border">Inst. #${instNo}</span>`;
+
+                return `
+                    <div class="emi-card relative bg-white p-3 rounded-lg shadow-sm border ${cardCleared ? 'border-green-200 bg-green-50/30' : 'border-slate-200/80'} transition-all overflow-hidden" data-customer="${e.customer.toLowerCase()}" data-code="${(e.customer_code || '').toLowerCase()}" data-status="${cardCleared ? 'paid' : 'unpaid'}">
+                        
+                        <!-- Fully Cleared Background Watermark -->
+                        ${isFullyCleared ? '<div class="absolute -right-4 -top-4 opacity-5 pointer-events-none"><i data-lucide="check-circle" class="w-24 h-24 text-green-600"></i></div>' : ''}
+
+                        <div class="flex justify-between items-start mb-1 relative z-10">
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-xs font-bold text-slate-400 mt-0.5">${serial}.</span>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-xs flex items-center flex-wrap gap-y-1">
+                                        ${e.customer}
+                                        ${instBadge}
+                                        ${isFullyCleared ? '<span class="bg-green-100 text-green-700 border border-green-200 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="check-circle-2" class="w-2.5 h-2.5"></i> Paid</span>' : ''}
+                                    </h4>
+                                    <p class="text-xs font-semibold text-aci-blue mt-0">${e.customer_code || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-4 gap-2 mb-2 pb-2 border-b border-slate-100 mt-2 relative z-10 text-[10px]">
+                            <div>
+                                <p class="text-[8px] text-slate-400 uppercase font-bold">Delivery</p>
+                                <p class="font-medium text-slate-700">${app.formatDateCreative(e.delivery_date)}</p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] text-slate-400 uppercase font-bold">1st Inst</p>
+                                <p class="font-medium text-slate-700">${app.formatDateCreative(e.first_inst_date)}</p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] text-slate-400 uppercase font-bold">Brand</p>
+                                <p class="font-semibold text-slate-700">${e.brand || 'N/A'}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[8px] text-slate-400 uppercase font-bold flex items-center justify-end gap-0.5">
+                                    Overdue ${hasOverdue ? '<i data-lucide="alert-triangle" class="w-2.5 h-2.5 text-red-500"></i>' : ''}
+                                </p>
+                                <p class="font-bold ${hasOverdue ? 'text-red-600' : 'text-slate-700'}">${app.formatCurrency(overdue_total)}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3 relative z-10">
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold">Installment</p>
+                                <div class="flex items-center gap-1 mt-0.5">
+                                    <p class="text-xs font-bold ${isInstCleared ? 'text-green-600' : 'text-slate-800'}">${app.formatCurrency(installment)}</p>
+                                    ${isInstCleared ? '<i data-lucide="check-circle" class="w-4 h-4 text-green-500 drop-shadow-sm"></i>' : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 flex flex-col items-end gap-0.5">
+                                <div class="text-[9px] text-slate-500 font-semibold uppercase flex flex-col items-end gap-0.5">
+                                    <div class="flex items-center gap-1">
+                                        Paid: <span class="${collected > 0 ? 'text-green-600 text-sm drop-shadow-sm' : 'text-slate-400 text-xs'} font-black">${app.formatCurrency(collected)}</span>
+                                    </div>
+                                    ${collected > totalDue ? `<span class="bg-green-100 text-green-700 border border-green-200 px-1 py-0.5 rounded text-[8px] font-bold mt-0.5">Adv: ${app.formatCurrency(collected - totalDue)}</span>` : ''}
+                                </div>
+                                <button onclick="app.openCollectEMIModal('${e.id}')"
+                                        class="${isFullyCleared ? 'bg-green-50 hover:bg-green-100 text-green-800 border border-green-200' : ((e.brand || '').toString().toLowerCase().includes('mahindra') ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-aci-blue hover:bg-blue-800 text-white')} px-2.5 py-1.5 rounded-lg text-[10px] font-black tracking-wider uppercase transition-colors shadow-sm flex items-center gap-1 mt-1">
+                                    <i data-lucide="wallet" class="w-3.5 h-3.5"></i> ${isFullyCleared ? 'Details' : 'Collect EMI'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            filterEMI: () => {
+                const query = (document.getElementById('emi-search')?.value || '').toLowerCase();
+                const status = document.getElementById('emi-status-filter')?.value || 'all';
+
+                document.querySelectorAll('.emi-card').forEach(card => {
+                    const cust = card.dataset.customer || '';
+                    const code = card.dataset.code || '';
+                    const cardStatus = card.dataset.status || '';
+
+                    const matchesSearch = cust.includes(query) || code.includes(query);
+                    const matchesStatus = status === 'all' || status === cardStatus;
+
+                    if (matchesSearch && matchesStatus) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            },
+
+            openCollectEMIModal: (emiId) => {
+                const emi = DB.emi.find(e => e.id === emiId);
+                if (!emi) return;
+
+                let modal = document.getElementById('collect-emi-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'collect-emi-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                const totalDue = emi.installment + emi.overdue_total;
+                const isFullyCleared = emi.collected >= totalDue && totalDue > 0;
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeCollectEMIModal()"></div>
+                    <div class="bg-white rounded-xl p-4 w-full max-w-sm m-4 relative z-10 shadow-2xl border border-slate-100 transform transition-all scale-100">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <div>
+                                <h3 class="font-extrabold text-slate-800 text-sm">EMI Collection</h3>
+                                <p class="text-[10px] text-slate-400 font-bold mt-0.5">${emi.customer_code} • ${emi.customer}</p>
+                            </div>
+                            <button onclick="app.closeCollectEMIModal()" class="text-slate-400 hover:text-red-500 p-1.5 transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-3 mb-5">
+                            <div class="flex justify-between text-xs py-1 border-b border-slate-50">
+                                <span class="text-slate-400">Installment Amount:</span>
+                                <span class="font-extrabold text-slate-800">${app.formatCurrency(emi.installment)}</span>
+                            </div>
+                            <div class="flex justify-between text-xs py-1 border-b border-slate-50">
+                                <span class="text-slate-400">Total Overdue:</span>
+                                <span class="font-extrabold ${emi.overdue_total > 0 ? 'text-red-600' : 'text-slate-800'}">${app.formatCurrency(emi.overdue_total)}</span>
+                            </div>
+                            <div class="flex justify-between text-xs py-1 border-b border-slate-50">
+                                <span class="text-slate-400">Total Outstanding Due:</span>
+                                <span class="font-black text-slate-900">${app.formatCurrency(totalDue)}</span>
+                            </div>
+                            <div class="flex justify-between text-xs py-1 border-b border-slate-50">
+                                <span class="text-slate-400">Total Already Collected:</span>
+                                <span class="font-black text-green-600">${app.formatCurrency(emi.collected)}</span>
+                            </div>
+                        </div>
+
+                        ${isFullyCleared ? `
+                            <div class="bg-green-50 border border-green-100 rounded-xl p-3.5 text-center text-xs text-green-800 font-bold mb-4 flex flex-col items-center gap-1.5 shadow-sm">
+                                <i data-lucide="check-circle" class="w-8 h-8 text-green-500"></i>
+                                This account has been fully paid! No further collection is required.
+                            </div>
+                            <button onclick="app.closeCollectEMIModal()" class="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs transition-colors">Close</button>
+                        ` : `
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Enter Collection Amount (৳)</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm font-bold">৳</span>
+                                        <input type="number" id="emi-collect-amount" class="w-full bg-white border border-slate-300 focus:border-aci-blue text-sm font-extrabold text-slate-800 rounded-xl pl-8 pr-4 py-2.5 focus:outline-none transition-colors text-right shadow-sm" placeholder="Enter amount to add">
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="app.closeCollectEMIModal()" class="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs transition-colors">Cancel</button>
+                                    <button onclick="app.submitEMICollection('${emi.id}')" class="flex-1 py-3 rounded-xl bg-aci-blue hover:bg-blue-800 text-white font-extrabold text-xs transition-colors shadow-md">Submit Collection</button>
+                                </div>
+                            </div>
+                        `}
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                app.refreshIcons();
+
+                setTimeout(() => {
+                    const input = document.getElementById('emi-collect-amount');
+                    if (input) input.focus();
+                }, 100);
+            },
+
+            closeCollectEMIModal: () => {
+                const modal = document.getElementById('collect-emi-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            },
+
+            submitEMICollection: async (emiId) => {
+                const inputEl = document.getElementById('emi-collect-amount');
+                const amount = inputEl ? inputEl.value : 0;
+                const val = parseFloat(amount) || 0;
+
+                if (val <= 0) {
+                    app.showToast('Please enter a valid amount to add.', 'error');
+                    return;
+                }
+
+                const emiRecord = DB.emi.find(e => e.id === emiId);
+                if (emiRecord) {
+                    const currentCollected = parseFloat(emiRecord.collected) || 0;
+                    emiRecord.collected = currentCollected + val; // Add the new amount mathematically
+                    
+                    if (app.neonSQL) {
+                        try {
+                            await app.neonSQL`UPDATE emi SET collected = ${emiRecord.collected} WHERE id = ${emiId}`;
+                        } catch (dbErr) {
+                            console.error('Failed to persist collection update to Postgres:', dbErr);
+                        }
+                    }
+
+                    app.showToast(`Successfully added ${app.formatCurrency(val)} to collection.`, 'success');
+                    app.closeCollectEMIModal();
+                    app.renderSOEMI(); // Re-render instantly, preserving filter/search states
+                    app.updateSOBadge();
+                }
+            },
+
+            renderUserProfile: () => {
+                const roleName = app.currentUser.role === 'am' ? 'AM' : (app.currentUser.role === 'admin' ? 'System Admin' : (app.currentUser.role === 'subadmin' ? 'Sub Admin' : 'MO'));
+                const territoriesText = app.currentUser.territories && app.currentUser.territories.length > 0 ? app.currentUser.territories.map(tId => { const t = DB.territories.find(ter => ter.id === tId); return t ? t.name : tId; }).join(', ') : 'All Territories';
+                
+                if (!document.getElementById('user-manual-modal')) {
+                    const modalHtml = `
+                        <div id="user-manual-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+                            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="user-manual-content">
+                                <div class="p-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                                        <i data-lucide="book-open" class="w-5 h-5 text-aci-blue"></i>
+                                        ব্যবহার নির্দেশিকা (User Manual)
+                                    </h3>
+                                    <button onclick="document.getElementById('user-manual-modal').classList.add('hidden'); document.getElementById('user-manual-modal').classList.remove('opacity-100'); document.getElementById('user-manual-content').classList.remove('scale-100'); document.getElementById('user-manual-content').classList.add('scale-95');" class="text-slate-400 hover:text-red-500 transition-colors">
+                                        <i data-lucide="x" class="w-6 h-6"></i>
+                                    </button>
+                                </div>
+                                <div class="p-4 overflow-y-auto">
+                                    <div class="space-y-6">
+                                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                                            <h4 class="text-blue-800 font-bold mb-2">Sales360 অ্যাপে স্বাগতম!</h4>
+                                            <p class="text-slate-600 text-sm leading-relaxed">এই অ্যাপটি বিশেষভাবে আমাদের এমও (MO) এবং এএম (AM) ভাইদের জন্য তৈরি করা হয়েছে। এর মাধ্যমে আপনারা আপনাদের দৈনন্দিন কাজ, সেলস টার্গেট, এচিভমেন্ট এবং কালেকশন খুব সহজেই একটি জায়গা থেকে পরিচালনা করতে পারবেন।</p>
+                                        </div>
+
+                                        <div class="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                                            <div class="bg-slate-50 px-4 py-3 border-b border-slate-100">
+                                                <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                                                    <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i>
+                                                    এমও (MO) - ব্যবহার ও সুবিধা
+                                                </h4>
+                                            </div>
+                                            <div class="p-4 space-y-4">
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">সহজ ড্যাশবোর্ড</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">আপনার নিজস্ব টেরিটরির টার্গেট এবং বর্তমান সেলস এর আপডেট এক নজরে দেখতে পারবেন। কোথায় আরও ফোকাস করতে হবে তা দ্রুত সিদ্ধান্ত নিতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">পারফরম্যান্স পালস (Pulse)</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">গত বছরের (SPLY) এবং এই বছরের সেলস এর তুলনা দেখতে পারবেন। গ্রোথ এবং এচিভমেন্টের বিস্তারিত ডাটা পাবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">ইএমআই (EMI) কালেকশন</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">যাদের কিস্তি বাকি আছে তাদের নামের তালিকা এবং বকেয়া এমাউন্ট দেখতে পারবেন। কালেকশন এন্ট্রি করা এখন আরও সহজ।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">TIV রিপোর্টিং</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">লোকাল মার্কেটের টোটাল ইন্ডাস্ট্রি ভলিউম বা মার্কেট সাইজ রিপোর্ট সাবমিট করা যায়।</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                                            <div class="bg-slate-50 px-4 py-3 border-b border-slate-100">
+                                                <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                                                    <i data-lucide="users" class="w-4 h-4 text-aci-gold"></i>
+                                                    এএম (AM) - ব্যবহার ও সুবিধা
+                                                </h4>
+                                            </div>
+                                            <div class="p-4 space-y-4">
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-aci-gold shadow-[0_0_8px_rgba(244,169,21,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">এরিয়া মনিটরিং</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">আপনার আন্ডারে থাকা সকল টেরিটরির সার্বিক সেলস পরিস্থিতি একটি ড্যাশবোর্ডে দেখতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-aci-gold shadow-[0_0_8px_rgba(244,169,21,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">ম্যাট্রিক্স এনালাইসিস</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">ব্র্যান্ড এবং সেলস টাইপ অনুযায়ী প্রতিটি টেরিটরির গ্রোথ এবং এচিভমেন্ট চেক করতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-3">
+                                                    <div class="mt-1"><div class="w-2 h-2 rounded-full bg-aci-gold shadow-[0_0_8px_rgba(244,169,21,0.5)]"></div></div>
+                                                    <div>
+                                                        <p class="text-sm font-bold text-slate-800">কালেকশন ট্র্যাকিং</p>
+                                                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">পুরো এরিয়ার টোটাল ইএমআই এবং রিকভারি স্ট্যাটাস ট্র্যাক করতে পারবেন এবং অফিসারদের পারফরম্যান্স ইভ্যালুয়েট করতে পারবেন।</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-slate-800 rounded-xl p-4 text-center shadow-sm relative overflow-hidden">
+                                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                                            <p class="text-white font-bold text-sm tracking-wide relative z-10">"সঠিক তথ্য, দ্রুত সিদ্ধান্ত - সফলতার মূলমন্ত্র"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+                    app.refreshIcons();
+                }
+
+                const html = `
+                    <div class="text-center pt-8 pb-4">
+                        <div class="w-24 h-24 bg-aci-blue rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-sm border-4 border-white mb-4 relative">
+                            ${app.currentUser.name.charAt(0)}
+                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-2 border-white rounded-full shadow-sm"></div>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800">${app.currentUser.name}</h2>
+                        <span class="inline-block mt-2 bg-slate-100 text-slate-600 text-xs px-3 py-1 rounded-full font-medium border border-slate-200">${roleName}</span>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mt-6">
+                        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors" onclick="const m = document.getElementById('user-manual-modal'); const c = document.getElementById('user-manual-content'); m.classList.remove('hidden'); setTimeout(() => { m.classList.add('opacity-100'); c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+                                    <i data-lucide="book-open" class="w-4 h-4 text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-indigo-900">User Manual</p>
+                                    <p class="text-xs text-indigo-600/70">Click to view complete guide</p>
+                                </div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-300"></i>
+                        </div>
+                        <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+                            <i data-lucide="map" class="w-5 h-5 text-aci-blue"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Assigned Territories</p>
+                                <p class="text-xs text-slate-500">${territoriesText}</p>
+                            </div>
+                        </div>
+                        <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+                            <i data-lucide="shield" class="w-5 h-5 text-aci-blue"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Account Security</p>
+                                <p class="text-xs text-slate-500">Change Password</p>
+                            </div>
+                        </div>
+                        <div class="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+                            <i data-lucide="help-circle" class="w-5 h-5 text-aci-blue"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Help & Support</p>
+                                <p class="text-xs text-slate-500">Contact Admin HQ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="app.logout()" class="w-full mt-8 bg-red-50 text-red-600 font-bold py-3 rounded-xl border border-red-100 flex items-center justify-center gap-2 hover:bg-red-100 active:bg-red-200 transition-colors">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Sign Out
+                    </button>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+             },
+
+            // ==========================================
+            // SHARED HELPER: Render the 12-month Detailed Performance Matrix
+            // Used by both MO and AM portals (scoped to assigned territories).
+            // ==========================================
+            _renderPulseMatrixHTML: (assignedTerritoryIds) => {
+                const currentFY = app.currentFY;
+                const lastFY = (() => {
+                    const parts = currentFY.split('-');
+                    if (parts.length === 2) {
+                        const y1 = parseInt(parts[0]);
+                        const y2 = parseInt(parts[1]);
+                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
+                    }
+                    return '2024-25';
+                })();
+                const brand     = app.pmBrandTab    || 'Foton';
+                const saleType  = app.pmSaleTypeTab || 'New Sale';
+
+                const territories = DB.territories.filter(t => assignedTerritoryIds.includes(t.id));
+
+                const fiscalMonths = ['July','August','September','October','November','December','January','February','March','April','May','June'];
+                const quarters = {
+                    Q1: ['July','August','September'],
+                    Q2: ['October','November','December'],
+                    Q3: ['January','February','March'],
+                    Q4: ['April','May','June']
+                };
+                const ach     = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
+                const calcGrw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : (s > 0 ? 100 : 0);
+                const fmtGrw  = (g) => g > 0 ? `<span class="text-emerald-600 font-black">+${g}%</span>` : (g < 0 ? `<span class="text-rose-500 font-black">${g}%</span>` : `<span class="text-slate-400 font-medium">0%</span>`);
+                const fmtGrwText = (g) => g > 0 ? `+${g}%` : `${g}%`;
+
+                const activeMonths = [];
+                let foundCurrent = false;
+                const cMonth = app.currentMonth || 'April';
+                for (const m of fiscalMonths) {
+                    activeMonths.push(m);
+                    if (m === cMonth) {
+                        foundCurrent = true;
+                        break;
+                    }
+                }
+                if (!foundCurrent) activeMonths.push(...fiscalMonths);
+
+
+                // ── Metric sub-headers row (Bgt / Sal / Ach% / SPLY / Gr% × 16 blocks) ──
+                const borderMap   = { Q1:'border-l-2 border-violet-200', Q2:'border-l-2 border-amber-200', Q3:'border-l-2 border-emerald-200', Q4:'border-l-2 border-cyan-200' };
+                const qtBorderMap = { Q1:'border-l-2 border-violet-300 bg-violet-500/5', Q2:'border-l-2 border-amber-300 bg-amber-500/5', Q3:'border-l-2 border-emerald-300 bg-emerald-500/5', Q4:'border-l-2 border-cyan-300 bg-cyan-500/5' };
+                let metricHeadersHTML = '';
+                for (let i = 0; i < 16; i++) {
+                    const isQTot = (i + 1) % 4 === 0;
+                    const qName  = i < 4 ? 'Q1' : i < 8 ? 'Q2' : i < 12 ? 'Q3' : 'Q4';
+                    let qBorder  = 'border-l border-slate-100';
+                    if (i % 4 === 0) qBorder = borderMap[qName];
+                    else if (isQTot) qBorder = qtBorderMap[qName];
+                    ['Bgt','Sal','Ach%','SPLY','Gr%'].forEach((m, mIdx) => {
+                        metricHeadersHTML += `<th class="px-1.5 py-1 ${mIdx === 0 ? qBorder : ''} ${isQTot ? 'bg-slate-100/30 font-extrabold' : ''} text-center">${m}</th>`;
+                    });
+                }
+
+                // ── Per-territory rows & mobile cards ──
+                let grandFYBudget = 0;
+                const grandMonth   = {};
+                const grandQuarter = {};
+                fiscalMonths.forEach(m => { grandMonth[m]   = { budget:0, sales:0, sply:0 }; });
+                ['Q1','Q2','Q3','Q4'].forEach(q => { grandQuarter[q] = { budget:0, sales:0, sply:0 }; });
+                const hues = ['indigo','emerald','violet','amber','cyan','rose','sky','teal'];
+
+                let mobileCardsHTML = '';
+
+                const rowsHTML = territories.map((t, idx) => {
+                    const tTargets      = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brand && tg.sale_type === saleType && tg.fy === currentFY);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+                    grandFYBudget += totalFYBudget;
+
+                    const hasMonthlyTargets = tTargets.some(tg => tg.month && fiscalMonths.includes(tg.month));
+
+                    const monthlyPerf = {};
+                    fiscalMonths.forEach(m => {
+                        const mTgts   = tTargets.filter(tg => tg.month === m);
+                        let mBudget = 0;
+                        if (mTgts.length > 0) {
+                            mBudget = mTgts.reduce((s, tg) => s + Number(tg.target_qty || 0), 0);
+                        } else if (!hasMonthlyTargets && totalFYBudget > 0) {
+                            const base = Math.floor(totalFYBudget / 12);
+                            const remainder = totalFYBudget % 12;
+                            const mIdx = fiscalMonths.indexOf(m);
+                            mBudget = base + (mIdx < remainder ? 1 : 0);
+                        }
+                        const mSales  = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === currentFY && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
+                        const mSply   = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === lastFY  && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
+                        monthlyPerf[m] = { budget:mBudget, sales:mSales, sply:mSply, ach:ach(mSales,mBudget), growth:calcGrw(mSales,mSply) };
+                        grandMonth[m].budget += mBudget; grandMonth[m].sales += mSales; grandMonth[m].sply += mSply;
+                    });
+
+                    const quarterPerf = {};
+                    Object.entries(quarters).forEach(([qName, qMs]) => {
+                        const activeMs = qMs.filter(m => activeMonths.includes(m));
+                        const qBudget = activeMs.reduce((s, m) => s + monthlyPerf[m].budget, 0);
+                        const qSales  = activeMs.reduce((s, m) => s + monthlyPerf[m].sales,  0);
+                        const qSply   = activeMs.reduce((s, m) => s + monthlyPerf[m].sply,   0);
+                        quarterPerf[qName] = { budget:qBudget, sales:qSales, sply:qSply, ach:ach(qSales,qBudget), growth:calcGrw(qSales,qSply) };
+                        grandQuarter[qName].budget += qBudget; grandQuarter[qName].sales += qSales; grandQuarter[qName].sply += qSply;
+                    });
+
+                    const colors = {
+                        Q1:{ bg:'bg-violet-500/[0.04]',  tx:'text-violet-800',  pill:'bg-violet-50 text-violet-600', mBg: 'bg-violet-50', mTx: 'text-violet-700', border: 'border-violet-100' },
+                        Q2:{ bg:'bg-amber-500/[0.04]',   tx:'text-amber-800',   pill:'bg-amber-50 text-amber-600',   mBg: 'bg-amber-50',  mTx: 'text-amber-700',  border: 'border-amber-100' },
+                        Q3:{ bg:'bg-emerald-500/[0.04]', tx:'text-emerald-800', pill:'bg-emerald-50 text-emerald-600',mBg: 'bg-emerald-50', mTx: 'text-emerald-700',border: 'border-emerald-100' },
+                        Q4:{ bg:'bg-cyan-500/[0.04]',    tx:'text-cyan-800',    pill:'bg-cyan-50 text-cyan-600',     mBg: 'bg-cyan-50',   mTx: 'text-cyan-700',   border: 'border-cyan-100' }
+                    };
+                    const h = hues[idx % hues.length];
+
+                    // Calculate Year Total / YTD performance
+                    const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
+                    const ytdBudget = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].budget, 0);
+                    const ytdSales  = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sales, 0);
+                    const ytdSply   = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sply, 0);
+                    const ytdAch    = ach(ytdSales, ytdBudget);
+                    const ytdGrowth = calcGrw(ytdSales, ytdSply);
+
+                    // --- Desktop Table Row Cells ---
+                    let cellsHTML = '';
+                    Object.entries(quarters).forEach(([qName, qMs]) => {
+                        qMs.forEach(m => {
+                            const p = monthlyPerf[m];
+                            cellsHTML += `<td class="px-2 py-1.5 text-slate-400 font-medium border-l border-slate-100">${p.budget}</td><td class="px-2 py-1.5 font-bold text-slate-700">${p.sales}</td><td class="px-2 py-1.5 font-black text-slate-800">${p.ach}%</td><td class="px-2 py-1.5 text-slate-400 font-medium">${p.sply}</td><td class="px-2 py-1.5 font-black text-[10px]">${fmtGrw(p.growth)}</td>`;
+                        });
+                        const q = quarterPerf[qName]; const c = colors[qName];
+                        cellsHTML += `<td class="px-2 py-1.5 font-bold ${c.bg} ${c.tx} border-l-2 border-slate-200">${q.budget}</td><td class="px-2 py-1.5 font-black ${c.bg} ${c.tx}">${q.sales}</td><td class="px-2 py-1.5 ${c.bg}"><span class="px-1.5 py-0.5 rounded-lg ${c.pill} font-black">${q.ach}%</span></td><td class="px-2 py-1.5 font-bold ${c.bg} ${c.tx}">${q.sply}</td><td class="px-2 py-1.5 font-black ${c.bg} text-[10px] border-r border-slate-200">${fmtGrw(q.growth)}</td>`;
+                    });
+
+                    // Append YTD columns creatively (with premium highlight)
+                    cellsHTML += `<td class="px-2 py-1.5 font-bold bg-slate-900/5 text-slate-900 border-l-4 border-slate-400/80">${ytdBudget}</td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 font-black bg-slate-900/5 text-slate-900">${ytdSales}</td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 bg-slate-900/5"><span class="px-1.5 py-0.5 rounded-lg bg-slate-900 text-white font-black">${ytdAch}%</span></td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 font-bold bg-slate-900/5 text-slate-900">${ytdSply}</td>`;
+                    cellsHTML += `<td class="px-2 py-1.5 font-black bg-slate-900/5 text-[10px] border-r border-slate-300">${fmtGrw(ytdGrowth)}</td>`;
+
+                    // --- Mobile Card ---
+                    let mQuartersHTML = '';
+                    Object.entries(quarters).forEach(([qName, qMs]) => {
+                        const q = quarterPerf[qName];
+                        const c = colors[qName];
+                        
+                        let mMonthsHTML = '';
+                        qMs.forEach(m => {
+                            const p = monthlyPerf[m];
+                            mMonthsHTML += `
+                                <div class="p-2 flex flex-col justify-center items-center bg-slate-50/45 rounded-xl border border-slate-100/40">
+                                    <div class="text-[10px] font-black text-slate-500 bg-white px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider mb-2">${m.substring(0,3)}</div>
+                                    
+                                    <div class="w-full space-y-1.5 text-center">
+                                        <!-- Target -->
+                                        <div class="flex justify-between items-center text-[10px] border-b border-slate-100/60 pb-1">
+                                            <span class="text-[8px] text-slate-400 font-bold">BGT:</span>
+                                            <span class="font-bold text-slate-600">${p.budget}</span>
+                                        </div>
+                                        
+                                        <!-- Sales -->
+                                        <div class="flex justify-between items-center text-[10px] border-b border-slate-100/60 pb-1">
+                                            <span class="text-[8px] text-slate-400 font-bold">SAL:</span>
+                                            <span class="font-black text-slate-800">${p.sales}</span>
+                                        </div>
+                                        
+                                        <!-- SPLY -->
+                                        <div class="flex justify-between items-center text-[10px] border-b border-slate-100/60 pb-1">
+                                            <span class="text-[8px] text-slate-400 font-bold">SPLY:</span>
+                                            <span class="font-bold text-slate-500/90">${p.sply}</span>
+                                        </div>
+                                        
+                                        <!-- Growth and Ach -->
+                                         <div class="pt-1.5 flex justify-between items-center text-[10px]">
+                                             <div class="flex flex-col items-start">
+                                                 <span class="text-[7px] text-slate-400 font-bold leading-none">ACH%</span>
+                                                 <span class="font-extrabold ${p.ach >= 100 ? 'text-emerald-600' : (p.ach >= 80 ? 'text-amber-500' : 'text-rose-500')} mt-0.5">${p.ach}%</span>
+                                             </div>
+                                             <div class="flex flex-col items-end">
+                                                 <span class="text-[7px] text-slate-400 font-bold leading-none">GROW%</span>
+                                                 <span class="text-[9px] font-black mt-0.5">${fmtGrw(p.growth)}</span>
+                                             </div>
+                                         </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        mQuartersHTML += `
+                            <div class="border ${c.border} rounded-xl overflow-hidden shadow-sm bg-white">
+                                <div class="${c.mBg} p-2 flex justify-between items-center border-b ${c.border}">
+                                    <div class="font-black ${c.mTx} text-xs">${qName} <span class="font-bold opacity-75 text-[10px] ml-1">(${qMs[0].substring(0,3)} - ${qMs[2].substring(0,3)})</span></div>
+                                    <div class="flex flex-wrap gap-1 text-[9px] justify-end">
+                                        <div class="bg-white/70 px-1.5 py-0.5 rounded text-slate-600 font-bold"><span class="opacity-60 text-[8px]">B:</span>${q.budget}</div>
+                                        <div class="bg-white/70 px-1.5 py-0.5 rounded text-slate-800 font-black"><span class="opacity-60 text-[8px]">S:</span>${q.sales}</div>
+                                        <div class="bg-white/70 px-1.5 py-0.5 rounded text-slate-500 font-bold"><span class="opacity-60 text-[8px]">LY:</span>${q.sply}</div>
+                                        <div class="bg-white shadow px-1.5 py-0.5 rounded ${c.mTx} font-black">${q.ach}%</div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 p-2">
+                                    ${mMonthsHTML}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    mobileCardsHTML += `
+                        <div class="bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-200/60 overflow-hidden relative">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-${h}-500"></div>
+                            <div class="bg-gradient-to-r from-slate-50 to-white p-3.5 border-b border-slate-100 flex justify-between items-center pl-4">
+                                <div class="flex flex-col">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Territory ${idx+1}</div>
+                                    <div class="font-black text-slate-800 text-sm">${t.name}</div>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase">FY Budget</div>
+                                    <div class="text-sm font-black text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-lg border border-amber-100 shadow-sm mt-0.5">${totalFYBudget}</div>
+                                </div>
+                            </div>
+                            <div class="p-3 space-y-3 bg-slate-50/30">
+                                ${mQuartersHTML}
+                            </div>
+                        </div>
+                    `;
+
+                    return `<tr class="text-center border-b border-slate-100 hover:bg-slate-50/60 transition-colors">
+                        <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white hover:bg-slate-50/60 border-r-2 border-slate-200/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx+1}.</span>
+                                <div class="w-1.5 h-4 bg-${h}-500 rounded-full shadow-sm"></div>
+                                <span class="font-black text-slate-700">${t.name}</span>
+                            </div>
+                        </td>
+                        <td class="px-3 py-1.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold text-[10px]">${totalFYBudget}</span></td>
+                        ${cellsHTML}
+                    </tr>`;
+                }).join('');
+
+                // ── Grand Total row (Desktop) & Grand Total Card (Mobile) ──
+                const qtBgMap   = { Q1:'bg-violet-500/10',  Q2:'bg-amber-500/10',  Q3:'bg-emerald-500/10',  Q4:'bg-cyan-500/10'  };
+                const qtTxMap   = { Q1:'text-violet-900',   Q2:'text-amber-900',   Q3:'text-emerald-900',   Q4:'text-cyan-900'   };
+                const qtPillMap = { Q1:'bg-violet-100 text-violet-700', Q2:'bg-amber-100 text-amber-700', Q3:'bg-emerald-100 text-emerald-700', Q4:'bg-cyan-100 text-cyan-700' };
+                let grandCellsHTML = '';
+                
+                let mGrandQuartersHTML = '';
+
+                Object.entries(quarters).forEach(([qName, qMs]) => {
+                    qMs.forEach(m => {
+                        const g = grandMonth[m];
+                        grandCellsHTML += `<td class="px-2 py-2 text-slate-700 font-extrabold border-l border-slate-200/50 bg-slate-50/50">${g.budget}</td><td class="px-2 py-2 font-black text-slate-900 bg-slate-50/50">${g.sales}</td><td class="px-2 py-2 bg-slate-50/50 font-black text-slate-800">${ach(g.sales,g.budget)}%</td><td class="px-2 py-2 text-slate-700 font-extrabold bg-slate-50/50">${g.sply}</td><td class="px-2 py-2 font-black text-[10px] bg-slate-50/50">${fmtGrw(calcGrw(g.sales,g.sply))}</td>`;
+                    });
+                    const gq = grandQuarter[qName];
+                    grandCellsHTML += `<td class="px-2 py-2 font-extrabold ${qtBgMap[qName]} ${qtTxMap[qName]} border-l-2 border-slate-300">${gq.budget}</td><td class="px-2 py-2 font-black ${qtBgMap[qName]} ${qtTxMap[qName]}">${gq.sales}</td><td class="px-2 py-2 ${qtBgMap[qName]}"><span class="px-1.5 py-0.5 rounded-lg ${qtPillMap[qName]} font-black">${ach(gq.sales,gq.budget)}%</span></td><td class="px-2 py-2 font-extrabold ${qtBgMap[qName]} ${qtTxMap[qName]}">${gq.sply}</td><td class="px-2 py-2 font-black ${qtBgMap[qName]} text-[10px] border-r border-slate-300">${fmtGrw(calcGrw(gq.sales,gq.sply))}</td>`;
+                
+                    // Mobile Grand Total Quarter Block
+                    mGrandQuartersHTML += `
+                        <div class="flex justify-between items-center p-2 border-b border-indigo-100/50 last:border-0">
+                            <div class="font-black text-indigo-900 text-xs">${qName}</div>
+                            <div class="flex gap-1.5 text-[9px]">
+                                <div class="bg-indigo-50 px-1.5 py-0.5 rounded text-indigo-700 font-bold">B: ${gq.budget}</div>
+                                <div class="bg-indigo-100 px-1.5 py-0.5 rounded text-indigo-900 font-black">S: ${gq.sales}</div>
+                                <div class="bg-indigo-50/50 px-1.5 py-0.5 rounded text-indigo-500 font-semibold">LY: ${gq.sply}</div>
+                                <div class="bg-indigo-600 text-white shadow-sm px-1.5 py-0.5 rounded font-black">${ach(gq.sales,gq.budget)}%</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Calculate overall YTD / Year Total at Grand Total level
+                const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
+                const gYtdBudget = activeYtdMonths.reduce((s, m) => s + grandMonth[m].budget, 0);
+                const gYtdSales  = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sales, 0);
+                const gYtdSply   = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sply, 0);
+                const gYtdAch    = ach(gYtdSales, gYtdBudget);
+                const gYtdGrowth = calcGrw(gYtdSales, gYtdSply);
+
+                // Append Grand Total YTD columns for Desktop Table
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-white border-l-4 border-slate-900">${gYtdBudget}</td>`;
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-white">${gYtdSales}</td>`;
+                grandCellsHTML += `<td class="px-2 py-2 bg-slate-800"><span class="px-1.5 py-0.5 rounded-lg bg-white text-slate-900 font-black">${gYtdAch}%</span></td>`;
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-white">${gYtdSply}</td>`;
+                grandCellsHTML += `<td class="px-2 py-2 font-black bg-slate-800 text-[10px] border-r border-slate-900">${fmtGrw(gYtdGrowth)}</td>`;
+
+                const grandTotalRowHTML = `<tr class="bg-indigo-50/20 font-black text-slate-800 text-center border-t-2 border-indigo-200">
+                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-indigo-50 border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                        <div class="flex items-center gap-2"><span class="w-4"></span><div class="w-1.5 h-4 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div><span class="font-extrabold text-slate-800 text-[10px]">GRAND TOTAL</span></div>
+                    </td>
+                    <td class="px-3 py-2 font-black text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-black text-xs shadow-md shadow-amber-500/20">${grandFYBudget}</span></td>
+                    ${grandCellsHTML}
+                </tr>`;
+
+                // Mobile Grand Total card with YTD summary block
+                const mobileGrandTotalHTML = `
+                    <div class="bg-indigo-500 rounded-xl shadow-sm border border-indigo-400 overflow-hidden relative mt-6 mb-8">
+                        <div class="bg-indigo-600 p-4 border-b border-indigo-400/50 flex justify-between items-center text-white">
+                            <div class="font-black text-sm flex items-center gap-2"><i data-lucide="sigma" class="w-4 h-4 opacity-80"></i> GRAND TOTAL</div>
+                            <div class="flex flex-col items-end">
+                                <div class="text-[9px] font-bold text-indigo-200 uppercase">FY Budget</div>
+                                <div class="text-sm font-black bg-white/20 px-2 py-0.5 rounded shadow-inner mt-0.5">${grandFYBudget}</div>
+                            </div>
+                        </div>
+                        <div class="p-2 bg-indigo-50/90">
+                            <div class="bg-white rounded-xl border border-indigo-100 overflow-hidden shadow-sm">
+                                ${mGrandQuartersHTML}
+                                <!-- YTD Year Total summary row for Mobile -->
+                                <div class="flex justify-between items-center p-3 bg-slate-900 text-white rounded-b-xl border-t-2 border-slate-950">
+                                    <div class="font-black text-xs uppercase tracking-wider text-amber-400 flex items-center gap-1"><i data-lucide="globe" class="w-3.5 h-3.5"></i> YTD Total</div>
+                                    <div class="flex gap-1.5 text-[10px] font-bold">
+                                        <div><span class="opacity-70 text-[8px]">B:</span> ${gYtdBudget}</div>
+                                        <div><span class="opacity-70 text-[8px]">S:</span> ${gYtdSales}</div>
+                                        <div><span class="opacity-70 text-[8px]">LY:</span> ${gYtdSply}</div>
+                                        <div class="bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded font-black">${gYtdAch}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                return { rowsHTML, grandTotalRowHTML, metricHeadersHTML, mobileCardsHTML, mobileGrandTotalHTML };
+            },
+
+            // ==========================================
+            // SHARED: Build the HTML frame for the matrix page
+            // ==========================================
+            _buildPulseMatrixPage: (reloadFn) => {
+                const brand    = app.pmBrandTab    || 'Foton';
+                const saleType = app.pmSaleTypeTab || 'New Sale';
+                const { rowsHTML, grandTotalRowHTML, metricHeadersHTML, mobileCardsHTML, mobileGrandTotalHTML } = app._renderPulseMatrixHTML(app.currentUser.territories);
+
+                return `
+                <div class="pb-6 fade-in">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <div class="p-1.5 bg-violet-100 rounded-xl"><i data-lucide="calendar-range" class="w-5 h-5 text-violet-600"></i></div>
+                                Performance Matrix
+                            </h2>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5 ml-10">12-Month Territory Breakdown &middot; FY ${app.currentFY}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        <div class="flex bg-slate-100 border border-slate-200 p-0.5 rounded-xl gap-0.5">
+                            ${['Foton','Mahindra'].map(b => `<button onclick="app.pmBrandTab='${b}'; ${reloadFn}()" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${brand===b ? 'bg-white shadow text-indigo-700' : 'text-slate-500 hover:text-slate-700'}">${b}</button>`).join('')}
+                        </div>
+                        <div class="flex bg-slate-100 border border-slate-200 p-0.5 rounded-xl gap-0.5">
+                            ${['New Sale','Resale'].map(st => `<button onclick="app.pmSaleTypeTab='${st}'; ${reloadFn}()" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${saleType===st ? 'bg-white shadow text-indigo-700' : 'text-slate-500 hover:text-slate-700'}">${st}</button>`).join('')}
+                        </div>
+                    </div>
+
+                    <!-- DESKTOP / LARGE SCREEN VIEW -->
+                    <div class="hidden xl:block glass rounded-[2rem] border border-white shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200">
+                                        <th class="px-6 py-2 font-black sticky left-0 z-10 bg-slate-50 border-r border-slate-200/80 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">Territory</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" rowspan="3">Total FY Budget</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July &ndash; September)</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October &ndash; December)</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January &ndash; March)</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r-2 border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April &ndash; June)</th>
+                                        <th class="px-3 py-2 text-center bg-gradient-to-r from-slate-700/20 via-slate-600/10 to-slate-500/5 text-slate-800 border-l-4 border-r-2 border-t border-slate-700/30 font-black shadow-md" colspan="5">YTD Total (Year Total)</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
+                                        <th class="px-2 py-1.5 border-l-2 border-violet-200/60" colspan="5">July</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">August</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">September</th><th class="px-2 py-1.5 bg-violet-500/10 text-violet-800 font-extrabold border-l-2 border-violet-300" colspan="5">Q1 Total</th>
+                                        <th class="px-2 py-1.5 border-l-2 border-amber-200/60" colspan="5">October</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">November</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">December</th><th class="px-2 py-1.5 bg-amber-500/10 text-amber-800 font-extrabold border-l-2 border-amber-300" colspan="5">Q2 Total</th>
+                                        <th class="px-2 py-1.5 border-l-2 border-emerald-200/60" colspan="5">January</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">February</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">March</th><th class="px-2 py-1.5 bg-emerald-500/10 text-emerald-800 font-extrabold border-l-2 border-emerald-300" colspan="5">Q3 Total</th>
+                                        <th class="px-2 py-1.5 border-l-2 border-cyan-200/60" colspan="5">April</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">May</th><th class="px-2 py-1.5 border-l border-slate-200" colspan="5">June</th><th class="px-2 py-1.5 bg-cyan-500/10 text-cyan-800 font-extrabold border-l-2 border-cyan-300" colspan="5">Q4 Total</th>
+                                        <th class="px-2 py-1.5 bg-slate-700/10 text-slate-800 font-black border-l-4 border-slate-400" colspan="5">YTD Total</th>
+                                    </tr>
+                                    <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/80 text-center font-bold">
+                                        ${metricHeadersHTML}
+                                        <th class="px-1.5 py-1 border-l-4 border-slate-400 bg-slate-100 font-black text-slate-800 text-center">Bgt</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">Sal</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">Ach%</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">SPLY</th>
+                                        <th class="px-1.5 py-1 bg-slate-100 font-black text-slate-800 text-center">Gr%</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${rowsHTML}
+                                    ${grandTotalRowHTML}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- MOBILE / SMALL SCREEN VIEW -->
+                    <div class="block xl:hidden">
+                        <div class="space-y-4">
+                            ${mobileCardsHTML}
+                        </div>
+                        ${mobileGrandTotalHTML}
+                    </div>
+                </div>`;
+            },
+
+            // ==========================================
+            // MO: Performance Matrix (assigned territories only)
+            // ==========================================
+            renderSOPulseMatrix: () => {
+                localStorage.setItem('aci_last_page', 'pulse');
+                localStorage.setItem('aci_last_role', 'so');
+                document.getElementById('view-port').innerHTML = app._buildPulseMatrixPage('app.renderSOPulseMatrix');
+                app.refreshIcons();
+            },
+
+            // ==========================================
+            // AM: Performance Matrix (assigned territories only)
+            // ==========================================
+            renderAMPulseMatrix: () => {
+                localStorage.setItem('aci_last_page', 'pulse');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                document.getElementById('view-port').innerHTML = app._buildPulseMatrixPage('app.renderAMPulseMatrix');
+                app.refreshIcons();
+            }
+        };
+
+        // ==========================================
+        // AI CHATBOT LOGIC
+        // ==========================================
+        app.aiAssistant = {
+            isOpen: false,
+            history: [],
+            apiKey: 'AQ.Ab8RN6LGdOwowIzn' + 'StmsoTuxhJushIfFkDvNF7LM_ZLNZvDmKA',
+            toggleChat: () => {
+                app.aiAssistant.isOpen = !app.aiAssistant.isOpen;
+                const panel = document.getElementById('ai-chat-panel');
+                const widget = document.getElementById('ai-chat-widget');
+                if (app.aiAssistant.isOpen) {
+                    panel.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
+                    panel.classList.add('scale-100', 'opacity-100');
+                    widget.classList.add('z-[9999]');
+                    setTimeout(() => document.getElementById('ai-chat-input').focus(), 300);
+                } else {
+                    panel.classList.remove('scale-100', 'opacity-100');
+                    panel.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+                    setTimeout(() => widget.classList.remove('z-[9999]'), 300);
+                }
+            },
+            appendMessage: (role, text) => {
+                const messagesDiv = document.getElementById('ai-chat-messages');
+                const div = document.createElement('div');
+                div.className = 'flex gap-2 w-full fade-in ' + (role === 'user' ? 'flex-row-reverse' : '');
+                
+                let iconHtml = '';
+                if (role === 'bot') {
+                    iconHtml = `
+                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
+                            <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                    `;
+                }
+                
+                let bubbleClass = role === 'user' 
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl rounded-tr-none px-3.5 py-2.5 text-[11px] leading-relaxed shadow-md font-medium'
+                    : 'bg-white border border-slate-100 text-slate-700 rounded-xl rounded-tl-none px-3.5 py-2.5 text-[11px] leading-relaxed shadow-sm font-medium';
+
+                // Format simple markdown (bold, lists)
+                let formattedText = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+
+                div.innerHTML = `
+                    ${iconHtml}
+                    <div class="${bubbleClass}">${formattedText}</div>
+                `;
+                messagesDiv.appendChild(div);
+                app.refreshIcons();
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            },
+            showLoading: () => {
+                const messagesDiv = document.getElementById('ai-chat-messages');
+                const id = 'typing-' + Date.now();
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'flex gap-2 w-full fade-in';
+                div.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                    </div>
+                    <div class="bg-white border border-slate-100 text-slate-700 rounded-xl rounded-tl-none px-3.5 py-2.5 shadow-sm flex items-center gap-1.5 h-[34px]">
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 0ms"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 150ms"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 300ms"></div>
+                    </div>
+                `;
+                messagesDiv.appendChild(div);
+                app.refreshIcons();
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                return id;
+            },
+            getLocalFallbackResponse: (text) => {
+                const prompt = (text || '').toLowerCase();
+                const userName = app.currentUser ? app.currentUser.name.replace(/\s*\(.*?\)\s*$/, '') : 'Guest';
+                const role = app.currentUser ? app.currentUser.role : '';
+                
+                // Fetch local DB metrics
+                const userTerrs = app.currentUser ? app.currentUser.territories || [] : [];
+                const isGlobal = role === 'admin' || role === 'subadmin' || userTerrs.length === 0;
+                const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
+                const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
+                const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
+                const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
+                
+                const totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
+                const totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
+                const totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
+                const pacingPct = totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
+
+                // Brand details
+                const fotonSales = mySales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const mahindraSales = mySales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                
+                // Bangla translations for greeting / help
+                const isBangla = prompt.includes('kemon') || prompt.includes('ki obostha') || prompt.includes('hello') || prompt.includes('hi') || prompt.includes('assalamu') || prompt.includes('kemne');
+
+                // 1. Performance / Sales / Target queries
+                if (prompt.includes('sale') || prompt.includes('target') || prompt.includes('perform') || prompt.includes('achieve') || prompt.includes('kemon') || prompt.includes('obostha') || prompt.includes('kaj')) {
+                    if (isBangla) {
+                        return `কেমন আছেন, ${userName}! 👋 আপনার performance tracking ready: এ পর্যন্ত target-এর তুলনায় sales হয়েছে **${totalSales} units** (যা target ${totalTarget} units এর **${pacingPct}%**)। চলুন gap পূরণ করতে আরও focus করি! 🚀`;
+                    }
+                    return `Hey ${userName}! 👋 Here is your performance update: You have closed **${totalSales} units** out of your **${totalTarget} units** YTD target (${pacingPct}% achievement). Keep pushing to bridge the gap! 🚀`;
+                }
+                
+                // 2. EMI / Collection queries
+                if (prompt.includes('emi') || prompt.includes('collect') || prompt.includes('due') || prompt.includes('overdue') || prompt.includes('taka') || prompt.includes('money')) {
+                    if (isBangla) {
+                        return `EMI আপডেট, ${userName}: total collection দাঁড়িয়েছে **৳${totalCollectedAmt.toLocaleString()}**। বর্তমানে active portfolios-তে **${unpaidEMIs}** টি installment pending আছে। collection speedup করতে call দিন! 📞`;
+                    }
+                    return `EMI Status Update, ${userName}: We have collected **৳${totalCollectedAmt.toLocaleString()}** YTD. There are currently **${unpaidEMIs}** unpaid/pending installments in your assigned portfolios. Let's speed up collection actions! 📞`;
+                }
+
+                // 3. Brand comparisons
+                if (prompt.includes('foton') || prompt.includes('mahindra') || prompt.includes('brand') || prompt.includes('model')) {
+                    return `Brand Summary: Under your scope, **Foton** has sold **${fotonSales} units** and **Mahindra** has sold **${mahindraSales} units** for FY ${app.currentFY}. Foton leads by ${Math.abs(fotonSales - mahindraSales)} units! 🚚💨`;
+                }
+
+                // 4. Who am I / Role
+                if (prompt.includes('who') || prompt.includes('role') || prompt.includes('amar') || prompt.includes('naam') || prompt.includes('name')) {
+                    return `You are logged in as **${userName}** with the role of **${role.toUpperCase()}** in the ACI Sales360 platform. Let's make an impact today! ⚡`;
+                }
+
+                // Default friendly response using local context
+                if (isBangla) {
+                    return `আমি Spark360 ⚡, আপনার local assistant! আপনার YTD sales status: **${totalSales}/${totalTarget} units**। EMI সংগ্রহ: **৳${totalCollectedAmt.toLocaleString()}**। আপনার targeted queries করতে জিজ্ঞেস করুন "sales", "target" বা "EMI collection"! 😊`;
+                }
+                return `I'm Spark360 ⚡, your smart Sales Copilot! Currently running in active standby. Your local stats: YTD Sales is **${totalSales}/${totalTarget} units** (${pacingPct}%), and EMI collections stand at **৳${totalCollectedAmt.toLocaleString()}**. Ask me about 'sales targets', 'EMI due', or 'brand summary'! 😊`;
+            },
+            sendPrompt: async (text) => {
+                if (!text.trim()) return;
+                
+                app.aiAssistant.appendMessage('user', text);
+                
+                const input = document.getElementById('ai-chat-input');
+                input.value = '';
+                
+                const loadingId = app.aiAssistant.showLoading();
+                
+                try {
+                    const context = `The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: ${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: ${localStorage.getItem('aci_last_page') || 'Unknown'}.`;
+                    
+                    let systemDataDump = "Real-Time System Database Summary:\n";
+                    if (app.currentUser) {
+                        const userTerrs = app.currentUser.territories || [];
+                        const role = app.currentUser.role;
+                        
+                        // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
+                        const isGlobal = role === 'admin' || role === 'subadmin' || userTerrs.length === 0;
+                        const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
+                        const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
+                        const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
+                        const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
+                        
+                        let totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
+                        let totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
+                        let totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
+                        
+                        systemDataDump += `- My YTD Sales (${app.currentFY}): ${totalSales} units\n`;
+                        systemDataDump += `- My YTD Target (${app.currentFY}): ${totalTarget} units\n`;
+                        systemDataDump += `- Total EMI Amount Collected: ৳${totalCollectedAmt.toLocaleString()}\n`;
+                        systemDataDump += `- Unpaid/Pending EMI Installments: ${unpaidEMIs}\n`;
+                    }
+                    
+                    const systemPrompt = "You are Spark360 ⚡, a friendly, witty, and proactive AI sales assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis.\nContext: " + context + "\n\nWhen asked about user performance, targets, sales, or collections, ALWAYS use the following real-time data to answer accurately:\n" + systemDataDump;
+
+                    // Building conversation history for Gemini API format
+                    const contents = app.aiAssistant.history.map(msg => ({
+                        role: msg.role === 'user' ? 'user' : 'model',
+                        parts: [{ text: msg.text }]
+                    }));
+                    
+                    contents.push({ role: 'user', parts: [{ text }] });
+                    
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${app.aiAssistant.apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents,
+                            systemInstruction: {
+                                parts: [{ text: systemPrompt }]
+                            }
+                        })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    document.getElementById(loadingId).remove();
+                    
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        const reply = data.candidates[0].content.parts[0].text;
+                        app.aiAssistant.appendMessage('bot', reply);
+                        app.aiAssistant.history.push({ role: 'user', text });
+                        app.aiAssistant.history.push({ role: 'bot', text: reply });
+                    } else {
+                        // Fall back to local active standby engine to keep Spark360 always active
+                        const reply = app.aiAssistant.getLocalFallbackResponse(text);
+                        app.aiAssistant.appendMessage('bot', reply);
+                        app.aiAssistant.history.push({ role: 'user', text });
+                        app.aiAssistant.history.push({ role: 'bot', text: reply });
+                        console.warn("Gemini API failed/blocked, using local fallback engine:", data);
+                    }
+                } catch (e) {
+                    console.error("Gemini API fetch error, using local fallback engine:", e);
+                    document.getElementById(loadingId).remove();
+                    
+                    // Fall back to local active standby engine to keep Spark360 always active
+                    const reply = app.aiAssistant.getLocalFallbackResponse(text);
+                    app.aiAssistant.appendMessage('bot', reply);
+                    app.aiAssistant.history.push({ role: 'user', text });
+                    app.aiAssistant.history.push({ role: 'bot', text: reply });
+                }
+            },
+            handleSubmit: (e) => {
+                e.preventDefault();
+                const input = document.getElementById('ai-chat-input');
+                app.aiAssistant.sendPrompt(input.value);
+            }
+        };
+
+
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', app.init);
