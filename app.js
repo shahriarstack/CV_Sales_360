@@ -3801,25 +3801,25 @@
 
                             brandSummaryRowsHTML += `
                                 <tr class="border-b border-slate-100/60 text-center group transition-all duration-150 ${b === 'Foton' ? 'hover:bg-foton-light/15 hover:shadow-[inset_3px_0_0_#041A54]' : 'hover:bg-mahindra-light/15 hover:shadow-[inset_3px_0_0_#E5223E]'}">
-                                    <td class="px-2 py-0.5 text-left font-bold text-slate-800 border-r ${brandBorderLight} sticky left-0 z-10 bg-white ${b === 'Foton' ? 'group-hover:bg-foton-light/10' : 'group-hover:bg-mahindra-light/10'} transition-colors">
+                                    <td class="px-3 py-1.5 text-left font-bold text-slate-800 border-r ${brandBorderLight} sticky left-0 z-10 bg-white ${b === 'Foton' ? 'group-hover:bg-foton-light/10' : 'group-hover:bg-mahindra-light/10'} transition-colors text-xs">
                                         <div class="flex items-center gap-2">
                                             <div class="w-1.5 h-4 ${b === 'Foton' ? 'bg-foton shadow-sm shadow-foton/30' : 'bg-mahindra shadow-sm shadow-mahindra/30'} rounded-full"></div>
                                             <span class="font-extrabold">${b}</span>
                                         </div>
                                     </td>
                                     <td class="px-2 py-0.5 font-bold text-slate-600 bg-slate-50/50 border-r border-slate-100">${fyBgt}</td>
-                                          <td class="px-2 py-0.5 font-medium text-slate-500">${isFirstMonth ? '-' : yBgt}</td>
-                                    <td class="px-2 py-0.5 font-bold text-slate-800">${isFirstMonth ? '-' : yAct}</td>
-                                    <td class="px-2 py-0.5 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(yAch)}">${isFirstMonth ? '-' : `${yAch}%`}</td>
-                                    <td class="px-2 py-0.5 font-bold text-rose-500 border-r border-slate-100">${isFirstMonth ? '-' : ySht}</td>
+                                          <td class="px-3 py-1 font-medium text-slate-500 text-xs">${isFirstMonth ? '-' : yBgt}</td>
+                                    <td class="px-3 py-1 font-bold text-slate-800 text-xs">${isFirstMonth ? '-' : yAct}</td>
+                                    <td class="px-3 py-1 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(yAch)} text-xs">${isFirstMonth ? '-' : `${yAch}%`}</td>
+                                    <td class="px-3 py-1 font-bold text-rose-500 border-r ${brandBorderLight} text-xs">${isFirstMonth ? '-' : ySht}</td>
 
-                                    <td class="px-2 py-0.5 font-medium text-slate-500 bg-slate-50/30">${isFirstMonth ? '-' : lBgt}</td>
-                                    <td class="px-2 py-0.5 font-bold text-slate-800 bg-slate-50/30">${isFirstMonth ? '-' : lAct}</td>
-                                    <td class="px-2 py-0.5 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${isFirstMonth ? '-' : `${lAch}%`}</td>
+                                    <td class="px-3 py-1 font-medium text-slate-500 bg-slate-50/30 text-xs">${isFirstMonth ? '-' : lBgt}</td>
+                                    <td class="px-3 py-1 font-bold text-slate-800 bg-slate-50/30 text-xs">${isFirstMonth ? '-' : lAct}</td>
+                                    <td class="px-3 py-1 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r ${brandBorderLight} text-xs">${isFirstMonth ? '-' : `${lAch}%`}</td>
 
-                                    <td class="px-2 py-0.5 font-medium text-slate-500">${cBgt}</td>
-                                    <td class="px-2 py-0.5 font-bold ${brandText} ${brandBgLightHalf}">${cAct}</td>
-                                    <td class="px-2 py-0.5 font-bold ${achColor(cAch)}">${cAch}%</td>
+                                    <td class="px-3 py-1 font-medium text-slate-500 text-xs">${cBgt}</td>
+                                    <td class="px-3 py-1 font-extrabold ${brandText} ${brandBgLightHalf} text-xs">${cAct}</td>
+                                    <td class="px-3 py-1 font-bold ${achColor(cAch)} text-xs">${cAch}%</td>
                                 </tr>
                             `;
                         });
@@ -3832,16 +3832,16 @@
                         return `
                             <div class="glass border border-slate-100 border-t-4 border-t-${brandFilter === 'Mahindra' ? 'mahindra' : 'foton'} rounded-xl shadow-sm overflow-hidden mb-3 transition-all duration-300 hover:shadow-md">
                                 <div class="overflow-x-auto custom-scrollbar">
-                                    <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
+                                    <table class="w-full text-left text-xs whitespace-nowrap border-collapse bg-white">
                                         <thead>
-                                            <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[10px] border-b border-slate-200/60">
+                                            <tr class="bg-slate-100/85 text-slate-700 uppercase tracking-wider text-[11px] font-extrabold border-b border-slate-200/60">
                                                 <th class="px-2 py-0.5.5 font-bold border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
                                                 <th class="px-2 py-0.5.5 font-extrabold text-center border-r border-slate-200/60" rowspan="2">Total FY Budget</th>
                                                 <th class="px-2 py-0.5 text-center bg-gradient-to-b from-violet-500/15 to-transparent text-violet-800 border-r ${brandBorderLight} font-extrabold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
                                                 <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-500/15 to-transparent text-amber-800 border-r ${brandBorderLight} font-extrabold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
                                                 <th class="px-2 py-0.5 text-center bg-gradient-to-b from-emerald-500/15 to-transparent text-emerald-800 font-extrabold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
-                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60 text-center">
+                                            <tr class="bg-slate-50/90 text-slate-600 uppercase tracking-wider text-[10px] font-bold border-b border-slate-200/60 text-center">
                                                 <!-- YTD -->
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60">Budget</th>
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60">Actual</th>
@@ -3861,16 +3861,16 @@
                                             ${brandSummaryRowsHTML}
                                             <tr class="${brandDark} font-bold text-white text-center border-t-2 ${brandBorderLight} shadow-md relative z-20">
                                                 <td class="px-2 py-0.5 text-left border-r ${brandBorderLight} sticky left-0 z-10 ${brandDark} font-extrabold text-white">GRAND TOTAL</td>
-                                                <td class="px-2 py-0.5 border-r ${brandBorderLight} bg-white/5">${gTot.fyBgt}</td>
+                                                <td class="px-2 py-0.5 border-r ${brandBorderLight} bg-white/5 text-xs font-extrabold">${gTot.fyBgt}</td>
                                                 
                                                 <td class="px-2 py-0.5">${isFirstMonth ? '-' : gTot.yBgt}</td>
                                                 <td class="px-2 py-0.5">${isFirstMonth ? '-' : gTot.yAct}</td>
                                                 <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gYAch)}">${isFirstMonth ? '-' : `${gYAch}%`}</td>
                                                 <td class="px-2 py-0.5 text-rose-600 border-r border-slate-200/60">${isFirstMonth ? '-' : gTot.ySht}</td>
 
-                                                <td class="px-2 py-0.5 bg-white/5">${isFirstMonth ? '-' : gTot.lBgt}</td>
-                                                <td class="px-2 py-0.5 bg-white/5">${isFirstMonth ? '-' : gTot.lAct}</td>
-                                                <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} border-r ${brandBorderLight} bg-white/5">${isFirstMonth ? '-' : `${gLAch}%`}</td>
+                                                <td class="px-2 py-0.5 bg-white/5 text-xs font-bold">${isFirstMonth ? '-' : gTot.lBgt}</td>
+                                                <td class="px-2 py-0.5 bg-white/5 text-xs font-bold">${isFirstMonth ? '-' : gTot.lAct}</td>
+                                                <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} border-r ${brandBorderLight} bg-white/5 text-xs font-bold">${isFirstMonth ? '-' : `${gLAch}%`}</td>
 
                                                 <td class="px-2 py-0.5">${gTot.cBgt}</td>
                                                 <td class="px-2 py-0.5 ${brandText} ${brandBgLightHalf} font-extrabold">${gTot.cAct}</td>
@@ -4049,7 +4049,7 @@
                                                     <td class="px-5 py-1 text-left sticky left-0 z-10 border-r ${brandBorderLight} shadow-sm transition-colors ${brandFilter === 'Mahindra' ? 'bg-white group-hover:bg-mahindra-light/10' : 'bg-white group-hover:bg-foton-light/10'}">
                                                         <div class="flex items-center gap-1.5">
                                                             <div class="w-1 h-3.5 bg-${h}-500 rounded-full"></div>
-                                                            <span class="font-bold text-slate-700 text-[11px]">${t.name}</span>
+                                                            <span class="font-bold text-slate-700 text-xs">${t.name}</span>
                                                         </div>
                                                     </td>
                                                     ${app.adminShowYTD ? `
@@ -4087,7 +4087,7 @@
                                                 <td class="px-2 py-0.5 text-left sticky left-0 z-10 ${brandBgLight} border-r ${brandBorderLight} shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
                                                     <div class="flex items-center gap-2">
                                                         <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow shadow-indigo-500/50"></div>
-                                                        <span class="font-extrabold text-slate-800 text-[9px]">GRAND TOTAL</span>
+                                                        <span class="font-extrabold text-slate-800 text-xs font-extrabold uppercase">GRAND TOTAL</span>
                                                     </div>
                                                 </td>
                                                 ${app.adminShowYTD ? `
@@ -4200,7 +4200,7 @@
                                 <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
                                     <thead>
                                         <!-- Row 1: Quarters -->
-                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60">
+                                        <tr class="bg-slate-50/90 text-slate-700 uppercase tracking-wider text-[11px] font-extrabold border-b border-slate-200/60">
                                             <th class="px-2 py-0.5 font-bold sticky left-0 z-10 bg-slate-50 border-r border-slate-200/60 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
                                                     <div class="flex items-center gap-1 cursor-pointer hover:${brandText} transition-colors" onclick="app.setPulseSort('name')">
@@ -4219,7 +4219,7 @@
                                             <th class="px-2 py-0.5 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
-                                        <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60 text-center">
+                                        <tr class="bg-slate-50/80 text-slate-600 uppercase tracking-wider text-[10px] font-bold border-b border-slate-200/60 text-center">
                                             <!-- Q1 Months -->
                                             <th class="px-1.5 py-0.5 border-l-2 border-violet-200/60" colspan="5">July</th>
                                             <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">August</th>
@@ -4244,7 +4244,7 @@
                                             <th class="px-1.5 py-0.5 bg-slate-800/20 text-slate-900 font-bold border-l-2 border-slate-400" colspan="5">FY Total</th>
                                         </tr>
                                         <!-- Row 3: Metrics -->
-                                        <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-200/60 text-center font-bold">
+                                        <tr class="text-slate-500 uppercase tracking-wider text-[9px] border-b border-slate-200/60 text-center font-extrabold">
                                             ${(() => {
                                                 let result = '';
                                                 for (let i = 0; i < 17; i++) {
@@ -4326,10 +4326,10 @@
                                                     qMonths.forEach(m => {
                                                         const p = monthlyPerf[m];
                                                         cellsHTML += `
-                                                            <td class="px-1.5 py-0.5 text-slate-400 font-medium border-l border-slate-100">${p.budget}</td>
-                                                            <td class="px-1.5 py-0.5 font-bold text-slate-700">${p.sales}</td>
-                                                            <td class="px-1.5 py-0.5 font-bold text-slate-800">${p.ach}%</td>
-                                                            <td class="px-1.5 py-0.5 text-slate-400 font-medium">${p.sply}</td>
+                                                            <td class="px-1.5 py-0.5 text-[11px] font-medium text-slate-500 border-l border-slate-100">${p.budget}</td>
+                                                            <td class="px-1.5 py-0.5 font-bold text-slate-700 text-xs">${p.sales}</td>
+                                                            <td class="px-1.5 py-0.5 font-bold text-slate-800 text-xs">${p.ach}%</td>
+                                                            <td class="px-1.5 py-0.5 text-[11px] font-medium text-slate-500">${p.sply}</td>
                                                             <td class="px-1.5 py-0.5 font-bold text-[9px]">${formatDetailedGrw(p.growth)}</td>
                                                         `;
                                                     });
@@ -4359,10 +4359,10 @@
                                                 const fyGrowth = calcGrw(fySales, fySply);
 
                                                 cellsHTML += `
-                                                    <td class="px-1.5 py-0.5 font-extrabold bg-slate-800/10 text-slate-900 border-l-2 border-slate-400 shadow-inner">${fyBudget}</td>
-                                                    <td class="px-1.5 py-0.5 font-bold bg-slate-800/10 text-slate-900 shadow-inner">${fySales}</td>
+                                                    <td class="px-1.5 py-0.5 font-extrabold bg-slate-800/10 text-slate-900 border-l-2 border-slate-400 shadow-inner text-xs font-extrabold">${fyBudget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold bg-slate-800/10 text-slate-900 shadow-inner text-xs font-extrabold">${fySales}</td>
                                                     <td class="px-1.5 py-0.5 bg-slate-800/10 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-800 text-white font-bold">${fyAch}%</span></td>
-                                                    <td class="px-1.5 py-0.5 font-extrabold bg-slate-800/10 text-slate-900 shadow-inner">${fySply}</td>
+                                                    <td class="px-1.5 py-0.5 font-extrabold bg-slate-800/10 text-slate-900 shadow-inner text-xs font-bold">${fySply}</td>
                                                     <td class="px-1.5 py-0.5 font-bold bg-slate-800/10 text-[9px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(fyGrowth)}</td>
                                                 `;
 
@@ -4478,10 +4478,10 @@
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
                                                             <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow shadow-indigo-500/50"></div>
-                                                            <span class="font-extrabold text-slate-800 text-[9px]">GRAND TOTAL</span>
+                                                            <span class="font-extrabold text-slate-800 text-xs font-extrabold uppercase">GRAND TOTAL</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-2 py-0.5 font-bold text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-bold text-[10px] shadow-sm shadow-amber-500/20">${grandFYBudget}</span></td>
+                                                    <td class="px-2 py-0.5 font-bold text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-xs shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-bold text-xs shadow-sm shadow-amber-500/20">${grandFYBudget}</span></td>
                                                     ${grandCellsHTML}
                                                 </tr>
                                             `;
@@ -4500,14 +4500,14 @@
                                     <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-t-4 border-t-${brandFilter === 'Mahindra' ? 'mahindra' : 'foton'} ${brandBorderLight} ring-1 ring-slate-200/50 transition-all duration-300 hover:shadow-md">
                                         <table class="w-full text-left text-xs whitespace-nowrap border-collapse bg-white">
                                             <thead>
-                                                <tr class="${brandDark} ${brandTextLight} uppercase tracking-widest text-[10px] border-b ${brandBorderLight}">
+                                                <tr class="${brandDark} ${brandTextLight} uppercase tracking-wider text-[11px] font-extrabold border-b ${brandBorderLight}">
                                                     <th class="px-2 py-0.5 font-bold sticky left-0 z-10 ${brandDark} border-r ${brandBorderLight} shadow-sm ${brandTextLight}">Territory</th>
                                                     <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-900/30 to-transparent text-amber-400 font-extrabold border-l border-r border-t border-amber-900/30 shadow-sm" colspan="1">Total FY Budget</th>
                                                     ${app.adminShowYTD ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-blue-900/30 to-transparent text-blue-300 border-l border-r border-t border-blue-900/30 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                     ${app.adminShowLastMonth ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-emerald-900/30 to-transparent text-emerald-400 border-l border-r border-t border-emerald-900/30 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                     <th class="px-2 py-0.5 text-center bg-gradient-to-b from-cyan-900/30 to-transparent text-cyan-300 border-l border-r border-t border-cyan-900/30 font-extrabold shadow-sm" colspan="${4 + dynamicModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                                 </tr>
-                                                <tr class="${brandBg} ${brandTextMedium} uppercase tracking-tighter text-[10px] border-b-2 ${brandBorderDark} text-center">
+                                                <tr class="${brandBg} ${brandTextMedium} uppercase tracking-wider text-[10px] font-bold border-b-2 ${brandBorderDark} text-center">
                                                     <th class="px-2 py-0.5 sticky left-0 z-10 ${brandBg} border-r ${brandBorderLight} shadow-sm">
                                                         <div class="flex items-center justify-between gap-2">
                                                             <div class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" onclick="app.setPulseSort('name')">
@@ -4576,7 +4576,7 @@
 
                                                         return `
                                                             <tr class="group transition-all duration-150 text-center border-b border-slate-100/60 ${brandFilter === 'Mahindra' ? 'hover:bg-mahindra-light/10 hover:shadow-[inset_3px_0_0_#E5223E]' : 'hover:bg-foton-light/10 hover:shadow-[inset_3px_0_0_#041A54]'}">
-                                                                <td class="px-4 py-0.5 text-left sticky left-0 z-10 border-r ${brandBorderLight} shadow-sm transition-colors ${brandFilter === 'Mahindra' ? 'bg-white group-hover:bg-mahindra-light/10' : 'bg-white group-hover:bg-foton-light/10'} font-bold text-slate-700">
+                                                                <td class="px-4 py-1.5 text-left sticky left-0 z-10 border-r ${brandBorderLight} shadow-sm transition-colors ${brandFilter === 'Mahindra' ? 'bg-white group-hover:bg-mahindra-light/10' : 'bg-white group-hover:bg-foton-light/10'} font-bold text-slate-700 text-xs">
                                                                     <div class="flex items-center justify-between gap-2">
                                                                         <div class="flex items-center gap-1.5">
                                                                             <span class="text-[10px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
@@ -4622,10 +4622,10 @@
                                                                 <div class="flex items-center gap-2">
                                                                     <span class="w-4"></span>
                                                                     <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow ${brandShadow}"></div>
-                                                                    <span class="font-bold text-white text-xs font-bold uppercase tracking-widest">Grand Total</span>
+                                                                    <span class="font-bold text-white text-xs font-extrabold uppercase tracking-wider">Grand Total</span>
                                                                 </div>
                                                             </td>
-                                                            <td class="px-2 py-0.5 font-bold text-amber-200 bg-gradient-to-b from-amber-900/30 to-transparent border-l border-r border-amber-900/20 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
+                                                            <td class="px-2 py-0.5 font-bold text-amber-200 bg-gradient-to-b from-amber-900/30 to-transparent border-l border-r border-amber-900/20 text-center text-xs shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-xs shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
                                                             ${app.adminShowYTD ? `
                                                                 <td class="px-1.5 py-0.5 text-blue-100 font-extrabold bg-blue-900/20 text-center border-l border-blue-900/30">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
                                                                 <td class="px-1.5 py-0.5 font-bold text-white bg-blue-900/20 text-center">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
@@ -4639,9 +4639,9 @@
                                                             ` : ''}
                                                             <td class="px-1.5 py-0.5 bg-cyan-900/20 text-cyan-100 font-extrabold text-center border-l border-cyan-900/30">${totalCurrBudget}</td>
                                                             <td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-white text-center">${totalCurrProj}</td>
-                                                            ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-cyan-300 text-center">${totalModelMap[m] || 0}</td>`).join('')}
-                                                            <td class="px-1.5 py-0.5 ${brandBgLightHalf} font-bold text-white text-[10px] text-center border-l ${brandBorderLight}">${totalCurrSalesUnits}</td>
-                                                            <td class="px-1.5 py-0.5 text-center border-r ${brandBorderLight} ${brandBgLightHalf} ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
+                                                            ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-cyan-900/20 font-extrabold text-cyan-300 text-xs text-center">${totalModelMap[m] || 0}</td>`).join('')}
+                                                            <td class="px-1.5 py-0.5 ${brandBgLightHalf} font-extrabold text-white text-xs text-center border-l ${brandBorderLight}">${totalCurrSalesUnits}</td>
+                                                            <td class="px-1.5 py-0.5 text-center border-r ${brandBorderLight} ${brandBgLightHalf} ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-xs font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                                         </tr>
                                                     `;
 
@@ -4721,7 +4721,7 @@
                                                     <td class="py-1 text-left font-bold text-slate-700 text-[9px]">${m.substring(0, 3)}</td>
                                                     <td class="py-1 text-slate-500 font-medium">${p.budget}</td>
                                                     <td class="py-1 font-bold text-slate-800">${p.sales}</td>
-                                                    <td class="py-1 font-bold text-slate-800">${p.ach}%</td>
+                                                    <td class="py-1 font-bold text-slate-800 text-xs">${p.ach}%</td>
                                                     <td class="py-1 text-slate-500 font-medium">${p.sply}</td>
                                                     <td class="py-1 text-[10px] font-bold">${formatDetailedGrw(p.growth)}</td>
                                                 </tr>
