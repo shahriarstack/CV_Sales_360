@@ -3310,16 +3310,16 @@
                 const activeBrand = app.adminEMIBrandFilter || 'Total';
                 const html = `
                     <div class="max-w-6xl mx-auto fade-in">
-                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <h1 class="text-xl font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
                                 <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
                             </div>
                             
                             <div class="flex flex-wrap items-center gap-3">
                                 <!-- Territory Dropdown Filter -->
                                 <div class="relative group">
-                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-xs font-bold focus:outline-none focus:border-aci-blue appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
+                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-4 py-1.5 text-xs font-bold focus:outline-none focus:border-aci-blue appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
                                         <option value="All" ${app.adminEMITerritoryFilter === 'All' ? 'selected' : ''}>All Territories</option>
                                         ${activeTerritories.map(t => `<option value="${t.id}" ${app.adminEMITerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                     </select>
@@ -3330,19 +3330,19 @@
 
                                 <!-- Premium Brand Selection Pill -->
                                 <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/50 shadow-inner">
-                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-md scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
+                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-md scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
                                         Total
                                     </button>
-                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
+                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-1.5 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
                                         <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
                                     </button>
-                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
+                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-1.5 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
                                         <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
                                     </button>
                                 </div>
 
                                 <!-- Capture Report Button -->
-                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-bold hover:from-indigo-700 hover:to-blue-700 shadow-md hover:shadow-lg transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
+                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-bold hover:from-indigo-700 hover:to-blue-700 shadow-md hover:shadow-sm border border-slate-200/80 transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
                                     <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                                     Capture
                                 </button>
@@ -3350,7 +3350,7 @@
                         </div>
 
                         <!-- Progress Analytics Panel -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <!-- Card 1: Credit Collection Progress -->
                             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 relative overflow-hidden">
                                 <div class="flex justify-between items-center mb-2.5">
@@ -3393,7 +3393,7 @@
                         </div>
                         
                         <!-- Premium Compact KPI Row -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
                             <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="users" class="absolute -right-2 -bottom-2 w-10 h-10 text-blue-200 opacity-50"></i>
                                 <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Total Cust.</p>
@@ -3432,7 +3432,7 @@
                         </div>
 
                         <!-- Territory Summary Table -->
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto mb-6">
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto mb-4">
                             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                                 <h3 class="font-bold text-slate-800 text-sm">Territory Wise EMI Summary</h3>
                             </div>
@@ -3571,9 +3571,9 @@
 
                 const html = `
                     <div class="max-w-7xl mx-auto fade-in">
-                        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                        <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">Manual Deliveries Tracker</h1>
+                                <h1 class="text-xl font-bold text-slate-800">Manual Deliveries Tracker</h1>
                                 <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
@@ -3620,11 +3620,11 @@
                                     </div>
                                 </div>
                                 
-                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 px-4 py-1.5.5 rounded-lg text-sm font-bold shadow-md hover:shadow-sm border border-slate-200/80 flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
                                     <i data-lucide="download" class="w-4 h-4"></i> Export CSV
                                 </button>
 
-                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
+                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-1.5.5 rounded-lg text-sm font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i> Clear Data
                                 </button>
                             </div>
@@ -3632,7 +3632,7 @@
 
 
                         <!-- Minimal & Creative Summary Section -->
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                             <!-- Total Entries -->
                             <div class="bg-gradient-to-br from-indigo-50/50 to-slate-50 border border-indigo-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
                                 <div class="flex items-center justify-between">
@@ -4301,7 +4301,7 @@
                         <!-- AM / Executive Header -->
                         <div class="mb-4">
                             ${isAM ? `
-                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-lg border border-white/10 relative overflow-hidden mb-4">
+                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-sm border border-slate-200/80 border border-white/10 relative overflow-hidden mb-4">
                                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="relative z-10 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
                                     
@@ -4337,11 +4337,11 @@
 
                                             <!-- Brand Switcher -->
                                             <div class="flex bg-black/20 p-1 rounded-xl border border-white/10 backdrop-blur-md">
-                                                <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Foton' ? 'bg-white shadow-lg text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}" style="animation: ${brandFilter === 'Foton' ? 'brandActiveGlow 2.5s ease-in-out' : 'brandInactivePulse 2.5s ease-in-out'} infinite;">
+                                                <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Foton' ? 'bg-white shadow-sm border border-slate-200/80 text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}" style="animation: ${brandFilter === 'Foton' ? 'brandActiveGlow 2.5s ease-in-out' : 'brandInactivePulse 2.5s ease-in-out'} infinite;">
                                                     <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
                                                     <span class="text-[10px] font-bold uppercase tracking-wider">Foton</span>
                                                 </button>
-                                                <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Mahindra' ? 'bg-white shadow-lg text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}" style="animation: ${brandFilter === 'Mahindra' ? 'brandActiveGlow 2.5s ease-in-out' : 'brandInactivePulse 2.5s ease-in-out'} infinite;">
+                                                <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/80 text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}" style="animation: ${brandFilter === 'Mahindra' ? 'brandActiveGlow 2.5s ease-in-out' : 'brandInactivePulse 2.5s ease-in-out'} infinite;">
                                                     <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
                                                     <span class="text-[10px] font-bold uppercase tracking-wider">Mahindra</span>
                                                 </button>
@@ -4458,7 +4458,7 @@
                                     </div>
                                 </div>
 
-                                <div class="bg-gradient-to-br ${brandFilter === 'Foton' ? 'from-foton to-[#03133d]' : 'from-mahindra to-[#b81b31]'} rounded-xl p-4 mb-4 relative overflow-hidden shadow-lg text-white">
+                                <div class="bg-gradient-to-br ${brandFilter === 'Foton' ? 'from-foton to-[#03133d]' : 'from-mahindra to-[#b81b31]'} rounded-xl p-4 mb-4 relative overflow-hidden shadow-sm border border-slate-200/80 text-white">
                                     <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
                                     <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
                                         <h3 class="font-bold text-sm">Current Month (${app.currentMonth}) - Area Total</h3>
@@ -4468,7 +4468,7 @@
                                     <div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center mb-4 relative z-10">
                                         <div><p class="text-[10px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-lg text-white">${monthlyBudget}</p></div>
                                         <div><p class="text-[10px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-lg text-white">${totalMonthlyProjection}</p></div>
-                                        <div class="col-span-2 border-l border-white/20"><p class="text-[10px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-2xl text-yellow-300">${currMonthSalesTotal}</p></div>
+                                        <div class="col-span-2 border-l border-white/20"><p class="text-[10px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-xl text-yellow-300">${currMonthSalesTotal}</p></div>
                                         
                                         <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[10px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-sm text-green-300">${ach(currMonthSalesTotal, monthlyBudget)}%</p></div>
                                         <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[10px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-sm text-amber-300">${ach(currMonthSalesTotal, totalMonthlyProjection)}%</p></div>
@@ -4524,7 +4524,7 @@
                             const predictedAch = ach(predictedFinish, currMonthBudget);
 
                             return `
-                                <div class="bg-white border border-slate-200/80 p-4 rounded-[1.5rem] border border-white shadow-sm mb-6 relative overflow-hidden">
+                                <div class="bg-white border border-slate-200/80 p-4 rounded-[1.5rem] border border-white shadow-sm mb-4 relative overflow-hidden">
                                     <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-4">
                                         <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
@@ -4558,7 +4558,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="bg-indigo-900 rounded-xl p-3 shadow-lg flex items-center justify-between text-white border border-white/10">
+                                        <div class="bg-indigo-900 rounded-xl p-3 shadow-sm border border-slate-200/80 flex items-center justify-between text-white border border-white/10">
                                             <div>
                                                 <p class="text-[10px] font-bold text-indigo-300 uppercase mb-0.5">Req. Daily Rate</p>
                                                 <h4 class="text-lg font-bold">${Math.max(0, Math.ceil((currMonthBudget - currMonthSalesPacing) / (daysInMonth - currentDay)))}</h4>
@@ -4604,14 +4604,14 @@
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                                 <div>
-                                    <h1 class="text-2xl md:text-2xl font-bold text-slate-900 tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
+                                    <h1 class="text-xl md:text-xl font-bold text-slate-900 tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
                                     <p class="text-sm font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
                                     <!-- Dynamic Fiscal Year Selector -->
                                     <div class="relative">
                                         <select onchange="app.selectedFY = this.value; app.renderAdminDashboard()" 
-                                                class="appearance-none bg-white border border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-700 rounded-xl pl-3 pr-8 py-2.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[95px]">
+                                                class="appearance-none bg-white border border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-700 rounded-xl pl-3 pr-8 py-1.5.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[95px]">
                                             ${[...new Set([...DB.sales.map(s => s.fy), ...DB.targets.map(t => t.fy), app.currentFY])].filter(Boolean).sort().reverse().map(fy => `<option value="${fy}" ${fy === currentFY ? 'selected' : ''}>FY ${fy}</option>`).join('')}
                                         </select>
                                         <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
@@ -4619,14 +4619,14 @@
                                         </div>
                                     </div>
 
-                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-bold text-[10px] uppercase tracking-wider group relative overflow-hidden">
+                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl shadow-md hover:shadow-sm border border-slate-200/80 hover:scale-[1.03] active:scale-95 transition-all duration-300 font-bold text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="banknote" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
                                         <span>EMI Analytics</span>
                                     </button>
 
                                     ${!isAM ? `
-                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-bold text-[10px] uppercase tracking-wider group relative overflow-hidden">
+                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-1.5 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl shadow-md hover:shadow-sm border border-slate-200/80 hover:scale-[1.03] active:scale-95 transition-all duration-300 font-bold text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="clipboard-list" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
                                         <span>Manual Deliveries</span>
@@ -4679,12 +4679,12 @@
                                         <!-- Creative Brand Logo Toggle -->
                                         <div class="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200 shadow-inner">
                                             <button onclick="app.yoyBrandTab='Foton'; app.renderAdminDashboard()" 
-                                                    class="relative flex items-center justify-center px-4 py-2 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                    class="relative flex items-center justify-center px-4 py-1.5 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
                                                 <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-6 object-contain" alt="Foton">
                                             </button>
                                             <div class="w-px h-5 bg-slate-300 mx-1"></div>
                                             <button onclick="app.yoyBrandTab='Mahindra'; app.renderAdminDashboard()" 
-                                                    class="relative flex items-center justify-center px-4 py-2 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                    class="relative flex items-center justify-center px-4 py-1.5 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/50 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
                                                 <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-5 object-contain" alt="Mahindra">
                                             </button>
                                         </div>
@@ -4793,8 +4793,8 @@
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
                                             <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[10px] border-b border-slate-200">
-                                                <th class="px-3 py-3 font-bold border-r border-slate-200 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
-                                                <th class="px-3 py-3 font-extrabold text-center border-r border-slate-200" rowspan="2">Total FY Budget</th>
+                                                <th class="px-3 py-1.5 font-bold border-r border-slate-200 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
+                                                <th class="px-3 py-1.5 font-extrabold text-center border-r border-slate-200" rowspan="2">Total FY Budget</th>
                                                 <th class="px-3 py-1 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200 font-bold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
                                                 <th class="px-3 py-1 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200 font-bold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
                                                 <th class="px-3 py-1 text-center bg-emerald-500/10 text-emerald-800 font-bold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
@@ -4842,7 +4842,7 @@
                     })()}
 
                     <!-- Charts -->
-                    <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-4 mb-6">
+                    <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-4 mb-4">
                         <div class="${isAM ? '' : 'lg:col-span-2'} bg-white border border-slate-200/80 p-3 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="bar-chart-2" class="w-3 h-3 text-aci-blue"></i> Territory Performance
@@ -4894,11 +4894,11 @@
                                 </div>
 
                                 <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
+                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/80 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
                                     <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                 </button>
                                 <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
+                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/80 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
                                     <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                 </button>
                                 <button onclick="app.downloadPulseCSV()" 
@@ -4911,7 +4911,7 @@
                         </div>
 
                         <!-- Creative Month Filter Pill Bar -->
-                        <div class="px-5 py-3.5 bg-slate-50/40 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 relative overflow-hidden">
+                        <div class="px-5 py-1.5.5 bg-slate-50/40 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 relative overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent opacity-40 pointer-events-none"></div>
                             <div class="flex items-center gap-2 relative z-10">
                                 <span class="flex h-2 w-2 relative">
@@ -5003,7 +5003,7 @@
                                 else { achBg = 'bg-rose-100'; achText = 'text-rose-700'; }
 
                                 return `
-                                                <tr class="hover:bg-slate-50/50 transition-colors group text-center border-b border-slate-100/50">
+                                                <tr class="hover:bg-slate-50/80 group transition-colors group text-center border-b border-slate-100/50">
                                                     <td class="px-5 py-1 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
                                                         <div class="flex items-center gap-1.5">
                                                             <div class="w-1 h-3.5 bg-${h}-500 rounded-full"></div>
@@ -5082,21 +5082,21 @@
                                             <tr class="text-slate-400 uppercase tracking-tighter text-[10px] border-b border-slate-100 text-center">
                                                 <th class="px-5 py-1 sticky left-0 z-10 bg-white"></th>
                                                 ${app.adminShowYTD ? `
-                                                    <th class="px-2 py-3 bg-slate-50">Budget</th>
-                                                    <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Actual</th>
-                                                    <th class="px-2 py-3 bg-slate-50">Ach%</th>
-                                                    <th class="px-2 py-3 bg-slate-50">Short</th>
+                                                    <th class="px-2 py-1.5 bg-slate-50">Budget</th>
+                                                    <th class="px-2 py-1.5 bg-slate-50 font-bold text-slate-600">Actual</th>
+                                                    <th class="px-2 py-1.5 bg-slate-50">Ach%</th>
+                                                    <th class="px-2 py-1.5 bg-slate-50">Short</th>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
-                                                    <th class="px-2 py-3">Budget</th>
-                                                    <th class="px-2 py-3 font-bold text-slate-600">Actual</th>
-                                                    <th class="px-2 py-3">Ach%</th>
+                                                    <th class="px-2 py-1.5">Budget</th>
+                                                    <th class="px-2 py-1.5 font-bold text-slate-600">Actual</th>
+                                                    <th class="px-2 py-1.5">Ach%</th>
                                                 ` : ''}
-                                                <th class="px-2 py-3 bg-slate-50">Budget</th>
-                                                <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Proj</th>
-                                                ${dynamicModels.map(m => `<th class="px-2 py-3 bg-slate-50">${m}</th>`).join('')}
-                                                <th class="px-2 py-3 bg-indigo-50 font-bold text-indigo-700">Total</th>
-                                                <th class="px-2 py-3 bg-indigo-50 font-bold text-indigo-700">Ach%</th>
+                                                <th class="px-2 py-1.5 bg-slate-50">Budget</th>
+                                                <th class="px-2 py-1.5 bg-slate-50 font-bold text-slate-600">Proj</th>
+                                                ${dynamicModels.map(m => `<th class="px-2 py-1.5 bg-slate-50">${m}</th>`).join('')}
+                                                <th class="px-2 py-1.5 bg-indigo-50 font-bold text-indigo-700">Total</th>
+                                                <th class="px-2 py-1.5 bg-indigo-50 font-bold text-indigo-700">Ach%</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-50 bg-white">
@@ -5127,15 +5127,15 @@
                                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
                                     <div class="flex items-center gap-2">
                                         <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/80 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
                                             <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                         </button>
                                         <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/80 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
                                             <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                         </button>
                                         <button onclick="app.pulseDetailedView = !app.pulseDetailedView; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-indigo-200 border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}">
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm border border-slate-200/80 shadow-indigo-200 border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}">
                                             <i data-lucide="${app.pulseDetailedView ? 'layout-grid' : 'list'}" class="w-3.5 h-3.5"></i>
                                             Detailed View
                                         </button>
@@ -5455,7 +5455,7 @@
                                 const dynamicModels = activeModels.filter(m => modelsWithSales.has(m));
 
                                 return `
-                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-lg border border-indigo-900/10 ring-1 ring-slate-200/50">
+                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-slate-200/80 border border-indigo-900/10 ring-1 ring-slate-200/50">
                                         <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse bg-white">
                                             <thead>
                                                 <tr class="bg-indigo-950 text-indigo-200 uppercase tracking-widest text-[10px] border-b border-indigo-900/50">
@@ -5533,7 +5533,7 @@
                                                         else { achBg = 'bg-red-100'; achText = 'text-red-700'; }
 
                                                         return `
-                                                            <tr class="hover:bg-slate-50/50 transition-all duration-150 group text-center border-b border-slate-100">
+                                                            <tr class="hover:bg-slate-50/80 group transition-all duration-150 group text-center border-b border-slate-100">
                                                                 <td class="px-4 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
                                                                     <div class="flex items-center justify-between gap-2">
                                                                         <div class="flex items-center gap-1.5">
@@ -5615,7 +5615,7 @@
                             <!-- MOBILE CARD VIEW -->
                             ${app.pulseDetailedView ? `
                             <div class="md:hidden">
-                                <div class="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                                <div class="px-5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-bold">Select Quarter:</span>
                                     <div class="flex bg-slate-200/50 p-0.5 rounded-xl border border-slate-200 shadow-inner">
                                         ${['Q1', 'Q2', 'Q3', 'Q4'].map(q => `
@@ -5897,7 +5897,7 @@
                                     <div class="p-4 bg-white active:bg-slate-50 transition-colors">
                                         <div class="flex justify-between items-center mb-4">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-12 h-12 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-200 flex items-center justify-center text-white font-bold text-lg">
+                                                <div class="w-12 h-12 rounded-xl bg-indigo-600 shadow-sm border border-slate-200/80 shadow-indigo-200 flex items-center justify-center text-white font-bold text-lg">
                                                     ${area.name.charAt(0)}
                                                 </div>
                                                 <div>
@@ -5909,7 +5909,7 @@
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="text-2xl font-bold text-indigo-700">${area.currSales}</span>
+                                                <span class="text-xl font-bold text-indigo-700">${area.currSales}</span>
                                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Sales Units</p>
                                             </div>
                                         </div>
@@ -5972,7 +5972,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-50 bg-white">
                                     ${currFYSales.filter(s => s.brand === brandFilter).map(s => `
-                                        <tr class="hover:bg-slate-50/50 transition-colors group">
+                                        <tr class="hover:bg-slate-50/80 group transition-colors group">
                                             <td class="px-4 py-4 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
                                                 <div class="font-bold text-slate-700">${s.customer_name || s.customer_id || 'Unknown'}</div>
                                                 <div class="text-[10px] text-slate-400 mt-0.5">${s.phone || 'No phone'}</div>
@@ -6689,9 +6689,9 @@
 
                     let html = `
                         <div class="animate-fade-in pb-20">
-                            <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                                    <h2 class="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
                                         <i data-lucide="bar-chart-2" class="w-6 h-6 text-sky-500"></i> Historical Analytics
                                     </h2>
                                     <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
@@ -6699,43 +6699,43 @@
                             </div>
 
                             <!-- Filter Bar -->
-                            <div class="bg-white border border-slate-200/80 p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end sticky top-16 z-20">
+                            <div class="bg-white border border-slate-200/80 p-4 rounded-xl border border-slate-200 shadow-sm mb-4 flex flex-wrap gap-4 items-end sticky top-16 z-20">
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
-                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Compare FY</label>
-                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         ${allFys.map(f => `<option value="${f}" ${app.analyticsFY2 === f ? 'selected' : ''}>${f}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Brand</label>
-                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsBrand === 'All' ? 'selected' : ''}>All Brands</option>
                                         ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Model</label>
-                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsModel === 'All' ? 'selected' : ''}>All Models</option>
                                         ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Territory</label>
-                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsTerritory === 'All' ? 'selected' : ''}>All Territories</option>
                                         ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upazila</label>
-                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsUpazila === 'All' ? 'selected' : ''}>All Upazilas</option>
                                         ${allUpazilas.map(u => `<option value="${u}" ${app.analyticsUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
                                     </select>
@@ -6747,7 +6747,7 @@
                                 <div class="bg-white border border-slate-200/80 p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
-                                        <h4 class="text-2xl font-bold text-slate-800 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-xl font-bold text-slate-800 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
                                 </div>
@@ -6755,7 +6755,7 @@
                                 <div class="bg-white border border-slate-200/80 p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
-                                        <h4 class="text-2xl font-bold text-slate-800 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-xl font-bold text-slate-800 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
                                 </div>
@@ -6764,7 +6764,7 @@
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
                                         <div class="flex items-center gap-1.5 mt-0.5">
-                                            <span class="text-2xl font-bold tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
+                                            <span class="text-xl font-bold tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
                                             <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
                                         </div>
                                     </div>
@@ -7220,9 +7220,9 @@
                 const html = `
                     <div class="max-w-7xl mx-auto fade-in pb-12">
                         <!-- AI Header Section -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 px-2 md:px-0">
                             <div class="w-full md:w-auto">
-                                <h1 class="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                                <h1 class="text-xl md:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
                                     <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl shadow-md shadow-purple-200">
                                         <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
                                     </div>
@@ -7281,7 +7281,7 @@
                         <!-- Top Level AI Summary Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
                             <!-- Prediction Card -->
-                            <div class="bg-white border border-slate-200/80 p-4 rounded-[1.75rem] border border-white shadow-lg relative overflow-hidden group">
+                            <div class="bg-white border border-slate-200/80 p-4 rounded-[1.75rem] border border-white shadow-sm border border-slate-200/80 relative overflow-hidden group">
                                 <div class="absolute -right-8 -top-8 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
                                 <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                                     <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-500"></i>
@@ -7295,7 +7295,7 @@
                                 </h3>
                                 
                                 <div class="flex items-baseline gap-1 mb-3">
-                                    <span class="text-2xl font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
+                                    <span class="text-xl font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
                                     <span class="text-xs font-bold text-slate-400 uppercase">Units</span>
                                 </div>
 
@@ -7324,7 +7324,7 @@
                             </div>
 
                             <!-- Brand Momentum Card -->
-                            <div class="bg-white border border-slate-200/80 p-4 rounded-[1.75rem] border border-white shadow-lg relative overflow-hidden group">
+                            <div class="bg-white border border-slate-200/80 p-4 rounded-[1.75rem] border border-white shadow-sm border border-slate-200/80 relative overflow-hidden group">
                                 <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
                                 <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-4 flex items-center gap-1.5">
                                     <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
@@ -7359,7 +7359,7 @@
                             </div>
 
                             <!-- Quick Insight Card -->
-                            <div class="bg-slate-900 p-4 rounded-[1.75rem] border border-slate-800 shadow-lg relative overflow-hidden group text-white">
+                            <div class="bg-slate-900 p-4 rounded-[1.75rem] border border-slate-800 shadow-sm border border-slate-200/80 relative overflow-hidden group text-white">
                                 <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
                                     <i data-lucide="cpu" class="w-24 h-24 text-purple-400"></i>
                                 </div>
@@ -7419,9 +7419,9 @@
                                         </div>
                                         <div>
                                             ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
                                             ` : `
-                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl text-xs font-bold shadow-md shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
+                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-md shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
                                             `}
                                         </div>
                                     </div>
@@ -7450,9 +7450,9 @@
                                         </div>
                                         <div>
                                             ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
                                             ` : `
-                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
+                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
                                             `}
                                         </div>
                                     </div>
@@ -7482,9 +7482,9 @@
                                         </div>
                                         <div>
                                             ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
                                             ` : `
-                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl text-xs font-bold shadow-md shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
+                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-md shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
                                             `}
                                         </div>
                                     </div>
@@ -7681,7 +7681,7 @@
                             <div class="lg:col-span-2 space-y-6">
                                 <!-- Dynamic Market Heatmap Visualization -->
                                 <div class="bg-white border border-slate-200/80 p-4 rounded-[1.75rem] border border-white shadow-md">
-                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                                         <h2 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
                                             <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-500"></i>
                                             Territory Performance Matrix
@@ -7778,10 +7778,10 @@
                                                         <p class="text-[8px] font-bold text-rose-400 uppercase tracking-wider">Critical</p>
                                                     </div>
                                                 </div>
-                                            `).join('') : '<p class="text-center text-[10px] font-bold text-slate-400 py-3">No territories under 40% achievement.</p>'}
+                                            `).join('') : '<p class="text-center text-[10px] font-bold text-slate-400 py-1.5">No territories under 40% achievement.</p>'}
                                         </div>
                                     </div>
-                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl shadow-md shadow-rose-200 transition-all active:scale-95 text-[10px] uppercase tracking-wider">
+                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-1.5.5 rounded-xl shadow-md shadow-rose-200 transition-all active:scale-95 text-[10px] uppercase tracking-wider">
                                         Review All Regions
                                     </button>
                                 </div>
@@ -7844,9 +7844,9 @@
                     <div class="max-w-7xl mx-auto fade-in pb-10 h-full flex flex-col">
                         
                         <!-- Header & Dynamic Filters -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 shrink-0 relative z-50">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 shrink-0 relative z-50">
                             <div>
-                                <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
+                                <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
                                     <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
                                     Geospatial Sales Heatmap
                                 </h1>
@@ -7932,7 +7932,7 @@
                             <!-- Leaflet Map Container (Fits remaining height) -->
                             <div class="flex-1 bg-white border border-slate-200/80 rounded-xl relative overflow-hidden bg-slate-50 border border-slate-200 shadow-inner flex flex-col h-[500px] lg:h-full">
                                 
-                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-200 shadow-sm z-20">
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm z-20">
                                     <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Sales Density (${viewMode})</p>
                                     <div class="flex items-center gap-2">
                                         <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-xs font-semibold text-slate-600 mr-2">Low</span>
@@ -7958,7 +7958,7 @@
                                         <!-- Search Bar -->
                                         <div class="relative">
                                             <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
                                         </div>
                                     </div>
 
@@ -8145,7 +8145,7 @@
                             }
 
                             const tooltipHtml = `
-                                <div class="bg-slate-900 text-white text-xs rounded-xl py-2 px-3 shadow-md border border-slate-700 min-w-[120px]">
+                                <div class="bg-slate-900 text-white text-xs rounded-xl py-1.5 px-3 shadow-md border border-slate-700 min-w-[120px]">
                                     <div class="flex items-center gap-2 mb-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                         <p class="font-bold text-sm text-slate-50 tracking-wide">${propName}</p>
@@ -8200,7 +8200,7 @@
                             const colorName = bgClass.split('-')[1];
 
                             const tooltipHtml = `
-                                <div class="bg-slate-900/90 backdrop-blur-md text-white text-xs rounded-xl py-2 px-3 shadow-md border border-slate-700 min-w-[120px]">
+                                <div class="bg-slate-900/90 backdrop-blur-md text-white text-xs rounded-xl py-1.5 px-3 shadow-md border border-slate-700 min-w-[120px]">
                                     <div class="flex items-center gap-2 mb-1">
                                         <i data-lucide="crosshairs" class="w-3 h-3 text-${colorName}-400"></i>
                                         <p class="font-bold text-sm text-slate-50 tracking-wide">${name}</p>
@@ -9462,10 +9462,10 @@
                     <div class="pb-6 fade-in max-w-5xl mx-auto">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 gap-4">
                             <div>
-                                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
+                                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
                                 <p class="text-sm font-semibold text-slate-500 mt-1">Manage and circulate critical notices to all branch officers dynamically.</p>
                             </div>
-                            <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 flex items-center gap-2">
+                            <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-1.5.5 rounded-xl font-bold text-sm transition-all shadow-sm border border-slate-200/80 shadow-amber-500/20 active:scale-95 flex items-center gap-2">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i> Create Notice
                             </button>
                         </div>
@@ -9503,10 +9503,10 @@
                         <!-- LINKS SECTION -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-12 mb-5 gap-4">
                             <div>
-                                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 text-indigo-500 fill-indigo-100"></i> Important App Links</h2>
+                                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 text-indigo-500 fill-indigo-100"></i> Important App Links</h2>
                                 <p class="text-sm font-semibold text-slate-500 mt-1">Manage essential web or app shortcuts for field agents.</p>
                             </div>
-                            <button onclick="app.showAddLinkModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
+                            <button onclick="app.showAddLinkModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-1.5.5 rounded-xl font-bold text-sm transition-all shadow-sm border border-slate-200/80 shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i> Add Link
                             </button>
                         </div>
