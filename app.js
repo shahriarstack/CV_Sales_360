@@ -2314,7 +2314,7 @@
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                             <div>
-                                <h1 class="text-xs font-extrabold uppercase tracking-widest text-slate-700">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <h1 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
                                 <p class="text-xs text-slate-500">Overdue collection monitoring and performance tracking</p>
                             </div>
                             
@@ -2591,7 +2591,7 @@
                     <div class="max-w-7xl mx-auto fade-in">
                         <div class="mb-3 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
                             <div>
-                                <h1 class="text-xs font-extrabold uppercase tracking-widest text-slate-700">Manual Deliveries Tracker</h1>
+                                <h1 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase">Manual Deliveries Tracker</h1>
                                 <p class="text-xs text-slate-500">Unsynced sales logged manually by Field Officers</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
@@ -2658,7 +2658,7 @@
                                     <span class="p-1.5 ${brandBgLight} ${brandText} rounded-lg"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex items-baseline gap-1">
-                                    <span class="text-xs font-extrabold uppercase tracking-widest text-slate-700">${manualSales.length}</span>
+                                    <span class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase">${manualSales.length}</span>
                                     <span class="text-xs font-bold text-slate-400">Deliveries</span>
                                 </div>
                             </div>
@@ -3337,7 +3337,11 @@
 
                 const pendingManualCount = DB.sales.filter(s => s.is_manual && (s.approval_status === 'Pending Approval' || !s.approval_status)).length;
 
-                const html = `
+                
+                const yoyCardBgStyle = brandFilter === 'Mahindra' 
+                    ? 'style="background: linear-gradient(90deg, #991b1b 0%, #e5223e 50%, #f43f5e 100%);"' 
+                    : 'style="background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);"';
+    const html = `
                     <div class="fade-in pb-12">
                         ${app.getTransitionBannerHtml(currentFY)}
                         <!-- AM / Executive Header -->
@@ -3646,7 +3650,7 @@
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
                                 <div>
-                                    <h1 class="text-xs font-extrabold text-slate-700 tracking-widest uppercase">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
+                                    <h1 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
                                     <p class="text-xs font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -3690,7 +3694,7 @@
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="border border-white/20 p-3 rounded-xl shadow-lg mb-3 relative overflow-hidden text-white" style="background: linear-gradient(90deg, #d946ef 0%, #4f46e5 50%, #06b6d4 100%);">
+                    <div class="border border-white/20 p-3 rounded-xl shadow-lg mb-3 relative overflow-hidden text-white" ${yoyCardBgStyle}>
                         <div class="absolute -right-20 -top-20 bg-white/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
@@ -5758,7 +5762,7 @@
                         <div class="animate-fade-in pb-20">
                             <div class="flex items-center justify-between mb-3">
                                 <div>
-                                    <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 tracking-tight flex items-center gap-2">
+                                    <h2 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase tracking-tight flex items-center gap-2">
                                         <i data-lucide="bar-chart-2" class="w-6 h-6 ${brandText}"></i> Historical Analytics
                                     </h2>
                                     <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
@@ -5814,7 +5818,7 @@
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
-                                        <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-xs text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
                                 </div>
@@ -5822,7 +5826,7 @@
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
-                                        <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-xs text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
                                 </div>
@@ -8593,7 +8597,7 @@
                     <div class="pb-6 fade-in max-w-5xl mx-auto">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div>
-                                <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
+                                <h2 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
                                 <p class="text-xs font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage and circulate critical notices to all branch officers dynamically.</p>
                             </div>
                             <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-1.5 rounded-xl font-bold text-[10px] transition-all shadow-sm border border-slate-200/60 shadow-amber-500/20 active:scale-95 flex items-center gap-2">
@@ -8634,7 +8638,7 @@
                         <!-- LINKS SECTION -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-12 mb-3 gap-3">
                             <div>
-                                <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 ${brandText} fill-indigo-100"></i> Important App Links</h2>
+                                <h2 class="text-sm font-black tracking-[0.2em] text-slate-800 uppercase flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 ${brandText} fill-indigo-100"></i> Important App Links</h2>
                                 <p class="text-xs font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage essential web or app shortcuts for field agents.</p>
                             </div>
                             <button onclick="app.showAddLinkModal()" class="${brandBg} hover:${brandBg} text-white px-5 py-1.5 rounded-xl font-bold text-[10px] transition-all shadow-sm border border-slate-200/60 shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
