@@ -3800,11 +3800,11 @@
                             const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                             brandSummaryRowsHTML += `
-                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors text-center">
-                                    <td class="px-2 py-0.5 text-left font-bold text-slate-800 border-r border-slate-100 font-bold">
+                                <tr class="border-b border-slate-100/60 text-center group transition-all duration-150 ${b === 'Foton' ? 'hover:bg-foton-light/15 hover:shadow-[inset_3px_0_0_#041A54]' : 'hover:bg-mahindra-light/15 hover:shadow-[inset_3px_0_0_#E5223E]'}">
+                                    <td class="px-2 py-0.5 text-left font-bold text-slate-800 border-r ${brandBorderLight} sticky left-0 z-10 bg-white ${b === 'Foton' ? 'group-hover:bg-foton-light/10' : 'group-hover:bg-mahindra-light/10'} transition-colors">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-1.5 h-4 ${b === 'Foton' ? 'bg-foton' : 'bg-mahindra'} rounded-full"></div>
-                                            ${b}
+                                            <div class="w-1.5 h-4 ${b === 'Foton' ? 'bg-foton shadow-sm shadow-foton/30' : 'bg-mahindra shadow-sm shadow-mahindra/30'} rounded-full"></div>
+                                            <span class="font-extrabold">${b}</span>
                                         </div>
                                     </td>
                                     <td class="px-2 py-0.5 font-bold text-slate-600 bg-slate-50/50 border-r border-slate-100">${fyBgt}</td>
@@ -3830,16 +3830,16 @@
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                            <div class="glass border border-slate-100 border-t-4 border-t-${brandFilter === 'Mahindra' ? 'mahindra' : 'foton'} rounded-xl shadow-sm overflow-hidden mb-3 transition-all duration-300 hover:shadow-md">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
                                         <thead>
                                             <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[10px] border-b border-slate-200/60">
                                                 <th class="px-2 py-0.5.5 font-bold border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
                                                 <th class="px-2 py-0.5.5 font-extrabold text-center border-r border-slate-200/60" rowspan="2">Total FY Budget</th>
-                                                <th class="px-2 py-0.5 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200/60 font-bold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
-                                                <th class="px-2 py-0.5 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200/60 font-bold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
-                                                <th class="px-2 py-0.5 text-center bg-emerald-500/10 text-emerald-800 font-bold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
+                                                <th class="px-2 py-0.5 text-center bg-gradient-to-b from-violet-500/15 to-transparent text-violet-800 border-r ${brandBorderLight} font-extrabold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
+                                                <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-500/15 to-transparent text-amber-800 border-r ${brandBorderLight} font-extrabold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
+                                                <th class="px-2 py-0.5 text-center bg-gradient-to-b from-emerald-500/15 to-transparent text-emerald-800 font-extrabold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
                                             <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60 text-center">
                                                 <!-- YTD -->
@@ -3859,18 +3859,18 @@
                                         </thead>
                                         <tbody>
                                             ${brandSummaryRowsHTML}
-                                            <tr class="bg-slate-100/50 font-bold text-slate-800 text-center border-t-2 border-slate-200/60">
-                                                <td class="px-2 py-0.5 text-left border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100 font-bold">GRAND TOTAL</td>
-                                                <td class="px-2 py-0.5 border-r border-slate-200/60">${gTot.fyBgt}</td>
+                                            <tr class="${brandDark} font-bold text-white text-center border-t-2 ${brandBorderLight} shadow-md relative z-20">
+                                                <td class="px-2 py-0.5 text-left border-r ${brandBorderLight} sticky left-0 z-10 ${brandDark} font-extrabold text-white">GRAND TOTAL</td>
+                                                <td class="px-2 py-0.5 border-r ${brandBorderLight} bg-white/5">${gTot.fyBgt}</td>
                                                 
                                                 <td class="px-2 py-0.5">${isFirstMonth ? '-' : gTot.yBgt}</td>
                                                 <td class="px-2 py-0.5">${isFirstMonth ? '-' : gTot.yAct}</td>
                                                 <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gYAch)}">${isFirstMonth ? '-' : `${gYAch}%`}</td>
                                                 <td class="px-2 py-0.5 text-rose-600 border-r border-slate-200/60">${isFirstMonth ? '-' : gTot.ySht}</td>
 
-                                                <td class="px-2 py-0.5 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lBgt}</td>
-                                                <td class="px-2 py-0.5 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lAct}</td>
-                                                <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} bg-slate-50/30 border-r border-slate-200/60">${isFirstMonth ? '-' : `${gLAch}%`}</td>
+                                                <td class="px-2 py-0.5 bg-white/5">${isFirstMonth ? '-' : gTot.lBgt}</td>
+                                                <td class="px-2 py-0.5 bg-white/5">${isFirstMonth ? '-' : gTot.lAct}</td>
+                                                <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} border-r ${brandBorderLight} bg-white/5">${isFirstMonth ? '-' : `${gLAch}%`}</td>
 
                                                 <td class="px-2 py-0.5">${gTot.cBgt}</td>
                                                 <td class="px-2 py-0.5 ${brandText} ${brandBgLightHalf} font-extrabold">${gTot.cAct}</td>
@@ -3905,7 +3905,7 @@
 
                     <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
                     ${isAM ? `
-                    <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3 relative">
+                    <div class="glass border border-slate-100 border-t-4 border-t-${brandFilter === 'Mahindra' ? 'mahindra' : 'foton'} rounded-xl shadow-sm overflow-hidden mb-3 relative transition-all duration-300 hover:shadow-md">
                         <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/30">
                             <div>
@@ -4045,8 +4045,8 @@
                                 else { achBg = 'bg-rose-100'; achText = 'text-rose-700'; }
 
                                 return `
-                                                <tr class="hover:bg-slate-50/80 group transition-colors group text-center border-b border-slate-100/50">
-                                                    <td class="px-5 py-1 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                                <tr class="group transition-all duration-150 text-center border-b border-slate-100/50 ${brandFilter === 'Mahindra' ? 'hover:bg-mahindra-light/10 hover:shadow-[inset_3px_0_0_#E5223E]' : 'hover:bg-foton-light/10 hover:shadow-[inset_3px_0_0_#041A54]'}">
+                                                    <td class="px-5 py-1 text-left sticky left-0 z-10 border-r ${brandBorderLight} shadow-sm transition-colors ${brandFilter === 'Mahindra' ? 'bg-white group-hover:bg-mahindra-light/10' : 'bg-white group-hover:bg-foton-light/10'}">
                                                         <div class="flex items-center gap-1.5">
                                                             <div class="w-1 h-3.5 bg-${h}-500 rounded-full"></div>
                                                             <span class="font-bold text-slate-700 text-[11px]">${t.name}</span>
@@ -4367,8 +4367,8 @@
                                                 `;
 
                                                 return `
-                                                    <tr class="pulse-tr-premium text-center border-b border-slate-100 group">
-                                                        <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-200/60/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)] sticky-left">
+                                                    <tr class="pulse-tr-premium text-center border-b border-slate-100/60 group transition-all duration-150 ${brandFilter === 'Mahindra' ? 'hover:bg-mahindra-light/10 hover:shadow-[inset_3px_0_0_#E5223E]' : 'hover:bg-foton-light/10 hover:shadow-[inset_3px_0_0_#041A54]'}">
+                                                        <td class="px-2 py-0.5 text-left sticky left-0 z-10 border-r-2 ${brandBorderLight} shadow-sm transition-colors ${brandFilter === 'Mahindra' ? 'bg-white group-hover:bg-mahindra-light/10' : 'bg-white group-hover:bg-foton-light/10'}">
                                                             <div class="flex items-center gap-2">
                                                                 <span class="text-[10px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
                                                                 <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full shadow-sm"></div>
@@ -4497,7 +4497,7 @@
                                 const dynamicModels = activeModels.filter(m => modelsWithSales.has(m));
 
                                 return `
-                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-slate-200/60 border ${brandBorderLight} ring-1 ring-slate-200/50">
+                                    <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-t-4 border-t-${brandFilter === 'Mahindra' ? 'mahindra' : 'foton'} ${brandBorderLight} ring-1 ring-slate-200/50 transition-all duration-300 hover:shadow-md">
                                         <table class="w-full text-left text-xs whitespace-nowrap border-collapse bg-white">
                                             <thead>
                                                 <tr class="${brandDark} ${brandTextLight} uppercase tracking-widest text-[10px] border-b ${brandBorderLight}">
@@ -4575,8 +4575,8 @@
                                                         else { achBg = 'bg-red-100'; achText = 'text-red-700'; }
 
                                                         return `
-                                                            <tr class="hover:bg-slate-50/80 group transition-all duration-150 group text-center border-b border-slate-100">
-                                                                <td class="px-4 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/60/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
+                                                            <tr class="group transition-all duration-150 text-center border-b border-slate-100/60 ${brandFilter === 'Mahindra' ? 'hover:bg-mahindra-light/10 hover:shadow-[inset_3px_0_0_#E5223E]' : 'hover:bg-foton-light/10 hover:shadow-[inset_3px_0_0_#041A54]'}">
+                                                                <td class="px-4 py-0.5 text-left sticky left-0 z-10 border-r ${brandBorderLight} shadow-sm transition-colors ${brandFilter === 'Mahindra' ? 'bg-white group-hover:bg-mahindra-light/10' : 'bg-white group-hover:bg-foton-light/10'} font-bold text-slate-700">
                                                                     <div class="flex items-center justify-between gap-2">
                                                                         <div class="flex items-center gap-1.5">
                                                                             <span class="text-[10px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
@@ -4625,7 +4625,7 @@
                                                                     <span class="font-bold text-white text-xs font-bold uppercase tracking-widest">Grand Total</span>
                                                                 </div>
                                                             </td>
-                                                            <td class="px-2 py-0.5 font-bold text-amber-200 bg-gradient-to-b from-amber-900/40 to-amber-900/10 border-l border-r border-amber-900/30 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
+                                                            <td class="px-2 py-0.5 font-bold text-amber-200 bg-gradient-to-b from-amber-900/30 to-transparent border-l border-r border-amber-900/20 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
                                                             ${app.adminShowYTD ? `
                                                                 <td class="px-1.5 py-0.5 text-blue-100 font-extrabold bg-blue-900/20 text-center border-l border-blue-900/30">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
                                                                 <td class="px-1.5 py-0.5 font-bold text-white bg-blue-900/20 text-center">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
