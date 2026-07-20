@@ -1297,6 +1297,22 @@
             },
 
             renderUserManagement: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'users');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
@@ -1304,52 +1320,52 @@
 
                 const html = `
                     <div class="max-w-6xl mx-auto fade-in pb-12">
-                        <div class="mb-6 flex justify-between items-center">
+                        <div class="mb-3 flex justify-between items-center">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">User Management</h1>
-                                <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
+                                <h1 class="text-base font-bold tracking-tight font-bold text-slate-800">User Management</h1>
+                                <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Manage System Administrators, AMs, and MOs</p>
                             </div>
-                            <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
+                            <button onclick="app.showAddUserModal()" class="bg-gradient-to-r ${brandGradient} text-white shadow-sm hover:scale-[1.02] ${brandGlow} transition-all text-white px-2.5 py-1.5 rounded-lg text-[11px] font-medium shadow flex items-center gap-2 transition-colors">
                                 <i data-lucide="plus" class="w-4 h-4"></i> Add User
                             </button>
                         </div>
 
                         <!-- System Admin Section -->
-                        <div class="mb-8">
-                            <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <div class="mb-3">
+                            <h2 class="text-[9px] font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"><i data-lucide="shield" class="w-4 h-4"></i></div>
                                 Administrator Management
                             </h2>
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
-                                <table class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                            <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-wider">
                                         <tr>
-                                            <th class="px-6 py-4 font-semibold">User</th>
-                                            <th class="px-6 py-4 font-semibold">Role</th>
-                                            <th class="px-6 py-4 font-semibold">Status</th>
-                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">User</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Role</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Status</th>
+                                            <th class="px-2 py-0.5.5 font-semibold text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
                                         ${admins.map(u => `
                                             <tr class="hover:bg-slate-50 transition-colors">
-                                                <td class="px-6 py-4">
+                                                <td class="px-2 py-0.5.5">
                                                     <div class="font-bold text-slate-800">${u.name}</div>
                                                     <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
                                                 </td>
-                                                <td class="px-6 py-4">
+                                                <td class="px-2 py-0.5.5">
                                                     ${u.role === 'subadmin' 
-                                                        ? `<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-purple-200">Sub Admin</span>`
+                                                        ? `<span class="${brandBgLight} ${brandText} px-2 py-1 rounded text-[10px] font-bold uppercase border ${brandBorderLight}">Sub Admin</span>`
                                                         : `<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-rose-200">Admin</span>`
                                                     }
                                                 </td>
-                                                <td class="px-6 py-4">
+                                                <td class="px-2 py-0.5.5">
                                                     <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
                                                         <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 text-right">
-                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit Admin"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <td class="px-2 py-0.5.5 text-right">
+                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:${brandText} mx-1 transition-colors tooltip" title="Edit Admin"><i data-lucide="edit" class="w-4 h-4"></i></button>
                                                     ${u.id === app.currentUser.id ? `
                                                         <button class="text-slate-200 cursor-not-allowed mx-1" title="You cannot delete yourself" disabled><i data-lucide="trash-2" class="w-4 h-4 text-slate-200"></i></button>
                                                     ` : `
@@ -1364,43 +1380,43 @@
                         </div>
 
                         <!-- AM Section -->
-                        <div class="mb-8">
-                            <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                        <div class="mb-3">
+                            <h2 class="text-[9px] font-bold text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg ${brandBgLight} ${brandText} flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
                                 AM Management
                             </h2>
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
-                                <table class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                            <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-wider">
                                         <tr>
-                                            <th class="px-6 py-4 font-semibold">User</th>
-                                            <th class="px-6 py-4 font-semibold">Role & Area</th>
-                                            <th class="px-6 py-4 font-semibold">Territories</th>
-                                            <th class="px-6 py-4 font-semibold">Status</th>
-                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">User</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Role & Area</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Territories</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Status</th>
+                                            <th class="px-2 py-0.5.5 font-semibold text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
                                         ${ams.map(u => `
                                             <tr class="hover:bg-slate-50 transition-colors">
-                                                <td class="px-6 py-4">
+                                                <td class="px-2 py-0.5.5">
                                                     <div class="font-bold text-slate-800">${u.name}</div>
                                                     <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
                                                 </td>
-                                                <td class="px-6 py-4">
+                                                <td class="px-2 py-0.5.5">
                                                     <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-slate-200">${u.role}</span>
-                                                    ${u.area_name ? `<div class="text-xs text-slate-500 mt-1 font-semibold">${u.area_name}</div>` : ''}
+                                                    ${u.area_name ? `<div class="text-[9px] text-slate-500 mt-1 font-semibold">${u.area_name}</div>` : ''}
                                                 </td>
-                                                <td class="px-6 py-4 text-slate-600 text-xs">
+                                                <td class="px-2 py-0.5.5 text-slate-600 text-[9px]">
                                                     ${u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || '<span class="text-slate-400 italic">Global</span>'}
                                                 </td>
-                                                <td class="px-6 py-4">
+                                                <td class="px-2 py-0.5.5">
                                                     <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
                                                         <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 text-right">
-                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit AM"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                <td class="px-2 py-0.5.5 text-right">
+                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:${brandText} mx-1 transition-colors tooltip" title="Edit AM"><i data-lucide="edit" class="w-4 h-4"></i></button>
                                                     <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete AM"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                                 </td>
                                             </tr>
@@ -1413,23 +1429,23 @@
                         <!-- MO / Territory Section -->
                         <div>
                             <div class="mb-3 flex justify-between items-center">
-                                <h2 class="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                <h2 class="text-[9px] font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
                                     <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
                                     MO Management
                                 </h2>
-                                <button onclick="app.showAddTerritoryModal()" class="btn-liquid text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors">
+                                <button onclick="app.showAddTerritoryModal()" class="bg-gradient-to-r ${brandGradient} text-white shadow-sm hover:scale-[1.02] ${brandGlow} transition-all text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5.5 rounded-lg text-[9px] font-bold shadow-sm flex items-center gap-1.5 transition-colors">
                                     <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Territory
                                 </button>
                             </div>
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
-                                <table class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                            <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-wider">
                                         <tr>
-                                            <th class="px-6 py-4 font-semibold w-16">#</th>
-                                            <th class="px-6 py-4 font-semibold">Territory Name (Username)</th>
-                                            <th class="px-6 py-4 font-semibold">Officer Name</th>
-                                            <th class="px-6 py-4 font-semibold">Employee ID (Password)</th>
-                                            <th class="px-6 py-4 font-semibold text-right">Action</th>
+                                            <th class="px-2 py-0.5.5 font-semibold w-16">#</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Territory Name (Username)</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Officer Name</th>
+                                            <th class="px-2 py-0.5.5 font-semibold">Employee ID (Password)</th>
+                                            <th class="px-2 py-0.5.5 font-semibold text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
@@ -1437,24 +1453,24 @@
                     const so = DB.users.find(u => u.role === 'so' && u.territories.includes(t.id));
                     return `
                                                 <tr class="hover:bg-slate-50 transition-colors">
-                                                    <td class="px-6 py-4 font-semibold text-slate-400">${index + 1}</td>
-                                                    <td class="px-6 py-4">
+                                                    <td class="px-2 py-0.5.5 font-semibold text-slate-400">${index + 1}</td>
+                                                    <td class="px-2 py-0.5.5">
                                                         <div class="font-bold text-slate-800">${t.name}</div>
                                                         <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5 uppercase">ID: ${t.id}</div>
                                                     </td>
-                                                    <td class="px-6 py-4">
+                                                    <td class="px-2 py-0.5.5">
                                                         ${so ? `<div class="font-bold text-slate-700">${so.name}</div>` : `<span class="px-2 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Unassigned</span>`}
                                                     </td>
-                                                    <td class="px-6 py-4">
-                                                        ${so ? `<div class="font-mono text-xs font-semibold text-slate-600">${so.employee_id}</div>` : `<span class="text-slate-300">-</span>`}
+                                                    <td class="px-2 py-0.5.5">
+                                                        ${so ? `<div class="font-mono text-[9px] font-semibold text-slate-600">${so.employee_id}</div>` : `<span class="text-slate-300">-</span>`}
                                                     </td>
-                                                    <td class="px-6 py-4">
+                                                    <td class="px-2 py-0.5.5">
                                                         <div class="flex items-center justify-end gap-1">
                                                             ${so ? `
-                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:text-aci-blue p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit MO"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:${brandText} p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit MO"><i data-lucide="edit" class="w-4 h-4"></i></button>
                                                                 <button onclick="app.deleteUser('${so.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete MO"><i data-lucide="user-x" class="w-4 h-4"></i></button>
                                                             ` : `
-                                                                <button onclick="app.showAddUserModal(null, '${t.id}')" class="text-aci-blue hover:text-indigo-600 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md hover:bg-indigo-50 transition-colors">
+                                                                <button onclick="app.showAddUserModal(null, '${t.id}')" class="${brandText} hover:${brandText} font-bold text-[11px] uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md hover:${brandBgLight} transition-colors">
                                                                     <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign MO
                                                                 </button>
                                                             `}
@@ -2218,6 +2234,22 @@
             },
 
             renderAdminEMI: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'emi');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const isAM = app.currentUser.role === 'am';
@@ -2280,39 +2312,39 @@
                 const activeBrand = app.adminEMIBrandFilter || 'Total';
                 const html = `
                     <div class="max-w-6xl mx-auto fade-in">
-                        <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                             <div>
-                                <h1 class="text-xs font-extrabold uppercase tracking-widest text-slate-700">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
-                                <p class="text-xs text-slate-500">Overdue collection monitoring and performance tracking</p>
+                                <h1 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <p class="text-[9px] text-slate-500">Overdue collection monitoring and performance tracking</p>
                             </div>
                             
                             <div class="flex flex-wrap items-center gap-3">
                                 <!-- Territory Dropdown Filter -->
                                 <div class="relative group">
-                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-4 py-1.5 text-xs font-bold focus:outline-none focus:border-aci-blue appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
+                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-2 py-1 text-[9px] font-bold focus:outline-none focus:${brandBorder} appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
                                         <option value="All" ${app.adminEMITerritoryFilter === 'All' ? 'selected' : ''}>All Territories</option>
                                         ${activeTerritories.map(t => `<option value="${t.id}" ${app.adminEMITerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                     </select>
-                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:${brandText} transition-colors">
                                         <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                     </div>
                                 </div>
 
                                 <!-- Premium Brand Selection Pill -->
                                 <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/60 shadow-inner">
-                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-sm scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
+                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-2 py-1 rounded-xl text-[9px] font-bold transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-sm scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
                                         Total
                                     </button>
-                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-1.5 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-sm scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
+                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-2 py-1 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 ${brandBorder} shadow-sm scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
                                         <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
                                     </button>
-                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-1.5 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-sm scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
+                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-2 py-1 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-sm scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
                                         <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
                                     </button>
                                 </div>
 
                                 <!-- Capture Report Button -->
-                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-bold hover:from-indigo-700 hover:to-blue-700 shadow-sm hover:shadow-sm border border-slate-200/60 transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
+                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-2 py-1 bg-gradient-to-r ${brandGradient} text-white rounded-xl text-[9px] font-bold hover:from-indigo-700 hover:to-blue-700 shadow-sm hover:shadow-sm border border-slate-200/60 transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
                                     <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                                     Capture
                                 </button>
@@ -2320,42 +2352,42 @@
                         </div>
 
                         <!-- Progress Analytics Panel -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                             <!-- Card 1: Credit Collection Progress -->
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 p-3 relative overflow-hidden">
+                            <div class="glass p-2.5 rounded-xl shadow-sm border border-slate-100 mb-3 relative overflow-hidden">
                                 <div class="flex justify-between items-center mb-2.5">
                                     <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
+                                        <h4 class="text-[9px] font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
                                         <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Due vs Collection till now</p>
                                     </div>
-                                    <span class="text-xl font-bold text-indigo-600">${collectionProgressPercent}%</span>
+                                    <span class="text-[11px] font-bold tracking-tight font-bold ${brandText}">${collectionProgressPercent}%</span>
                                 </div>
                                 
                                 <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                    <div class="${brandBg} h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
                                 </div>
                                 
-                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                <div class="flex justify-between items-center text-[9px] font-semibold text-slate-500">
                                     <span>Collected: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
                                     <span>Total Due: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
                                 </div>
                             </div>
                             
                             <!-- Card 2: File Coverage Progress -->
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 p-3 relative overflow-hidden">
+                            <div class="glass p-2.5 rounded-xl shadow-sm border border-slate-100 mb-3 relative overflow-hidden">
                                 <div class="flex justify-between items-center mb-2.5">
                                     <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
+                                        <h4 class="text-[9px] font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
                                         <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Files vs Collected Files</p>
                                     </div>
-                                    <span class="text-xl font-bold text-emerald-600">${custProgressPercent}%</span>
+                                    <span class="text-[11px] font-bold tracking-tight font-bold text-emerald-600">${custProgressPercent}%</span>
                                 </div>
                                 
                                 <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
                                     <div class="bg-emerald-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
                                 </div>
                                 
-                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                <div class="flex justify-between items-center text-[9px] font-semibold text-slate-500">
                                     <span>Collected Files: <span class="text-slate-800 font-extrabold">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
                                     ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
                                 </div>
@@ -2363,31 +2395,31 @@
                         </div>
                         
                         <!-- Premium Compact KPI Row -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-3">
                             <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="users" class="absolute -right-2 -bottom-2 w-10 h-10 text-blue-200 opacity-50"></i>
                                 <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Total Cust.</p>
-                                <h3 class="text-xl font-extrabold text-blue-700">${totalCust}</h3>
+                                <h3 class="text-[11px] font-bold tracking-tight font-extrabold text-blue-700">${totalCust}</h3>
                             </div>
                             <div class="bg-green-50 border border-green-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="user-check" class="absolute -right-2 -bottom-2 w-10 h-10 text-green-200 opacity-50"></i>
                                 <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Paid Cust.</p>
-                                <h3 class="text-xl font-extrabold text-green-700">${paidCust}</h3>
+                                <h3 class="text-[11px] font-bold tracking-tight font-extrabold text-green-700">${paidCust}</h3>
                             </div>
                             <div class="bg-red-50 border border-red-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="user-x" class="absolute -right-2 -bottom-2 w-10 h-10 text-red-200 opacity-50"></i>
                                 <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Unpaid Cust.</p>
-                                <h3 class="text-xl font-extrabold text-red-700">${unpaidCust}</h3>
+                                <h3 class="text-[11px] font-bold tracking-tight font-extrabold text-red-700">${unpaidCust}</h3>
                             </div>
                             <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="pie-chart" class="absolute -right-2 -bottom-2 w-10 h-10 text-teal-200 opacity-50"></i>
                                 <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-0.5">Paid Cust %</p>
-                                <h3 class="text-xl font-extrabold text-teal-700">${paidCustPercent}%</h3>
+                                <h3 class="text-[11px] font-bold tracking-tight font-extrabold text-teal-700">${paidCustPercent}%</h3>
                             </div>
-                            <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                            <div class="${brandBgLight} border ${brandBorderLight} p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="wallet" class="absolute -right-2 -bottom-2 w-10 h-10 text-indigo-200 opacity-50"></i>
-                                <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-0.5 truncate" title="Total Installment Amount">Inst. Amt</p>
-                                <h3 class="text-base sm:text-lg font-extrabold text-indigo-700 truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</h3>
+                                <p class="text-[10px] font-bold ${brandText} uppercase tracking-wider mb-0.5 truncate" title="Total Installment Amount">Inst. Amt</p>
+                                <h3 class="text-base sm:text-lg font-extrabold ${brandText} truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</h3>
                             </div>
                             <div class="bg-cyan-50 border border-cyan-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="coins" class="absolute -right-2 -bottom-2 w-10 h-10 text-cyan-200 opacity-50"></i>
@@ -2397,78 +2429,78 @@
                             <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="trending-up" class="absolute -right-2 -bottom-2 w-10 h-10 text-amber-200 opacity-50"></i>
                                 <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-0.5">Collect %</p>
-                                <h3 class="text-xl font-extrabold text-amber-700">${collectionRate}%</h3>
+                                <h3 class="text-[11px] font-bold tracking-tight font-extrabold text-amber-700">${collectionRate}%</h3>
                             </div>
                         </div>
 
                         <!-- Territory Summary Table -->
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden overflow-x-auto mb-4">
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto mb-3">
                             <div class="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                                <h3 class="font-bold text-slate-800 text-xs">Territory Wise EMI Summary</h3>
+                                <h3 class="font-bold text-slate-800 text-[9px]">Territory Wise EMI Summary</h3>
                             </div>
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead class="border-b border-slate-200/60 text-slate-500 uppercase text-[10px] tracking-widest bg-slate-100/50">
                                     <tr>
-                                        <th class="px-4 py-1 font-bold">Sales Territory</th>
-                                        <th class="px-3 py-1 font-bold text-center">Total Customers</th>
-                                        <th class="px-3 py-1 font-bold text-center text-green-600">Paying Customers</th>
-                                        <th class="px-3 py-1 font-bold text-center text-red-500">Non-Paying Customers</th>
-                                        <th class="px-3 py-1 font-bold text-right">Total Due (Inst)</th>
-                                        <th class="px-3 py-1 font-bold text-right">Amount Collected</th>
-                                        <th class="px-4 py-1 font-bold text-center">Collection Rate %</th>
+                                        <th class="px-2 py-0.5 font-bold">Sales Territory</th>
+                                        <th class="px-2 py-0.5 font-bold text-center">Total Customers</th>
+                                        <th class="px-2 py-0.5 font-bold text-center text-green-600">Paying Customers</th>
+                                        <th class="px-2 py-0.5 font-bold text-center text-red-500">Non-Paying Customers</th>
+                                        <th class="px-2 py-0.5 font-bold text-right">Total Due (Inst)</th>
+                                        <th class="px-2 py-0.5 font-bold text-right">Amount Collected</th>
+                                        <th class="px-2 py-0.5 font-bold text-center">Collection Rate %</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Total Cust..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Paying..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Unpaid..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Due Amt..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Rate..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Total Cust..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Paying..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Unpaid..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Due Amt..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Rate..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     ${territorySummary.map(t => `
                                         <tr class="hover:bg-slate-50 transition-colors">
-                                            <td class="px-4 py-1 font-bold text-slate-800">${t.name}</td>
-                                            <td class="px-3 py-1 text-center font-semibold text-slate-700">${t.totalCust}</td>
-                                            <td class="px-3 py-1 text-center font-bold text-green-600">${t.payingCust}</td>
-                                            <td class="px-3 py-1 text-center font-bold text-red-500">${t.nonPayingCust}</td>
-                                            <td class="px-3 py-1 text-right font-semibold text-slate-700">${app.formatCurrency(t.tTotalDue)}</td>
-                                            <td class="px-3 py-1 text-right font-semibold text-aci-blue">${app.formatCurrency(t.tAmountCol)}</td>
-                                            <td class="px-4 py-1 text-center">
+                                            <td class="px-2 py-0.5 font-bold text-slate-800">${t.name}</td>
+                                            <td class="px-2 py-0.5 text-center font-semibold text-slate-700">${t.totalCust}</td>
+                                            <td class="px-2 py-0.5 text-center font-bold text-green-600">${t.payingCust}</td>
+                                            <td class="px-2 py-0.5 text-center font-bold text-red-500">${t.nonPayingCust}</td>
+                                            <td class="px-2 py-0.5 text-right font-semibold text-slate-700">${app.formatCurrency(t.tTotalDue)}</td>
+                                            <td class="px-2 py-0.5 text-right font-semibold ${brandText}">${app.formatCurrency(t.tAmountCol)}</td>
+                                            <td class="px-2 py-0.5 text-center">
                                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.tColRate >= 80 ? 'bg-green-100 text-green-700 border border-green-200' : (t.tColRate >= 50 ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-red-100 text-red-700 border border-red-200')}">
                                                     ${t.tColRate}%
                                                 </span>
                                             </td>
                                         </tr>
                                      `).join('')}
-                                     ${territorySummary.length === 0 ? '<tr><td colspan="7" class="px-3 py-1.5 text-center text-slate-500">No territory data available.</td></tr>' : ''}
+                                     ${territorySummary.length === 0 ? '<tr><td colspan="7" class="px-2 py-0.5.5 text-center text-slate-500">No territory data available.</td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden overflow-x-auto">
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
                             <div class="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                                <h3 class="font-bold text-slate-800 text-xs">Account Level Breakdown</h3>
+                                <h3 class="font-bold text-slate-800 text-[9px]">Account Level Breakdown</h3>
                             </div>
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead class="border-b border-slate-200/60 text-slate-500 uppercase text-[10px] tracking-widest bg-slate-100/50">
                                     <tr>
-                                        <th class="px-4 py-1 font-bold">Customer</th>
-                                        <th class="px-4 py-1 font-bold">Territory</th>
-                                        <th class="px-4 py-1 font-bold">EMI Size</th>
-                                        <th class="px-4 py-1 font-bold">Total Due (EMI+Overdue)</th>
-                                        <th class="px-4 py-1 font-bold">Collected</th>
-                                        <th class="px-4 py-1 font-bold">Status</th>
+                                        <th class="px-2 py-0.5 font-bold">Customer</th>
+                                        <th class="px-2 py-0.5 font-bold">Territory</th>
+                                        <th class="px-2 py-0.5 font-bold">EMI Size</th>
+                                        <th class="px-2 py-0.5 font-bold">Total Due (EMI+Overdue)</th>
+                                        <th class="px-2 py-0.5 font-bold">Collected</th>
+                                        <th class="px-2 py-0.5 font-bold">Status</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter EMI..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Total Due..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Status..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter EMI..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Total Due..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Status..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -2477,15 +2509,15 @@
                     const isCleared = e.collected >= totalDue;
                     return `
                                         <tr class="hover:bg-slate-50 transition-colors">
-                                            <td class="px-4 py-1">
+                                            <td class="px-2 py-0.5">
                                                 <div class="font-bold text-slate-800">${e.customer}</div>
                                                 <div class="text-[10px] text-slate-500">${e.customer_code || 'N/A'}</div>
                                             </td>
-                                            <td class="px-4 py-1 text-slate-600 text-xs">${DB.territories.find(t => t.id === e.territory_id)?.name || 'Unknown'}</td>
-                                            <td class="px-4 py-1 text-slate-700 font-semibold">${app.formatCurrency(e.installment)}</td>
-                                            <td class="px-4 py-1 text-red-600 font-semibold">${app.formatCurrency(totalDue)}</td>
-                                            <td class="px-4 py-1 text-green-600 font-semibold">${app.formatCurrency(e.collected)}</td>
-                                            <td class="px-4 py-1">
+                                            <td class="px-2 py-0.5 text-slate-600 text-[9px]">${DB.territories.find(t => t.id === e.territory_id)?.name || 'Unknown'}</td>
+                                            <td class="px-2 py-0.5 text-slate-700 font-semibold">${app.formatCurrency(e.installment)}</td>
+                                            <td class="px-2 py-0.5 text-red-600 font-semibold">${app.formatCurrency(totalDue)}</td>
+                                            <td class="px-2 py-0.5 text-green-600 font-semibold">${app.formatCurrency(e.collected)}</td>
+                                            <td class="px-2 py-0.5">
                                                 ${isCleared
                             ? '<span class="text-green-600 text-[10px] font-bold flex items-center gap-1 bg-green-50 px-2 py-0.5 rounded w-max border border-green-100"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Cleared</span>'
                             : '<span class="text-amber-600 text-[10px] font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded w-max border border-amber-100"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>'
@@ -2493,7 +2525,7 @@
                                             </td>
                                         </tr>
                                     `}).join('')}
-                                    ${emiData.length === 0 ? '<tr><td colspan="6" class="px-3 py-1.5 text-center text-slate-500">No EMI data found.</td></tr>' : ''}
+                                    ${emiData.length === 0 ? '<tr><td colspan="6" class="px-2 py-0.5.5 text-center text-slate-500">No EMI data found.</td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
@@ -2504,6 +2536,22 @@
             },
 
             renderAdminManualDeliveries: (startDate = null, endDate = null) => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'manual');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 
@@ -2541,24 +2589,24 @@
 
                 const html = `
                     <div class="max-w-7xl mx-auto fade-in">
-                        <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
+                        <div class="mb-3 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
                             <div>
-                                <h1 class="text-xs font-extrabold uppercase tracking-widest text-slate-700">Manual Deliveries Tracker</h1>
-                                <p class="text-xs text-slate-500">Unsynced sales logged manually by Field Officers</p>
+                                <h1 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700">Manual Deliveries Tracker</h1>
+                                <p class="text-[9px] text-slate-500">Unsynced sales logged manually by Field Officers</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
                                 <!-- Creative Sale Type Selector Button Group -->
                                 <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner">
                                     <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()"
-                                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 ${
+                                            class="px-3.5 py-1.5 rounded-lg text-[9px] font-bold tracking-wider transition-all duration-300 ${
                                                 app.manualSaleTypeFilter === 'All'
-                                                ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/60/30'
+                                                ? 'bg-white ${brandText} shadow-sm border border-slate-200/60/30'
                                                 : 'text-slate-500 hover:text-slate-800'
                                             }">
                                         All
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()"
-                                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 Token1 ${
+                                            class="px-3.5 py-1.5 rounded-lg text-[9px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 Token1 ${
                                                 app.manualSaleTypeFilter === 'New Sale'
                                                 ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
                                                 : 'text-slate-500 hover:text-slate-800'
@@ -2567,7 +2615,7 @@
                                         New Sales
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()"
-                                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 Token2 ${
+                                            class="px-3.5 py-1.5 rounded-lg text-[9px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 Token2 ${
                                                 app.manualSaleTypeFilter === 'Resale'
                                                 ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/20'
                                                 : 'text-slate-500 hover:text-slate-800'
@@ -2578,23 +2626,23 @@
                                 </div>
 
                                 <!-- Date Range Selector -->
-                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200/60 shadow-sm transition-all hover:border-aci-blue">
+                                <div class="flex items-center gap-2 bg-white px-2 py-0.5.5 rounded-lg border border-slate-200/60 shadow-sm transition-all hover:${brandBorder}">
                                     <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
                                     <div class="flex flex-col">
                                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Date Range</span>
                                         <div class="flex items-center gap-1.5">
-                                            <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="Start Date">
+                                            <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="text-[9px] focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="Start Date">
                                             <span class="text-slate-300 font-bold">-</span>
-                                            <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="End Date">
+                                            <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="text-[9px] focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="End Date">
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:shadow-sm border border-slate-200/60 flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 px-2 py-1 rounded-lg text-[9px] font-bold shadow-sm hover:shadow-sm border border-slate-200/60 flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
                                     <i data-lucide="download" class="w-4 h-4"></i> Export CSV
                                 </button>
 
-                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
+                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-2 py-1 rounded-lg text-[9px] font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i> Clear Data
                                 </button>
                             </div>
@@ -2602,21 +2650,21 @@
 
 
                         <!-- Minimal & Creative Summary Section -->
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                             <!-- Total Entries -->
-                            <div class="bg-gradient-to-br from-indigo-50/50 to-slate-50 border border-indigo-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="bg-gradient-to-br from-indigo-50/50 to-slate-50 border ${brandBorderLight} rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-extrabold text-indigo-500 uppercase tracking-wider">Total Logged</span>
-                                    <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
+                                    <span class="text-[10px] font-extrabold ${brandText} uppercase tracking-wider">Total Logged</span>
+                                    <span class="p-1.5 ${brandBgLight} ${brandText} rounded-lg"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex items-baseline gap-1">
-                                    <span class="text-xs font-extrabold uppercase tracking-widest text-slate-700">${manualSales.length}</span>
+                                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700">${manualSales.length}</span>
                                     <span class="text-[10px] font-bold text-slate-400">Deliveries</span>
                                 </div>
                             </div>
 
                             <!-- Pending Sync -->
-                            <div class="bg-white border border-slate-200/60 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="glass border border-slate-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[10px] font-extrabold text-amber-500 uppercase tracking-wider">Pending Sync</span>
                                     <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg relative flex items-center justify-center">
@@ -2625,82 +2673,82 @@
                                     </span>
                                 </div>
                                 <div class="mt-2 flex items-baseline gap-1">
-                                    <span class="text-xl font-bold text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
+                                    <span class="text-[11px] font-bold tracking-tight font-bold text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
                                     <span class="text-[10px] font-bold text-slate-400">Pending</span>
                                 </div>
                             </div>
 
                             <!-- Brand Share -->
-                            <div class="bg-white border border-slate-200/60 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="glass border border-slate-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[10px] font-extrabold text-emerald-500 uppercase tracking-wider">Brand Share</span>
                                     <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="tag" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2.5 flex items-center justify-between">
                                     <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-slate-800">${manualSales.filter(s => s.brand === 'Foton').length}</span>
+                                        <span class="text-[9px] font-bold text-slate-800">${manualSales.filter(s => s.brand === 'Foton').length}</span>
                                         <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Foton</span>
                                     </div>
                                     <div class="h-6 w-px bg-slate-100"></div>
                                     <div class="flex flex-col items-end">
-                                        <span class="text-xs font-bold text-slate-800">${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
+                                        <span class="text-[9px] font-bold text-slate-800">${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
                                         <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Mahindra</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Combined Trade Value -->
-                            <div class="bg-white border border-slate-200/60 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="glass border border-slate-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
                                     <span class="p-1.5 bg-slate-50 text-slate-600 rounded-lg"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex flex-col">
-                                    <span class="text-xs font-bold text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
+                                    <span class="text-[9px] font-bold text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
                                     <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Est. Trade Value</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden overflow-x-auto">
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
                             <div class="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                                <h3 class="font-bold text-slate-800 text-xs">Pending Actuals Integration <span class="bg-aci-blue text-white px-2 py-0.5 rounded-full text-xs ml-2">${manualSales.length} Entries</span></h3>
+                                <h3 class="font-bold text-slate-800 text-[9px]">Pending Actuals Integration <span class="${brandBg} text-white px-2 py-0.5 rounded-full text-[9px] ml-2">${manualSales.length} Entries</span></h3>
                             </div>
                             <table class="w-full text-left text-[11px] whitespace-nowrap min-w-[1000px]">
                                 <thead class="border-b border-slate-200/60 text-slate-500 uppercase text-[10px] tracking-widest bg-slate-100/50">
                                     <tr>
-                                        <th class="px-3 py-1 font-bold text-center w-12">S/N</th>
-                                        <th class="px-3 py-1 font-bold">Territory & Area</th>
-                                        <th class="px-3 py-1 font-bold">Customer Details</th>
-                                        <th class="px-3 py-1 font-bold">Product Info</th>
-                                        <th class="px-3 py-1 font-bold text-right">Financials (BDT)</th>
-                                        <th class="px-3 py-1 font-bold">Offers & Gifts</th>
-                                        <th class="px-3 py-1 font-bold">Logged On</th>
-                                        <th class="px-3 py-1 font-bold text-center">Status</th>
-                                        <th class="px-3 py-1 font-bold text-right">Actions</th>
+                                        <th class="px-2 py-0.5 font-bold text-center w-12">S/N</th>
+                                        <th class="px-2 py-0.5 font-bold">Territory & Area</th>
+                                        <th class="px-2 py-0.5 font-bold">Customer Details</th>
+                                        <th class="px-2 py-0.5 font-bold">Product Info</th>
+                                        <th class="px-2 py-0.5 font-bold text-right">Financials (BDT)</th>
+                                        <th class="px-2 py-0.5 font-bold">Offers & Gifts</th>
+                                        <th class="px-2 py-0.5 font-bold">Logged On</th>
+                                        <th class="px-2 py-0.5 font-bold text-center">Status</th>
+                                        <th class="px-2 py-0.5 font-bold text-right">Actions</th>
                                     </tr>
                                     <tr class="bg-slate-50/80">
-                                        <th class="px-3 py-1 border-b border-slate-200/60 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60">
-                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60">
+                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
                                                 <option value="">All Brands</option>
                                                 <option value="foton">Foton</option>
                                                 <option value="mahindra">Mahindra</option>
                                             </select>
                                         </th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60 text-right"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60"><span class="text-[10px] text-slate-400 font-normal">Use top filter</span></th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60 text-center">
-                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60 text-right"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60"><span class="text-[10px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60"><span class="text-[10px] text-slate-400 font-normal">Use top filter</span></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60 text-center">
+                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200/60 focus:outline-none focus:${brandBorder} focus:ring-1 ${brandFocus} bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
                                                 <option value="">All Status</option>
                                                 <option value="pending approval">Pending</option>
                                                 <option value="done">Done</option>
                                             </select>
                                         </th>
-                                        <th class="px-3 py-1 border-b border-slate-200/60 text-right"><span class="text-[10px] text-slate-400 font-normal">-</span></th>
+                                        <th class="px-2 py-0.5 border-b border-slate-200/60 text-right"><span class="text-[10px] text-slate-400 font-normal">-</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -2708,10 +2756,10 @@
                                         const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
                                         return `
                                             <tr class="hover:bg-slate-50 transition-colors group">
-                                                <td class="px-3 py-1 border-b border-slate-100 text-center font-bold text-slate-400">
+                                                <td class="px-2 py-0.5 border-b border-slate-100 text-center font-bold text-slate-400">
                                                     ${idx + 1}
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                <td class="px-2 py-0.5 border-b border-slate-100">
                                                     <div class="font-bold text-slate-800 flex items-center gap-2">
                                                         ${terrName}
                                                     </div>
@@ -2720,16 +2768,16 @@
                                                         ${s.upazila || 'N/A'} ${s.district ? `(${s.district})` : ''}
                                                     </div>
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                <td class="px-2 py-0.5 border-b border-slate-100">
                                                     <div class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
                                                     <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                                        <span class="text-[10px] font-bold text-aci-blue bg-blue-50 px-1 py-0.2 rounded">ID: ${s.customer_id}</span>
+                                                        <span class="text-[10px] font-bold ${brandText} bg-blue-50 px-1 py-0.2 rounded">ID: ${s.customer_id}</span>
                                                         ${s.chassis_no ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded" title="Chassis No">Chassis: ${s.chassis_no}</span>` : ''}
                                                         ${s.old_customer_id ? `<span class="text-[8px] font-semibold text-slate-500 bg-slate-100 px-1 py-0.2 rounded" title="Old Customer ID">Old: ${s.old_customer_id}</span>` : ''}
-                                                        ${s.purpose_of_use ? `<span class="text-[8px] font-bold text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded flex items-center gap-0.5" title="Purpose of Use"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> ${s.purpose_of_use}</span>` : ''}
+                                                        ${s.purpose_of_use ? `<span class="text-[8px] font-bold ${brandText} ${brandBgLight} px-1 py-0.2 rounded flex items-center gap-0.5" title="Purpose of Use"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> ${s.purpose_of_use}</span>` : ''}
                                                     </div>
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                <td class="px-2 py-0.5 border-b border-slate-100">
                                                     <div class="font-bold text-slate-700 text-[11px]">${s.model}</div>
                                                     <div class="flex items-center gap-1 mt-0.5">
                                                         <img src="${s.brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-2.5 object-contain">
@@ -2737,16 +2785,16 @@
                                                         <span class="px-1 py-0.2 rounded-full text-[8px] font-bold ml-1 ${s.sale_type === 'New Sale' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}" data-sale-type-badge="${s.sale_type}">${s.sale_type}</span>
                                                     </div>
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100 text-right">
+                                                <td class="px-2 py-0.5 border-b border-slate-100 text-right">
                                                     <div class="text-[11px] font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
                                                     <div class="text-[10px] text-slate-600 font-medium mt-0.2">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
                                                     <div class="text-[10px] text-slate-400 font-medium mt-0.2">Tenure: ${s.financials?.tenure || 0} Mos</div>
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100">
+                                                <td class="px-2 py-0.5 border-b border-slate-100">
                                                     ${s.discounts?.amount > 0 ? `<div class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5"><i data-lucide="tags" class="w-2.5 h-2.5"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[10px] text-slate-400 italic">No Discount</div>'}
-                                                    ${s.discounts?.gift ? `<div class="text-[10px] text-indigo-600 font-bold mt-0.5 flex items-center gap-0.5"><i data-lucide="gift" class="w-2.5 h-2.5"></i> ${s.discounts.gift}</div>` : ''}
+                                                    ${s.discounts?.gift ? `<div class="text-[10px] ${brandText} font-bold mt-0.5 flex items-center gap-0.5"><i data-lucide="gift" class="w-2.5 h-2.5"></i> ${s.discounts.gift}</div>` : ''}
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100 text-[10px] text-slate-500 font-medium whitespace-nowrap">
+                                                <td class="px-2 py-0.5 border-b border-slate-100 text-[10px] text-slate-500 font-medium whitespace-nowrap">
                                                     <div class="flex flex-col gap-0.5">
                                                         <div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded w-max">
                                                             <i data-lucide="calendar-clock" class="w-3 h-3 text-slate-400"></i>
@@ -2754,13 +2802,13 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100 text-center">
+                                                <td class="px-2 py-0.5 border-b border-slate-100 text-center">
                                                     <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${s.approval_status === 'Done' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
                                                         ${s.approval_status || 'Pending Approval'}
                                                     </span>
                                                     ${s.admin_comments ? `<div class="text-[8px] text-slate-400 mt-0.5 truncate max-w-[100px] mx-auto" title="${s.admin_comments}">Note: ${s.admin_comments}</div>` : ''}
                                                 </td>
-                                                <td class="px-3 py-1 border-b border-slate-100 text-right">
+                                                <td class="px-2 py-0.5 border-b border-slate-100 text-right">
                                                     <div class="flex items-center justify-end gap-1.5">
                                                         ${s.approval_status !== 'Done' ? `
                                                             <button onclick="app.approveManualDelivery('${s.id}')" title="Approve" class="p-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition-colors shadow-sm">
@@ -3061,6 +3109,22 @@
 
 
             renderAdminDashboard: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'dashboard');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 app.setupSidebar();
@@ -3110,7 +3174,7 @@
                 const fotonUnits = currFYSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                 const mahindraUnits = currFYSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
-                const brandFilter = app.adminBrandTab || 'Foton';
+                
                 const activeModels = DB.models.filter(m => m.brand === brandFilter).map(m => m.name);
 
                 // Calculate Monthly Budget for the current view
@@ -3357,10 +3421,10 @@
                              return `
                                  <!-- YTD Overall -->
                                  <div class="glass p-2.5 rounded-xl shadow-sm border border-slate-100 mb-3 relative overflow-hidden">
-                                     <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
+                                     <div class="absolute -right-10 -top-10 ${brandBg}/5 w-32 h-32 rounded-full blur-2xl"></div>
                                      <div class="flex justify-between items-center mb-3">
-                                         <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                                             <i data-lucide="bar-chart-2" class="w-4 h-4 text-aci-blue/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
+                                         <h3 class="font-bold text-slate-800 text-[11px] flex items-center gap-2">
+                                             <i data-lucide="bar-chart-2" class="w-4 h-4 ${brandText}/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
                                              ${isTransitionMode ? `Last Fiscal Year Overall Area (${concludingFY})` : `YTD Overall Area (${currentFY})`}
                                          </h3>
                                          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
@@ -3372,7 +3436,7 @@
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
                                             <p class="text-[9px] text-slate-400 uppercase font-semibold">Sales</p>
-                                            <p class="font-bold text-aci-blue text-[10px]">${tillLastMonthSalesUnits}</p>
+                                            <p class="font-bold ${brandText} text-[10px]">${tillLastMonthSalesUnits}</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
                                             <p class="text-[9px] text-slate-400 uppercase font-semibold">Ach%</p>
@@ -3416,7 +3480,7 @@
                                                     <div class="grid grid-cols-7 gap-1 px-1.5 py-1 bg-slate-50/50 rounded-lg border border-slate-100 items-center hover:bg-slate-100/50 transition-colors">
                                                         <div class="text-[9px] font-bold text-slate-700 truncate">${t.name}</div>
                                                         <div class="text-[9px] font-bold text-slate-600 text-center">${tBudgetYTD}</div>
-                                                        <div class="text-[9px] font-bold text-aci-blue text-center">${tSalesYTD}</div>
+                                                        <div class="text-[9px] font-bold ${brandText} text-center">${tSalesYTD}</div>
                                                         <div class="text-[9px] font-bold ${tAch >= 100 ? 'text-emerald-600' : 'text-amber-500'} text-center">${tAch}%</div>
                                                         <div class="text-[9px] font-bold text-red-500 text-center">${Math.max(0, tBudgetYTD - tSalesYTD)}</div>
                                                         <div class="text-[9px] font-bold text-slate-400 text-center">${tSply}</div>
@@ -3438,7 +3502,7 @@
                                     <div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center mb-3 relative z-10">
                                         <div><p class="text-[9px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-lg text-white">${monthlyBudget}</p></div>
                                         <div><p class="text-[9px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-lg text-white">${totalMonthlyProjection}</p></div>
-                                        <div class="col-span-2 border-l border-white/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-xl text-yellow-300">${currMonthSalesTotal}</p></div>
+                                        <div class="col-span-2 border-l border-white/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-[11px] font-bold tracking-tight text-yellow-300">${currMonthSalesTotal}</p></div>
                                         
                                         <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-[10px] text-green-300">${ach(currMonthSalesTotal, monthlyBudget)}%</p></div>
                                         <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-[10px] text-amber-300">${ach(currMonthSalesTotal, totalMonthlyProjection)}%</p></div>
@@ -3495,9 +3559,9 @@
 
                             return `
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-white shadow-sm mb-3 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                                    <div class="absolute right-0 top-0 w-32 h-32 ${brandBg}/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-3">
-                                        <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                                        <div class="p-2 bg-indigo-100 rounded-lg ${brandText}"><i data-lucide="zap" class="w-4 h-4"></i></div>
                                         <h3 class="font-bold text-slate-800 text-[10px] tracking-tight">${app.currentMonth} Pacing Monitor</h3>
                                         <span class="ml-auto bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-slate-200/60 uppercase">Day ${currentDay} of ${daysInMonth}</span>
                                     </div>
@@ -3509,11 +3573,11 @@
                                                 <span class="text-[10px] font-bold ${isAhead ? 'text-emerald-600' : 'text-amber-500'}">${monthAch}%</span>
                                             </div>
                                             <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
-                                                <div class="h-full bg-indigo-600 rounded-full" style="width: ${monthAch}%"></div>
+                                                <div class="h-full ${brandBg} rounded-full" style="width: ${monthAch}%"></div>
                                             </div>
                                             <div class="flex justify-between mt-1">
                                                 <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Budget: ${currMonthBudget}</span>
-                                                <span class="text-[8px] font-bold text-indigo-500 uppercase tracking-tighter">${monthProgress}% Time Elapsed</span>
+                                                <span class="text-[8px] font-bold ${brandText} uppercase tracking-tighter">${monthProgress}% Time Elapsed</span>
                                             </div>
                                         </div>
 
@@ -3605,8 +3669,8 @@
                                     ` : ''}
 
                                     <div class="flex bg-slate-200/50 p-1 rounded-xl flex-1 sm:flex-none border border-slate-200/60">
-                                        <button onclick="app.adminSaleTypeTab='New Sale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'New Sale' ? 'bg-white shadow-sm text-aci-blue' : 'text-slate-500 hover:text-slate-800'}">NEW</button>
-                                        <button onclick="app.adminSaleTypeTab='Resale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'Resale' ? 'bg-white shadow-sm text-aci-blue' : 'text-slate-500 hover:text-slate-800'}">RESALE</button>
+                                        <button onclick="app.adminSaleTypeTab='New Sale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'New Sale' ? 'bg-white shadow-sm ${brandText}' : 'text-slate-500 hover:text-slate-800'}">NEW</button>
+                                        <button onclick="app.adminSaleTypeTab='Resale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'Resale' ? 'bg-white shadow-sm ${brandText}' : 'text-slate-500 hover:text-slate-800'}">RESALE</button>
                                     </div>
                                     ${!isAM ? `
                                     <button onclick="app.downloadRawCSV()" class="p-2.5 bg-white border border-slate-200/60 text-slate-600 rounded-xl shadow-sm hover:bg-slate-50 transition-all active:scale-95">
@@ -3619,18 +3683,18 @@
 
                     <!-- YOY Trajectory Chart -->
                     <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-white shadow-sm mb-3 relative overflow-hidden">
-                        <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="absolute -right-20 -top-20 ${brandBg}/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
                             <div class="lg:col-span-2 flex flex-col justify-between">
                                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                                     <div>
-                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 text-indigo-500"></i> Performance vs Budget & YOY</h3>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="git-compare" class="w-4 h-4 ${brandText}"></i> Performance vs Budget & YOY</h3>
                                         <p class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5">Month by Month Comparative Velocity & Pacing</p>
                                     </div>
                                     <div class="flex items-center gap-3 flex-wrap">
                                         <label class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200/60 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
-                                            <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-3 h-3">
+                                            <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 ${brandText} focus:ring-indigo-500 w-3 h-3">
                                             <span class="text-[9px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
                                         </label>
 
@@ -3649,12 +3713,12 @@
                                         <!-- Creative Brand Logo Toggle -->
                                         <div class="flex items-center bg-slate-100/80 p-1 rounded-lg border border-slate-200/60 shadow-inner">
                                             <button onclick="app.yoyBrandTab='Foton'; app.renderAdminDashboard()" 
-                                                    class="relative flex items-center justify-center px-4 py-1.5 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                    class="relative flex items-center justify-center px-2 py-1 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Foton' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
                                                 <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-6 object-contain" alt="Foton">
                                             </button>
                                             <div class="w-px h-5 bg-slate-300 mx-1"></div>
                                             <button onclick="app.yoyBrandTab='Mahindra'; app.renderAdminDashboard()" 
-                                                    class="relative flex items-center justify-center px-4 py-1.5 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
+                                                    class="relative flex items-center justify-center px-2 py-1 rounded-md transition-all duration-300 ${app.yoyBrandTab === 'Mahindra' ? 'bg-white shadow-sm border border-slate-200/60 scale-105 z-10' : 'opacity-50 hover:opacity-100 grayscale hover:grayscale-0'}">
                                                 <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-5 object-contain" alt="Mahindra">
                                             </button>
                                         </div>
@@ -3670,11 +3734,11 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <div>
                                         <h4 class="text-[10px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                                            <i data-lucide="map" class="w-3.5 h-3.5 text-indigo-500"></i> ${app.currentMonth} Sales Map
+                                            <i data-lucide="map" class="w-3.5 h-3.5 ${brandText}"></i> ${app.currentMonth} Sales Map
                                         </h4>
                                         <p class="text-[9px] text-slate-400 font-medium mt-0.5">District wise actual units</p>
                                     </div>
-                                    <span id="minimap-sales-total" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-bold rounded-full border border-indigo-100">0 Units</span>
+                                    <span id="minimap-sales-total" class="px-2 py-0.5 ${brandBgLight} ${brandText} text-[9px] font-bold rounded-full border ${brandBorderLight}">0 Units</span>
                                 </div>
                                 <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[250px]" style="height: 250px; min-height: 250px;"></div>
                             </div>
@@ -3729,25 +3793,25 @@
 
                             brandSummaryRowsHTML += `
                                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors text-center">
-                                    <td class="px-3 py-1 text-left font-bold text-slate-800 border-r border-slate-100 font-bold">
+                                    <td class="px-2 py-0.5 text-left font-bold text-slate-800 border-r border-slate-100 font-bold">
                                         <div class="flex items-center gap-2">
                                             <div class="w-1.5 h-4 ${b === 'Foton' ? 'bg-foton' : 'bg-mahindra'} rounded-full"></div>
                                             ${b}
                                         </div>
                                     </td>
-                                    <td class="px-3 py-1 font-bold text-slate-600 bg-slate-50/50 border-r border-slate-100">${fyBgt}</td>
-                                          <td class="px-3 py-1 font-medium text-slate-500">${isFirstMonth ? '-' : yBgt}</td>
-                                    <td class="px-3 py-1 font-bold text-slate-800">${isFirstMonth ? '-' : yAct}</td>
-                                    <td class="px-3 py-1 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(yAch)}">${isFirstMonth ? '-' : `${yAch}%`}</td>
-                                    <td class="px-3 py-1 font-bold text-rose-500 border-r border-slate-100">${isFirstMonth ? '-' : ySht}</td>
+                                    <td class="px-2 py-0.5 font-bold text-slate-600 bg-slate-50/50 border-r border-slate-100">${fyBgt}</td>
+                                          <td class="px-2 py-0.5 font-medium text-slate-500">${isFirstMonth ? '-' : yBgt}</td>
+                                    <td class="px-2 py-0.5 font-bold text-slate-800">${isFirstMonth ? '-' : yAct}</td>
+                                    <td class="px-2 py-0.5 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(yAch)}">${isFirstMonth ? '-' : `${yAch}%`}</td>
+                                    <td class="px-2 py-0.5 font-bold text-rose-500 border-r border-slate-100">${isFirstMonth ? '-' : ySht}</td>
 
-                                    <td class="px-3 py-1 font-medium text-slate-500 bg-slate-50/30">${isFirstMonth ? '-' : lBgt}</td>
-                                    <td class="px-3 py-1 font-bold text-slate-800 bg-slate-50/30">${isFirstMonth ? '-' : lAct}</td>
-                                    <td class="px-3 py-1 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${isFirstMonth ? '-' : `${lAch}%`}</td>
+                                    <td class="px-2 py-0.5 font-medium text-slate-500 bg-slate-50/30">${isFirstMonth ? '-' : lBgt}</td>
+                                    <td class="px-2 py-0.5 font-bold text-slate-800 bg-slate-50/30">${isFirstMonth ? '-' : lAct}</td>
+                                    <td class="px-2 py-0.5 font-bold ${isFirstMonth ? 'text-slate-400' : achColor(lAch)} bg-slate-50/30 border-r border-slate-100">${isFirstMonth ? '-' : `${lAch}%`}</td>
 
-                                    <td class="px-3 py-1 font-medium text-slate-500">${cBgt}</td>
-                                    <td class="px-3 py-1 font-bold text-indigo-900 bg-indigo-100/50">${cAct}</td>
-                                    <td class="px-3 py-1 font-bold ${achColor(cAch)}">${cAch}%</td>
+                                    <td class="px-2 py-0.5 font-medium text-slate-500">${cBgt}</td>
+                                    <td class="px-2 py-0.5 font-bold text-indigo-900 bg-indigo-100/50">${cAct}</td>
+                                    <td class="px-2 py-0.5 font-bold ${achColor(cAch)}">${cAch}%</td>
                                 </tr>
                             `;
                         });
@@ -3758,51 +3822,51 @@
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                            <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
                                             <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[9px] border-b border-slate-200/60">
-                                                <th class="px-3 py-1.5 font-bold border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
-                                                <th class="px-3 py-1.5 font-extrabold text-center border-r border-slate-200/60" rowspan="2">Total FY Budget</th>
-                                                <th class="px-3 py-1 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200/60 font-bold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
-                                                <th class="px-3 py-1 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200/60 font-bold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
-                                                <th class="px-3 py-1 text-center bg-emerald-500/10 text-emerald-800 font-bold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
+                                                <th class="px-2 py-0.5.5 font-bold border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
+                                                <th class="px-2 py-0.5.5 font-extrabold text-center border-r border-slate-200/60" rowspan="2">Total FY Budget</th>
+                                                <th class="px-2 py-0.5 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200/60 font-bold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
+                                                <th class="px-2 py-0.5 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200/60 font-bold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
+                                                <th class="px-2 py-0.5 text-center bg-emerald-500/10 text-emerald-800 font-bold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
                                             <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60 text-center">
                                                 <!-- YTD -->
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Budget</th>
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Actual</th>
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Ach%</th>
-                                                <th class="px-3 py-1 border-t border-slate-200/60 border-r border-slate-200/60">Short</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Budget</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Actual</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Ach%</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60 border-r border-slate-200/60">Short</th>
                                                 <!-- Last Month -->
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Budget</th>
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Actual</th>
-                                                <th class="px-3 py-1 border-t border-slate-200/60 border-r border-slate-200/60">Ach%</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Budget</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Actual</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60 border-r border-slate-200/60">Ach%</th>
                                                 <!-- Current Month -->
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Budget</th>
-                                                <th class="px-3 py-1 border-t border-indigo-200 bg-indigo-100 text-indigo-900 font-extrabold">Total Delivered</th>
-                                                <th class="px-3 py-1 border-t border-slate-200/60">Ach%</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Budget</th>
+                                                <th class="px-2 py-0.5 border-t border-indigo-200 bg-indigo-100 text-indigo-900 font-extrabold">Total Delivered</th>
+                                                <th class="px-2 py-0.5 border-t border-slate-200/60">Ach%</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             ${brandSummaryRowsHTML}
                                             <tr class="bg-slate-100/50 font-bold text-slate-800 text-center border-t-2 border-slate-200/60">
-                                                <td class="px-3 py-1 text-left border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100 font-bold">GRAND TOTAL</td>
-                                                <td class="px-3 py-1 border-r border-slate-200/60">${gTot.fyBgt}</td>
+                                                <td class="px-2 py-0.5 text-left border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100 font-bold">GRAND TOTAL</td>
+                                                <td class="px-2 py-0.5 border-r border-slate-200/60">${gTot.fyBgt}</td>
                                                 
-                                                <td class="px-3 py-1">${isFirstMonth ? '-' : gTot.yBgt}</td>
-                                                <td class="px-3 py-1">${isFirstMonth ? '-' : gTot.yAct}</td>
-                                                <td class="px-3 py-1 ${isFirstMonth ? 'text-slate-400' : achColor(gYAch)}">${isFirstMonth ? '-' : `${gYAch}%`}</td>
-                                                <td class="px-3 py-1 text-rose-600 border-r border-slate-200/60">${isFirstMonth ? '-' : gTot.ySht}</td>
+                                                <td class="px-2 py-0.5">${isFirstMonth ? '-' : gTot.yBgt}</td>
+                                                <td class="px-2 py-0.5">${isFirstMonth ? '-' : gTot.yAct}</td>
+                                                <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gYAch)}">${isFirstMonth ? '-' : `${gYAch}%`}</td>
+                                                <td class="px-2 py-0.5 text-rose-600 border-r border-slate-200/60">${isFirstMonth ? '-' : gTot.ySht}</td>
 
-                                                <td class="px-3 py-1 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lBgt}</td>
-                                                <td class="px-3 py-1 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lAct}</td>
-                                                <td class="px-3 py-1 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} bg-slate-50/30 border-r border-slate-200/60">${isFirstMonth ? '-' : `${gLAch}%`}</td>
+                                                <td class="px-2 py-0.5 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lBgt}</td>
+                                                <td class="px-2 py-0.5 bg-slate-50/30">${isFirstMonth ? '-' : gTot.lAct}</td>
+                                                <td class="px-2 py-0.5 ${isFirstMonth ? 'text-slate-400' : achColor(gLAch)} bg-slate-50/30 border-r border-slate-200/60">${isFirstMonth ? '-' : `${gLAch}%`}</td>
 
-                                                <td class="px-3 py-1">${gTot.cBgt}</td>
-                                                <td class="px-3 py-1 text-indigo-900 bg-indigo-200/50 font-extrabold">${gTot.cAct}</td>
-                                                <td class="px-3 py-1 ${achColor(gCAch)}">${gCAch}%</td>
+                                                <td class="px-2 py-0.5">${gTot.cBgt}</td>
+                                                <td class="px-2 py-0.5 text-indigo-900 bg-indigo-200/50 font-extrabold">${gTot.cAct}</td>
+                                                <td class="px-2 py-0.5 ${achColor(gCAch)}">${gCAch}%</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -3815,7 +3879,7 @@
                     <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-3 mb-3">
                         <div class="${isAM ? '' : 'lg:col-span-2'} bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-2 text-[9px] flex items-center gap-1.5 uppercase tracking-wider">
-                                <i data-lucide="bar-chart-2" class="w-3 h-3 text-aci-blue"></i> Territory Performance
+                                <i data-lucide="bar-chart-2" class="w-3 h-3 ${brandText}"></i> Territory Performance
                             </h3>
                             <div class="${isAM ? 'h-36' : 'h-64'} relative w-full">
                                 <canvas id="chartTerritory"></canvas>
@@ -3823,7 +3887,7 @@
                         </div>
                         <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-2 text-[9px] flex items-center gap-1.5 uppercase tracking-wider">
-                                <i data-lucide="pie-chart" class="w-3 h-3 text-aci-blue"></i> Brand Split
+                                <i data-lucide="pie-chart" class="w-3 h-3 ${brandText}"></i> Brand Split
                             </h3>
                             <div class="${isAM ? 'h-36' : 'h-64'} relative w-full flex justify-center">
                                 <canvas id="chartBrand"></canvas>
@@ -3833,7 +3897,7 @@
 
                     <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
                     ${isAM ? `
-                    <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3 relative">
+                    <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3 relative">
                         <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/30">
                             <div>
@@ -3859,16 +3923,16 @@
                                 </div>
 
                                 <div class="flex bg-slate-200/50 p-1 rounded-xl border border-slate-200/60">
-                                    <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="px-3 py-1.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">FOTON</button>
-                                    <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="px-3 py-1.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">MAHINDRA</button>
+                                    <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="px-2 py-0.5.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">FOTON</button>
+                                    <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="px-2 py-0.5.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">MAHINDRA</button>
                                 </div>
 
                                 <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                        class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                     <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                 </button>
                                 <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                        class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                        class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                     <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                 </button>
                                 <button onclick="app.downloadPulseCSV()" 
@@ -3993,8 +4057,8 @@
                                                     ` : ''}
                                                     <td class="px-1.5 py-0.5 bg-slate-50/50 text-slate-400 font-medium text-center">${currBudget}</td>
                                                     <td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-slate-700 text-center">${currProj}</td>
-                                                    ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-center ${modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
-                                                    <td class="px-1.5 py-0.5 bg-indigo-50/30 font-bold text-indigo-700 text-[10px] text-center">${currSalesUnits}</td>
+                                                    ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-center ${modelMap[m] ? '${brandText}' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
+                                                    <td class="px-1.5 py-0.5 ${brandBgLight}/30 font-bold ${brandText} text-[10px] text-center">${currSalesUnits}</td>
                                                     <td class="px-1.5 py-0.5 text-center ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${currAchVal}%</span></td>
                                                 </tr>
                                             `;
@@ -4011,18 +4075,18 @@
                             else { tAchBg = 'bg-rose-100'; tAchText = 'text-rose-700'; }
 
                             const totalRowHTML = `
-                                            <tr class="bg-indigo-50/20 font-bold text-slate-800 text-center border-t border-indigo-100/55">
-                                                <td class="px-4 py-1 text-left sticky left-0 z-10 bg-indigo-50 border-r border-indigo-100 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                            <tr class="${brandBgLight}/20 font-bold text-slate-800 text-center border-t ${brandBorderLight}/55">
+                                                <td class="px-2 py-0.5 text-left sticky left-0 z-10 ${brandBgLight} border-r ${brandBorderLight} shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
                                                     <div class="flex items-center gap-2">
-                                                        <div class="w-1.5 h-4.5 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div>
+                                                        <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow shadow-indigo-500/50"></div>
                                                         <span class="font-extrabold text-slate-800 text-[9px]">GRAND TOTAL</span>
                                                     </div>
                                                 </td>
                                                 ${app.adminShowYTD ? `
-                                                    <td class="px-1.5 py-0.5 text-slate-700 font-extrabold bg-indigo-50/10 text-center">${totalYtdBudget}</td>
-                                                    <td class="px-1.5 py-0.5 font-bold text-slate-900 bg-indigo-50/10 text-center">${totalYtdSales}</td>
-                                                    <td class="px-1.5 py-0.5 bg-indigo-50/10 text-center"><span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-50 text-${totalH}-600 font-bold">${totalYtdAchVal}%</span></td>
-                                                    <td class="px-1.5 py-0.5 font-bold text-rose-600 bg-indigo-50/10 text-center">${totalYtdShort}</td>
+                                                    <td class="px-1.5 py-0.5 text-slate-700 font-extrabold ${brandBgLight}/10 text-center">${totalYtdBudget}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-slate-900 ${brandBgLight}/10 text-center">${totalYtdSales}</td>
+                                                    <td class="px-1.5 py-0.5 ${brandBgLight}/10 text-center"><span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-50 text-${totalH}-600 font-bold">${totalYtdAchVal}%</span></td>
+                                                    <td class="px-1.5 py-0.5 font-bold text-rose-600 ${brandBgLight}/10 text-center">${totalYtdShort}</td>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
                                                     <td class="px-1.5 py-0.5 text-slate-700 font-extrabold text-center">${totalLastMonthBudget}</td>
@@ -4031,8 +4095,8 @@
                                                 ` : ''}
                                                 <td class="px-1.5 py-0.5 bg-slate-100/50 text-slate-700 font-extrabold text-center">${totalCurrBudget}</td>
                                                 <td class="px-1.5 py-0.5 bg-slate-100/50 font-bold text-slate-900 text-center">${totalCurrProj}</td>
-                                                ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
-                                                <td class="px-1.5 py-0.5 bg-indigo-100/50 font-bold text-indigo-700 text-[10px] text-center">${totalCurrSalesUnits}</td>
+                                                ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-100/50 font-bold ${brandText} text-center">${totalModelMap[m] || 0}</td>`).join('')}
+                                                <td class="px-1.5 py-0.5 bg-indigo-100/50 font-bold ${brandText} text-[10px] text-center">${totalCurrSalesUnits}</td>
                                                 <td class="px-1.5 py-0.5 text-center ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                             </tr>
                                         `;
@@ -4043,9 +4107,9 @@
                                         <thead>
                                             <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
                                                 <th class="px-5 py-1.5 font-bold sticky left-0 z-10 bg-slate-50">Territory</th>
-                                                ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                                ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                                <th class="px-3 py-4 text-center border-l border-slate-100 font-extrabold" colspan="${4 + dynamicModels.length}">
+                                                ${app.adminShowYTD ? `<th class="px-2 py-0.5.5 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                ${app.adminShowLastMonth ? `<th class="px-2 py-0.5.5 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                <th class="px-2 py-0.5.5 text-center border-l border-slate-100 font-extrabold" colspan="${4 + dynamicModels.length}">
                                                     ${(app.performanceFilterMonth || app.currentMonth) === app.currentMonth ? 'Current' : 'Selected'} Month (${(app.performanceFilterMonth || app.currentMonth).substring(0, 3)})
                                                 </th>
                                             </tr>
@@ -4065,8 +4129,8 @@
                                                 <th class="px-1.5 py-1 bg-slate-50">Budget</th>
                                                 <th class="px-1.5 py-1 bg-slate-50 font-bold text-slate-600">Proj</th>
                                                 ${dynamicModels.map(m => `<th class="px-1.5 py-1 bg-slate-50">${m}</th>`).join('')}
-                                                <th class="px-1.5 py-1 bg-indigo-50 font-bold text-indigo-700">Total</th>
-                                                <th class="px-1.5 py-1 bg-indigo-50 font-bold text-indigo-700">Ach%</th>
+                                                <th class="px-1.5 py-1 ${brandBgLight} font-bold ${brandText}">Total</th>
+                                                <th class="px-1.5 py-1 ${brandBgLight} font-bold ${brandText}">Ach%</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-50 bg-white">
@@ -4083,7 +4147,7 @@
                     ${!isAM ? `
                     <!-- Comprehensive Data Table & Mobile Cards -->
                     <div class="mb-3">
-                        <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden">
+                        <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden">
                             <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
                                 <div>
                                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
@@ -4097,19 +4161,19 @@
                                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
                                     <div class="flex items-center gap-2">
                                         <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                             <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                         </button>
                                         <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                             <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                         </button>
                                         <button onclick="app.pulseDetailedView = !app.pulseDetailedView; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm border border-slate-200/60 shadow-indigo-200 border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm border border-slate-200/60 ${brandGlow} border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
                                             <i data-lucide="${app.pulseDetailedView ? 'layout-grid' : 'list'}" class="w-3.5 h-3.5"></i>
                                             Detailed View
                                         </button>
-                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="bg-white border border-slate-200/60 rounded-xl px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
+                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="glass border border-slate-100 rounded-xl px-2 py-0.5.5 text-[9px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
                                             <option value="Foton" ${brandFilter === 'Foton' ? 'selected' : ''}>Foton</option>
                                             <option value="Mahindra" ${brandFilter === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
                                         </select>
@@ -4129,22 +4193,22 @@
                                     <thead>
                                         <!-- Row 1: Quarters -->
                                         <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60">
-                                            <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-slate-50 border-r border-slate-200/60 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
+                                            <th class="px-2 py-0.5 font-bold sticky left-0 z-10 bg-slate-50 border-r border-slate-200/60 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
-                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
+                                                    <div class="flex items-center gap-1 cursor-pointer hover:${brandText} transition-colors" onclick="app.setPulseSort('name')">
                                                         Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 ${brandText} shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" rowspan="3">Total FY Budget</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July - September)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October - December)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January - March)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
+                                            <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" rowspan="3">Total FY Budget</th>
+                                            <th class="px-2 py-0.5 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July - September)</th>
+                                            <th class="px-2 py-0.5 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October - December)</th>
+                                            <th class="px-2 py-0.5 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January - March)</th>
+                                            <th class="px-2 py-0.5 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-2 py-0.5 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
                                         <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60 text-center">
@@ -4296,14 +4360,14 @@
 
                                                 return `
                                                     <tr class="pulse-tr-premium text-center border-b border-slate-100 group">
-                                                        <td class="px-4 py-1 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-200/60/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)] sticky-left">
+                                                        <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-200/60/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)] sticky-left">
                                                             <div class="flex items-center gap-2">
                                                                 <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
                                                                 <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full shadow-sm"></div>
                                                                 <span class="font-bold text-slate-700">${mt.name}</span>
                                                             </div>
                                                         </td>
-                                                        <td class="px-3 py-1 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[9px]">${totalFYBudget}</span></td>
+                                                        <td class="px-2 py-0.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[9px]">${totalFYBudget}</span></td>
                                                         ${cellsHTML}
                                                     </tr>
                                                 `;
@@ -4401,15 +4465,15 @@
                                             `;
 
                                             const grandTotalRowHTML = `
-                                                <tr class="bg-indigo-50/20 font-bold text-slate-800 text-center border-t-2 border-indigo-200">
-                                                    <td class="px-4 py-1 text-left sticky left-0 z-10 bg-indigo-50 border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                                <tr class="${brandBgLight}/20 font-bold text-slate-800 text-center border-t-2 border-indigo-200">
+                                                    <td class="px-2 py-0.5 text-left sticky left-0 z-10 ${brandBgLight} border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
-                                                            <div class="w-1.5 h-4.5 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div>
+                                                            <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow shadow-indigo-500/50"></div>
                                                             <span class="font-extrabold text-slate-800 text-[9px]">GRAND TOTAL</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-1 font-bold text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-bold text-[10px] shadow-sm shadow-amber-500/20">${grandFYBudget}</span></td>
+                                                    <td class="px-2 py-0.5 font-bold text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-bold text-[10px] shadow-sm shadow-amber-500/20">${grandFYBudget}</span></td>
                                                     ${grandCellsHTML}
                                                 </tr>
                                             `;
@@ -4429,24 +4493,24 @@
                                         <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse bg-white">
                                             <thead>
                                                 <tr class="bg-indigo-950 text-indigo-200 uppercase tracking-widest text-[9px] border-b border-indigo-900/50">
-                                                    <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-indigo-950 border-r border-indigo-900/80 shadow-[2px_0_5px_rgba(0,0,0,0.2)] text-indigo-50">Territory</th>
-                                                    <th class="px-3 py-1 text-center bg-gradient-to-b from-amber-900/30 to-transparent text-amber-400 font-extrabold border-l border-r border-t border-amber-900/30 shadow-sm" colspan="1">Total FY Budget</th>
-                                                    ${app.adminShowYTD ? `<th class="px-3 py-1 text-center bg-gradient-to-b from-blue-900/30 to-transparent text-blue-300 border-l border-r border-t border-blue-900/30 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                                    ${app.adminShowLastMonth ? `<th class="px-3 py-1 text-center bg-gradient-to-b from-emerald-900/30 to-transparent text-emerald-400 border-l border-r border-t border-emerald-900/30 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                                    <th class="px-3 py-1 text-center bg-gradient-to-b from-cyan-900/30 to-transparent text-cyan-300 border-l border-r border-t border-cyan-900/30 font-extrabold shadow-sm" colspan="${4 + dynamicModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                                    <th class="px-2 py-0.5 font-bold sticky left-0 z-10 bg-indigo-950 border-r border-indigo-900/80 shadow-[2px_0_5px_rgba(0,0,0,0.2)] text-indigo-50">Territory</th>
+                                                    <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-900/30 to-transparent text-amber-400 font-extrabold border-l border-r border-t border-amber-900/30 shadow-sm" colspan="1">Total FY Budget</th>
+                                                    ${app.adminShowYTD ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-blue-900/30 to-transparent text-blue-300 border-l border-r border-t border-blue-900/30 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                    ${app.adminShowLastMonth ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-emerald-900/30 to-transparent text-emerald-400 border-l border-r border-t border-emerald-900/30 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                    <th class="px-2 py-0.5 text-center bg-gradient-to-b from-cyan-900/30 to-transparent text-cyan-300 border-l border-r border-t border-cyan-900/30 font-extrabold shadow-sm" colspan="${4 + dynamicModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                                 </tr>
                                                 <tr class="bg-indigo-900 text-indigo-300 uppercase tracking-tighter text-[9px] border-b-2 border-indigo-950 text-center">
-                                                    <th class="px-4 py-1 sticky left-0 z-10 bg-indigo-900 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                                                    <th class="px-2 py-0.5 sticky left-0 z-10 bg-indigo-900 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
                                                         <div class="flex items-center justify-between gap-2">
                                                             <div class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" onclick="app.setPulseSort('name')">
                                                                 <span class="w-4 text-right opacity-50">#</span> Territory ${app.getSortIcon('name')}
                                                             </div>
-                                                            <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-500 text-white shadow-inner scale-110' : 'hover:bg-indigo-800 text-indigo-400 hover:text-white'}" title="Filter Territories">
+                                                            <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? '${brandBg} text-white shadow-inner scale-110' : '${brandBgHover} text-white/70 hover:text-white'}" title="Filter Territories">
                                                                 <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                             </button>
                                                         </div>
                                                     </th>
-                                                    <th class="px-3 py-1 bg-amber-900/10 border-l border-r border-amber-900/20 cursor-pointer hover:bg-amber-900/30 transition-colors text-center font-bold text-amber-500" onclick="app.setPulseSort('sortVal_fy_budget')">
+                                                    <th class="px-2 py-0.5 bg-amber-900/10 border-l border-r border-amber-900/20 cursor-pointer hover:bg-amber-900/30 transition-colors text-center font-bold text-amber-500" onclick="app.setPulseSort('sortVal_fy_budget')">
                                                         <div class="flex items-center justify-center gap-1 font-bold">
                                                             Total ${app.getSortIcon('sortVal_fy_budget')}
                                                         </div>
@@ -4465,8 +4529,8 @@
                                                     <th class="px-1.5 py-0.5 bg-cyan-900/10 cursor-pointer hover:bg-cyan-900/30 transition-colors border-l border-cyan-900/20" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
                                                     <th class="px-1.5 py-0.5 bg-cyan-900/10 cursor-pointer hover:bg-cyan-900/30 transition-colors" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1 text-cyan-200">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
                                                     ${dynamicModels.map(m => `<th class="px-1.5 py-0.5 bg-cyan-900/10 text-cyan-400 font-bold">${m}</th>`).join('')}
-                                                    <th class="px-1.5 py-0.5 bg-indigo-800/40 font-bold text-indigo-200 cursor-pointer hover:bg-indigo-700/50 transition-colors border-l border-indigo-700/50" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
-                                                    <th class="px-1.5 py-0.5 bg-indigo-800/40 font-bold text-indigo-200 cursor-pointer hover:bg-indigo-700/50 transition-colors border-r border-indigo-700/50" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
+                                                    <th class="px-1.5 py-0.5 ${brandBgHover.replace('hover:', '')}/40 font-bold text-indigo-200 cursor-pointer ${brandBgHoverHalf} transition-colors border-l ${brandBorder}/50" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
+                                                    <th class="px-1.5 py-0.5 ${brandBgHover.replace('hover:', '')}/40 font-bold text-indigo-200 cursor-pointer ${brandBgHoverHalf} transition-colors border-r ${brandBorder}/50" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-slate-100">
@@ -4527,9 +4591,9 @@
                                                                 ` : ''}
                                                                 <td class="px-2 py-0.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
                                                                 <td class="px-2 py-0.5 bg-slate-50/30 font-bold text-slate-700 text-center">${mt.currProj}</td>
-                                                                ${dynamicModels.map(m => `<td class="px-2 py-0.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
-                                                                <td class="px-2 py-0.5 bg-indigo-50/30 font-bold text-indigo-700 text-center border-l border-indigo-100">${mt.currSalesUnits}</td>
-                                                                <td class="px-2 py-0.5 text-center border-r border-indigo-100 ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
+                                                                ${dynamicModels.map(m => `<td class="px-2 py-0.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? '${brandText}' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
+                                                                <td class="px-2 py-0.5 ${brandBgLight}/30 font-bold ${brandText} text-center border-l ${brandBorderLight}">${mt.currSalesUnits}</td>
+                                                                <td class="px-2 py-0.5 text-center border-r ${brandBorderLight} ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
                                                             </tr>
                                                         `;
                                                     }).join('');
@@ -4546,14 +4610,14 @@
 
                                                     const totalRowHTML = `
                                                         <tr class="bg-indigo-950 font-bold text-indigo-100 text-center border-t-[3px] border-indigo-900/80 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] relative z-20">
-                                                            <td class="px-4 py-1 text-left sticky left-0 z-10 bg-indigo-950 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.2)]">
+                                                            <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-indigo-950 border-r border-indigo-800 shadow-[2px_0_5px_rgba(0,0,0,0.2)]">
                                                                 <div class="flex items-center gap-2">
                                                                     <span class="w-4"></span>
                                                                     <div class="w-1.5 h-4.5 bg-indigo-400 rounded-full shadow shadow-indigo-400/50"></div>
                                                                     <span class="font-bold text-white text-[10.5px] uppercase tracking-widest">Grand Total</span>
                                                                 </div>
                                                             </td>
-                                                            <td class="px-3 py-1 font-bold text-amber-200 bg-gradient-to-b from-amber-900/40 to-amber-900/10 border-l border-r border-amber-900/30 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
+                                                            <td class="px-2 py-0.5 font-bold text-amber-200 bg-gradient-to-b from-amber-900/40 to-amber-900/10 border-l border-r border-amber-900/30 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
                                                             ${app.adminShowYTD ? `
                                                                 <td class="px-1.5 py-0.5 text-blue-100 font-extrabold bg-blue-900/20 text-center border-l border-blue-900/30">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
                                                                 <td class="px-1.5 py-0.5 font-bold text-white bg-blue-900/20 text-center">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
@@ -4590,7 +4654,7 @@
                                     <div class="flex bg-slate-200/50 p-0.5 rounded-xl border border-slate-200/60 shadow-inner">
                                         ${['Q1', 'Q2', 'Q3', 'Q4'].map(q => `
                                             <button onclick="app.pulseMobileQuarter = '${q}'; app.renderAdminDashboard()" 
-                                                    class="px-3 py-1 text-[9px] font-bold transition-all ${app.pulseMobileQuarter === q ? 'bg-white shadow-sm text-indigo-700 scale-105 rounded-lg' : 'text-slate-500 hover:text-slate-800 rounded-lg'}">
+                                                    class="px-2 py-0.5 text-[9px] font-bold transition-all ${app.pulseMobileQuarter === q ? 'bg-white shadow-sm ${brandText} scale-105 rounded-lg' : 'text-slate-500 hover:text-slate-800 rounded-lg'}">
                                                 ${q}
                                             </button>
                                         `).join('')}
@@ -4697,7 +4761,7 @@
                                                                 <th class="py-1 text-left">Period</th>
                                                                 <th class="py-1">Bgt</th>
                                                                 <th class="py-1">Sal</th>
-                                                                <th class="py-1 text-indigo-600 font-bold">Ach%</th>
+                                                                <th class="py-1 ${brandText} font-bold">Ach%</th>
                                                                 <th class="py-1">SPLY</th>
                                                                 <th class="py-1">Growth</th>
                                                             </tr>
@@ -4735,7 +4799,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <span class="text-xl font-bold text-indigo-700">${currSalesUnits}</span>
+                                                    <span class="text-[11px] font-bold tracking-tight font-bold ${brandText}">${currSalesUnits}</span>
                                                     <p class="text-[9px] font-bold text-slate-400 uppercase">${app.currentMonth} Units</p>
                                                 </div>
                                             </div>
@@ -4749,9 +4813,9 @@
                                                     <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">YTD Ach</p>
                                                     <p class="text-[10px] font-bold text-${app.currentMonth === 'July' ? 'slate-400' : `${h}-600`}">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</p>
                                                 </div>
-                                                <div class="bg-indigo-50 p-2.5 rounded-xl border border-indigo-100">
-                                                    <p class="text-[8px] font-bold text-indigo-400 uppercase mb-1">M.Ach</p>
-                                                    <p class="text-[10px] font-bold text-indigo-700">${ach(currSalesUnits, currBudget)}%</p>
+                                                <div class="${brandBgLight} p-2.5 rounded-xl border ${brandBorderLight}">
+                                                    <p class="text-[8px] font-bold text-white/70 uppercase mb-1">M.Ach</p>
+                                                    <p class="text-[10px] font-bold ${brandText}">${ach(currSalesUnits, currBudget)}%</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -4765,12 +4829,12 @@
 
                     ${!isAM ? `
                     <!-- Area (AM) Performance Analytics & Mobile Cards -->
-                    <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
-                        <div class="p-3 border-b border-indigo-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-indigo-50/30">
+                    <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                        <div class="p-3 border-b ${brandBorderLight} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${brandBgLight}/30">
                             <div>
                                 <h3 class="font-bold text-indigo-900 flex items-center gap-2">
-                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-100">
-                                        <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
+                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border ${brandBorderLight}">
+                                        <i data-lucide="users" class="w-5 h-5 ${brandText}"></i>
                                     </div>
                                     AM Sync
                                 </h3>
@@ -4782,23 +4846,23 @@
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
-                                    <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
-                                        <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
-                                        <th class="px-4 py-1 font-bold bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-1 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="${brandBgLightHalf} text-slate-500 uppercase tracking-widest text-[9px] border-b ${brandBorderLight}">
+                                        <th class="px-2 py-0.5 font-bold sticky left-0 z-10 ${brandBgLight} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
+                                        <th class="px-2 py-0.5 font-bold ${brandBgLightHalf} border-r ${brandBorderLight}">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-2 py-0.5 text-center border-l ${brandBorderLight}" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-2 py-0.5 text-center border-l ${brandBorderLight}" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-2 py-0.5 text-center border-l ${brandBorderLight}" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center font-bold">
-                                        <th class="px-4 py-1 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b ${brandBorderLight} text-center font-bold">
+                                        <th class="px-2 py-0.5 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                             <div class="flex items-center justify-between gap-2">
                                                 <span>Area</span>
-                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 ${brandText} shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-4 py-1 bg-white border-r border-indigo-100 text-left">
+                                        <th class="px-2 py-0.5 bg-white border-r ${brandBorderLight} text-left">
                                             <span>AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
@@ -4810,9 +4874,9 @@
                                             <th class="px-1.5 py-0.5">Budget</th>
                                             <th class="px-1.5 py-0.5 font-bold text-slate-600">Actual</th>
                                         ` : ''}
-                                        <th class="px-1.5 py-0.5 bg-indigo-50/30">Budget</th>
-                                        <th class="px-1.5 py-0.5 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-1.5 py-0.5 bg-indigo-50/30">${m}</th>`).join('')}
+                                        <th class="px-1.5 py-0.5 ${brandBgLight}/30">Budget</th>
+                                        <th class="px-1.5 py-0.5 ${brandBgLight}/30 font-bold text-slate-600">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-1.5 py-0.5 ${brandBgLight}/30">${m}</th>`).join('')}
                                         <th class="px-1.5 py-0.5 bg-indigo-100 text-indigo-900 font-extrabold border-l border-indigo-200">Total</th>
                                         <th class="px-1.5 py-0.5 bg-indigo-100 text-indigo-900 font-extrabold">Ach%</th>
                                     </tr>
@@ -4826,20 +4890,20 @@
                             const totalSalesDisplay = area.currSales > 0 ? `<div class="font-bold text-[11px]">${area.currSales}</div>` : '<span class="text-slate-400">0</span>';
 
                             return `
-                                            <tr class="hover:bg-indigo-50/20 transition-colors text-center">
-                                                <td class="px-4 py-1 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                            <tr class="hover:${brandBgLight}/20 transition-colors text-center">
+                                                <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                                     <div class="flex items-center gap-2">
-                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[9px] font-bold shrink-0">${area.name.charAt(0)}</div>
+                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center ${brandText} text-[9px] font-bold shrink-0">${area.name.charAt(0)}</div>
                                                         <span class="font-bold text-slate-700">${area.name}</span>
                                                     </div>
                                                 </td>
-                                                <td class="px-4 py-1 text-left font-bold text-indigo-600 border-r border-indigo-50 bg-slate-50/30 whitespace-nowrap">
+                                                <td class="px-2 py-0.5 text-left font-bold ${brandText} border-r border-indigo-50 bg-slate-50/30 whitespace-nowrap">
                                                     ${area.areaName}
                                                 </td>
                                                 ${app.adminShowYTD ? `
                                                     <td class="px-1.5 py-0.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
                                                     <td class="px-1.5 py-0.5 font-bold text-slate-700">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
-                                                    <td class="px-1.5 py-0.5 font-bold text-indigo-600">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
+                                                    <td class="px-1.5 py-0.5 font-bold ${brandText}">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
                                                     <td class="px-1.5 py-0.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
@@ -4848,8 +4912,8 @@
                                                 <td class="px-1.5 py-0.5 bg-slate-50/50 text-slate-400">${area.currBudget}</td>
                                                 <td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-slate-700">${area.currProj}</td>
                                                 ${modelCells}
-                                                <td class="px-1.5 py-0.5 bg-indigo-50 font-bold text-indigo-900 border-l border-indigo-100/50">${totalSalesDisplay}</td>
-                                                <td class="px-1.5 py-0.5 bg-indigo-50 font-bold text-indigo-900">${ach(area.currSales, area.currBudget)}%</td>
+                                                <td class="px-1.5 py-0.5 ${brandBgLight} font-bold text-indigo-900 border-l ${brandBorderLight}/50">${totalSalesDisplay}</td>
+                                                <td class="px-1.5 py-0.5 ${brandBgLight} font-bold text-indigo-900">${ach(area.currSales, area.currBudget)}%</td>
                                             </tr>
                                         `;
                         }).join('')}
@@ -4867,7 +4931,7 @@
                                     <div class="p-3 bg-white active:bg-slate-50 transition-colors">
                                         <div class="flex justify-between items-center mb-3">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-12 h-12 rounded-xl bg-indigo-600 shadow-sm border border-slate-200/60 shadow-indigo-200 flex items-center justify-center text-white font-bold text-lg">
+                                                <div class="w-12 h-12 rounded-xl ${brandBg} shadow-sm border border-slate-200/60 ${brandGlow} flex items-center justify-center text-white font-bold text-lg">
                                                     ${area.name.charAt(0)}
                                                 </div>
                                                 <div>
@@ -4879,19 +4943,19 @@
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="text-xl font-bold text-indigo-700">${area.currSales}</span>
+                                                <span class="text-[11px] font-bold tracking-tight font-bold ${brandText}">${area.currSales}</span>
                                                 <p class="text-[9px] font-bold text-slate-400 uppercase">Sales Units</p>
                                             </div>
                                         </div>
                                         
                                         <div class="grid grid-cols-2 gap-3">
-                                            <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                                            <div class="${brandBgLightHalf} p-3 rounded-xl border ${brandBorderLight}">
                                                 <div class="flex justify-between items-center mb-1">
-                                                    <p class="text-[8px] font-bold text-indigo-400 uppercase">M-Target Ach</p>
-                                                    <span class="text-[9px] font-bold text-indigo-700">${mAchVal}%</span>
+                                                    <p class="text-[8px] font-bold text-white/70 uppercase">M-Target Ach</p>
+                                                    <span class="text-[9px] font-bold ${brandText}">${mAchVal}%</span>
                                                 </div>
-                                                <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border border-indigo-100">
-                                                    <div class="h-full bg-indigo-600 rounded-full" style="width: ${Math.min(100, mAchVal)}%"></div>
+                                                <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border ${brandBorderLight}">
+                                                    <div class="h-full ${brandBg} rounded-full" style="width: ${Math.min(100, mAchVal)}%"></div>
                                                 </div>
                                             </div>
                                             <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
@@ -4913,7 +4977,7 @@
 
                     <!-- Detailed Sales Data Table (Like Admin Panel) -->
                     ${isAM ? `
-                    <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
+                    <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
                         <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
                             <div>
                                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
@@ -4924,7 +4988,7 @@
                                 </h3>
                                 <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Raw Sales Records for Assigned Territories</p>
                             </div>
-                            <div class="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-xl text-[10px] font-bold border border-emerald-100 shadow-sm flex items-center gap-2">
+                            <div class="bg-emerald-50 text-emerald-700 px-2 py-0.5.5 rounded-xl text-[10px] font-bold border border-emerald-100 shadow-sm flex items-center gap-2">
                                 <i data-lucide="database" class="w-4 h-4"></i> Total Records: ${currFYSales.filter(s => s.brand === brandFilter).length}
                             </div>
                         </div>
@@ -4932,35 +4996,35 @@
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
-                                        <th class="px-3 py-1.5 font-bold sticky left-0 z-10 bg-slate-50">Customer Details</th>
-                                        <th class="px-3 py-4">Location</th>
-                                        <th class="px-3 py-4">Vehicle</th>
-                                        <th class="px-3 py-4">Sale Type</th>
-                                        <th class="px-3 py-4 text-center">Units</th>
-                                        <th class="px-3 py-4">Status</th>
+                                        <th class="px-2 py-0.5.5 font-bold sticky left-0 z-10 bg-slate-50">Customer Details</th>
+                                        <th class="px-2 py-0.5.5">Location</th>
+                                        <th class="px-2 py-0.5.5">Vehicle</th>
+                                        <th class="px-2 py-0.5.5">Sale Type</th>
+                                        <th class="px-2 py-0.5.5 text-center">Units</th>
+                                        <th class="px-2 py-0.5.5">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-50 bg-white">
                                     ${currFYSales.filter(s => s.brand === brandFilter).map(s => `
                                         <tr class="hover:bg-slate-50/80 group transition-colors group">
-                                            <td class="px-3 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                            <td class="px-2 py-0.5.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
                                                 <div class="font-bold text-slate-700">${s.customer_name || s.customer_id || 'Unknown'}</div>
                                                 <div class="text-[9px] text-slate-400 mt-0.5">${s.phone || 'No phone'}</div>
                                             </td>
-                                            <td class="px-3 py-4 text-slate-600">
+                                            <td class="px-2 py-0.5.5 text-slate-600">
                                                 <div class="font-bold text-slate-800">${DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown'}</div>
                                                 <div class="font-medium text-slate-700 mt-0.5">${s.upazila}</div>
                                                 <div class="text-[9px] text-slate-400 mt-0.5">${s.district}</div>
                                             </td>
-                                            <td class="px-3 py-4">
+                                            <td class="px-2 py-0.5.5">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="px-1.5 py-0.5 rounded text-[8px] font-bold border ${s.brand === 'Foton' ? 'bg-foton-light text-foton border-foton/30' : 'bg-mahindra-light text-mahindra border-mahindra/30'}">${s.brand}</span>
                                                     <span class="font-bold text-slate-800">${s.model}</span>
                                                 </div>
                                             </td>
-                                            <td class="px-3 py-4 text-slate-500">${s.sale_type}</td>
-                                            <td class="px-3 py-4 font-bold text-indigo-600 text-center">${s.unit_qty}</td>
-                                            <td class="px-3 py-4"><span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase">Delivered</span></td>
+                                            <td class="px-2 py-0.5.5 text-slate-500">${s.sale_type}</td>
+                                            <td class="px-2 py-0.5.5 font-bold ${brandText} text-center">${s.unit_qty}</td>
+                                            <td class="px-2 py-0.5.5"><span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase">Delivered</span></td>
                                         </tr>
                                     `).join('')}
                                     ${currFYSales.filter(s => s.brand === brandFilter).length === 0 ? '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 font-medium">No sales data found for the selected criteria.</td></tr>' : ''}
@@ -4978,10 +5042,10 @@
                 // Highlight active mobile nav tab
                 ['nav-dashboard', 'nav-map', 'nav-ai', 'nav-emi', 'nav-notices'].forEach(id => {
                     const el = document.getElementById(id);
-                    if (el) el.classList.remove('nav-tab-active', 'text-aci-blue');
+                    if (el) el.classList.remove('nav-tab-active', '${brandText}');
                 });
                 const activeNav = document.getElementById('nav-dashboard');
-                if (activeNav) activeNav.classList.add('nav-tab-active', 'text-aci-blue');
+                if (activeNav) activeNav.classList.add('nav-tab-active', '${brandText}');
 
                 // Calculate YOY Chart specific data based on local YOY Brand Tab
                 let yoyTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.sale_type === currentSaleType);
@@ -5615,6 +5679,22 @@
             },
 
             renderAdminAnalytics: (keepDropdownOpen = false) => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 try {
                     localStorage.setItem('aci_last_page', 'analytics');
                     app.setupSidebar();
@@ -5659,53 +5739,53 @@
 
                     let html = `
                         <div class="animate-fade-in pb-20">
-                            <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center justify-between mb-3">
                                 <div>
-                                    <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 tracking-tight flex items-center gap-2">
-                                        <i data-lucide="bar-chart-2" class="w-6 h-6 text-sky-500"></i> Historical Analytics
+                                    <h2 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700 tracking-tight flex items-center gap-2">
+                                        <i data-lucide="bar-chart-2" class="w-6 h-6 ${brandText}"></i> Historical Analytics
                                     </h2>
-                                    <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
+                                    <p class="text-[9px] text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
                                 </div>
                             </div>
 
                             <!-- Filter Bar -->
-                            <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm mb-4 flex flex-wrap gap-3 items-end sticky top-16 z-20">
+                            <div class="bg-white border border-slate-200/60 p-3 rounded-xl border border-slate-200/60 shadow-sm mb-3 flex flex-wrap gap-3 items-end sticky top-16 z-20">
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
-                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Compare FY</label>
-                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         ${allFys.map(f => `<option value="${f}" ${app.analyticsFY2 === f ? 'selected' : ''}>${f}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Brand</label>
-                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsBrand === 'All' ? 'selected' : ''}>All Brands</option>
                                         ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Model</label>
-                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsModel === 'All' ? 'selected' : ''}>All Models</option>
                                         ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Territory</label>
-                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsTerritory === 'All' ? 'selected' : ''}>All Territories</option>
                                         ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upazila</label>
-                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
+                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-sky-500">
                                         <option value="All" ${app.analyticsUpazila === 'All' ? 'selected' : ''}>All Upazilas</option>
                                         ${allUpazilas.map(u => `<option value="${u}" ${app.analyticsUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
                                     </select>
@@ -5717,7 +5797,7 @@
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
-                                        <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
                                 </div>
@@ -5725,7 +5805,7 @@
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
-                                        <h4 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
+                                        <h4 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
                                     </div>
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
                                 </div>
@@ -5734,7 +5814,7 @@
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
                                         <div class="flex items-center gap-1.5 mt-0.5">
-                                            <span class="text-xl font-bold tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
+                                            <span class="text-[11px] font-bold tracking-tight font-bold tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
                                             <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
                                         </div>
                                     </div>
@@ -5746,8 +5826,8 @@
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
                                 <!-- Line Chart -->
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 lg:col-span-2 flex flex-col">
-                                    <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                        <i data-lucide="activity" class="w-4 h-4 text-sky-500"></i> Monthly Trend Analysis
+                                    <h3 class="text-[9px] font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                        <i data-lucide="activity" class="w-4 h-4 ${brandText}"></i> Monthly Trend Analysis
                                     </h3>
                                     <div class="flex-1 relative min-h-[300px]">
                                         <canvas id="chartAnalyticsTrend"></canvas>
@@ -5756,7 +5836,7 @@
                                 
                                 <!-- Brand Share -->
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 flex flex-col">
-                                    <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <h3 class="text-[9px] font-bold text-slate-800 mb-3 flex items-center gap-2">
                                         <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> Brand Share (${app.analyticsFY2})
                                     </h3>
                                     <div class="flex-1 relative min-h-[300px] flex items-center justify-center">
@@ -5766,7 +5846,7 @@
                                 
                                 <!-- Territory Bar Chart -->
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-xl shadow-sm border border-slate-200/60 lg:col-span-3 flex flex-col">
-                                    <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <h3 class="text-[9px] font-bold text-slate-800 mb-3 flex items-center gap-2">
                                         <i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-amber-500"></i> Regional Comparison (${app.analyticsFY1} vs ${app.analyticsFY2})
                                     </h3>
                                     <div class="flex-1 relative min-h-[400px]">
@@ -5829,8 +5909,8 @@
                                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-xs font-bold text-red-800">Historical Analytics Failed to Load</h3>
-                                    <p class="text-xs text-red-600 mt-1">${e.message}</p>
+                                    <h3 class="text-[9px] font-bold text-red-800">Historical Analytics Failed to Load</h3>
+                                    <p class="text-[9px] text-red-600 mt-1">${e.message}</p>
                                     <div class="mt-4 bg-slate-900 text-slate-300 p-3 rounded-lg text-[10px] font-mono overflow-auto max-h-48 leading-relaxed">
                                         ${e.stack}
                                     </div>
@@ -6035,6 +6115,22 @@
             },
 
             renderAdminAIInsights: (keepDropdownOpen = false) => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'ai');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 app.setupSidebar();
@@ -6190,13 +6286,13 @@
                 const html = `
                     <div class="max-w-7xl mx-auto fade-in pb-12">
                         <!-- AI Header Section -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3 px-2 md:px-0">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3 px-2 md:px-0">
                             <div class="w-full md:w-auto">
-                                <h1 class="text-xl md:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                                    <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl shadow-sm shadow-purple-200">
+                                <h1 class="text-[11px] font-bold tracking-tight md:text-[11px] font-bold tracking-tight font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                                    <div class="p-2.5 bg-gradient-to-br ${brandGradient} rounded-xl shadow-sm ${brandGlow}">
                                         <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
                                     </div>
-                                    <span>AI Strategic <span class="text-purple-600 font-bold">Insights</span></span>
+                                    <span>AI Strategic <span class="${brandText} font-bold">Insights</span></span>
                                 </h1>
                                 <p class="text-slate-400 font-semibold text-[10px] mt-1 flex items-center gap-1.5">
                                     <span class="flex h-2.5 w-2.5 relative">
@@ -6207,9 +6303,9 @@
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md p-1.5 rounded-xl shadow-sm border border-slate-100 w-full md:w-auto">
-                                <div class="px-3 py-1 flex-1 md:flex-none text-center">
+                                <div class="px-2 py-0.5 flex-1 md:flex-none text-center">
                                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Confidence Level</p>
-                                    <p class="text-xs font-bold text-purple-600 flex items-center justify-center gap-1">
+                                    <p class="text-[9px] font-bold ${brandText} flex items-center justify-center gap-1">
                                         ${predictionConfidence}%
                                         <span class="group relative inline-block cursor-pointer">
                                             <i data-lucide="info" class="w-3 h-3 text-slate-400 hover:text-slate-600"></i>
@@ -6224,21 +6320,21 @@
                                 <!-- Month Multi-Select for AI Insights -->
                                 <div class="flex items-center gap-2 relative">
                                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
-                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200/60 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[120px]">
+                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200/60 rounded-xl px-2.5 py-1 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[120px]">
                                         <span>${activeMonthsInSelection.length === 12 ? 'All FY (YTD)' : activeMonthsInSelection.length + ' Selected'}</span>
                                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-1 text-slate-400"></i>
                                     </button>
                                     <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-1.5 right-0 w-48 bg-white border border-slate-200/60 rounded-xl shadow-sm z-[100] max-h-64 overflow-y-auto">
                                         <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
                                             <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-bold text-slate-700 transition-colors">
-                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : [app.currentMonth]; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : [app.currentMonth]; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 ${brandText} focus:ring-purple-500 w-3.5 h-3.5">
                                                 Select All FY (YTD)
                                             </label>
                                         </div>
                                         <div class="p-2 space-y-0.5">
                                             ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => `
                                                 <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-semibold text-slate-600 transition-colors">
-                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 ${brandText} focus:ring-purple-500 w-3.5 h-3.5">
                                                     ${m}
                                                 </label>
                                             `).join('')}
@@ -6265,16 +6361,16 @@
                                 </h3>
                                 
                                 <div class="flex items-baseline gap-1 mb-3">
-                                    <span class="text-xl font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
-                                    <span class="text-xs font-bold text-slate-400 uppercase">Units</span>
+                                    <span class="text-[11px] font-bold tracking-tight font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Units</span>
                                 </div>
 
                                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200/60 mb-2 relative">
-                                    <div class="bg-purple-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.min(100, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
+                                    <div class="${brandBg} h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.min(100, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
                                     <div class="absolute top-0 bottom-0 w-0.5 bg-slate-400" style="left: ${Math.min(99, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
                                 </div>
 
-                                <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-4">
+                                <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-3">
                                     <span>YTD Actual: ${totalActual}</span>
                                     <span>Target: ${totalTarget}</span>
                                 </div>
@@ -6282,13 +6378,13 @@
                                 <div class="border-t border-slate-100/60 pt-3 flex items-center justify-between">
                                     <div class="flex flex-col">
                                         <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Pace Status</span>
-                                        <span class="text-xs font-extrabold ${isPacingWell ? 'text-green-600' : 'text-amber-600'}">
+                                        <span class="text-[9px] font-extrabold ${isPacingWell ? 'text-green-600' : 'text-amber-600'}">
                                             ${isPacingWell ? 'Ahead of Schedule' : 'Behind Target'}
                                         </span>
                                     </div>
                                     <div class="text-right">
                                         <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wide">Pacing Rate</span>
-                                        <span class="text-xs font-bold text-slate-700 block">${currentDailyAvg} vs req. ${requiredDailyAvg} / day</span>
+                                        <span class="text-[9px] font-bold text-slate-700 block">${currentDailyAvg} vs req. ${requiredDailyAvg} / day</span>
                                     </div>
                                 </div>
                             </div>
@@ -6296,7 +6392,7 @@
                             <!-- Brand Momentum Card -->
                             <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm border border-slate-200/60 relative overflow-hidden group">
                                 <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
-                                <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                                <h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
                                     <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
                                     Strategic Brand Momentum
                                     <span class="group relative inline-block cursor-pointer">
@@ -6309,11 +6405,11 @@
                                 <div class="space-y-4">
                                     <div>
                                         <div class="flex justify-between text-[10px] font-bold mb-1 uppercase tracking-tighter">
-                                            <span class="text-indigo-600">Foton Velocity</span>
+                                            <span class="${brandText}">Foton Velocity</span>
                                             <span class="text-slate-500">${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}% of Goal</span>
                                         </div>
                                         <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
-                                            <div class="bg-indigo-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}%"></div>
+                                            <div class="${brandBg} h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}%"></div>
                                         </div>
                                     </div>
                                     <div>
@@ -6343,13 +6439,13 @@
                                         </span>
                                     </span>
                                 </h3>
-                                <p class="text-xs font-semibold leading-relaxed text-slate-300 mb-3.5">
+                                <p class="text-[9px] font-semibold leading-relaxed text-slate-300 mb-3.5">
                                     National growth is <strong class="text-white font-extrabold">${Math.round(((totalActual - (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual)) / (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual || 1)) * 100)}%</strong> vs SPLY. ${predictedClose > totalTarget ? 'Target surplus projected. Maintaining positive momentum.' : 'Daily volume gap identified: +' + dailyGapNeeded + ' units/day needed to recover.'}
                                 </p>
                                 <div class="flex items-center gap-3 pt-2 border-t border-slate-800">
                                     <div class="flex -space-x-1.5">
                                         <div class="w-5.5 h-5.5 rounded-full bg-purple-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">AI</div>
-                                        <div class="w-5.5 h-5.5 rounded-full bg-indigo-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">BI</div>
+                                        <div class="w-5.5 h-5.5 rounded-full ${brandBg} border border-slate-900 flex items-center justify-center text-[7px] font-bold">BI</div>
                                     </div>
                                     <span class="text-[8px] font-bold uppercase tracking-widest text-slate-500">Real-Time Forecast Optimization</span>
                                 </div>
@@ -6358,12 +6454,12 @@
 
                         <!-- NEW: AI INTERVENTION CONSOLE (Action Hub) -->
                         <div class="mb-3 bg-white p-3 rounded-[1.75rem] border border-slate-100 shadow-sm">
-                            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                            <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
                                 <h2 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                                    <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600"></i>
+                                    <i data-lucide="shield-alert" class="w-4 h-4 ${brandText}"></i>
                                     AI Intervention Console
                                 </h2>
-                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border border-purple-200">Decision Center</span>
+                                <span class="${brandBgLight} ${brandText} px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border ${brandBorderLight}">Decision Center</span>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -6372,26 +6468,26 @@
                                     const actionKey = `budget_shift_${lowestTerr.id}`;
                                     const isExecuted = app.aiActionsState[actionKey] === 'Executed';
                                     return `
-                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-purple-100 bg-purple-50/10'} hover:shadow-sm transition-all duration-300 relative">
+                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-purple-100 ${brandBgLight}/10'} hover:shadow-sm transition-all duration-300 relative">
                                         <div>
                                             <div class="flex justify-between items-start mb-2">
-                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-purple-100 text-purple-700 border border-purple-200'}">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : '${brandBgLight} ${brandText} border ${brandBorderLight}'}">
                                                     ${isExecuted ? 'Executed' : 'High Priority'}
                                                 </span>
                                                 <span class="text-[8px] font-bold text-slate-400">Budget Shift</span>
                                             </div>
-                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                            <h4 class="font-bold text-slate-800 text-[9px] mb-1.5 flex items-center gap-1">
                                                 Shift Promo Budget to ${lowestTerr.name}
                                             </h4>
-                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-3">
                                                 Shift 15% promotional budget from high-surplus <strong class="text-slate-800 font-bold">${highestTerr.name}</strong> to support conversion rates in struggling <strong class="text-slate-800 font-bold">${lowestTerr.name}</strong> (${lowestTerr.ach}% ach).
                                             </p>
                                         </div>
                                         <div>
                                             ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-[9px] font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
                                             ` : `
-                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-sm shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
+                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 ${brandBg} hover:bg-purple-700 text-white py-1.5 rounded-xl text-[9px] font-bold shadow-sm shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
                                             `}
                                         </div>
                                     </div>
@@ -6403,26 +6499,26 @@
                                     const actionKey = `notice_${lowestTerr.id}`;
                                     const isExecuted = app.aiActionsState[actionKey] === 'Executed';
                                     return `
-                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-indigo-100 bg-indigo-50/10'} hover:shadow-sm transition-all duration-300">
+                                    <div class="flex flex-col justify-between p-3 rounded-xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : '${brandBorderLight} ${brandBgLight}/10'} hover:shadow-sm transition-all duration-300">
                                         <div>
                                             <div class="flex justify-between items-start mb-2">
-                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-indigo-100 ${brandText} border border-indigo-200'}">
                                                     ${isExecuted ? 'Circulated' : 'Action Required'}
                                                 </span>
                                                 <span class="text-[8px] font-bold text-slate-400">Direct Message</span>
                                             </div>
-                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                            <h4 class="font-bold text-slate-800 text-[9px] mb-1.5 flex items-center gap-1">
                                                 Issue Target Directive in ${lowestTerr.name}
                                             </h4>
-                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-3">
                                                 Current achievement of <strong class="text-slate-800 font-bold">${lowestTerr.ach}%</strong> is below pacing baseline. Dispatch an AI-generated notice to push local MOs to prioritize key conversions.
                                             </p>
                                         </div>
                                         <div>
                                             ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-[9px] font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
                                             ` : `
-                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-sm shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
+                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 ${brandBg} hover:bg-indigo-700 text-white py-1.5 rounded-xl text-[9px] font-bold shadow-sm shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
                                             `}
                                         </div>
                                     </div>
@@ -6443,18 +6539,18 @@
                                                 </span>
                                                 <span class="text-[8px] font-bold text-slate-400">Inventory Alert</span>
                                             </div>
-                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                            <h4 class="font-bold text-slate-800 text-[9px] mb-1.5 flex items-center gap-1">
                                                 Pre-position ${aff.model} to ${aff.upazila}
                                             </h4>
-                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-3">
                                                 High demand affinity detected in <strong class="text-slate-800 font-bold">${aff.upazila}</strong> (${aff.qty} units). Pre-position 10 buffer stock units to secure market availability.
                                             </p>
                                         </div>
                                         <div>
                                             ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-1.5 rounded-xl text-[9px] font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
                                             ` : `
-                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-xl text-xs font-bold shadow-sm shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
+                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-xl text-[9px] font-bold shadow-sm shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
                                             `}
                                         </div>
                                     </div>
@@ -6468,22 +6564,22 @@
                             <!-- Column 1: Product-Market Fit (Upazila Wise) -->
                             <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm flex flex-col justify-between">
                                 <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
-                                            <i data-lucide="map-pin" class="w-4 h-4 text-indigo-500"></i>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-[9px] font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="map-pin" class="w-4 h-4 ${brandText}"></i>
                                             Upazila Champion Models
                                         </h3>
-                                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 tracking-wider">FIT INDEX</span>
+                                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded ${brandBgLight} ${brandText} tracking-wider">FIT INDEX</span>
                                     </div>
                                     <div class="space-y-2.5">
                                         ${upazilaAffinities.map(a => `
                                             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-300 hover:bg-white transition-all shadow-sm">
                                                 <div>
                                                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${a.upazila}</p>
-                                                    <p class="font-extrabold text-slate-700 text-xs">${a.model}</p>
+                                                    <p class="font-extrabold text-slate-700 text-[9px]">${a.model}</p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <span class="px-2 py-0.5 bg-white rounded-lg border border-slate-200/60 text-[10px] font-bold text-indigo-600 shadow-sm">${a.qty} Units</span>
+                                                    <span class="px-2 py-0.5 bg-white rounded-lg border border-slate-200/60 text-[10px] font-bold ${brandText} shadow-sm">${a.qty} Units</span>
                                                 </div>
                                             </div>
                                         `).join('')}
@@ -6495,8 +6591,8 @@
                             <!-- Column 2: Brand Dominance Battleground -->
                             <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm flex flex-col justify-between">
                                 <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-[9px] font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
                                             <i data-lucide="swords" class="w-4 h-4 text-rose-500"></i>
                                             Regional Brand Dominance
                                         </h3>
@@ -6510,7 +6606,7 @@
                                                     <span class="text-[8px] font-bold text-${t.leaderColor}-600 uppercase tracking-wider">Leading: ${t.leader}</span>
                                                 </div>
                                                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex p-0.5 border border-slate-200/60">
-                                                    <div class="bg-indigo-500 h-full transition-all duration-700" style="width: ${(t.f / t.total) * 100}%"></div>
+                                                    <div class="${brandBg} h-full transition-all duration-700" style="width: ${(t.f / t.total) * 100}%"></div>
                                                     <div class="bg-rose-500 h-full transition-all duration-700" style="width: ${(t.m / t.total) * 100}%"></div>
                                                 </div>
                                             </div>
@@ -6518,7 +6614,7 @@
                                     </div>
                                 </div>
                                 <div class="mt-4 flex items-center justify-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span><span>Foton</span></div>
+                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full ${brandBg}"></span><span>Foton</span></div>
                                     <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Mahindra</span></div>
                                 </div>
                             </div>
@@ -6526,8 +6622,8 @@
                             <!-- Column 3: Risk & Underperforming Assets -->
                             <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm flex flex-col justify-between bg-slate-50/30">
                                 <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-xs font-bold text-rose-700 tracking-tight flex items-center gap-1.5">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-[9px] font-bold text-rose-700 tracking-tight flex items-center gap-1.5">
                                             <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
                                             Model Performance Risks
                                         </h3>
@@ -6538,15 +6634,15 @@
                                             <div class="p-3 rounded-xl bg-white border border-rose-100 shadow-sm relative overflow-hidden group">
                                                 <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${m.brand}</p>
                                                 <div class="flex justify-between items-center relative z-10">
-                                                    <span class="font-extrabold text-slate-700 text-xs">${m.name}</span>
+                                                    <span class="font-extrabold text-slate-700 text-[9px]">${m.name}</span>
                                                     <div class="text-right">
-                                                        <span class="text-rose-600 font-extrabold text-xs">${m.sales} Sales</span>
+                                                        <span class="text-rose-600 font-extrabold text-[9px]">${m.sales} Sales</span>
                                                         <p class="text-[7px] font-bold text-rose-400 uppercase tracking-tighter">Underperforming</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         `).join('')}
-                                        ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-6 text-xs">All models performing within threshold.</p>' : ''}
+                                        ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-6 text-[9px]">All models performing within threshold.</p>' : ''}
                                     </div>
                                 </div>
                                 <div class="mt-4 p-2.5 bg-amber-50 rounded-xl border border-amber-100 text-[10px] text-amber-700 font-semibold italic leading-normal">
@@ -6557,9 +6653,9 @@
 
                         <!-- NEW: Quantum Market Intelligence & Predictive Forecasting -->
                         <div class="mb-3">
-                            <div class="flex items-center gap-2 mb-4">
+                            <div class="flex items-center gap-2 mb-3">
                                 <h2 class="text-base font-bold text-slate-800 tracking-tight">Quantum Market Intelligence</h2>
-                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border border-purple-200">Experimental Model</span>
+                                <span class="${brandBgLight} ${brandText} px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest border ${brandBorderLight}">Experimental Model</span>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -6571,13 +6667,13 @@
                                         Next Period Forecast (May)
                                     </h4>
                                     <div class="space-y-2">
-                                        <div class="flex justify-between items-center text-xs">
+                                        <div class="flex justify-between items-center text-[9px]">
                                             <span class="font-medium text-slate-300">Projected Demand</span>
-                                            <span class="font-bold text-indigo-400">+12.4%</span>
+                                            <span class="font-bold text-white/70">+12.4%</span>
                                         </div>
                                         <div class="p-2 bg-white/5 rounded-lg border border-white/10">
                                             <p class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Trending Model</p>
-                                            <p class="text-xs font-bold text-white">Mahindra Bolero Pick-up</p>
+                                            <p class="text-[9px] font-bold text-white">Mahindra Bolero Pick-up</p>
                                         </div>
                                     </div>
                                     <div class="mt-4 pt-3 border-t border-white/10 text-[10px] text-slate-400 leading-relaxed italic">
@@ -6619,9 +6715,9 @@
                                                 <circle cx="32" cy="32" r="28" fill="transparent" stroke="#f1f5f9" stroke-width="6"/>
                                                 <circle cx="32" cy="32" r="28" fill="transparent" stroke="#8b5cf6" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="${176 * (1 - 0.92)}"/>
                                             </svg>
-                                            <span class="absolute text-xs font-extrabold text-slate-800">92%</span>
+                                            <span class="absolute text-[9px] font-extrabold text-slate-800">92%</span>
                                         </div>
-                                        <p class="text-[10px] font-extrabold text-purple-600 uppercase mt-2 tracking-tighter">Very High Confidence</p>
+                                        <p class="text-[10px] font-extrabold ${brandText} uppercase mt-2 tracking-tighter">Very High Confidence</p>
                                     </div>
                                 </div>
 
@@ -6651,15 +6747,15 @@
                             <div class="lg:col-span-2 space-y-6">
                                 <!-- Dynamic Market Heatmap Visualization -->
                                 <div class="bg-white border border-slate-200/60 p-3 rounded-[1.75rem] border border-white shadow-sm">
-                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                                        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
-                                            <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-500"></i>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+                                        <h2 class="text-[9px] font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="layout-grid" class="w-4 h-4 ${brandText}"></i>
                                             Territory Performance Matrix
                                         </h2>
                                         
                                         <!-- Matrix Filter Tabs -->
                                         <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200/60 text-[10px] font-bold">
-                                            <button onclick="app.aiTerrPerformanceFilter='all'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">All</button>
+                                            <button onclick="app.aiTerrPerformanceFilter='all'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'all' ? 'bg-white ${brandText} shadow-sm' : 'text-slate-500 hover:text-slate-800'}">All</button>
                                             <button onclick="app.aiTerrPerformanceFilter='risk'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'risk' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">At Risk (<60%)</button>
                                             <button onclick="app.aiTerrPerformanceFilter='strong'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'strong' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">Strong (>=80%)</button>
                                         </div>
@@ -6674,7 +6770,7 @@
                                         }
 
                                         if (filteredTerrPerformance.length === 0) {
-                                            return `<div class="text-center text-slate-400 py-10 font-bold text-xs">No territories match the selected filter.</div>`;
+                                            return `<div class="text-center text-slate-400 py-10 font-bold text-[9px]">No territories match the selected filter.</div>`;
                                         }
 
                                         return `
@@ -6706,7 +6802,7 @@
                             <div class="space-y-6">
                                 <!-- Top Performers -->
                                 <div class="bg-white p-3 rounded-[1.75rem] border border-slate-100 shadow-sm">
-                                    <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5 mb-4">
+                                    <h3 class="text-[9px] font-bold text-slate-800 flex items-center gap-1.5 mb-3">
                                         <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
                                         Top Performers
                                     </h3>
@@ -6714,14 +6810,14 @@
                                         ${topTerritories.map((t, idx) => `
                                             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                                                 <div class="flex items-center gap-2">
-                                                    <div class="w-6.5 h-6.5 rounded-lg bg-amber-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">${idx + 1}</div>
+                                                    <div class="w-6.5 h-6.5 rounded-lg bg-amber-500 text-white flex items-center justify-center font-extrabold text-[9px] shadow-sm">${idx + 1}</div>
                                                     <div>
-                                                        <p class="font-extrabold text-slate-700 text-xs">${t.name}</p>
+                                                        <p class="font-extrabold text-slate-700 text-[9px]">${t.name}</p>
                                                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${t.actual} Units Sold</p>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="text-xs font-extrabold text-green-600">${t.ach}%</p>
+                                                    <p class="text-[9px] font-extrabold text-green-600">${t.ach}%</p>
                                                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Achieved</p>
                                                 </div>
                                             </div>
@@ -6732,7 +6828,7 @@
                                 <!-- Risk Monitor -->
                                 <div class="bg-rose-50/50 p-3 rounded-[1.75rem] border border-rose-100 shadow-sm flex flex-col justify-between">
                                     <div>
-                                        <h3 class="text-xs font-bold text-rose-800 flex items-center gap-1.5 mb-4">
+                                        <h3 class="text-[9px] font-bold text-rose-800 flex items-center gap-1.5 mb-3">
                                             <i data-lucide="activity" class="w-4 h-4 text-rose-600"></i>
                                             Risk Monitor
                                         </h3>
@@ -6740,11 +6836,11 @@
                                             ${atRiskTerritories.length > 0 ? atRiskTerritories.map(t => `
                                                 <div class="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-rose-100">
                                                     <div>
-                                                        <p class="font-extrabold text-rose-900 text-xs">${t.name}</p>
+                                                        <p class="font-extrabold text-rose-900 text-[9px]">${t.name}</p>
                                                         <p class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Gap: ${t.target - t.actual} Units</p>
                                                     </div>
                                                     <div class="text-right">
-                                                        <p class="text-xs font-extrabold text-rose-600">${t.ach}%</p>
+                                                        <p class="text-[9px] font-extrabold text-rose-600">${t.ach}%</p>
                                                         <p class="text-[8px] font-bold text-rose-400 uppercase tracking-wider">Critical</p>
                                                     </div>
                                                 </div>
@@ -6764,6 +6860,22 @@
             },
 
             renderAdminSalesMap: (keepDropdownOpen = false) => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'map');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 app.setupSidebar();
@@ -6814,27 +6926,27 @@
                     <div class="max-w-7xl mx-auto fade-in pb-10 h-full flex flex-col">
                         
                         <!-- Header & Dynamic Filters -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-3 shrink-0 relative z-50">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-3 gap-3 shrink-0 relative z-50">
                             <div>
-                                <h1 class="text-xs font-extrabold text-transparent uppercase tracking-widest bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
+                                <h1 class="text-[9px] font-extrabold text-transparent uppercase tracking-widest bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
                                     <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
                                     Geospatial Sales Heatmap
                                 </h1>
-                                <p class="text-xs text-slate-500 font-medium mt-2">Visualizing actual sales distribution across Bangladesh (FY ${currentFY})</p>
+                                <p class="text-[9px] text-slate-500 font-medium mt-2">Visualizing actual sales distribution across Bangladesh (FY ${currentFY})</p>
                             </div>
                             
                             <div class="flex flex-col sm:flex-row items-center gap-3 bg-white border border-slate-200/60 p-2 rounded-xl shadow-sm flex-wrap justify-end">
                                 <!-- View Toggle -->
                                 <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/60">
-                                    <button onclick="app.mapViewMode='district'; app.renderAdminSalesMap()" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'district' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">District View</button>
-                                    <button onclick="app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'upazila' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">Upazila View</button>
+                                    <button onclick="app.mapViewMode='district'; app.renderAdminSalesMap()" class="px-2 py-0.5.5 rounded-md text-[9px] font-bold transition-all ${viewMode === 'district' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">District View</button>
+                                    <button onclick="app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="px-2 py-0.5.5 rounded-md text-[9px] font-bold transition-all ${viewMode === 'upazila' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">Upazila View</button>
                                 </div>
                                 <div class="hidden sm:block w-px h-6 bg-slate-200 mx-1"></div>
                                 
                                 <!-- District Filter -->
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">District</label>
-                                    <select onchange="app.mapDistrictTab=this.value; if(this.value !== 'All') app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold ${districtTab !== 'All' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-700'} focus:outline-none focus:border-emerald-500 transition-colors">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">District</label>
+                                    <select onchange="app.mapDistrictTab=this.value; if(this.value !== 'All') app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-[9px] font-bold ${districtTab !== 'All' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-700'} focus:outline-none focus:border-emerald-500 transition-colors">
                                         <option value="All" ${districtTab === 'All' ? 'selected' : ''}>All BD</option>
                                         ${allDistricts.map(d => `<option value="${d}" ${districtTab === d ? 'selected' : ''}>${d}</option>`).join('')}
                                     </select>
@@ -6842,8 +6954,8 @@
 
                                 <!-- Brand Filter -->
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Brand</label>
-                                    <select onchange="app.mapBrandTab=this.value; app.mapModelTab='All'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Brand</label>
+                                    <select onchange="app.mapBrandTab=this.value; app.mapModelTab='All'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
                                         <option value="All" ${brandTab === 'All' ? 'selected' : ''}>All Brands</option>
                                         <option value="Foton" ${brandTab === 'Foton' ? 'selected' : ''}>Foton</option>
                                         <option value="Mahindra" ${brandTab === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
@@ -6852,8 +6964,8 @@
 
                                 <!-- Sale Type Filter -->
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Type</label>
-                                    <select onchange="app.mapSaleType=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Type</label>
+                                    <select onchange="app.mapSaleType=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
                                         <option value="All" ${saleTypeTab === 'All' ? 'selected' : ''}>All Types</option>
                                         <option value="New Sale" ${saleTypeTab === 'New Sale' ? 'selected' : ''}>New</option>
                                         <option value="Resale" ${saleTypeTab === 'Resale' ? 'selected' : ''}>Resale</option>
@@ -6862,8 +6974,8 @@
                                 
                                 <!-- Model Filter -->
                                 <div class="flex items-center gap-2">
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Model</label>
-                                    <select onchange="app.mapModelTab=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Model</label>
+                                    <select onchange="app.mapModelTab=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-1.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
                                         <option value="All">All Models</option>
                                         ${activeModels.map(m => `<option value="${m.name}" ${modelTab === m.name ? 'selected' : ''}>${m.name}</option>`).join('')}
                                     </select>
@@ -6871,21 +6983,21 @@
                                 
                                 <!-- Month Multi-Select -->
                                 <div class="flex items-center gap-2 relative">
-                                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
-                                    <button onclick="document.getElementById('map-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors flex items-center justify-between min-w-[100px]">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
+                                    <button onclick="document.getElementById('map-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200/60 rounded-lg px-2 py-0.5.5 text-[9px] font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors flex items-center justify-between min-w-[100px]">
                                         <span>${app.mapMonths.length === 12 ? 'All FY' : app.mapMonths.length + ' Selected'}</span>
                                         <i data-lucide="chevron-down" class="w-4 h-4 ml-2"></i>
                                     </button>
                                     <div id="map-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-2 right-0 w-48 bg-white border border-slate-200/60 rounded-xl shadow-sm z-[100] max-h-64 overflow-y-auto">
                                         <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
-                                            <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-bold text-slate-700 transition-colors">
+                                            <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-[9px] font-bold text-slate-700 transition-colors">
                                                 <input type="checkbox" onchange="app.mapMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : []; app.renderAdminSalesMap(true)" ${app.mapMonths.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4">
                                                 Select All FY
                                             </label>
                                         </div>
                                         <div class="p-2 space-y-0.5">
                                             ${allMonths.map(m => `
-                                                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-xs font-medium text-slate-600 transition-colors">
+                                                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded-lg cursor-pointer text-[9px] font-medium text-slate-600 transition-colors">
                                                     <input type="checkbox" onchange="app.toggleMapMonth('${m}')" ${app.mapMonths.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4">
                                                     ${m}
                                                 </label>
@@ -6902,12 +7014,12 @@
                             <!-- Leaflet Map Container (Fits remaining height) -->
                             <div class="flex-1 bg-white border border-slate-200/60 rounded-xl relative overflow-hidden bg-slate-50 border border-slate-200/60 shadow-inner flex flex-col h-[500px] lg:h-full">
                                 
-                                <div class="absolute top-3 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200/60 shadow-sm z-20">
+                                <div class="absolute top-3 right-4 bg-white/90 backdrop-blur-md px-2 py-0.5.5 rounded-lg border border-slate-200/60 shadow-sm z-20">
                                     <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Sales Density (${viewMode})</p>
                                     <div class="flex items-center gap-2">
-                                        <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-xs font-semibold text-slate-600 mr-2">Low</span>
-                                        <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm"></span><span class="text-xs font-semibold text-slate-600 mr-2">Med</span>
-                                        <span class="w-3 h-3 rounded-full bg-rose-600 shadow-sm"></span><span class="text-xs font-semibold text-slate-600">High</span>
+                                        <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-[9px] font-semibold text-slate-600 mr-2">Low</span>
+                                        <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm"></span><span class="text-[9px] font-semibold text-slate-600 mr-2">Med</span>
+                                        <span class="w-3 h-3 rounded-full bg-rose-600 shadow-sm"></span><span class="text-[9px] font-semibold text-slate-600">High</span>
                                     </div>
                                 </div>
 
@@ -6928,7 +7040,7 @@
                                         <!-- Search Bar -->
                                         <div class="relative">
                                             <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200/60 rounded-xl pl-9 pr-4 py-1.5 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200/60 rounded-xl pl-9 pr-4 py-1.5 text-[9px] font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
                                         </div>
                                     </div>
 
@@ -6942,7 +7054,7 @@
                                             }).sort((a, b) => b.sales - a.sales);
 
                                             if (listItems.length === 0) {
-                                                return `<p class="text-center text-slate-400 text-xs py-8 font-medium">No areas matching filters</p>`;
+                                                return `<p class="text-center text-slate-400 text-[9px] py-8 font-medium">No areas matching filters</p>`;
                                             }
 
                                             return listItems.map((item, idx) => {
@@ -6958,7 +7070,7 @@
                                                         <div class="flex items-center justify-between gap-2.5">
                                                             <div class="flex items-center gap-2 min-w-0">
                                                                 <span class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200/60 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0">${idx + 1}</span>
-                                                                <span class="truncate text-xs font-bold text-slate-800">${item.name}</span>
+                                                                <span class="truncate text-[9px] font-bold text-slate-800">${item.name}</span>
                                                             </div>
                                                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${item.sales > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400'}">${item.sales} Units</span>
                                                         </div>
@@ -7115,10 +7227,10 @@
                             }
 
                             const tooltipHtml = `
-                                <div class="bg-slate-900 text-white text-xs rounded-xl py-1.5 px-3 shadow-sm border border-slate-700 min-w-[120px]">
+                                <div class="bg-slate-900 text-white text-[9px] rounded-xl py-1.5 px-3 shadow-sm border border-slate-700 min-w-[120px]">
                                     <div class="flex items-center gap-2 mb-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                                        <p class="font-bold text-xs text-slate-50 tracking-wide">${propName}</p>
+                                        <p class="font-bold text-[9px] text-slate-50 tracking-wide">${propName}</p>
                                     </div>
                                     <p class="text-slate-300 font-medium pl-5"><span class="text-${colorName}-400 font-bold text-base">${sales}</span> Units Plotted</p>
                                 </div>
@@ -7170,10 +7282,10 @@
                             const colorName = bgClass.split('-')[1];
 
                             const tooltipHtml = `
-                                <div class="bg-slate-900/90 backdrop-blur-md text-white text-xs rounded-xl py-1.5 px-3 shadow-sm border border-slate-700 min-w-[120px]">
+                                <div class="bg-slate-900/90 backdrop-blur-md text-white text-[9px] rounded-xl py-1.5 px-3 shadow-sm border border-slate-700 min-w-[120px]">
                                     <div class="flex items-center gap-2 mb-1">
                                         <i data-lucide="crosshairs" class="w-3 h-3 text-${colorName}-400"></i>
-                                        <p class="font-bold text-xs text-slate-50 tracking-wide">${name}</p>
+                                        <p class="font-bold text-[9px] text-slate-50 tracking-wide">${name}</p>
                                     </div>
                                     <p class="text-slate-300 font-medium pl-5"><span class="text-${colorName}-400 font-bold text-base">${sales}</span> Units Plotted</p>
                                 </div>
@@ -7278,6 +7390,22 @@
             },
 
             renderDataUpload: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'upload');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 if (app.currentUser.role !== 'admin') {
@@ -7286,40 +7414,40 @@
                 }
                 const html = `
                     <div class="max-w-6xl mx-auto pb-10">
-                        <div class="mb-6">
-                            <h1 class="text-2xl font-bold text-slate-800">Bulk Data Upload</h1>
-                            <p class="text-sm text-slate-500">Upload Targets, Projections, and System Sales securely.</p>
+                        <div class="mb-3">
+                            <h1 class="text-base font-bold tracking-tight font-bold text-slate-800">Bulk Data Upload</h1>
+                            <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Upload Targets, Projections, and System Sales securely.</p>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             
                             <!-- 1. Yearly Targets -->
                             <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
-                                <div class="flex justify-between items-start mb-4">
+                                <div class="flex justify-between items-start mb-3">
                                     <div>
-                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform"></i> Yearly Targets</h3>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 ${brandText} group-hover:scale-110 transition-transform"></i> Yearly Targets</h3>
                                         <p class="text-[10px] text-slate-500 mt-1">Set once per year by Upazila</p>
-                                        <div class="flex items-center gap-1 mt-2.5 bg-indigo-50/80 border border-indigo-100 px-2 py-0.5 rounded-full w-max">
-                                            <i data-lucide="clock" class="w-3 h-3 text-indigo-500"></i>
-                                            <span class="text-[9px] font-black text-indigo-700 uppercase tracking-widest">Updated: 20 May '26</span>
+                                        <div class="flex items-center gap-1 mt-2.5 ${brandBgLight}/80 border ${brandBorderLight} px-2 py-0.5 rounded-full w-max">
+                                            <i data-lucide="clock" class="w-3 h-3 ${brandText}"></i>
+                                            <span class="text-[9px] font-black ${brandText} uppercase tracking-widest">Updated: 20 May '26</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
-                                        <button onclick="app.viewUploadedData('targets')" title="View Data" class="text-indigo-600 hover:bg-indigo-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <button onclick="app.viewUploadedData('targets')" title="View Data" class="${brandText} hover:bg-indigo-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                         <div class="w-px h-4 bg-slate-200"></div>
-                                        <button onclick="app.downloadTemplate('target')" title="Download Template" class="text-indigo-600 hover:bg-indigo-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                        <button onclick="app.downloadTemplate('target')" title="Download Template" class="${brandText} hover:bg-indigo-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
                                     </div>
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-target').click()">
-                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-indigo-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload Target CSV</p>
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-white/70 mx-auto mb-2"></i>
+                                    <p class="text-[9px] font-semibold text-slate-700">Upload Target CSV</p>
                                     <input type="file" id="file-target" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Yearly Targets', 'targets')">
                                 </div>
                             </div>
 
                             <!-- 2. Monthly Projections -->
                             <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
-                                <div class="flex justify-between items-start mb-4">
+                                <div class="flex justify-between items-start mb-3">
                                     <div>
                                         <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-amber-600 group-hover:scale-110 transition-transform"></i> Projections</h3>
                                         <p class="text-[10px] text-slate-500 mt-1">Current month territory-wise</p>
@@ -7336,14 +7464,14 @@
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-proj').click()">
                                     <i data-lucide="upload-cloud" class="w-8 h-8 text-amber-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload Projection CSV</p>
+                                    <p class="text-[9px] font-semibold text-slate-700">Upload Projection CSV</p>
                                     <input type="file" id="file-proj" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Monthly Projections', 'projections')">
                                 </div>
                             </div>
 
                             <!-- 3. System Sales Data (Current Year) -->
                             <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
-                                <div class="flex justify-between items-start mb-4">
+                                <div class="flex justify-between items-start mb-3">
                                     <div>
                                         <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-green-600 group-hover:scale-110 transition-transform"></i> System Sales</h3>
                                         <p class="text-[10px] text-slate-500 mt-1">Upload month-end final sales actuals</p>
@@ -7360,38 +7488,38 @@
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-sales').click()">
                                     <i data-lucide="upload-cloud" class="w-8 h-8 text-green-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload Sales CSV</p>
+                                    <p class="text-[9px] font-semibold text-slate-700">Upload Sales CSV</p>
                                     <input type="file" id="file-sales" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'System Sales Data', 'sales')">
                                 </div>
                             </div>
 
                             <!-- 4. Early EMI Data -->
                             <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
-                                <div class="flex justify-between items-start mb-4">
+                                <div class="flex justify-between items-start mb-3">
                                     <div>
-                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="file-clock" class="w-5 h-5 text-purple-600 group-hover:scale-110 transition-transform"></i> Early EMI Customers</h3>
+                                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="file-clock" class="w-5 h-5 ${brandText} group-hover:scale-110 transition-transform"></i> Early EMI Customers</h3>
                                         <p class="text-[10px] text-slate-500 mt-1">Upload 1st & 2nd EMI details</p>
-                                        <div class="flex items-center gap-1 mt-2.5 bg-purple-50/80 border border-purple-100 px-2 py-0.5 rounded-full w-max">
+                                        <div class="flex items-center gap-1 mt-2.5 ${brandBgLight}/80 border border-purple-100 px-2 py-0.5 rounded-full w-max">
                                             <i data-lucide="clock" class="w-3 h-3 text-purple-500"></i>
-                                            <span class="text-[9px] font-black text-purple-700 uppercase tracking-widest">Updated: 19 May '26</span>
+                                            <span class="text-[9px] font-black ${brandText} uppercase tracking-widest">Updated: 19 May '26</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5">
-                                        <button onclick="app.viewUploadedData('emi')" title="View Data" class="text-purple-600 hover:bg-purple-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                        <button onclick="app.viewUploadedData('emi')" title="View Data" class="${brandText} hover:${brandBgLight} p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                         <div class="w-px h-4 bg-slate-200"></div>
-                                        <button onclick="app.downloadTemplate('emi_early')" title="Download Template" class="text-purple-600 hover:bg-purple-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                        <button onclick="app.downloadTemplate('emi_early')" title="Download Template" class="${brandText} hover:${brandBgLight} p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
                                     </div>
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-emi-early').click()">
                                     <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload EMI CSV</p>
+                                    <p class="text-[9px] font-semibold text-slate-700">Upload EMI CSV</p>
                                     <input type="file" id="file-emi-early" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Early EMI Data', 'emi')">
                                 </div>
                             </div>
                             
                             <!-- 5. Historical Sales Data -->
                             <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
-                                <div class="flex justify-between items-start mb-4">
+                                <div class="flex justify-between items-start mb-3">
                                     <div>
                                         <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-rose-600 group-hover:scale-110 transition-transform"></i> Historical Sales</h3>
                                         <p class="text-[10px] text-slate-500 mt-1">Multi-year historical FY data</p>
@@ -7408,14 +7536,14 @@
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-last-year').click()">
                                     <i data-lucide="upload-cloud" class="w-8 h-8 text-rose-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload Historical Sales CSV</p>
+                                    <p class="text-[9px] font-semibold text-slate-700">Upload Historical Sales CSV</p>
                                     <input type="file" id="file-last-year" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Historical Sales Data', 'last_year_sales')">
                                 </div>
                             </div>
 
                             <!-- 6. Recovery OD Status -->
                             <div class="glass p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col group transition-all hover:shadow-md">
-                                <div class="flex justify-between items-start mb-4">
+                                <div class="flex justify-between items-start mb-3">
                                     <div>
                                         <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-orange-600 group-hover:scale-110 transition-transform"></i> Recovery OD Status</h3>
                                         <p class="text-[10px] text-slate-500 mt-1">Territory-wide overdue metrics</p>
@@ -7432,7 +7560,7 @@
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-3.5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-recovery-od').click()">
                                     <i data-lucide="upload-cloud" class="w-8 h-8 text-orange-400 mx-auto mb-2"></i>
-                                    <p class="text-xs font-semibold text-slate-700">Upload Recovery OD CSV</p>
+                                    <p class="text-[9px] font-semibold text-slate-700">Upload Recovery OD CSV</p>
                                     <input type="file" id="file-recovery-od" class="hidden" accept=".csv" onchange="app.simulateUpload(this, 'Recovery OD Status', 'recovery_od')">
                                 </div>
                             </div>
@@ -7442,17 +7570,17 @@
                         <!-- Creative Data Lifecycle Guideline -->
                         <div class="mt-12 glass p-8 rounded-[2rem] border border-white shadow-2xl relative overflow-hidden group">
                             <!-- Background elements -->
-                            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+                            <div class="absolute -right-20 -bottom-20 w-64 h-64 ${brandBg}/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
                             <div class="absolute -left-20 -top-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
 
                             <div class="relative z-10">
-                                <div class="flex items-center gap-4 mb-8">
+                                <div class="flex items-center gap-4 mb-3">
                                     <div class="p-3 bg-slate-900 rounded-xl shadow-sm">
                                         <i data-lucide="info" class="w-6 h-6 text-white"></i>
                                     </div>
                                     <div>
-                                        <h2 class="text-xl font-black text-slate-800 tracking-tight">Data Synchronization Lifecycle</h2>
-                                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">Guidelines for maintaining system integrity</p>
+                                        <h2 class="text-[11px] font-bold tracking-tight font-black text-slate-800 tracking-tight">Data Synchronization Lifecycle</h2>
+                                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Guidelines for maintaining system integrity</p>
                                     </div>
                                 </div>
 
@@ -7460,68 +7588,68 @@
                                     <!-- Yearly Cycle -->
                                     <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">01</span>
-                                            <h4 class="font-black text-slate-700 text-sm">Strategic Foundation</h4>
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 ${brandText} flex items-center justify-center font-black text-[9px]">01</span>
+                                            <h4 class="font-black text-slate-700 text-[11px]">Strategic Foundation</h4>
                                         </div>
                                         <div class="pl-10">
-                                            <p class="text-[11px] font-bold text-indigo-600 uppercase mb-1">Upload: Yearly Targets</p>
-                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Set the destination once per year during the July kickoff. This forms the baseline for all achievement metrics."</p>
+                                            <p class="text-[11px] font-bold ${brandText} uppercase mb-1">Upload: Yearly Targets</p>
+                                            <p class="text-[9px] text-slate-500 leading-relaxed italic">"Set the destination once per year during the July kickoff. This forms the baseline for all achievement metrics."</p>
                                         </div>
                                     </div>
 
                                     <!-- Monthly Cycle -->
                                     <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-black text-xs">02</span>
-                                            <h4 class="font-black text-slate-700 text-sm">Monthly Forecasting</h4>
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-black text-[9px]">02</span>
+                                            <h4 class="font-black text-slate-700 text-[11px]">Monthly Forecasting</h4>
                                         </div>
                                         <div class="pl-10">
                                             <p class="text-[11px] font-bold text-amber-600 uppercase mb-1">Upload: Projections</p>
-                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Sync territory expectations by the 1st of every month to align field goals with market potential."</p>
+                                            <p class="text-[9px] text-slate-500 leading-relaxed italic">"Sync territory expectations by the 1st of every month to align field goals with market potential."</p>
                                         </div>
                                     </div>
 
                                     <!-- Post-Closing Cycle -->
                                     <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs">03</span>
-                                            <h4 class="font-black text-slate-700 text-sm">Reality Verification</h4>
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-[9px]">03</span>
+                                            <h4 class="font-black text-slate-700 text-[11px]">Reality Verification</h4>
                                         </div>
                                         <div class="pl-10">
                                             <p class="text-[11px] font-bold text-emerald-600 uppercase mb-1">Upload: System Sales</p>
-                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Upload final actuals by the 3rd of the next month. This is the moment of truth for performance audits."</p>
+                                            <p class="text-[9px] text-slate-500 leading-relaxed italic">"Upload final actuals by the 3rd of the next month. This is the moment of truth for performance audits."</p>
                                         </div>
                                     </div>
 
                                     <!-- Weekly/Operational Cycle -->
                                     <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-black text-xs">04</span>
-                                            <h4 class="font-black text-slate-700 text-sm">Dynamic Recovery</h4>
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full ${brandBgLight} ${brandText} flex items-center justify-center font-black text-[9px]">04</span>
+                                            <h4 class="font-black text-slate-700 text-[11px]">Dynamic Recovery</h4>
                                         </div>
                                         <div class="pl-10">
-                                            <p class="text-[11px] font-bold text-purple-600 uppercase mb-1">Upload: EMI & Recovery</p>
-                                            <p class="text-xs text-slate-500 leading-relaxed italic">"Sync every Monday morning. Weekly refreshes keep SOs focused on high-priority collection targets."</p>
+                                            <p class="text-[11px] font-bold ${brandText} uppercase mb-1">Upload: EMI & Recovery</p>
+                                            <p class="text-[9px] text-slate-500 leading-relaxed italic">"Sync every Monday morning. Weekly refreshes keep SOs focused on high-priority collection targets."</p>
                                         </div>
                                     </div>
 
                                     <!-- Historical Initialization -->
                                     <div class="space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-black text-xs">05</span>
-                                            <h4 class="font-black text-slate-700 text-sm">Retrospective Sync</h4>
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-black text-[9px]">05</span>
+                                            <h4 class="font-black text-slate-700 text-[11px]">Retrospective Sync</h4>
                                         </div>
                                         <div class="pl-10">
                                             <p class="text-[11px] font-bold text-rose-600 uppercase mb-1">Upload: Historical Sales</p>
-                                            <p class="text-xs text-slate-500 leading-relaxed italic">"One-time initialization. Required for the AI engine to generate year-over-year growth insights."</p>
+                                            <p class="text-[9px] text-slate-500 leading-relaxed italic">"One-time initialization. Required for the AI engine to generate year-over-year growth insights."</p>
                                         </div>
                                     </div>
 
                                     <!-- Audit Log -->
                                     <div class="space-y-3 p-4 rounded-xl bg-slate-900 shadow-2xl">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center font-black text-xs"><i data-lucide="shield-check" class="w-3 h-3"></i></span>
-                                            <h4 class="font-black text-white text-sm">Security Protocol</h4>
+                                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center font-black text-[9px]"><i data-lucide="shield-check" class="w-3 h-3"></i></span>
+                                            <h4 class="font-black text-white text-[11px]">Security Protocol</h4>
                                         </div>
                                         <div class="pl-10">
                                             <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Auto-Validation Active</p>
@@ -8426,21 +8554,37 @@
             },
 
             renderAdminNotices: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'notices');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const html = `
                     <div class="pb-6 fade-in max-w-5xl mx-auto">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div>
-                                <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
-                                <p class="text-xs font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage and circulate critical notices to all branch officers dynamically.</p>
+                                <h2 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
+                                <p class="text-[9px] font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage and circulate critical notices to all branch officers dynamically.</p>
                             </div>
-                            <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-1.5 rounded-xl font-bold text-xs transition-all shadow-sm border border-slate-200/60 shadow-amber-500/20 active:scale-95 flex items-center gap-2">
+                            <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-1.5 rounded-xl font-bold text-[9px] transition-all shadow-sm border border-slate-200/60 shadow-amber-500/20 active:scale-95 flex items-center gap-2">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i> Create Notice
                             </button>
                         </div>
                         
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200/60">
@@ -8450,16 +8594,16 @@
                                         <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right w-24 shrink-0">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 text-xs">
+                                <tbody class="divide-y divide-slate-100 text-[9px]">
                                     ${DB.notices.length > 0 ? DB.notices.slice().reverse().map(n => `
                                         <tr class="hover:bg-slate-50/70 transition-colors group">
-                                            <td class="p-3 whitespace-nowrap text-slate-500 text-xs font-bold">${n.timestamp}</td>
+                                            <td class="p-3 whitespace-nowrap text-slate-500 text-[9px] font-bold">${n.timestamp}</td>
                                             <td class="p-3">
                                                 <p class="font-bold text-slate-800 text-base mb-1">${n.title}</p>
-                                                <p class="text-xs font-medium text-slate-500 leading-relaxed max-w-2xl">${n.message}</p>
+                                                <p class="text-[9px] font-medium text-slate-500 leading-relaxed max-w-2xl">${n.message}</p>
                                             </td>
                                             <td class="p-3">
-                                                ${n.fileName ? `<span class="inline-flex items-center gap-1.5 bg-slate-100 border border-slate-200/60 text-slate-700 px-2.5 py-1.5 rounded-lg text-[10px] font-bold shadow-sm truncate max-w-[180px]"><i data-lucide="${n.fileType === 'pdf' ? 'file-text' : 'image'}" class="w-3.5 h-3.5 ${n.fileType === 'pdf' ? 'text-red-500' : 'text-indigo-500'}"></i> ${n.fileName}</span>` : '<span class="text-slate-300 text-xs font-bold text-slate-600 uppercase tracking-wide italic">No attachment</span>'}
+                                                ${n.fileName ? `<span class="inline-flex items-center gap-1.5 bg-slate-100 border border-slate-200/60 text-slate-700 px-2.5 py-1.5 rounded-lg text-[10px] font-bold shadow-sm truncate max-w-[180px]"><i data-lucide="${n.fileType === 'pdf' ? 'file-text' : 'image'}" class="w-3.5 h-3.5 ${n.fileType === 'pdf' ? 'text-red-500' : '${brandText}'}"></i> ${n.fileName}</span>` : '<span class="text-slate-300 text-[9px] font-bold text-slate-600 uppercase tracking-wide italic">No attachment</span>'}
                                             </td>
                                             <td class="p-3 text-right">
                                                 <button onclick="app.deleteNotice('${n.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Delete Notice"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
@@ -8473,15 +8617,15 @@
                         <!-- LINKS SECTION -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-12 mb-3 gap-3">
                             <div>
-                                <h2 class="text-xs font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 text-indigo-500 fill-indigo-100"></i> Important App Links</h2>
-                                <p class="text-xs font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage essential web or app shortcuts for field agents.</p>
+                                <h2 class="text-[9px] font-extrabold uppercase tracking-widest text-slate-700 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 ${brandText} fill-indigo-100"></i> Important App Links</h2>
+                                <p class="text-[9px] font-bold text-slate-600 uppercase tracking-wide text-slate-500 mt-1">Manage essential web or app shortcuts for field agents.</p>
                             </div>
-                            <button onclick="app.showAddLinkModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-1.5 rounded-xl font-bold text-xs transition-all shadow-sm border border-slate-200/60 shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
+                            <button onclick="app.showAddLinkModal()" class="${brandBg} hover:${brandBg} text-white px-5 py-1.5 rounded-xl font-bold text-[9px] transition-all shadow-sm border border-slate-200/60 shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i> Add Link
                             </button>
                         </div>
                         
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200/60">
@@ -8491,16 +8635,16 @@
                                         <th class="p-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right w-24 shrink-0">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 text-xs">
+                                <tbody class="divide-y divide-slate-100 text-[9px]">
                                     ${DB.links.length > 0 ? DB.links.map(l => `
                                         <tr class="hover:bg-slate-50/70 transition-colors group">
                                             <td class="p-3">
-                                                <span class="inline-flex items-center gap-1.5 ${l.type === 'app' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-indigo-100 text-indigo-700 border-indigo-200'} border px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wide">
+                                                <span class="inline-flex items-center gap-1.5 ${l.type === 'app' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-indigo-100 ${brandText} border-indigo-200'} border px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wide">
                                                     <i data-lucide="${l.icon}" class="w-3.5 h-3.5"></i> ${l.type}
                                                 </span>
                                             </td>
                                             <td class="p-3 font-bold text-slate-800">${l.title}</td>
-                                            <td class="p-3 text-xs font-semibold text-slate-500 truncate max-w-sm"><a href="${l.url}" target="_blank" class="hover:text-indigo-600 transition-colors">${l.url}</a></td>
+                                            <td class="p-3 text-[9px] font-semibold text-slate-500 truncate max-w-sm"><a href="${l.url}" target="_blank" class="hover:${brandText} transition-colors">${l.url}</a></td>
                                             <td class="p-3 text-right">
                                                 <button onclick="app.deleteLink('${l.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Remove Link"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                                             </td>
@@ -9108,6 +9252,22 @@
             },
 
             renderTIVManagement: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const brandGradient = brandFilter === 'Mahindra' ? 'from-mahindra to-[#b81b31]' : 'from-foton to-[#03133d]';
+                const brandGlow = brandFilter === 'Mahindra' ? 'shadow-mahindra/20' : 'shadow-foton/20';
+                const brandBg = brandFilter === 'Mahindra' ? 'bg-mahindra' : 'bg-foton';
+                const brandText = brandFilter === 'Mahindra' ? 'text-mahindra' : 'text-foton';
+                const brandBorder = brandFilter === 'Mahindra' ? 'border-mahindra' : 'border-foton';
+                const brandFocus = brandFilter === 'Mahindra' ? 'focus:border-mahindra focus:ring-mahindra' : 'focus:border-foton focus:ring-foton';
+
+                // Helpers to avoid nested quotes inside template strings
+                const brandBgHover = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/90' : 'hover:bg-foton/90';
+                const brandBgLight = brandFilter === 'Mahindra' ? 'bg-mahindra-light' : 'bg-foton-light';
+                const brandBgLightHalf = brandFilter === 'Mahindra' ? 'bg-mahindra-light/50' : 'bg-foton-light/50';
+                const brandBorderLight = brandFilter === 'Mahindra' ? 'border-mahindra/10' : 'border-foton/10';
+                const brandBgForty = brandFilter === 'Mahindra' ? 'bg-mahindra/40' : 'bg-foton/40';
+                const brandBgHoverHalf = brandFilter === 'Mahindra' ? 'hover:bg-mahindra/50' : 'hover:bg-foton/50';
+    
                 localStorage.setItem('aci_last_page', 'tiv');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const currentMonth = app.currentMonth;
@@ -9120,55 +9280,55 @@
 
                 let html = `
                     <div class="max-w-6xl mx-auto fade-in">
-                        <div class="mb-6 flex justify-between items-center">
+                        <div class="mb-3 flex justify-between items-center">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-800">TIV Data Management</h1>
-                                <p class="text-sm text-slate-500">Total Industry Volume Collection & Administration</p>
+                                <h1 class="text-base font-bold tracking-tight font-bold text-slate-800">TIV Data Management</h1>
+                                <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Total Industry Volume Collection & Administration</p>
                             </div>
                             <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
-                                <button onclick="app.tivAdminSubView='submissions'; app.renderTIVManagement()" class="px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeSubView === 'submissions' ? 'bg-slate-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">Submissions</button>
-                                <button onclick="app.tivAdminSubView='settings'; app.renderTIVManagement()" class="px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeSubView === 'settings' ? 'bg-slate-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">Settings (Brands)</button>
+                                <button onclick="app.tivAdminSubView='submissions'; app.renderTIVManagement()" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all ${activeSubView === 'submissions' ? 'bg-slate-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">Submissions</button>
+                                <button onclick="app.tivAdminSubView='settings'; app.renderTIVManagement()" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all ${activeSubView === 'settings' ? 'bg-slate-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-700'}">Settings (Brands)</button>
                             </div>
                         </div>
                 `;
 
                 if (activeSubView === 'submissions') {
                     html += `
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                             <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="bar-chart-2" class="absolute -right-2 -bottom-2 w-12 h-12 text-blue-200 opacity-50"></i>
-                                <p class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Reporting Month</p>
-                                <h3 class="text-2xl font-extrabold text-blue-700">${currentMonth} 2026</h3>
+                                <p class="text-[9px] font-bold text-blue-500 uppercase tracking-wider mb-1">Reporting Month</p>
+                                <h3 class="text-base font-bold tracking-tight font-extrabold text-blue-700">${currentMonth} 2026</h3>
                             </div>
                             <div class="bg-teal-50 border border-teal-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="check-circle" class="absolute -right-2 -bottom-2 w-12 h-12 text-teal-200 opacity-50"></i>
-                                <p class="text-xs font-bold text-teal-500 uppercase tracking-wider mb-1">Submitted</p>
-                                <h3 class="text-2xl font-extrabold text-teal-700">${submittedCount} / ${totalTerritories}</h3>
+                                <p class="text-[9px] font-bold text-teal-500 uppercase tracking-wider mb-1">Submitted</p>
+                                <h3 class="text-base font-bold tracking-tight font-extrabold text-teal-700">${submittedCount} / ${totalTerritories}</h3>
                             </div>
                             <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl shadow-sm relative overflow-hidden">
                                 <i data-lucide="percent" class="absolute -right-2 -bottom-2 w-12 h-12 text-amber-200 opacity-50"></i>
-                                <p class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Completion Rate</p>
-                                <h3 class="text-2xl font-extrabold text-amber-700">${completionRate}%</h3>
+                                <p class="text-[9px] font-bold text-amber-500 uppercase tracking-wider mb-1">Completion Rate</p>
+                                <h3 class="text-base font-bold tracking-tight font-extrabold text-amber-700">${completionRate}%</h3>
                             </div>
                         </div>
 
-                        <div class="flex gap-2 mb-6">
-                            <button onclick="app.exportTIVCsv()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center gap-2 transition-colors">
+                        <div class="flex gap-2 mb-3">
+                            <button onclick="app.exportTIVCsv()" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-2 transition-colors">
                                 <i data-lucide="download" class="w-4 h-4"></i> Export CSV
                             </button>
-                            <button onclick="app.unlockAllTIV()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm flex items-center gap-2 transition-colors">
+                            <button onclick="app.unlockAllTIV()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-2.5 py-1.5 rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-2 transition-colors">
                                 <i data-lucide="unlock" class="w-4 h-4"></i> Unlock All Entries
                             </button>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                        <div class="glass rounded-xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest">
                                     <tr>
-                                        <th class="px-6 py-1.5 font-bold">Territory</th>
-                                        <th class="px-6 py-1.5 font-bold">Status</th>
-                                        <th class="px-6 py-1.5 font-bold text-right">Total Volume</th>
-                                        <th class="px-6 py-1.5 font-bold text-right">Actions</th>
+                                        <th class="px-2 py-0.5.5 font-bold">Territory</th>
+                                        <th class="px-2 py-0.5.5 font-bold">Status</th>
+                                        <th class="px-2 py-0.5.5 font-bold text-right">Total Volume</th>
+                                        <th class="px-2 py-0.5.5 font-bold text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -9176,8 +9336,8 @@
                         const sub = submissions.find(s => s.territory === t.id);
                         return `
                                             <tr class="hover:bg-slate-50 transition-colors">
-                                                <td class="px-6 py-1.5 font-bold text-slate-800">${t.name}</td>
-                                                <td class="px-6 py-1.5">
+                                                <td class="px-2 py-0.5.5 font-bold text-slate-800">${t.name}</td>
+                                                <td class="px-2 py-0.5.5">
                                                     ${sub ? `
                                                         <span class="bg-green-50 text-green-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
                                                             <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Submitted
@@ -9188,14 +9348,14 @@
                                                         </span>
                                                     `}
                                                 </td>
-                                                <td class="px-6 py-1.5 font-bold text-slate-800 text-right">
+                                                <td class="px-2 py-0.5.5 font-bold text-slate-800 text-right">
                                                     ${sub ? sub.total : 0}
                                                 </td>
-                                                <td class="px-6 py-1.5 text-right">
+                                                <td class="px-2 py-0.5.5 text-right">
                                                     ${sub ? `
-                                                        <button onclick="app.viewTIVSubmission('${sub.territory}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors" title="View"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                                        <button onclick="app.viewTIVSubmission('${sub.territory}')" class="text-slate-400 hover:${brandText} mx-1 transition-colors" title="View"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                                         <button onclick="app.unlockTIVSubmission('${sub.territory}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors" title="Unlock"><i data-lucide="unlock" class="w-4 h-4"></i></button>
-                                                    ` : '<span class="text-xs text-slate-400 italic">No Data</span>'}
+                                                    ` : '<span class="text-[9px] text-slate-400 italic">No Data</span>'}
                                                 </td>
                                             </tr>
                                         `;
@@ -9208,45 +9368,45 @@
                     html += `
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200">
-                                <h3 class="font-bold text-slate-800 text-base mb-4">Add New Brand</h3>
+                                <h3 class="font-bold text-slate-800 text-base mb-3">Add New Brand</h3>
                                 <form onsubmit="app.addTIVBrand(event)" class="space-y-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-600 mb-1">Brand Name</label>
-                                        <input type="text" id="tiv-new-brand" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="e.g. Fuso">
+                                        <label class="block text-[11px] font-medium text-slate-600 mb-1">Brand Name</label>
+                                        <input type="text" id="tiv-new-brand" class="w-full border-2 border-slate-100 rounded-xl px-2 py-1 text-[11px] font-bold focus:outline-none focus:${brandBorder} bg-slate-50/50" required placeholder="e.g. Fuso">
                                     </div>
-                                    <button type="submit" class="w-full btn-liquid text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow"><i data-lucide="plus" class="w-4 h-4"></i> Add Brand</button>
+                                    <button type="submit" class="w-full bg-gradient-to-r ${brandGradient} text-white shadow-sm hover:scale-[1.02] ${brandGlow} transition-all text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow"><i data-lucide="plus" class="w-4 h-4"></i> Add Brand</button>
                                 </form>
                             </div>
 
                             <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200">
-                                <h3 class="font-bold text-slate-800 text-base mb-4">Add New Model</h3>
+                                <h3 class="font-bold text-slate-800 text-base mb-3">Add New Model</h3>
                                 <form onsubmit="app.addTIVModel(event)" class="space-y-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-600 mb-1">Brand</label>
-                                        <select id="tiv-model-brand-select" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required>
+                                        <label class="block text-[11px] font-medium text-slate-600 mb-1">Brand</label>
+                                        <select id="tiv-model-brand-select" class="w-full border-2 border-slate-100 rounded-xl px-2 py-1 text-[11px] font-bold focus:outline-none focus:${brandBorder} bg-slate-50/50" required>
                                             ${DB.tiv_brands.map(b => `<option value="${b.name}">${b.name}</option>`).join('')}
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-600 mb-1">Model Name</label>
-                                        <input type="text" id="tiv-new-model" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="e.g. Fuso 10 Ton">
+                                        <label class="block text-[11px] font-medium text-slate-600 mb-1">Model Name</label>
+                                        <input type="text" id="tiv-new-model" class="w-full border-2 border-slate-100 rounded-xl px-2 py-1 text-[11px] font-bold focus:outline-none focus:${brandBorder} bg-slate-50/50" required placeholder="e.g. Fuso 10 Ton">
                                     </div>
-                                    <button type="submit" class="w-full btn-liquid text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow"><i data-lucide="plus" class="w-4 h-4"></i> Add Model</button>
+                                    <button type="submit" class="w-full bg-gradient-to-r ${brandGradient} text-white shadow-sm hover:scale-[1.02] ${brandGlow} transition-all text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow"><i data-lucide="plus" class="w-4 h-4"></i> Add Model</button>
                                 </form>
                             </div>
 
                             <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 overflow-y-auto max-h-[60vh]">
-                                <h3 class="font-bold text-slate-800 text-base mb-4">TIV Portfolio</h3>
+                                <h3 class="font-bold text-slate-800 text-base mb-3">TIV Portfolio</h3>
                                 <div class="space-y-3">
                                     ${DB.tiv_brands.map(b => `
                                         <div class="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
                                             <div class="flex justify-between items-center mb-2">
-                                                <span class="font-bold text-sm text-slate-800">${b.name}</span>
-                                                <button onclick="app.deleteTIVBrand('${b.name}')" class="text-xs text-red-500 hover:underline"><i data-lucide="trash-2" class="w-3 h-3 inline"></i></button>
+                                                <span class="font-bold text-[11px] text-slate-800">${b.name}</span>
+                                                <button onclick="app.deleteTIVBrand('${b.name}')" class="text-[9px] text-red-500 hover:underline"><i data-lucide="trash-2" class="w-3 h-3 inline"></i></button>
                                             </div>
                                             <div class="flex flex-wrap gap-1.5">
                                                 ${b.models.map(m => `
-                                                    <span class="bg-white border border-slate-200 px-2 py-0.5 rounded text-xs text-slate-700 flex items-center gap-1 font-medium shadow-sm">
+                                                    <span class="bg-white border border-slate-200 px-2 py-0.5 rounded text-[9px] text-slate-700 flex items-center gap-1 font-medium shadow-sm">
                                                         ${m}
                                                         <button onclick="app.deleteTIVModel('${b.name}', '${m}')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button>
                                                     </span>
