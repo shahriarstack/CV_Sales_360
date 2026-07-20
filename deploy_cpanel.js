@@ -199,6 +199,7 @@ async function run() {
         console.log("[5/5] Preparing files for upload...");
         
         const filesToUpload = [
+            { name: '.htaccess', path: path.join(__dirname, '.htaccess') },
             { name: 'inspect_emi.php', path: path.join(__dirname, 'inspect_emi.php') },
             { name: 'index.html', path: path.join(__dirname, 'index.html') },
             { name: 'api.php', path: path.join(__dirname, 'api.php') },
