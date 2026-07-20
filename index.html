@@ -10976,9 +10976,6 @@
             },
 
             renderSODashboard: () => {
-                // Silently flush any offline-queued deliveries on dashboard load
-                if (app.flushDeliveryQueue) app.flushDeliveryQueue();
-
                 const brand = app.soBrandTab || 'Foton';
                 const saleType = app.soSaleTypeTab || 'New Sale';
                 const activeFY = app.currentFY;
@@ -12368,18 +12365,7 @@
                         timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     };
 
-                    // Helper: save to offline queue if network fails
-                    const saveToOfflineQueue = (delivery) => {
-                        try {
-                            const queue = JSON.parse(localStorage.getItem('aci_delivery_queue') || '[]');
-                            // avoid duplicates
-                            if (!queue.find(d => d.id === delivery.id)) queue.push(delivery);
-                            localStorage.setItem('aci_delivery_queue', JSON.stringify(queue));
-                        } catch(e) {}
-                    };
-
                     // Attempt to send via dedicated action (bypasses WAF whitelist)
-                    let saved = false;
                     try {
                         const response = await fetch('api.php', {
                             method: 'POST',
@@ -12388,82 +12374,29 @@
                         });
 
                         if (response.status === 401) {
-                            // Session expired — re-login
                             app.hideLoader();
                             app.showToast('Session expired. Please log in again.', 'error');
-                            saveToOfflineQueue(newDelivery);
                             return;
                         }
 
                         const result = await response.json();
                         if (response.ok && result.success) {
-                            saved = true;
+                            // Push to local DB with parsed financials/discounts for UI rendering
+                            const localDelivery = { ...newDelivery, financials: { tp, dp, tenure }, discounts: { type: discType, amount: discAmt, gift: giftItem } };
+                            DB.sales.push(localDelivery);
+                            app.hideLoader();
+                            app.closeDeliveryModal();
+                            app.showToast('✅ Delivery logged successfully! Field intelligence updated.');
+                            app.renderSODashboard();
                         } else {
                             throw new Error(result.error || 'Server returned an error');
                         }
                     } catch (err) {
                         console.error('Delivery save failed:', err);
-                        // Save locally so data is not lost
-                        saveToOfflineQueue(newDelivery);
                         app.hideLoader();
-                        app.showToast('⚠️ Network issue — delivery saved offline. Will auto-sync when connection restores.', 'error');
-                        // Still push to local DB so UI shows it
-                        const localDelivery = { ...newDelivery, financials: { tp, dp, tenure }, discounts: { type: discType, amount: discAmt, gift: giftItem } };
-                        DB.sales.push(localDelivery);
-                        app.closeDeliveryModal();
-                        app.renderSODashboard();
-                        return;
-                    }
-
-                    if (saved) {
-                        // Push to local DB with parsed financials/discounts for UI rendering
-                        const localDelivery = { ...newDelivery, financials: { tp, dp, tenure }, discounts: { type: discType, amount: discAmt, gift: giftItem } };
-                        DB.sales.push(localDelivery);
-                        app.hideLoader();
-                        app.closeDeliveryModal();
-                        app.showToast('✅ Delivery logged successfully! Field intelligence updated.');
-                        app.renderSODashboard();
-                        // Also try to flush offline queue if any pending
-                        app.flushDeliveryQueue();
+                        app.showToast(`❌ Failed to save: ${err.message || 'Network issue. Please try again.'}`, 'error');
                     }
                 }, 800);
-            },
-
-            // Auto-sync offline delivery queue when network is available
-            flushDeliveryQueue: async () => {
-                try {
-                    const queue = JSON.parse(localStorage.getItem('aci_delivery_queue') || '[]');
-                    if (queue.length === 0) return;
-                    const remaining = [];
-                    for (const delivery of queue) {
-                        try {
-                            const response = await fetch('api.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ action: 'add_manual_delivery', delivery })
-                            });
-                            const result = await response.json();
-                            if (!response.ok || !result.success) remaining.push(delivery);
-                            else {
-                                // Add to local DB if not already there
-                                if (!DB.sales.find(s => s.id === delivery.id)) {
-                                    DB.sales.push({
-                                        ...delivery,
-                                        financials: typeof delivery.financials === 'string' ? JSON.parse(delivery.financials) : delivery.financials,
-                                        discounts: typeof delivery.discounts === 'string' ? JSON.parse(delivery.discounts) : delivery.discounts,
-                                        is_manual: true
-                                    });
-                                }
-                            }
-                        } catch(e) {
-                            remaining.push(delivery);
-                        }
-                    }
-                    localStorage.setItem('aci_delivery_queue', JSON.stringify(remaining));
-                    if (remaining.length < queue.length) {
-                        app.showToast(`✅ ${queue.length - remaining.length} offline delivery(ies) synced to server.`, 'success');
-                    }
-                } catch(e) {}
             },
 
             renderSOFirstTwoEMI: () => {
