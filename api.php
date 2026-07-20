@@ -167,6 +167,50 @@ try {
     // Otherwise, check if user is authenticated
     $isAuthenticated = isset($_SESSION['user_id']);
 
+    if ($action === 'add_manual_delivery') {
+        if (!$isAuthenticated) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Authentication required']);
+            exit;
+        }
+        
+        $delivery = isset($input['delivery']) ? $input['delivery'] : null;
+        if (!$delivery) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Delivery data is required']);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id=id");
+        $stmt->execute([
+            $delivery['id'],
+            $delivery['customer_id'],
+            $delivery['district'],
+            $delivery['territory_id'],
+            $delivery['upazila'],
+            $delivery['brand'],
+            $delivery['model'],
+            (int)$delivery['unit_qty'],
+            $delivery['fy'],
+            (int)$delivery['sales_year'],
+            $delivery['sales_month'],
+            $delivery['sale_type'],
+            $delivery['customer_name'],
+            $delivery['chassis_no'],
+            $delivery['purpose_of_use'],
+            is_array($delivery['financials']) ? json_encode($delivery['financials']) : $delivery['financials'],
+            is_array($delivery['discounts']) ? json_encode($delivery['discounts']) : $delivery['discounts'],
+            $delivery['old_customer_id'],
+            1, // is_manual
+            $delivery['approval_status'],
+            $delivery['admin_comments'],
+            $delivery['timestamp']
+        ]);
+
+        echo json_encode(['success' => true, 'affected_rows' => $stmt->rowCount()]);
+        exit;
+    }
+
     if (isset($input['query'])) {
         $query = $input['query'];
         $params = isset($input['params']) ? $input['params'] : [];

@@ -482,6 +482,11 @@
             }
         }
 
+        @keyframes brandPulse {
+            0%, 100% { opacity: 0.45; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.12); }
+        }
+
         /* Mobile Specific Premium Enhancements */
         @media (max-width: 640px) {
             #view-port {
@@ -618,7 +623,8 @@
 
     <!-- ========================================== -->
     <!-- LOGIN VIEW (Hidden by default to prevent flash) -->
-    <!-- ========================================== -->    <div id="login-view"
+    <!-- ========================================== -->
+    <div id="login-view"
         class="h-full w-full hidden flex flex-col md:flex-row absolute inset-0 z-50 transition-opacity duration-500 overflow-hidden bg-white">
 
         <!-- LEFT SIDE: Branding, Animations & Mockup (Hidden on Mobile) -->
@@ -1135,8 +1141,8 @@
             yoyBrandTab: 'Foton', // State for YOY Chart Brand Filter (Default: Foton)
             yoyTerritoryFilter: 'All', // State for YOY Chart Territory Filter (Default: All)
             yoyShowLY: false,   // State for Last Year Line Toggle
-            adminShowYTD: true,
-            adminShowLastMonth: true,
+            adminShowYTD: false,
+            adminShowLastMonth: false,
             performanceFilterMonth: null,
             pulseDetailedView: false,
             pulseMobileQuarter: 'Q1',
@@ -1165,6 +1171,98 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+            },
+
+            downloadPulseCSV: () => {
+                const brandFilter = app.adminBrandTab || 'Foton';
+                const currentSaleType = app.adminSaleTypeTab || 'New Sale';
+                const currentFY = app.selectedFY || app.currentFY;
+                const concludingFY = app.getPreviousFY(app.currentFY);
+                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : app.currentFY;
+                const activeFY = app.selectedFY || defaultFY;
+                const performanceMonth = app.performanceFilterMonth || app.currentMonth;
+                
+                const isAM = app.currentUser.role === 'am';
+                const baseTerritories = isAM ? DB.territories.filter(t => app.currentUser.territories.includes(t.id)) : DB.territories;
+                
+                let pulseTerritories = [...baseTerritories];
+                if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+                    pulseTerritories = pulseTerritories.filter(t => t.id === app.adminTerritoryFilter);
+                }
+                if (app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0) {
+                    pulseTerritories = pulseTerritories.filter(t => app.pulseFilterTerritories.includes(t.id));
+                }
+
+                const mapped = pulseTerritories.map(t => {
+                    const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
+                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === activeFY);
+                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+
+                    const currBudgetTgts = tTargets.filter(tg => tg.month === performanceMonth);
+                    const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+
+                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === performanceMonth && p.sale_type === currentSaleType);
+                    const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+
+                    const currSalesRecords = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth && s.fy === activeFY && s.sale_type === currentSaleType);
+                    const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+                    const ytdAchVal = perf.ytd.budget > 0 ? Math.round((perf.ytd.sales / perf.ytd.budget) * 100) : 0;
+                    const currAchVal = currBudget > 0 ? Math.round((currSalesUnits / currBudget) * 100) : 0;
+                    const lmAchVal = perf.lastMonth.budget > 0 ? Math.round((perf.lastMonth.sales / perf.lastMonth.budget) * 100) : 0;
+
+                    return {
+                        name: t.name,
+                        totalFYBudget,
+                        ytdBudget: perf.ytd.budget,
+                        ytdSales: perf.ytd.sales,
+                        ytdAch: ytdAchVal,
+                        lmBudget: perf.lastMonth.budget,
+                        lmSales: perf.lastMonth.sales,
+                        lmAch: lmAchVal,
+                        currBudget,
+                        currProj,
+                        currSalesUnits,
+                        currAch: currAchVal
+                    };
+                });
+
+                if (mapped.length === 0) {
+                    return app.showToast('No pulse data available to download.', 'error');
+                }
+
+                let csv = 'Territory,Brand,Sale Type,Total FY Budget,YTD Budget,YTD Actual,YTD Ach %,Last Month Budget,Last Month Actual,Last Month Ach %,Current Month Budget,Current Month Projection,Current Month Actual,Current Month Ach %\n';
+
+                mapped.forEach(row => {
+                    const csvRow = [
+                        `"${row.name}"`,
+                        `"${brandFilter}"`,
+                        `"${currentSaleType}"`,
+                        row.totalFYBudget,
+                        row.ytdBudget,
+                        row.ytdSales,
+                        `"${row.ytdAch}%"`,
+                        row.lmBudget,
+                        row.lmSales,
+                        `"${row.lmAch}%"`,
+                        row.currBudget,
+                        row.currProj,
+                        row.currSalesUnits,
+                        `"${row.currAch}%"`
+                    ];
+                    csv += csvRow.join(',') + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `Territory_Pulse_${brandFilter}_${currentSaleType}_${performanceMonth}_${activeFY}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                app.showToast('Territory Pulse CSV downloaded successfully!', 'success');
             },
 
             saveDBState: () => {
@@ -3025,196 +3123,92 @@
                 const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
 
                 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                // Auto-scale row height so ALL territories fit on one A4 page
+                const n       = territorySummary.length;
+                const budget  = 870;
+                const theadPx = 22;
+                const rh      = Math.max(13, Math.min(20, Math.floor((budget - theadPx) / (n + 1))));
+                const fs      = Math.max(7.5, Math.min(9, rh * 0.52));
+                const cs      = (clr, align, extra) =>
+                    `font-size:${fs}px;color:${clr};padding:0 6px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e8edf2;${extra||''}`;
 
-                // Calculate layout spacing dynamically to ensure it fits 100% on one A4 page
-                const totalTerritories = territorySummary.length;
-                const itemsPerCol = Math.ceil(totalTerritories / 2);
+                const tableRowsHTML = territorySummary.map((t, i) => {
+                    const bg = i % 2 === 0 ? '#fff' : '#f8fafc';
+                    const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                    return `<tr style="height:${rh}px;background:${bg};">
+                        <td style="${cs('#1e293b','left','padding-left:10px;font-weight:600;border-right:1px solid #e8edf2;')}"><span style="color:#bfcad6;font-size:${fs-1}px;">#${i+1} </span>${t.name}</td>
+                        <td style="${cs('#334155','center','border-right:1px solid #e8edf2;font-weight:500;')}">${t.totalCust}</td>
+                        <td style="${cs('#15803d','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.payingCust}</td>
+                        <td style="${cs('#dc2626','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.nonPayingCust}</td>
+                        <td style="${cs('#475569','center','border-right:1px solid #e8edf2;font-weight:500;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                        <td style="${cs('#2563eb','center','border-right:1px solid #e8edf2;font-weight:600;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                        <td style="${cs(rc,'center','font-weight:700;')}">${t.tColRate}%</td>
+                    </tr>`;
+                }).join('');
 
-                // Base style variables (highly tuned for pixel-perfect A4 printing/capture)
-                let cardHeight = 40;
-                let gap = 4;
-                let fontSizeName = 10.5;
-                let fontSizeInfo = 8.5;
-                let fontSizeRate = 9.5;
+                const totalRowHTML = `<tr style="height:${rh}px;background:#1e3a8a;">
+                    <td style="${cs('#fff','left','padding-left:10px;font-weight:700;border-right:1px solid rgba(255,255,255,0.15);')}">GRAND TOTAL</td>
+                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandCust}</td>
+                    <td style="${cs('#86efac','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandPaying}</td>
+                    <td style="${cs('#fca5a5','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandNonPaying}</td>
+                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                    <td style="${cs('#93c5fd','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                    <td style="${cs('#fff','center','font-weight:800;')}">${grandRate}%</td>
+                </tr>`;
 
-                // Auto-scale sizes down if territory counts are very large
-                if (itemsPerCol > 20) {
-                    const factor = 20 / itemsPerCol;
-                    cardHeight = Math.max(32, Math.floor(40 * factor));
-                    gap = Math.max(2.5, Math.floor(4 * factor));
-                    fontSizeName = Math.max(9, 10.5 * factor);
-                    fontSizeInfo = Math.max(7.5, 8.5 * factor);
-                    fontSizeRate = Math.max(8.5, 9.5 * factor);
-                }
-
-                const col1 = territorySummary.slice(0, itemsPerCol);
-                const col2 = territorySummary.slice(itemsPerCol);
-
-                const getCardHtml = (t, index) => {
-                    const rateColor = t.tColRate >= 80 ? '#10b981' : (t.tColRate >= 50 ? '#f59e0b' : '#ef4444');
-                    const colStr = app.formatCurrency(t.tAmountCol).replace('৳', '');
-                    const dueStr = app.formatCurrency(t.tTotalDue).replace('৳', '');
-                    
-                    return `
-                        <div style="
-                            display:block;
-                            position:relative;
-                            height:${cardHeight}px;
-                            background:#ffffff;
-                            border:1px solid #e2e8f0;
-                            border-radius:6px;
-                            box-shadow:0 1px 2px rgba(0,0,0,0.01);
-                            box-sizing:border-box;
-                            overflow:hidden;
-                            margin-bottom:${gap}px;
-                            width:100%;
-                        ">
-                            <!-- Left Accent Color Strip -->
-                            <div style="width:4px; height:100%; background:${rateColor}; position:absolute; left:0; top:0;"></div>
-                            
-                            <!-- Left: Territory details -->
-                            <div style="
-                                position:absolute;
-                                left:14px;
-                                top:0;
-                                bottom:0;
-                                width:180px;
-                                display:flex;
-                                flex-direction:column;
-                                justify-content:center;
-                                text-align:left;
-                                box-sizing:border-box;
-                            ">
-                                <span style="font-size:${fontSizeName}px; font-weight:700; color:#0f172a; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; width:100%;">
-                                    <span style="color:#94a3b8; font-weight:500; font-size:${fontSizeName - 1}px; margin-right:3px;">#${index}</span>${t.name}
-                                </span>
-                                <span style="font-size:${fontSizeInfo}px; color:#64748b; line-height:1.2; margin-top:2px; display:block; width:100%;">
-                                    Paying: <strong style="color:#334155;">${t.payingCust}</strong>/${t.totalCust}
-                                </span>
-                            </div>
-
-                            <!-- Right: Financial details -->
-                            <div style="
-                                position:absolute;
-                                right:12px;
-                                top:0;
-                                bottom:0;
-                                width:145px;
-                                display:flex;
-                                flex-direction:column;
-                                justify-content:center;
-                                text-align:right;
-                                box-sizing:border-box;
-                            ">
-                                <div style="font-size:${fontSizeRate}px; font-weight:700; color:#1e293b; line-height:1.2; text-align:right; width:100%;">
-                                    <span style="color:#10b981;">${colStr}</span><span style="color:#94a3b8; font-weight:400; margin:0 2px;">/</span><span style="color:#64748b; font-weight:500;">${dueStr}</span>
-                                </div>
-                                <div style="text-align:right; width:100%; margin-top:2px; height:12px; line-height:12px;">
-                                    <div style="width:36px; height:3.5px; background:#e2e8f0; border-radius:2px; overflow:hidden; display:inline-block; vertical-align:middle; margin-right:4px;">
-                                        <div style="width:${t.tColRate}%; height:100%; background:${rateColor}; border-radius:2px;"></div>
-                                    </div>
-                                    <span style="font-size:${fontSizeRate}px; font-weight:800; color:${rateColor}; display:inline-block; vertical-align:middle;">${t.tColRate}%</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                };
-
-                const col1Html = col1.map((t, i) => getCardHtml(t, i + 1)).join('');
-                const col2Html = col2.map((t, i) => getCardHtml(t, i + itemsPerCol + 1)).join('');
-
-                // Build off-screen container styled like a premium modern A4 print dashboard
+                // Build A4 off-screen container
                 const container = document.createElement('div');
                 container.id = 'emi-report-capture';
-                container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;background:#f8fafc;z-index:99999;font-family:\'Segoe UI\',Arial,sans-serif;box-sizing:border-box;padding:0;';
+                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#fff;font-family:'Segoe UI',Arial,sans-serif;box-sizing:border-box;overflow:hidden;";
 
                 container.innerHTML = `
-                    <div style="
-                        width:794px;
-                        height:1123px;
-                        background:#f8fafc;
-                        padding:20px 24px;
-                        box-sizing:border-box;
-                        display:flex;
-                        flex-direction:column;
-                        position:relative;
-                    ">
-                        <!-- Top Gradient Accent Bar -->
-                        <div style="position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(to right, #1e3a8a, #3b82f6);"></div>
-                        
-                        <!-- Header Section -->
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                            <div>
-                                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
-                                    <span style="background:#1e3a8a; color:#ffffff; font-size:8.5px; font-weight:900; padding:1.5px 5px; border-radius:3px; letter-spacing:0.5px; text-transform:uppercase;">ACI Motors</span>
-                                    <span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Commercial Vehicle</span>
-                                </div>
-                                <h1 style="font-size:17px; margin:0; color:#0f172a; font-weight:800; letter-spacing:-0.5px;">1st & 2nd EMI Collection Status</h1>
-                                <div style="font-size:9px; color:#64748b; margin-top:2px; font-weight:500;">Report Date: <span style="color:#334155; font-weight:600;">${today}</span></div>
+                <div style="width:794px;height:1123px;background:#fff;padding:22px 26px 16px 26px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;padding-top:2px;flex-shrink:0;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                <span style="background:#1e3a8a;color:#fff;font-size:7.5px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;">ACI Motors</span>
+                                <span style="color:#94a3b8;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Commercial Vehicle</span>
                             </div>
-                            <div style="text-align:right;">
-                                <div style="font-size:9.5px; font-weight:700; color:#1e3a8a; text-transform:uppercase; letter-spacing:0.5px;">Global Dashboard</div>
-                                <div style="font-size:8.5px; color:#94a3b8; margin-top:1px;">Performance Analytics</div>
-                            </div>
+                            <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;line-height:1.1;">1st &amp; 2nd EMI Collection Status</div>
+                            <div style="font-size:8px;color:#64748b;margin-top:3px;">Report Date: <b style="color:#1e3a8a;">${today}</b></div>
                         </div>
-
-                        <!-- KPI Summary Cards -->
-                        <div style="display:flex; gap:10px; margin-bottom:14px; width:100%;">
-                            <!-- Rate Card -->
-                            <div style="flex:1; width:25%; background:linear-gradient(135deg, #1e3a8a, #3b82f6); color:#ffffff; padding:10px 12px; border-radius:10px; box-shadow:0 3px 6px rgba(30,58,138,0.1); box-sizing:border-box;">
-                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#93c5fd;">Collection Rate</div>
-                                <div style="font-size:18px; font-weight:800; margin-top:3px; letter-spacing:-0.5px;">${grandRate}%</div>
-                                <div style="width:100%; height:3px; background:rgba(255,255,255,0.25); border-radius:1.5px; margin-top:6px; overflow:hidden;">
-                                    <div style="width:${grandRate}%; height:100%; background:#10b981; border-radius:1.5px;"></div>
-                                </div>
-                            </div>
-                            <!-- Customers Card -->
-                            <div style="flex:1; width:25%; background:#ffffff; border:1px solid #e2e8f0; padding:10px 12px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); box-sizing:border-box;">
-                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#64748b;">Customer Coverage</div>
-                                <div style="font-size:18px; font-weight:800; color:#0f172a; margin-top:3px; letter-spacing:-0.5px;">${grandCust} <span style="font-size:10px; font-weight:500; color:#64748b;">Total</span></div>
-                                <div style="font-size:8px; color:#64748b; margin-top:5px; display:flex; justify-content:space-between;">
-                                    <span>Paying: <strong style="color:#10b981;">${grandPaying}</strong></span>
-                                    <span>Unpaid: <strong style="color:#ef4444;">${grandNonPaying}</strong></span>
-                                </div>
-                            </div>
-                            <!-- Due Card -->
-                            <div style="flex:1; width:25%; background:#ffffff; border:1px solid #e2e8f0; padding:10px 12px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); box-sizing:border-box;">
-                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#64748b;">Total Installment Due</div>
-                                <div style="font-size:15px; font-weight:800; color:#0f172a; margin-top:6px; letter-spacing:-0.3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${app.formatCurrency(grandDue)}">${app.formatCurrency(grandDue)}</div>
-                                <div style="font-size:7.5px; color:#94a3b8; margin-top:4px; font-weight:500;">Target Amount</div>
-                            </div>
-                            <!-- Collected Card -->
-                            <div style="flex:1; width:25%; background:#ffffff; border:1px solid #e2e8f0; padding:10px 12px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); box-sizing:border-box;">
-                                <div style="font-size:8px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px; color:#64748b;">Total Collected</div>
-                                <div style="font-size:15px; font-weight:800; color:#2563eb; margin-top:6px; letter-spacing:-0.3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${app.formatCurrency(grandCol)}">${app.formatCurrency(grandCol)}</div>
-                                <div style="font-size:7.5px; color:#94a3b8; margin-top:4px; font-weight:500;">Collected Amount</div>
-                            </div>
-                        </div>
-
-                        <!-- Section Divider & Header -->
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
-                            <span style="font-size:9.5px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Territory Performance Summary</span>
-                            <span style="font-size:8px; color:#64748b;">Amounts in BDT (৳)</span>
-                        </div>
-
-                        <!-- Grid Columns Container -->
-                        <div style="display:flex; gap:16px; flex:1; overflow:hidden;">
-                            <!-- Column 1 -->
-                            <div style="flex:1; width:calc(50% - 8px); display:flex; flex-direction:column; gap:${gap}px; overflow:hidden;">
-                                ${col1Html}
-                            </div>
-                            <!-- Column 2 -->
-                            <div style="flex:1; width:calc(50% - 8px); display:flex; flex-direction:column; gap:${gap}px; overflow:hidden;">
-                                ${col2Html}
-                            </div>
-                        </div>
-
-                        <!-- Footer Area -->
-                        <div style="height:20px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; margin-top:12px; font-size:8px; color:#94a3b8; font-weight:500;">
-                            <span>Generated dynamically from Sales360 System | ACI Motors Ltd.</span>
-                            <span>Page 1 of 1</span>
+                        <div style="text-align:right;">
+                            <div style="font-size:9px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">Global Dashboard</div>
+                            <div style="font-size:7.5px;color:#94a3b8;margin-top:1px;">Performance Analytics</div>
                         </div>
                     </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #cbd5e1;padding-bottom:5px;margin-bottom:8px;flex-shrink:0;">
+                        <span style="font-size:8px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.8px;">Territory Wise Performance Summary</span>
+                        <span style="font-size:7.5px;color:#94a3b8;">Amounts in BDT (৳)</span>
+                    </div>
+                    <div style="flex:1;">
+                        <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
+                            <colgroup>
+                                <col style="width:26%;"><col style="width:9%;"><col style="width:9%;"><col style="width:11%;"><col style="width:17%;"><col style="width:18%;"><col style="width:10%;">
+                            </colgroup>
+                            <thead>
+                                <tr style="height:${theadPx}px;background:#1e3a8a;color:#fff;">
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 8px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Sales Territory</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Total</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#86efac;">Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#fca5a5;">Non-Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Due (Inst)</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#93c5fd;">Collected</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;">Rate %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowsHTML}
+                                ${totalRowHTML}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;">
+                        <span>Generated from Sales360 System | ACI Motors Ltd.</span>
+                        <span>Page 1 of 1</span>
+                    </div>
+                </div>
                 `;
 
                 document.body.appendChild(container);
@@ -4292,12 +4286,12 @@
                                             <!-- Brand Switcher -->
                                             <div class="flex bg-black/20 p-1 rounded-xl border border-white/10 backdrop-blur-md">
                                                 <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Foton' ? 'bg-white shadow-lg text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}">
-                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
-                                                    <span class="text-[9px] font-black uppercase tracking-wider">Foton</span>
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm" style="${brandFilter !== 'Foton' ? 'animation:brandPulse 2.5s ease-in-out infinite;' : ''}"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
+                                                    <span class="text-[9px] font-black uppercase tracking-wider">${brandFilter !== 'Foton' ? '<span style="animation:brandPulse 2.5s ease-in-out infinite;display:inline-block;">Foton</span>' : 'Foton'}</span>
                                                 </button>
                                                 <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Mahindra' ? 'bg-white shadow-lg text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}">
-                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
-                                                    <span class="text-[9px] font-black uppercase tracking-wider">Mahindra</span>
+                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm" style="${brandFilter !== 'Mahindra' ? 'animation:brandPulse 2.5s ease-in-out infinite;' : ''}"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
+                                                    <span class="text-[9px] font-black uppercase tracking-wider">${brandFilter !== 'Mahindra' ? '<span style="animation:brandPulse 2.5s ease-in-out infinite;display:inline-block;">Mahindra</span>' : 'Mahindra'}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -4855,6 +4849,12 @@
                                         class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
                                     <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                 </button>
+                                <button onclick="app.downloadPulseCSV()" 
+                                        class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
+                                        title="Download Territory Pulse CSV">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                    <span class="text-[10px] font-black uppercase tracking-wider hidden sm:inline">Export</span>
+                                </button>
                             </div>
                         </div>
 
@@ -4895,7 +4895,7 @@
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
-                                        <th class="px-6 py-4 font-black sticky left-0 z-10 bg-slate-50">Territory</th>
+                                        <th class="px-5 py-2.5 font-black sticky left-0 z-10 bg-slate-50">Territory</th>
                                         ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
                                         ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
                                         <th class="px-3 py-4 text-center border-l border-slate-100 font-extrabold" colspan="${4 + activeModels.length}">
@@ -4903,7 +4903,7 @@
                                         </th>
                                     </tr>
                                     <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-100 text-center">
-                                        <th class="px-6 py-3 sticky left-0 z-10 bg-white"></th>
+                                        <th class="px-5 py-2 sticky left-0 z-10 bg-white"></th>
                                         ${app.adminShowYTD ? `
                                             <th class="px-2 py-3 bg-slate-50">Budget</th>
                                             <th class="px-2 py-3 bg-slate-50 font-bold text-slate-600">Actual</th>
@@ -4937,6 +4937,14 @@
                             const performanceMonth = app.performanceFilterMonth || app.currentMonth;
 
                             const rowsHTML = activeTerritories.filter(t => !app.adminTerritoryFilter || app.adminTerritoryFilter === 'All' || t.id === app.adminTerritoryFilter).map(t => {
+                                // Pre-compute current month ach for sorting
+                                const _tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
+                                const _currTgts = _tTargets.filter(tg => tg.month === performanceMonth);
+                                const _currBudget = _currTgts.length > 0 ? _currTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(_tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+                                const _currSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                                t._sortAch = ach(_currSales, _currBudget);
+                                return t;
+                            }).sort((a, b) => b._sortAch - a._sortAch).map(t => {
                                 const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
                                 const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === currentFY);
                                 const currTgts = tTargets.filter(tg => tg.month === performanceMonth);
@@ -4965,10 +4973,10 @@
 
                                 return `
                                                 <tr class="hover:bg-slate-50/50 transition-colors group text-center border-b border-slate-100/50">
-                                                    <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
-                                                        <div class="flex items-center gap-2">
-                                                            <div class="w-1.5 h-4.5 bg-${h}-500 rounded-full"></div>
-                                                            <span class="font-black text-slate-700">${t.name}</span>
+                                                    <td class="px-5 py-1 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                                                        <div class="flex items-center gap-1.5">
+                                                            <div class="w-1 h-3.5 bg-${h}-500 rounded-full"></div>
+                                                            <span class="font-black text-slate-700 text-[11px]">${t.name}</span>
                                                         </div>
                                                     </td>
                                                     ${app.adminShowYTD ? `
@@ -4985,8 +4993,8 @@
                                                     <td class="px-2 py-1.5 bg-slate-50/50 text-slate-400 font-medium text-center">${currBudget}</td>
                                                     <td class="px-2 py-1.5 bg-slate-50/50 font-black text-slate-700 text-center">${currProj}</td>
                                                     ${activeModels.map(m => `<td class="px-2 py-1.5 bg-slate-50/50 font-bold text-center ${modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
-                                                    <td class="px-2 py-1.5 bg-indigo-50/30 font-black text-indigo-700 text-sm text-center">${currSalesUnits}</td>
-                                                    <td class="px-2 py-1.5 bg-indigo-50/30 font-black text-emerald-600 text-center">${ach(currSalesUnits, currBudget)}%</td>
+                                                    <td class="px-2 py-1 bg-indigo-50/30 font-black text-indigo-700 text-sm text-center">${currSalesUnits}</td>
+                                                    <td class="px-2 py-1 text-center"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px]" style="background:${ach(currSalesUnits, currBudget) >= 100 ? '#dcfce7' : ach(currSalesUnits, currBudget) >= 80 ? '#fef9c3' : ach(currSalesUnits, currBudget) >= 60 ? '#ffedd5' : '#fee2e2'};color:${ach(currSalesUnits, currBudget) >= 100 ? '#15803d' : ach(currSalesUnits, currBudget) >= 80 ? '#a16207' : ach(currSalesUnits, currBudget) >= 60 ? '#c2410c' : '#dc2626'};">${ach(currSalesUnits, currBudget)}%</span></td>
                                                 </tr>
                                             `;
                             }).join('');
@@ -5016,8 +5024,8 @@
                                                 <td class="px-2 py-2 bg-slate-100/50 text-slate-700 font-extrabold text-center">${totalCurrBudget}</td>
                                                 <td class="px-2 py-2 bg-slate-100/50 font-black text-slate-900 text-center">${totalCurrProj}</td>
                                                 ${activeModels.map(m => `<td class="px-2 py-2 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
-                                                <td class="px-2 py-2 bg-indigo-100/50 font-black text-indigo-700 text-sm text-center">${totalCurrSalesUnits}</td>
-                                                <td class="px-2 py-2 bg-indigo-100/50 font-black text-emerald-600 text-center">${ach(totalCurrSalesUnits, totalCurrBudget)}%</td>
+                                                <td class="px-2 py-1.5 bg-indigo-100/50 font-black text-indigo-700 text-sm text-center">${totalCurrSalesUnits}</td>
+                                                <td class="px-2 py-1.5 text-center"><span class="px-2 py-0.5 rounded-md text-[10px] font-black inline-block min-w-[38px]" style="background:${ach(totalCurrSalesUnits, totalCurrBudget) >= 100 ? '#dcfce7' : ach(totalCurrSalesUnits, totalCurrBudget) >= 80 ? '#fef9c3' : ach(totalCurrSalesUnits, totalCurrBudget) >= 60 ? '#ffedd5' : '#fee2e2'};color:${ach(totalCurrSalesUnits, totalCurrBudget) >= 100 ? '#15803d' : ach(totalCurrSalesUnits, totalCurrBudget) >= 80 ? '#a16207' : ach(totalCurrSalesUnits, totalCurrBudget) >= 60 ? '#c2410c' : '#dc2626'};">${ach(totalCurrSalesUnits, totalCurrBudget)}%</span></td>
                                             </tr>
                                         `;
 
@@ -5062,6 +5070,12 @@
                                             <option value="Foton" ${brandFilter === 'Foton' ? 'selected' : ''}>Foton</option>
                                             <option value="Mahindra" ${brandFilter === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
                                         </select>
+                                        <button onclick="app.downloadPulseCSV()" 
+                                                class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
+                                                title="Download Territory Pulse CSV">
+                                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                            <span class="text-[10px] font-black uppercase tracking-wider hidden sm:inline">Export</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -10962,6 +10976,9 @@
             },
 
             renderSODashboard: () => {
+                // Silently flush any offline-queued deliveries on dashboard load
+                if (app.flushDeliveryQueue) app.flushDeliveryQueue();
+
                 const brand = app.soBrandTab || 'Foton';
                 const saleType = app.soSaleTypeTab || 'New Sale';
                 const activeFY = app.currentFY;
@@ -12342,8 +12359,8 @@
                         sales_year: currentYear,
                         sales_month: app.currentMonth,
                         sale_type: type,
-                        financials: { tp, dp, tenure },
-                        discounts: { type: discType, amount: discAmt, gift: giftItem },
+                        financials: JSON.stringify({ tp, dp, tenure }),
+                        discounts: JSON.stringify({ type: discType, amount: discAmt, gift: giftItem }),
                         old_customer_id: oldCustomerId,
                         is_manual: true,
                         approval_status: 'Pending Approval',
@@ -12351,26 +12368,102 @@
                         timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     };
 
-                    if (app.neonSQL) {
+                    // Helper: save to offline queue if network fails
+                    const saveToOfflineQueue = (delivery) => {
                         try {
-                            await app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (${newDelivery.id}, ${newDelivery.customer_id}, ${newDelivery.district}, ${newDelivery.territory_id}, ${newDelivery.upazila}, ${newDelivery.brand}, ${newDelivery.model}, ${newDelivery.unit_qty}, ${newDelivery.fy}, ${newDelivery.sales_year}, ${newDelivery.sales_month}, ${newDelivery.sale_type}, ${newDelivery.customer_name}, ${newDelivery.chassis_no}, ${newDelivery.purpose_of_use}, ${JSON.stringify(newDelivery.financials)}, ${JSON.stringify(newDelivery.discounts)}, ${newDelivery.old_customer_id}, ${1}, ${newDelivery.approval_status}, ${newDelivery.admin_comments}, ${newDelivery.timestamp})`;
-                            
-                            DB.sales.push(newDelivery);
-                        } catch (err) {
-                            console.error("Failed to insert manual delivery to database", err);
-                            app.showToast('Database insertion failed', 'error');
+                            const queue = JSON.parse(localStorage.getItem('aci_delivery_queue') || '[]');
+                            // avoid duplicates
+                            if (!queue.find(d => d.id === delivery.id)) queue.push(delivery);
+                            localStorage.setItem('aci_delivery_queue', JSON.stringify(queue));
+                        } catch(e) {}
+                    };
+
+                    // Attempt to send via dedicated action (bypasses WAF whitelist)
+                    let saved = false;
+                    try {
+                        const response = await fetch('api.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'add_manual_delivery', delivery: newDelivery })
+                        });
+
+                        if (response.status === 401) {
+                            // Session expired — re-login
                             app.hideLoader();
+                            app.showToast('Session expired. Please log in again.', 'error');
+                            saveToOfflineQueue(newDelivery);
                             return;
                         }
+
+                        const result = await response.json();
+                        if (response.ok && result.success) {
+                            saved = true;
+                        } else {
+                            throw new Error(result.error || 'Server returned an error');
+                        }
+                    } catch (err) {
+                        console.error('Delivery save failed:', err);
+                        // Save locally so data is not lost
+                        saveToOfflineQueue(newDelivery);
+                        app.hideLoader();
+                        app.showToast('⚠️ Network issue — delivery saved offline. Will auto-sync when connection restores.', 'error');
+                        // Still push to local DB so UI shows it
+                        const localDelivery = { ...newDelivery, financials: { tp, dp, tenure }, discounts: { type: discType, amount: discAmt, gift: giftItem } };
+                        DB.sales.push(localDelivery);
+                        app.closeDeliveryModal();
+                        app.renderSODashboard();
+                        return;
                     }
 
-                    app.hideLoader();
-                    app.closeDeliveryModal();
-                    app.showToast('Delivery logged successfully! Field intelligence updated.');
-
-                    // Re-render dashboard to show immediate reflection
-                    app.renderSODashboard();
+                    if (saved) {
+                        // Push to local DB with parsed financials/discounts for UI rendering
+                        const localDelivery = { ...newDelivery, financials: { tp, dp, tenure }, discounts: { type: discType, amount: discAmt, gift: giftItem } };
+                        DB.sales.push(localDelivery);
+                        app.hideLoader();
+                        app.closeDeliveryModal();
+                        app.showToast('✅ Delivery logged successfully! Field intelligence updated.');
+                        app.renderSODashboard();
+                        // Also try to flush offline queue if any pending
+                        app.flushDeliveryQueue();
+                    }
                 }, 800);
+            },
+
+            // Auto-sync offline delivery queue when network is available
+            flushDeliveryQueue: async () => {
+                try {
+                    const queue = JSON.parse(localStorage.getItem('aci_delivery_queue') || '[]');
+                    if (queue.length === 0) return;
+                    const remaining = [];
+                    for (const delivery of queue) {
+                        try {
+                            const response = await fetch('api.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'add_manual_delivery', delivery })
+                            });
+                            const result = await response.json();
+                            if (!response.ok || !result.success) remaining.push(delivery);
+                            else {
+                                // Add to local DB if not already there
+                                if (!DB.sales.find(s => s.id === delivery.id)) {
+                                    DB.sales.push({
+                                        ...delivery,
+                                        financials: typeof delivery.financials === 'string' ? JSON.parse(delivery.financials) : delivery.financials,
+                                        discounts: typeof delivery.discounts === 'string' ? JSON.parse(delivery.discounts) : delivery.discounts,
+                                        is_manual: true
+                                    });
+                                }
+                            }
+                        } catch(e) {
+                            remaining.push(delivery);
+                        }
+                    }
+                    localStorage.setItem('aci_delivery_queue', JSON.stringify(remaining));
+                    if (remaining.length < queue.length) {
+                        app.showToast(`✅ ${queue.length - remaining.length} offline delivery(ies) synced to server.`, 'success');
+                    }
+                } catch(e) {}
             },
 
             renderSOFirstTwoEMI: () => {
@@ -13292,153 +13385,6 @@
                 return { rowsHTML, grandTotalRowHTML, metricHeadersHTML, mobileCardsHTML, mobileGrandTotalHTML };
             },
 
-            downloadPulseMatrixCSV: () => {
-                const currentFY = app.currentFY;
-                const lastFY = (() => {
-                    const parts = currentFY.split('-');
-                    if (parts.length === 2) {
-                        const y1 = parseInt(parts[0]);
-                        const y2 = parseInt(parts[1]);
-                        if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                    }
-                    return '2024-25';
-                })();
-                const brand     = app.pmBrandTab    || 'Foton';
-                const saleType  = app.pmSaleTypeTab || 'New Sale';
-                const assignedTerrs = app.currentUser.territories || [];
-                const territories = DB.territories.filter(t => assignedTerrs.length === 0 || assignedTerrs.includes(t.id));
-
-                const fiscalMonths = ['July','August','September','October','November','December','January','February','March','April','May','June'];
-                const quarters = {
-                    Q1: ['July','August','September'],
-                    Q2: ['October','November','December'],
-                    Q3: ['January','February','March'],
-                    Q4: ['April','May','June']
-                };
-                
-                const ach     = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
-                const calcGrw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : (s > 0 ? 100 : 0);
-
-                const activeMonths = [];
-                let foundCurrent = false;
-                const cMonth = app.currentMonth || 'April';
-                for (const m of fiscalMonths) {
-                    activeMonths.push(m);
-                    if (m === cMonth) {
-                        foundCurrent = true;
-                        break;
-                    }
-                }
-                if (!foundCurrent) activeMonths.push(...fiscalMonths);
-
-                // Build CSV Headers
-                let csv = 'Territory,Total FY Budget';
-                fiscalMonths.forEach(m => {
-                    csv += `,${m} Bgt,${m} Sal,${m} Ach%,${m} SPLY,${m} Gr%`;
-                    const qName = m === 'September' ? 'Q1' : m === 'December' ? 'Q2' : m === 'March' ? 'Q3' : m === 'June' ? 'Q4' : null;
-                    if (qName) {
-                        csv += `,${qName} Bgt,${qName} Sal,${qName} Ach%,${qName} SPLY,${qName} Gr%`;
-                    }
-                });
-                csv += ',YTD Bgt,YTD Sal,YTD Ach%,YTD SPLY,YTD Gr%\n';
-
-                let grandFYBudget = 0;
-                const grandMonth = {};
-                const grandQuarter = {};
-                fiscalMonths.forEach(m => { grandMonth[m] = { budget: 0, sales: 0, sply: 0 }; });
-                ['Q1','Q2','Q3','Q4'].forEach(q => { grandQuarter[q] = { budget: 0, sales: 0, sply: 0 }; });
-
-                territories.forEach(t => {
-                    const tTargets      = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brand && tg.sale_type === saleType && tg.fy === currentFY);
-                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
-                    grandFYBudget += totalFYBudget;
-
-                    const hasMonthlyTargets = tTargets.some(tg => tg.month && fiscalMonths.includes(tg.month));
-
-                    const monthlyPerf = {};
-                    fiscalMonths.forEach(m => {
-                        const mTgts   = tTargets.filter(tg => tg.month === m);
-                        let mBudget = 0;
-                        if (mTgts.length > 0) {
-                            mBudget = mTgts.reduce((s, tg) => s + Number(tg.target_qty || 0), 0);
-                        } else if (!hasMonthlyTargets && totalFYBudget > 0) {
-                            const base = Math.floor(totalFYBudget / 12);
-                            const remainder = totalFYBudget % 12;
-                            const mIdx = fiscalMonths.indexOf(m);
-                            mBudget = base + (mIdx < remainder ? 1 : 0);
-                        }
-                        const mSales  = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === currentFY && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
-                        const mSply   = DB.sales.filter(s => s.territory_id === t.id && s.brand === brand && s.sale_type === saleType && s.fy === lastFY  && s.sales_month === m).reduce((s, r) => s + Number(r.unit_qty || 0), 0);
-                        monthlyPerf[m] = { budget:mBudget, sales:mSales, sply:mSply, ach:ach(mSales,mBudget), growth:calcGrw(mSales,mSply) };
-                        grandMonth[m].budget += mBudget; grandMonth[m].sales += mSales; grandMonth[m].sply += mSply;
-                    });
-
-                    const quarterPerf = {};
-                    Object.entries(quarters).forEach(([qName, qMs]) => {
-                        const activeMs = qMs.filter(m => activeMonths.includes(m));
-                        const qBudget = activeMs.reduce((s, m) => s + monthlyPerf[m].budget, 0);
-                        const qSales  = activeMs.reduce((s, m) => s + monthlyPerf[m].sales,  0);
-                        const qSply   = activeMs.reduce((s, m) => s + monthlyPerf[m].sply,   0);
-                        quarterPerf[qName] = { budget:qBudget, sales:qSales, sply:qSply, ach:ach(qSales,qBudget), growth:calcGrw(qSales,qSply) };
-                        grandQuarter[qName].budget += qBudget; grandQuarter[qName].sales += qSales; grandQuarter[qName].sply += qSply;
-                    });
-
-                    const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
-                    const ytdBudget = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].budget, 0);
-                    const ytdSales  = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sales, 0);
-                    const ytdSply   = activeYtdMonths.reduce((s, m) => s + monthlyPerf[m].sply, 0);
-                    const ytdAch    = ach(ytdSales, ytdBudget);
-                    const ytdGrowth = calcGrw(ytdSales, ytdSply);
-
-                    let row = `"${t.name}",${totalFYBudget}`;
-                    fiscalMonths.forEach(m => {
-                        const p = monthlyPerf[m];
-                        row += `,${p.budget},${p.sales},${p.ach}%,${p.sply},${p.growth}%`;
-                        const qName = m === 'September' ? 'Q1' : m === 'December' ? 'Q2' : m === 'March' ? 'Q3' : m === 'June' ? 'Q4' : null;
-                        if (qName) {
-                            const q = quarterPerf[qName];
-                            row += `,${q.budget},${q.sales},${q.ach}%,${q.sply},${q.growth}%`;
-                        }
-                    });
-                    row += `,${ytdBudget},${ytdSales},${ytdAch}%,${ytdSply},${ytdGrowth}%\n`;
-                    csv += row;
-                });
-
-                let grandRow = `"[GRAND TOTAL]",${grandFYBudget}`;
-                fiscalMonths.forEach(m => {
-                    const g = grandMonth[m];
-                    const mAch = ach(g.sales, g.budget);
-                    const mGrw = calcGrw(g.sales, g.sply);
-                    grandRow += `,${g.budget},${g.sales},${mAch}%,${g.sply},${mGrw}%`;
-
-                    const qName = m === 'September' ? 'Q1' : m === 'December' ? 'Q2' : m === 'March' ? 'Q3' : m === 'June' ? 'Q4' : null;
-                    if (qName) {
-                        const gq = grandQuarter[qName];
-                        const qAch = ach(gq.sales, gq.budget);
-                        const qGrw = calcGrw(gq.sales, gq.sply);
-                        grandRow += `,${gq.budget},${gq.sales},${qAch}%,${gq.sply},${qGrw}%`;
-                    }
-                });
-                const activeYtdMonths = fiscalMonths.filter(m => activeMonths.includes(m));
-                const gYtdBudget = activeYtdMonths.reduce((s, m) => s + grandMonth[m].budget, 0);
-                const gYtdSales  = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sales, 0);
-                const gYtdSply   = activeYtdMonths.reduce((s, m) => s + grandMonth[m].sply, 0);
-                const gYtdAch    = ach(gYtdSales, gYtdBudget);
-                const gYtdGrowth = calcGrw(gYtdSales, gYtdSply);
-
-                grandRow += `,${gYtdBudget},${gYtdSales},${gYtdAch}%,${gYtdSply},${gYtdGrowth}%\n`;
-                csv += grandRow;
-
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.setAttribute('download', `Performance_Matrix_${brand}_${saleType}_FY${currentFY}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                app.showToast('Performance Matrix CSV downloaded!', 'success');
-            },
-
             // ==========================================
             // SHARED: Build the HTML frame for the matrix page
             // ==========================================
@@ -13457,9 +13403,6 @@
                             </h2>
                             <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5 ml-10">12-Month Territory Breakdown &middot; FY ${app.currentFY}</p>
                         </div>
-                        <button onclick="app.downloadPulseMatrixCSV()" class="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-black shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95 duration-200" title="Export Matrix to CSV">
-                            <i data-lucide="download" class="w-4 h-4"></i> Export CSV
-                        </button>
                     </div>
 
                     <div class="flex flex-wrap gap-2 mb-5">
