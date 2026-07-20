@@ -3350,12 +3350,12 @@
                                     <!-- Left Section: Welcome Info & Mobile-only Sync Badge -->
                                     <div class="flex justify-between items-start w-full md:w-auto">
                                         <div>
-                                            <p class="text-[8px] font-bold ${brandTextMedium} uppercase tracking-[0.2em]">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
+                                            <p class="text-[10px] font-bold ${brandTextMedium} uppercase tracking-[0.2em]">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
                                             <h2 class="text-base font-bold text-white leading-tight">Welcome, ${app.currentUser.name.split(' ')[0]}</h2>
                                         </div>
                                         
                                         <!-- Mobile-only Live Sync Badge -->
-                                        <div class="flex md:hidden items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30 text-[8px] font-bold text-green-400">
+                                        <div class="flex md:hidden items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30 text-[10px] font-bold text-green-400">
                                             <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                                             <span>Sync</span>
                                         </div>
@@ -3368,7 +3368,7 @@
                                             <!-- Territory Switcher -->
                                             <div class="relative flex-grow sm:flex-grow-0">
                                                 <select onchange="app.adminTerritoryFilter=this.value; app.renderAdminDashboard()" 
-                                                        class="w-full sm:w-auto appearance-none bg-black/20 border border-white/10 rounded-xl pl-3 pr-8 py-1.5 text-[9px] font-bold uppercase tracking-wider text-white focus:outline-none focus:border-white/40 shadow-sm backdrop-blur-md min-w-[110px]">
+                                                        class="w-full sm:w-auto appearance-none bg-black/20 border border-white/10 rounded-xl pl-3 pr-8 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white focus:outline-none focus:border-white/40 shadow-sm backdrop-blur-md min-w-[110px]">
                                                     <option value="All">All Territories</option>
                                                     ${baseTerritories.map(t => `<option value="${t.id}" ${app.adminTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                                 </select>
@@ -3381,11 +3381,11 @@
                                             <div class="flex bg-black/20 p-1 rounded-xl border border-white/10 backdrop-blur-md">
                                                 <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex-1 py-1.5 px-3 rounded-md text-[10px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-white/40 hover:text-white/70'}">
                                                     <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
-                                                    <span class="text-[9px] font-bold uppercase tracking-wider">Foton</span>
+                                                    <span class="text-[10px] font-bold uppercase tracking-wider">Foton</span>
                                                 </button>
                                                 <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex-1 py-1.5 px-3 rounded-md text-[10px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-white/40 hover:text-white/70'}">
                                                     <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
-                                                    <span class="text-[9px] font-bold uppercase tracking-wider">Mahindra</span>
+                                                    <span class="text-[10px] font-bold uppercase tracking-wider">Mahindra</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -3393,15 +3393,15 @@
                                         <!-- Target & Desktop-only Sync Stats -->
                                         <div class="flex items-center gap-3 justify-end ml-auto md:ml-0">
                                             <div class="flex flex-col items-end">
-                                                <span class="text-[7px] font-bold ${brandTextLight} uppercase">Target</span>
+                                                <span class="text-[10px] font-bold ${brandTextLight} uppercase">Target</span>
                                                 <span class="text-[10px] font-bold text-white">${totalYearlyTarget} Units</span>
                                             </div>
                                             <!-- Desktop-only Sync Indicator -->
                                             <div class="hidden md:flex items-center gap-3">
                                                 <div class="w-px h-4 bg-white/20"></div>
                                                 <div class="flex flex-col items-end">
-                                                    <span class="text-[7px] font-bold ${brandTextLight} uppercase">Live</span>
-                                                    <span class="text-[9px] font-bold text-green-400 flex items-center gap-1"><i data-lucide="activity" class="w-2.5 h-2.5"></i> Sync</span>
+                                                    <span class="text-[10px] font-bold ${brandTextLight} uppercase">Live</span>
+                                                    <span class="text-[10px] font-bold text-green-400 flex items-center gap-1"><i data-lucide="activity" class="w-2.5 h-2.5"></i> Sync</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -3431,35 +3431,35 @@
                                  <div class="glass p-2.5 rounded-xl shadow-sm border border-slate-100 mb-3 relative overflow-hidden">
                                      <div class="absolute -right-10 -top-10 ${brandBg}/5 w-32 h-32 rounded-full blur-2xl"></div>
                                      <div class="flex justify-between items-center mb-3">
-                                         <h3 class="font-bold text-slate-800 text-[11px] flex items-center gap-2">
+                                         <h3 class="font-bold text-slate-800 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
                                              <i data-lucide="bar-chart-2" class="w-4 h-4 ${brandText}/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
                                              ${isTransitionMode ? `Last Fiscal Year Overall Area (${concludingFY})` : `YTD Overall Area (${currentFY})`}
                                          </h3>
-                                         <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
+                                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
                                      </div>
                                     <div class="grid grid-cols-6 text-center divide-x divide-slate-100 mb-3">
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">${isTransitionMode ? 'FY Target' : 'YTD Target'}</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-semibold">${isTransitionMode ? 'FY Target' : 'YTD Target'}</p>
                                             <p class="font-bold text-slate-800 text-[10px]">${ytdTargetTillLastMonth}</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Sales</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Sales</p>
                                             <p class="font-bold ${brandText} text-[10px]">${tillLastMonthSalesUnits}</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Ach%</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Ach%</p>
                                             <p class="font-bold text-slate-800 text-[10px]">${ach(tillLastMonthSalesUnits, ytdTargetTillLastMonth)}%</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Shortfall</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Shortfall</p>
                                             <p class="font-bold text-red-500 text-[10px]">${Math.max(0, ytdTargetTillLastMonth - tillLastMonthSalesUnits)}</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">SPLY</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-semibold">SPLY</p>
                                             <p class="font-bold text-slate-800 text-[10px]">${amSplyYtd}</p>
                                         </div>
                                         <div class="px-1 flex flex-col justify-center">
-                                            <p class="text-[9px] text-slate-400 uppercase font-semibold">Grw%</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Grw%</p>
                                             <p class="text-[10px] font-bold text-emerald-600">${grw(tillLastMonthSalesUnits, amSplyYtd)}%</p>
                                         </div>
                                     </div>
@@ -3467,13 +3467,13 @@
                                     <!-- Territory YTD Drill-down Rows -->
                                     <div class="mt-4 border-t border-slate-100 pt-3">
                                         <div class="grid grid-cols-7 gap-1 px-2 mb-2">
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase">Territory</div>
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Target</div>
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Sales</div>
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Ach%</div>
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Gap</div>
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">SPLY</div>
-                                            <div class="text-[8px] font-bold text-slate-400 uppercase text-center">Grw%</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Territory</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase text-center">Target</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase text-center">Sales</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase text-center">Ach%</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase text-center">Gap</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase text-center">SPLY</div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase text-center">Grw%</div>
                                         </div>
                                         <div class="space-y-1">
                                             ${activeTerritories.map(t => {
@@ -3486,13 +3486,13 @@
 
                                 return `
                                                     <div class="grid grid-cols-7 gap-1 px-1.5 py-1 bg-slate-50/50 rounded-lg border border-slate-100 items-center hover:bg-slate-100/50 transition-colors">
-                                                        <div class="text-[9px] font-bold text-slate-700 truncate">${t.name}</div>
-                                                        <div class="text-[9px] font-bold text-slate-600 text-center">${tBudgetYTD}</div>
-                                                        <div class="text-[9px] font-bold ${brandText} text-center">${tSalesYTD}</div>
-                                                        <div class="text-[9px] font-bold ${tAch >= 100 ? 'text-emerald-600' : 'text-amber-500'} text-center">${tAch}%</div>
-                                                        <div class="text-[9px] font-bold text-red-500 text-center">${Math.max(0, tBudgetYTD - tSalesYTD)}</div>
-                                                        <div class="text-[9px] font-bold text-slate-400 text-center">${tSply}</div>
-                                                        <div class="text-[9px] font-bold ${tGrw >= 0 ? 'text-emerald-600' : 'text-rose-500'} text-center">${tGrw}%</div>
+                                                        <div class="text-[10px] font-bold text-slate-700 truncate">${t.name}</div>
+                                                        <div class="text-[10px] font-bold text-slate-600 text-center">${tBudgetYTD}</div>
+                                                        <div class="text-[10px] font-bold ${brandText} text-center">${tSalesYTD}</div>
+                                                        <div class="text-[10px] font-bold ${tAch >= 100 ? 'text-emerald-600' : 'text-amber-500'} text-center">${tAch}%</div>
+                                                        <div class="text-[10px] font-bold text-red-500 text-center">${Math.max(0, tBudgetYTD - tSalesYTD)}</div>
+                                                        <div class="text-[10px] font-bold text-slate-400 text-center">${tSply}</div>
+                                                        <div class="text-[10px] font-bold ${tGrw >= 0 ? 'text-emerald-600' : 'text-rose-500'} text-center">${tGrw}%</div>
                                                     </div>
                                                 `;
                             }).join('')}
@@ -3504,26 +3504,26 @@
                                     <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
                                     <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
                                         <h3 class="font-bold text-[10px]">Current Month (${app.currentMonth}) - Area Total</h3>
-                                        <span class="bg-white/20 px-2 py-0.5 rounded text-[9px] font-bold text-white">${currentSaleType}</span>
+                                        <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold text-white">${currentSaleType}</span>
                                     </div>
                                     
                                     <div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center mb-3 relative z-10">
-                                        <div><p class="text-[9px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-lg text-white">${monthlyBudget}</p></div>
-                                        <div><p class="text-[9px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-lg text-white">${totalMonthlyProjection}</p></div>
-                                        <div class="col-span-2 border-l border-white/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-[11px] font-bold tracking-tight text-yellow-300">${currMonthSalesTotal}</p></div>
+                                        <div><p class="text-[10px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-xl font-bold text-white">${monthlyBudget}</p></div>
+                                        <div><p class="text-[10px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-xl font-bold text-white">${totalMonthlyProjection}</p></div>
+                                        <div class="col-span-2 border-l border-white/20"><p class="text-[10px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-xl font-bold tracking-tight text-yellow-300">${currMonthSalesTotal}</p></div>
                                         
-                                        <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-[10px] text-green-300">${ach(currMonthSalesTotal, monthlyBudget)}%</p></div>
-                                        <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-[10px] text-amber-300">${ach(currMonthSalesTotal, totalMonthlyProjection)}%</p></div>
+                                        <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[10px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-[10px] text-green-300">${ach(currMonthSalesTotal, monthlyBudget)}%</p></div>
+                                        <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[10px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-[10px] text-amber-300">${ach(currMonthSalesTotal, totalMonthlyProjection)}%</p></div>
                                     </div>
 
                                     <div class="mt-4 border-t border-white/20 pt-3 relative z-10">
                                         <div class="grid grid-cols-6 gap-1 px-2 mb-2">
-                                            <div class="text-[8px] font-bold text-white/50 uppercase">Territory</div>
-                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Budget</div>
-                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Proj</div>
-                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Sales</div>
-                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Ach(B)</div>
-                                            <div class="text-[8px] font-bold text-white/50 uppercase text-center">Ach(P)</div>
+                                            <div class="text-[10px] font-bold text-white/50 uppercase">Territory</div>
+                                            <div class="text-[10px] font-bold text-white/50 uppercase text-center">Budget</div>
+                                            <div class="text-[10px] font-bold text-white/50 uppercase text-center">Proj</div>
+                                            <div class="text-[10px] font-bold text-white/50 uppercase text-center">Sales</div>
+                                            <div class="text-[10px] font-bold text-white/50 uppercase text-center">Ach(B)</div>
+                                            <div class="text-[10px] font-bold text-white/50 uppercase text-center">Ach(P)</div>
                                         </div>
                                         <div class="space-y-1">
                                             ${activeTerritories.map(t => {
@@ -3537,12 +3537,12 @@
 
                                 return `
                                                     <div class="grid grid-cols-6 gap-1 px-1.5 py-0.5 bg-black/10 rounded border border-white/5 items-center">
-                                                        <div class="text-[9px] font-bold text-white/90 truncate">${t.name}</div>
-                                                        <div class="text-[9px] font-medium text-white/80 text-center">${tBudgetM}</div>
-                                                        <div class="text-[9px] font-medium text-white/80 text-center">${tProjM}</div>
-                                                        <div class="text-[9px] font-bold text-yellow-300 text-center">${tSalesM}</div>
-                                                        <div class="text-[9px] font-bold ${tAchB >= 100 ? 'text-green-400' : 'text-amber-300'} text-center">${tAchB}%</div>
-                                                        <div class="text-[9px] font-bold ${tAchP >= 100 ? 'text-green-400' : 'text-amber-300'} text-center">${tAchP}%</div>
+                                                        <div class="text-[10px] font-bold text-white/90 truncate">${t.name}</div>
+                                                        <div class="text-[10px] font-medium text-white/80 text-center">${tBudgetM}</div>
+                                                        <div class="text-[10px] font-medium text-white/80 text-center">${tProjM}</div>
+                                                        <div class="text-[10px] font-bold text-yellow-300 text-center">${tSalesM}</div>
+                                                        <div class="text-[10px] font-bold ${tAchB >= 100 ? 'text-green-400' : 'text-amber-300'} text-center">${tAchB}%</div>
+                                                        <div class="text-[10px] font-bold ${tAchP >= 100 ? 'text-green-400' : 'text-amber-300'} text-center">${tAchP}%</div>
                                                     </div>
                                                 `;
                             }).join('')}
@@ -3570,28 +3570,28 @@
                                     <div class="absolute right-0 top-0 w-32 h-32 ${brandBg}/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-3">
                                         <div class="p-2 ${brandBgLight} rounded-lg ${brandText}"><i data-lucide="zap" class="w-4 h-4"></i></div>
-                                        <h3 class="font-bold text-slate-800 text-[10px] tracking-tight">${app.currentMonth} Pacing Monitor</h3>
-                                        <span class="ml-auto bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-full border border-slate-200/60 uppercase">Day ${currentDay} of ${daysInMonth}</span>
+                                        <h3 class="font-bold text-slate-800 text-xs font-bold uppercase tracking-wider">${app.currentMonth} Pacing Monitor</h3>
+                                        <span class="ml-auto bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-200/60 uppercase">Day ${currentDay} of ${daysInMonth}</span>
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex justify-between items-end mb-1">
-                                                <span class="text-[9px] font-bold text-slate-400 uppercase">Month Achievement</span>
+                                                <span class="text-[10px] font-bold text-slate-400 uppercase">Month Achievement</span>
                                                 <span class="text-[10px] font-bold ${isAhead ? 'text-emerald-600' : 'text-amber-500'}">${monthAch}%</span>
                                             </div>
                                             <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
                                                 <div class="h-full ${brandBg} rounded-full" style="width: ${monthAch}%"></div>
                                             </div>
                                             <div class="flex justify-between mt-1">
-                                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Budget: ${currMonthBudget}</span>
+                                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Budget: ${currMonthBudget}</span>
                                                 <span class="text-[8px] font-bold ${brandText} uppercase tracking-tighter">${monthProgress}% Time Elapsed</span>
                                             </div>
                                         </div>
 
                                         <div class="bg-slate-50/50 rounded-xl p-3 border border-slate-100 flex items-center justify-between">
                                             <div>
-                                                <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Predicted Finish</p>
+                                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Predicted Finish</p>
                                                 <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-slate-700">${predictedFinish} <span class="text-[9px] text-slate-400">Units</span></h4>
                                             </div>
                                             <div class="text-right">
@@ -3602,7 +3602,7 @@
 
                                         <div class="bg-gradient-to-br ${brandFilter === 'Mahindra' ? 'from-mahindra to-[#8a1426]' : 'from-foton to-[#052269]'} rounded-xl p-2.5 shadow-sm border border-white/10 flex items-center justify-between text-white">
                                             <div>
-                                                <p class="text-[9px] font-bold ${brandTextMedium} uppercase mb-0.5">Req. Daily Rate</p>
+                                                <p class="text-[10px] font-bold ${brandTextMedium} uppercase mb-0.5">Req. Daily Rate</p>
                                                 <h4 class="text-lg font-bold">${Math.max(0, Math.ceil((currMonthBudget - currMonthSalesPacing) / (daysInMonth - currentDay)))}</h4>
                                             </div>
                                             <div class="p-2 bg-white/10 rounded-xl"><i data-lucide="trending-up" class="w-5 h-5 ${brandTextLight}"></i></div>
@@ -3611,7 +3611,7 @@
 
                                     <div class="mt-4 pt-4 border-t border-slate-100">
                                         <div class="flex items-center gap-2 mb-3">
-                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Territory Drill-down</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Territory Drill-down</p>
                                             <div class="h-px flex-1 bg-slate-50"></div>
                                         </div>
                                         <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
@@ -3627,10 +3627,10 @@
                                                     <div class="shrink-0 flex items-center gap-3 bg-white border border-slate-100 p-2 rounded-xl shadow-sm min-w-[140px]">
                                                         <div class="w-1.5 h-6 rounded-full ${tIsAhead ? 'bg-emerald-500' : 'bg-rose-400'}"></div>
                                                         <div>
-                                                            <h5 class="text-[9px] font-bold text-slate-800 leading-none mb-1 truncate w-24">${t.name}</h5>
+                                                            <h5 class="text-[10px] font-bold text-slate-800 leading-none mb-1 truncate w-24">${t.name}</h5>
                                                             <div class="flex items-center gap-2">
-                                                                 <span class="text-[12px] font-bold text-slate-700">${tSales}/${tBudget}</span>
-                                                                 <span class="text-[9px] font-bold ${tIsAhead ? 'text-emerald-600' : 'text-rose-500'}">${tAch}%</span>
+                                                                 <span class="text-xs font-bold text-slate-700">${tSales}/${tBudget}</span>
+                                                                 <span class="text-[10px] font-bold ${tIsAhead ? 'text-emerald-600' : 'text-rose-500'}">${tAch}%</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -3646,14 +3646,14 @@
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
                                 <div>
-                                    <h1 class="text-[10px] font-extrabold text-slate-700 tracking-widest uppercase">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
-                                    <p class="text-[10px] font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
+                                    <h1 class="text-xs font-extrabold text-slate-700 tracking-widest uppercase">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
+                                    <p class="text-xs font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
                                     <!-- Dynamic Fiscal Year Selector -->
                                     <div class="relative">
                                         <select onchange="app.selectedFY = this.value; app.renderAdminDashboard()" 
-                                                class="appearance-none bg-white border border-slate-200/60 text-[9px] font-bold uppercase tracking-wider text-slate-700 rounded-xl pl-3 pr-8 py-1.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[95px]">
+                                                class="appearance-none bg-white border border-slate-200/60 text-[10px] font-bold uppercase tracking-wider text-slate-700 rounded-xl pl-3 pr-8 py-1.5 shadow-sm focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[95px]">
                                             ${[...new Set([...DB.sales.map(s => s.fy), ...DB.targets.map(t => t.fy), app.currentFY])].filter(Boolean).sort().reverse().map(fy => `<option value="${fy}" ${fy === currentFY ? 'selected' : ''}>FY ${fy}</option>`).join('')}
                                         </select>
                                         <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
@@ -3677,8 +3677,8 @@
                                     ` : ''}
 
                                     <div class="flex bg-slate-200/50 p-1 rounded-xl flex-1 sm:flex-none border border-slate-200/60">
-                                        <button onclick="app.adminSaleTypeTab='New Sale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'New Sale' ? 'bg-white shadow-sm ${brandText}' : 'text-slate-500 hover:text-slate-800'}">NEW</button>
-                                        <button onclick="app.adminSaleTypeTab='Resale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'Resale' ? 'bg-white shadow-sm ${brandText}' : 'text-slate-500 hover:text-slate-800'}">RESALE</button>
+                                        <button onclick="app.adminSaleTypeTab='New Sale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'New Sale' ? 'bg-white shadow-sm ${brandText}' : 'text-slate-500 hover:text-slate-800'}">NEW</button>
+                                        <button onclick="app.adminSaleTypeTab='Resale'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${currentSaleType === 'Resale' ? 'bg-white shadow-sm ${brandText}' : 'text-slate-500 hover:text-slate-800'}">RESALE</button>
                                     </div>
                                     ${!isAM ? `
                                     <button onclick="app.downloadRawCSV()" class="p-2.5 bg-white border border-slate-200/60 text-slate-600 rounded-xl shadow-sm hover:bg-slate-50 transition-all active:scale-95">
@@ -3703,13 +3703,13 @@
                                     <div class="flex items-center gap-3 flex-wrap">
                                         <label class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200/60 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
                                             <input type="checkbox" onchange="app.yoyShowLY = this.checked; app.renderAdminDashboard()" ${app.yoyShowLY ? 'checked' : ''} class="rounded border-slate-300 ${brandText} focus:ring-indigo-500 w-3 h-3">
-                                            <span class="text-[9px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
+                                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Vs Last Year</span>
                                         </label>
 
                                         <!-- Territory Filter Dropdown -->
                                         <div class="relative">
                                             <select onchange="app.yoyTerritoryFilter = this.value; app.renderAdminDashboard()" 
-                                                    class="appearance-none bg-white/80 border border-slate-200/60 rounded-lg pl-3 pr-8 py-1.5 text-[9px] font-bold text-slate-600 uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer shadow-sm min-w-[120px]">
+                                                    class="appearance-none bg-white/80 border border-slate-200/60 rounded-lg pl-3 pr-8 py-1.5 text-[10px] font-bold text-slate-600 uppercase tracking-wider focus:ring-2 focus:ring-indigo-500/20 transition-all cursor-pointer shadow-sm min-w-[120px]">
                                                 <option value="All">All Territories</option>
                                                 ${activeTerritories.map(t => `<option value="${t.id}" ${app.yoyTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                             </select>
@@ -3746,7 +3746,7 @@
                                         </h4>
                                         <p class="text-[9px] text-slate-400 font-medium mt-0.5">District wise actual units</p>
                                     </div>
-                                    <span id="minimap-sales-total" class="px-2 py-0.5 ${brandBgLight} ${brandText} text-[9px] font-bold rounded-full border ${brandBorderLight}">0 Units</span>
+                                    <span id="minimap-sales-total" class="px-2 py-0.5 ${brandBgLight} ${brandText} text-[10px] font-bold rounded-full border ${brandBorderLight}">0 Units</span>
                                 </div>
                                 <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[250px]" style="height: 250px; min-height: 250px;"></div>
                             </div>
@@ -3832,16 +3832,16 @@
                         return `
                             <div class="glass border border-slate-100 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
                                 <div class="overflow-x-auto custom-scrollbar">
-                                    <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                    <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
                                         <thead>
-                                            <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[9px] border-b border-slate-200/60">
+                                            <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[10px] border-b border-slate-200/60">
                                                 <th class="px-2 py-0.5.5 font-bold border-r border-slate-200/60 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
                                                 <th class="px-2 py-0.5.5 font-extrabold text-center border-r border-slate-200/60" rowspan="2">Total FY Budget</th>
                                                 <th class="px-2 py-0.5 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200/60 font-bold" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
                                                 <th class="px-2 py-0.5 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200/60 font-bold" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
                                                 <th class="px-2 py-0.5 text-center bg-emerald-500/10 text-emerald-800 font-bold" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
-                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60 text-center">
+                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60 text-center">
                                                 <!-- YTD -->
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60">Budget</th>
                                                 <th class="px-2 py-0.5 border-t border-slate-200/60">Actual</th>
@@ -3915,13 +3915,13 @@
                                     </div>
                                     Territory Performance Analytics
                                 </h3>
-                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Full Performance Breakdown for Assigned Territories</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Full Performance Breakdown for Assigned Territories</p>
                             </div>
                             <div class="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
                                 <!-- Territory Filter -->
                                 <div class="relative shrink-0">
                                     <select onchange="app.adminTerritoryFilter=this.value; app.renderAdminDashboard()" 
-                                            class="appearance-none bg-white border border-slate-200/60 rounded-xl pl-3 pr-8 py-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm min-w-[140px]">
+                                            class="appearance-none bg-white border border-slate-200/60 rounded-xl pl-3 pr-8 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm min-w-[140px]">
                                         <option value="All">All Territories</option>
                                         ${baseTerritories.map(t => `<option value="${t.id}" ${app.adminTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                     </select>
@@ -3931,23 +3931,23 @@
                                 </div>
 
                                 <div class="flex bg-slate-200/50 p-1 rounded-xl border border-slate-200/60">
-                                    <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="px-2 py-0.5.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">FOTON</button>
-                                    <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="px-2 py-0.5.5 rounded-md text-[9px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">MAHINDRA</button>
+                                    <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="px-2 py-0.5.5 rounded-md text-[10px] font-bold transition-all ${brandFilter === 'Foton' ? 'bg-foton shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">FOTON</button>
+                                    <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="px-2 py-0.5.5 rounded-md text-[10px] font-bold transition-all ${brandFilter === 'Mahindra' ? 'bg-mahindra shadow-sm text-white' : 'text-slate-500 hover:text-slate-800'}">MAHINDRA</button>
                                 </div>
 
                                 <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                        class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                        class="shrink-0 px-2 py-0.5.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                     <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                 </button>
                                 <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                        class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                        class="shrink-0 px-2 py-0.5.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                     <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                 </button>
                                 <button onclick="app.downloadPulseCSV()" 
                                         class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
                                         title="Download Territory Pulse CSV">
                                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider hidden sm:inline">Export</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider hidden sm:inline">Export</span>
                                 </button>
                             </div>
                         </div>
@@ -3960,7 +3960,7 @@
                                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                   <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
-                                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500">Performance Focus:</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Performance Focus:</span>
                                 <span class="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-100/50">${app.performanceFilterMonth || app.currentMonth} ${currentFY}</span>
                             </div>
                             
@@ -3972,7 +3972,7 @@
                                     const shortName = m.substring(0, 3).toUpperCase();
                                     return `
                                         <button onclick="app.performanceFilterMonth='${m}'; app.renderAdminDashboard()" 
-                                                class="px-3.5 py-1.5 rounded-xl text-[9px] font-bold tracking-wider transition-all duration-300 shrink-0 relative flex items-center gap-1.5 ${
+                                                class="px-3.5 py-1.5 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-300 shrink-0 relative flex items-center gap-1.5 ${
                                                     isActive 
                                                     ? 'bg-gradient-to-r ' + (brandFilter === 'Mahindra' ? 'from-mahindra to-rose-700' : 'from-foton to-indigo-900') + ' text-white shadow-sm border border-white/20 scale-105' 
                                                     : 'bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 border border-slate-200/60 shadow-sm'
@@ -4067,7 +4067,7 @@
                                                     <td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-slate-700 text-center">${currProj}</td>
                                                     ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-50/50 font-bold text-center ${modelMap[m] ? '${brandText}' : 'text-slate-300'}">${modelMap[m] || '-'}</td>`).join('')}
                                                     <td class="px-1.5 py-0.5 ${brandBgLight}/30 font-bold ${brandText} text-[10px] text-center">${currSalesUnits}</td>
-                                                    <td class="px-1.5 py-0.5 text-center ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${currAchVal}%</span></td>
+                                                    <td class="px-1.5 py-0.5 text-center ${achBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block min-w-[38px] ${achText}">${currAchVal}%</span></td>
                                                 </tr>
                                             `;
                             }).join('');
@@ -4105,15 +4105,15 @@
                                                 <td class="px-1.5 py-0.5 bg-slate-100/50 font-bold text-slate-900 text-center">${totalCurrProj}</td>
                                                 ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-slate-100/50 font-bold ${brandText} text-center">${totalModelMap[m] || 0}</td>`).join('')}
                                                 <td class="px-1.5 py-0.5 ${brandBgLightHalf} font-bold ${brandText} text-[10px] text-center">${totalCurrSalesUnits}</td>
-                                                <td class="px-1.5 py-0.5 text-center ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
+                                                <td class="px-1.5 py-0.5 text-center ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                             </tr>
                                         `;
 
                             return `
                                 <div class="overflow-x-auto">
-                                    <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                    <table class="w-full text-left text-xs whitespace-nowrap">
                                         <thead>
-                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
+                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-100">
                                                 <th class="px-5 py-1.5 font-bold sticky left-0 z-10 bg-slate-50">Territory</th>
                                                 ${app.adminShowYTD ? `<th class="px-2 py-0.5.5 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
                                                 ${app.adminShowLastMonth ? `<th class="px-2 py-0.5.5 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
@@ -4121,7 +4121,7 @@
                                                     ${(app.performanceFilterMonth || app.currentMonth) === app.currentMonth ? 'Current' : 'Selected'} Month (${(app.performanceFilterMonth || app.currentMonth).substring(0, 3)})
                                                 </th>
                                             </tr>
-                                            <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-100 text-center">
+                                            <tr class="text-slate-400 uppercase tracking-tighter text-[10px] border-b border-slate-100 text-center">
                                                 <th class="px-5 py-1 sticky left-0 z-10 bg-white"></th>
                                                 ${app.adminShowYTD ? `
                                                     <th class="px-1.5 py-1 bg-slate-50">Budget</th>
@@ -4164,24 +4164,24 @@
                                         </div>
                                         Territory Pulse
                                     </h3>
-                                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">${app.currentMonth} Analytics</p>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">${app.currentMonth} Analytics</p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
                                     <div class="flex items-center gap-2">
                                         <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                             <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                         </button>
                                         <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? '${brandBg} text-white shadow-sm border border-slate-200/60 ${brandGlow}' : 'bg-white text-slate-400 border border-slate-200/60'}">
                                             <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                         </button>
                                         <button onclick="app.pulseDetailedView = !app.pulseDetailedView; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[9px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r ' + (brandFilter === 'Mahindra' ? 'from-mahindra to-rose-700' : 'from-foton to-indigo-900') + ' text-white shadow-sm border border-slate-200/60 ' + brandGlow : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
+                                                class="shrink-0 px-2 py-0.5.5 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r ' + (brandFilter === 'Mahindra' ? 'from-mahindra to-rose-700' : 'from-foton to-indigo-900') + ' text-white shadow-sm border border-slate-200/60 ' + brandGlow : 'bg-white text-slate-500 border border-slate-200/60 hover:bg-slate-50'}">
                                             <i data-lucide="${app.pulseDetailedView ? 'layout-grid' : 'list'}" class="w-3.5 h-3.5"></i>
                                             Detailed View
                                         </button>
-                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="glass border border-slate-100 rounded-xl px-2 py-0.5.5 text-[9px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
+                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="glass border border-slate-100 rounded-xl px-2 py-0.5.5 text-[10px] font-bold uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
                                             <option value="Foton" ${brandFilter === 'Foton' ? 'selected' : ''}>Foton</option>
                                             <option value="Mahindra" ${brandFilter === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
                                         </select>
@@ -4189,7 +4189,7 @@
                                                 class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
                                                 title="Download Territory Pulse CSV">
                                             <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                            <span class="text-[9px] font-bold uppercase tracking-wider hidden sm:inline">Export</span>
+                                            <span class="text-[10px] font-bold uppercase tracking-wider hidden sm:inline">Export</span>
                                         </button>
                                     </div>
                                 </div>
@@ -4197,10 +4197,10 @@
                             <!-- DESKTOP TABLE VIEW -->
                             ${app.pulseDetailedView ? `
                             <div class="hidden md:block overflow-x-auto custom-scrollbar border-t border-slate-200/60">
-                                <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
                                     <thead>
                                         <!-- Row 1: Quarters -->
-                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60">
+                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60">
                                             <th class="px-2 py-0.5 font-bold sticky left-0 z-10 bg-slate-50 border-r border-slate-200/60 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
                                                     <div class="flex items-center gap-1 cursor-pointer hover:${brandText} transition-colors" onclick="app.setPulseSort('name')">
@@ -4219,7 +4219,7 @@
                                             <th class="px-2 py-0.5 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
-                                        <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200/60 text-center">
+                                        <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60 text-center">
                                             <!-- Q1 Months -->
                                             <th class="px-1.5 py-0.5 border-l-2 border-violet-200/60" colspan="5">July</th>
                                             <th class="px-1.5 py-0.5 border-l border-slate-200/60" colspan="5">August</th>
@@ -4244,7 +4244,7 @@
                                             <th class="px-1.5 py-0.5 bg-slate-800/20 text-slate-900 font-bold border-l-2 border-slate-400" colspan="5">FY Total</th>
                                         </tr>
                                         <!-- Row 3: Metrics -->
-                                        <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/60 text-center font-bold">
+                                        <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-200/60 text-center font-bold">
                                             ${(() => {
                                                 let result = '';
                                                 for (let i = 0; i < 17; i++) {
@@ -4370,7 +4370,7 @@
                                                     <tr class="pulse-tr-premium text-center border-b border-slate-100 group">
                                                         <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-200/60/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)] sticky-left">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
+                                                                <span class="text-[10px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
                                                                 <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full shadow-sm"></div>
                                                                 <span class="font-bold text-slate-700">${mt.name}</span>
                                                             </div>
@@ -4498,16 +4498,16 @@
 
                                 return `
                                     <div class="hidden md:block overflow-x-auto rounded-xl shadow-sm border border-slate-200/60 border ${brandBorderLight} ring-1 ring-slate-200/50">
-                                        <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse bg-white">
+                                        <table class="w-full text-left text-xs whitespace-nowrap border-collapse bg-white">
                                             <thead>
-                                                <tr class="${brandDark} ${brandTextLight} uppercase tracking-widest text-[9px] border-b ${brandBorderLight}">
+                                                <tr class="${brandDark} ${brandTextLight} uppercase tracking-widest text-[10px] border-b ${brandBorderLight}">
                                                     <th class="px-2 py-0.5 font-bold sticky left-0 z-10 ${brandDark} border-r ${brandBorderLight} shadow-sm ${brandTextLight}">Territory</th>
                                                     <th class="px-2 py-0.5 text-center bg-gradient-to-b from-amber-900/30 to-transparent text-amber-400 font-extrabold border-l border-r border-t border-amber-900/30 shadow-sm" colspan="1">Total FY Budget</th>
                                                     ${app.adminShowYTD ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-blue-900/30 to-transparent text-blue-300 border-l border-r border-t border-blue-900/30 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                     ${app.adminShowLastMonth ? `<th class="px-2 py-0.5 text-center bg-gradient-to-b from-emerald-900/30 to-transparent text-emerald-400 border-l border-r border-t border-emerald-900/30 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                     <th class="px-2 py-0.5 text-center bg-gradient-to-b from-cyan-900/30 to-transparent text-cyan-300 border-l border-r border-t border-cyan-900/30 font-extrabold shadow-sm" colspan="${4 + dynamicModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                                 </tr>
-                                                <tr class="${brandBg} ${brandTextMedium} uppercase tracking-tighter text-[9px] border-b-2 ${brandBorderDark} text-center">
+                                                <tr class="${brandBg} ${brandTextMedium} uppercase tracking-tighter text-[10px] border-b-2 ${brandBorderDark} text-center">
                                                     <th class="px-2 py-0.5 sticky left-0 z-10 ${brandBg} border-r ${brandBorderLight} shadow-sm">
                                                         <div class="flex items-center justify-between gap-2">
                                                             <div class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" onclick="app.setPulseSort('name')">
@@ -4579,7 +4579,7 @@
                                                                 <td class="px-4 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/60/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
                                                                     <div class="flex items-center justify-between gap-2">
                                                                         <div class="flex items-center gap-1.5">
-                                                                            <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
+                                                                            <span class="text-[10px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
                                                                             <div class="w-1 h-3 bg-${mt.h}-500 rounded-full transition-all duration-300 group-hover:h-4.5 group-hover:w-1.5"></div>
                                                                             <span class="font-bold text-slate-700">${mt.name}</span>
                                                                         </div>
@@ -4601,7 +4601,7 @@
                                                                 <td class="px-2 py-0.5 bg-slate-50/30 font-bold text-slate-700 text-center">${mt.currProj}</td>
                                                                 ${dynamicModels.map(m => `<td class="px-2 py-0.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? '${brandText}' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
                                                                 <td class="px-2 py-0.5 ${brandBgLight}/30 font-bold ${brandText} text-center border-l ${brandBorderLight}">${mt.currSalesUnits}</td>
-                                                                <td class="px-2 py-0.5 text-center border-r ${brandBorderLight} ${achBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
+                                                                <td class="px-2 py-0.5 text-center border-r ${brandBorderLight} ${achBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block min-w-[38px] ${achText}">${mt.currAchVal}%</span></td>
                                                             </tr>
                                                         `;
                                                     }).join('');
@@ -4622,7 +4622,7 @@
                                                                 <div class="flex items-center gap-2">
                                                                     <span class="w-4"></span>
                                                                     <div class="w-1.5 h-4.5 ${brandBg} rounded-full shadow ${brandShadow}"></div>
-                                                                    <span class="font-bold text-white text-[10.5px] uppercase tracking-widest">Grand Total</span>
+                                                                    <span class="font-bold text-white text-xs font-bold uppercase tracking-widest">Grand Total</span>
                                                                 </div>
                                                             </td>
                                                             <td class="px-2 py-0.5 font-bold text-amber-200 bg-gradient-to-b from-amber-900/40 to-amber-900/10 border-l border-r border-amber-900/30 text-center text-[10px] shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-600/90 text-white font-bold text-[10px] shadow-sm shadow-amber-900/40 ring-1 ring-amber-400/30">${totalFYBudget}</span></td>
@@ -4641,7 +4641,7 @@
                                                             <td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-white text-center">${totalCurrProj}</td>
                                                             ${dynamicModels.map(m => `<td class="px-1.5 py-0.5 bg-cyan-900/20 font-bold text-cyan-300 text-center">${totalModelMap[m] || 0}</td>`).join('')}
                                                             <td class="px-1.5 py-0.5 ${brandBgLightHalf} font-bold text-white text-[10px] text-center border-l ${brandBorderLight}">${totalCurrSalesUnits}</td>
-                                                            <td class="px-1.5 py-0.5 text-center border-r ${brandBorderLight} ${brandBgLightHalf} ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[9px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
+                                                            <td class="px-1.5 py-0.5 text-center border-r ${brandBorderLight} ${brandBgLightHalf} ${tAchBg}"><span class="px-2 py-0.5 rounded-md text-[10px] font-bold inline-block min-w-[38px] ${tAchText}">${totalCurrAchVal}%</span></td>
                                                         </tr>
                                                     `;
 
@@ -4658,11 +4658,11 @@
                             ${app.pulseDetailedView ? `
                             <div class="md:hidden">
                                 <div class="px-5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider font-bold">Select Quarter:</span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-bold">Select Quarter:</span>
                                     <div class="flex bg-slate-200/50 p-0.5 rounded-xl border border-slate-200/60 shadow-inner">
                                         ${['Q1', 'Q2', 'Q3', 'Q4'].map(q => `
                                             <button onclick="app.pulseMobileQuarter = '${q}'; app.renderAdminDashboard()" 
-                                                    class="px-2 py-0.5 text-[9px] font-bold transition-all ${app.pulseMobileQuarter === q ? 'bg-white shadow-sm ${brandText} scale-105 rounded-lg' : 'text-slate-500 hover:text-slate-800 rounded-lg'}">
+                                                    class="px-2 py-0.5 text-[10px] font-bold transition-all ${app.pulseMobileQuarter === q ? 'bg-white shadow-sm ${brandText} scale-105 rounded-lg' : 'text-slate-500 hover:text-slate-800 rounded-lg'}">
                                                 ${q}
                                             </button>
                                         `).join('')}
@@ -4723,7 +4723,7 @@
                                                     <td class="py-1 font-bold text-slate-800">${p.sales}</td>
                                                     <td class="py-1 font-bold text-slate-800">${p.ach}%</td>
                                                     <td class="py-1 text-slate-500 font-medium">${p.sply}</td>
-                                                    <td class="py-1 text-[9px] font-bold">${formatDetailedGrw(p.growth)}</td>
+                                                    <td class="py-1 text-[10px] font-bold">${formatDetailedGrw(p.growth)}</td>
                                                 </tr>
                                             `;
                                         }).join('');
@@ -4741,7 +4741,7 @@
                                                 <td class="py-1">${qPerf.sales}</td>
                                                 <td class="py-1"><span class="px-1.5 py-0.5 rounded bg-white font-bold">${qPerf.ach}%</span></td>
                                                 <td class="py-1">${qPerf.sply}</td>
-                                                <td class="py-1 text-[9px] font-bold">${formatDetailedGrw(qPerf.growth)}</td>
+                                                <td class="py-1 text-[10px] font-bold">${formatDetailedGrw(qPerf.growth)}</td>
                                             </tr>
                                         `;
 
@@ -4754,11 +4754,11 @@
                                                         </div>
                                                         <div>
                                                             <h4 class="font-bold text-slate-800 leading-tight">${t.name}</h4>
-                                                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Detailed Performance Matrix</p>
+                                                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Detailed Performance Matrix</p>
                                                         </div>
                                                     </div>
                                                     <div class="text-right">
-                                                        <span class="text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-1.5 py-0.5 shadow-sm">FY Bgt: ${totalFYBudget}</span>
+                                                        <span class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-1.5 py-0.5 shadow-sm">FY Bgt: ${totalFYBudget}</span>
                                                     </div>
                                                 </div>
                                                 
@@ -4803,22 +4803,22 @@
                                                     </div>
                                                     <div>
                                                         <h4 class="font-bold text-slate-800">${t.name}</h4>
-                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active Pulse</p>
+                                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Pulse</p>
                                                     </div>
                                                 </div>
                                                 <div class="text-right">
                                                     <span class="text-[11px] font-bold tracking-tight font-bold ${brandText}">${currSalesUnits}</span>
-                                                    <p class="text-[9px] font-bold text-slate-400 uppercase">${app.currentMonth} Units</p>
+                                                    <p class="text-[10px] font-bold text-slate-400 uppercase">${app.currentMonth} Units</p>
                                                 </div>
                                             </div>
                                             
                                             <div class="grid grid-cols-3 gap-2">
                                                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                                                    <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">Budget</p>
+                                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Budget</p>
                                                     <p class="text-[10px] font-bold text-slate-700">${currBudget}</p>
                                                 </div>
                                                 <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                                                    <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">YTD Ach</p>
+                                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">YTD Ach</p>
                                                     <p class="text-[10px] font-bold text-${app.currentMonth === 'July' ? 'slate-400' : `${h}-600`}">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</p>
                                                 </div>
                                                 <div class="${brandBgLight} p-2.5 rounded-xl border ${brandBorderLight}">
@@ -4846,22 +4846,22 @@
                                     </div>
                                     AM Sync
                                 </h3>
-                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Insights</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Insights</p>
                             </div>
                         </div>
                         
                         <!-- DESKTOP TABLE VIEW -->
                         <div class="hidden md:block overflow-x-auto">
-                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
                                 <thead>
-                                    <tr class="${brandBgLightHalf} text-slate-500 uppercase tracking-widest text-[9px] border-b ${brandBorderLight}">
+                                    <tr class="${brandBgLightHalf} text-slate-500 uppercase tracking-widest text-[10px] border-b ${brandBorderLight}">
                                         <th class="px-2 py-0.5 font-bold sticky left-0 z-10 ${brandBgLight} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
                                         <th class="px-2 py-0.5 font-bold ${brandBgLightHalf} border-r ${brandBorderLight}">AM Name</th>
                                         ${app.adminShowYTD ? `<th class="px-2 py-0.5 text-center border-l ${brandBorderLight}" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                         ${app.adminShowLastMonth ? `<th class="px-2 py-0.5 text-center border-l ${brandBorderLight}" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                         <th class="px-2 py-0.5 text-center border-l ${brandBorderLight}" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b ${brandBorderLight} text-center font-bold">
+                                    <tr class="text-slate-400 uppercase tracking-tighter text-[10px] border-b ${brandBorderLight} text-center font-bold">
                                         <th class="px-2 py-0.5 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                             <div class="flex items-center justify-between gap-2">
                                                 <span>Area</span>
@@ -4901,7 +4901,7 @@
                                             <tr class="hover:${brandBgLight}/20 transition-colors text-center">
                                                 <td class="px-2 py-0.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                                                     <div class="flex items-center gap-2">
-                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center ${brandText} text-[9px] font-bold shrink-0">${area.name.charAt(0)}</div>
+                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center ${brandText} text-[10px] font-bold shrink-0">${area.name.charAt(0)}</div>
                                                         <span class="font-bold text-slate-700">${area.name}</span>
                                                     </div>
                                                 </td>
@@ -4946,13 +4946,13 @@
                                                     <h4 class="font-bold text-slate-800">${area.name}</h4>
                                                     <div class="flex items-center gap-1.5 mt-0.5">
                                                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${area.areaName}</p>
+                                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${area.areaName}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="text-right">
                                                 <span class="text-[11px] font-bold tracking-tight font-bold ${brandText}">${area.currSales}</span>
-                                                <p class="text-[9px] font-bold text-slate-400 uppercase">Sales Units</p>
+                                                <p class="text-[10px] font-bold text-slate-400 uppercase">Sales Units</p>
                                             </div>
                                         </div>
                                         
@@ -4960,7 +4960,7 @@
                                             <div class="${brandBgLightHalf} p-3 rounded-xl border ${brandBorderLight}">
                                                 <div class="flex justify-between items-center mb-1">
                                                     <p class="text-[8px] font-bold text-white/70 uppercase">M-Target Ach</p>
-                                                    <span class="text-[9px] font-bold ${brandText}">${mAchVal}%</span>
+                                                    <span class="text-[10px] font-bold ${brandText}">${mAchVal}%</span>
                                                 </div>
                                                 <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border ${brandBorderLight}">
                                                     <div class="h-full ${brandBg} rounded-full" style="width: ${Math.min(100, mAchVal)}%"></div>
@@ -4969,7 +4969,7 @@
                                             <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
                                                 <div class="flex justify-between items-center mb-1">
                                                     <p class="text-[8px] font-bold text-emerald-500 uppercase">YTD Target</p>
-                                                    <span class="text-[9px] font-bold text-emerald-700">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</span>
+                                                    <span class="text-[10px] font-bold text-emerald-700">${app.currentMonth === 'July' ? '-' : `${ytdAchVal}%`}</span>
                                                 </div>
                                                 <div class="w-full bg-white h-1.5 rounded-full overflow-hidden border border-emerald-100">
                                                     <div class="h-full bg-emerald-500 rounded-full" style="width: ${app.currentMonth === 'July' ? 0 : Math.min(100, ytdAchVal)}%"></div>
@@ -4994,16 +4994,16 @@
                                     </div>
                                     Detailed Performance Data
                                 </h3>
-                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Raw Sales Records for Assigned Territories</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Raw Sales Records for Assigned Territories</p>
                             </div>
                             <div class="bg-emerald-50 text-emerald-700 px-2 py-0.5.5 rounded-xl text-[10px] font-bold border border-emerald-100 shadow-sm flex items-center gap-2">
                                 <i data-lucide="database" class="w-4 h-4"></i> Total Records: ${currFYSales.filter(s => s.brand === brandFilter).length}
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
                                 <thead>
-                                    <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
+                                    <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-100">
                                         <th class="px-2 py-0.5.5 font-bold sticky left-0 z-10 bg-slate-50">Customer Details</th>
                                         <th class="px-2 py-0.5.5">Location</th>
                                         <th class="px-2 py-0.5.5">Vehicle</th>
@@ -5032,7 +5032,7 @@
                                             </td>
                                             <td class="px-2 py-0.5.5 text-slate-500">${s.sale_type}</td>
                                             <td class="px-2 py-0.5.5 font-bold ${brandText} text-center">${s.unit_qty}</td>
-                                            <td class="px-2 py-0.5.5"><span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase">Delivered</span></td>
+                                            <td class="px-2 py-0.5.5"><span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase">Delivered</span></td>
                                         </tr>
                                     `).join('')}
                                     ${currFYSales.filter(s => s.brand === brandFilter).length === 0 ? '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 font-medium">No sales data found for the selected criteria.</td></tr>' : ''}
