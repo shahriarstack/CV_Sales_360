@@ -1124,7 +1124,7 @@
                 localStorage.setItem('aci_last_page', 'models');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const html = `
-                    <div class="max-w-6xl mx-auto fade-in">
+                    <div class="w-full fade-in">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Vehicle Models</h1></div>
@@ -1302,7 +1302,7 @@
                 const ams = DB.users.filter(u => u.role === 'am');
 
                 const html = `
-                    <div class="max-w-6xl mx-auto fade-in pb-12">
+                    <div class="w-full fade-in pb-12">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">User Management</h1></div>
@@ -2278,7 +2278,7 @@
 
                 const activeBrand = app.adminEMIBrandFilter || 'Total';
                 const html = `
-                    <div class="max-w-6xl mx-auto fade-in">
+                    <div class="w-full fade-in">
                         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1></div>
@@ -2526,7 +2526,7 @@
                 app.currentManualSales = manualSales;
 
                 const html = `
-                    <div class="max-w-7xl mx-auto fade-in">
+                    <div class="w-full fade-in">
                         <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
@@ -3616,7 +3616,7 @@
 
                 const activeBrand = app.adminEMIBrandFilter || 'Total';
                 const html = `
-                    <div class="max-w-6xl mx-auto fade-in">
+                    <div class="w-full fade-in">
                         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1></div>
@@ -3864,7 +3864,7 @@
                 app.currentManualSales = manualSales;
 
                 const html = `
-                    <div class="max-w-7xl mx-auto fade-in">
+                    <div class="w-full fade-in">
                         <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
@@ -7558,7 +7558,7 @@ approveManualDelivery: async (id) => {
                 const lowestTerr = terrPerformance.length > 0 ? terrPerformance[terrPerformance.length - 1] : null;
 
                 const html = `
-                    <div class="max-w-7xl mx-auto fade-in pb-12">
+                    <div class="w-full fade-in pb-12">
                         <!-- AI Header Section -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
                             <div class="w-full md:w-auto">
@@ -8181,7 +8181,7 @@ approveManualDelivery: async (id) => {
                 const allMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
 
                 const html = `
-                    <div class="max-w-7xl mx-auto fade-in pb-10 h-full flex flex-col">
+                    <div class="w-full fade-in pb-10 h-full flex flex-col">
                         
                         <!-- Header & Dynamic Filters -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 shrink-0 relative z-50">
@@ -8969,7 +8969,7 @@ approveManualDelivery: async (id) => {
                 }
 
                 const html = `
-                    <div class="max-w-7xl mx-auto fade-in pb-10">
+                    <div class="w-full fade-in pb-10">
                         <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
                                 <button onclick="app.renderDataUpload()" class="text-slate-500 hover:text-aci-blue flex items-center gap-1.5 text-sm font-bold mb-3 transition-colors">
@@ -9799,7 +9799,7 @@ approveManualDelivery: async (id) => {
                 localStorage.setItem('aci_last_page', 'notices');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const html = `
-                    <div class="pb-6 fade-in max-w-5xl mx-auto">
+                    <div class="w-full pb-6 fade-in">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-amber-500"></i> Notice Board Panel</h1></div>
@@ -10489,7 +10489,7 @@ approveManualDelivery: async (id) => {
                 const activeSubView = app.tivAdminSubView || 'submissions';
 
                 let html = `
-                    <div class="max-w-6xl mx-auto fade-in">
+                    <div class="w-full fade-in">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">TIV Data Management</h1></div>
@@ -11003,7 +11003,7 @@ approveManualDelivery: async (id) => {
                 });
 
                 const html = `
-                    <div class="max-w-4xl mx-auto pb-10 fade-in">
+                    <div class="w-full pb-10 fade-in">
                         <!-- Upper Greeting & Breadcrumbs -->
                         <div class="mb-6 flex justify-between items-center">
                             <div>
