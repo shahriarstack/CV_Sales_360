@@ -1127,7 +1127,7 @@
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
-                                <h1 class="text-lg font-bold text-slate-800">Vehicle Models</h1>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Vehicle Models</h1></div>
                                 <p class="text-sm text-slate-500">Manage brands and model names for MO delivery entry</p>
                             </div>
                             <button onclick="app.showAddEditModelModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
@@ -1305,7 +1305,7 @@
                     <div class="max-w-6xl mx-auto fade-in pb-12">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
-                                <h1 class="text-lg font-bold text-slate-800">User Management</h1>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">User Management</h1></div>
                                 <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
                             </div>
                             <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
@@ -2281,7 +2281,7 @@
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h1 class="text-lg font-bold text-slate-800">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1></div>
                                 <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
                             </div>
                             
@@ -2531,7 +2531,7 @@
                     <div class="max-w-7xl mx-auto fade-in">
                         <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                             <div>
-                                <h1 class="text-lg font-bold text-slate-800">Manual Deliveries Tracker</h1>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
                                 <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
                                 
                                 <!-- Beautiful & Creative Sale Type Switcher Pill -->
@@ -3622,7 +3622,7 @@ approveManualDelivery: async (id) => {
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                                 <div>
-                                    <h1 class="text-xl font-black text-slate-900 tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1>
+                                    <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1></div>
                                     <p class="text-sm font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -6220,7 +6220,7 @@ approveManualDelivery: async (id) => {
                         <!-- AI Header Section -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
                             <div class="w-full md:w-auto">
-                                <h1 class="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-3">
                                     <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl shadow-md shadow-purple-200">
                                         <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
                                     </div>
@@ -6844,7 +6844,7 @@ approveManualDelivery: async (id) => {
                         <!-- Header & Dynamic Filters -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 shrink-0 relative z-50">
                             <div>
-                                <h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight flex items-center gap-3">
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-3">
                                     <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
                                     Geospatial Sales Heatmap
                                 </h1>
@@ -7315,7 +7315,7 @@ approveManualDelivery: async (id) => {
                 const html = `
                     <div class="max-w-6xl mx-auto pb-10">
                         <div class="mb-6">
-                            <h1 class="text-lg font-bold text-slate-800">Bulk Data Upload</h1>
+                            <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Bulk Data Upload</h1></div>
                             <p class="text-sm text-slate-500">Upload Targets, Projections, and System Sales securely.</p>
                         </div>
                         
@@ -7633,7 +7633,7 @@ approveManualDelivery: async (id) => {
                                 <button onclick="app.renderDataUpload()" class="text-slate-500 hover:text-aci-blue flex items-center gap-1.5 text-sm font-bold mb-3 transition-colors">
                                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Upload Hub
                                 </button>
-                                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-2">
                                     <i data-lucide="${icon}" class="w-6 h-6 text-${themeColor}-600"></i> ${title}
                                 </h1>
                                 <p class="text-sm text-slate-500 mt-1">Viewing all synchronized records currently in the active database.</p>
@@ -8460,7 +8460,7 @@ approveManualDelivery: async (id) => {
                     <div class="pb-6 fade-in max-w-5xl mx-auto">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                             <div>
-                                <h2 class="text-3xl font-black text-slate-800 flex items-center gap-2"><i data-lucide="megaphone" class="w-8 h-8 text-amber-500 fill-amber-100"></i> Notice Board Panel</h2>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-amber-500"></i> Notice Board Panel</h1></div>
                                 <p class="text-sm font-semibold text-slate-500 mt-1">Manage and circulate critical notices to all branch officers dynamically.</p>
                             </div>
                             <button onclick="app.showAddNoticeModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 flex items-center gap-2">
@@ -8501,7 +8501,7 @@ approveManualDelivery: async (id) => {
                         <!-- LINKS SECTION -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mt-12 mb-8 gap-4">
                             <div>
-                                <h2 class="text-3xl font-black text-slate-800 flex items-center gap-2"><i data-lucide="link-2" class="w-8 h-8 text-indigo-500 fill-indigo-100"></i> Important App Links</h2>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-2"><i data-lucide="link-2" class="w-5 h-5 text-indigo-500"></i> Important App Links</h1></div>
                                 <p class="text-sm font-semibold text-slate-500 mt-1">Manage essential web or app shortcuts for field agents.</p>
                             </div>
                             <button onclick="app.showAddLinkModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
@@ -9150,7 +9150,7 @@ approveManualDelivery: async (id) => {
                     <div class="max-w-6xl mx-auto fade-in">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
-                                <h1 class="text-lg font-bold text-slate-800">TIV Data Management</h1>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">TIV Data Management</h1></div>
                                 <p class="text-sm text-slate-500">Total Industry Volume Collection & Administration</p>
                             </div>
                             <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
