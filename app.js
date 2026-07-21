@@ -121,8 +121,8 @@
             performanceFilterMonth: null,
             pulseDetailedView: false,
             pulseMobileQuarter: 'Q1',
-            pulseSortCol: 'name',
-            pulseSortDir: 'asc',
+            pulseSortCol: 'sortVal_curr_ach',
+            pulseSortDir: 'desc',
             pulseFilterTerritories: [],
             mapBrandTab: 'All', // State for Sales Map
             mapModelTab: 'All', // State for Sales Map
@@ -712,6 +712,20 @@
             },
 
             // --- UI Utilities ---
+            getAchBadge: (val) => {
+                let badgeClass = '';
+                if (val >= 100) {
+                    badgeClass = 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
+                } else if (val >= 80) {
+                    badgeClass = 'bg-lime-500/10 text-lime-700 border-lime-500/20';
+                } else if (val >= 60) {
+                    badgeClass = 'bg-amber-500/10 text-amber-700 border-amber-500/20';
+                } else {
+                    badgeClass = 'bg-rose-500/10 text-rose-700 border-rose-500/20';
+                }
+                return `<span class="px-2 py-0.5 rounded-lg border font-black text-[10px] shadow-sm ${badgeClass}">${val}%</span>`;
+            },
+
             updateAuroraColors: () => {
                 let blobs = document.getElementById('aurora-blobs');
                 const body = document.body;
@@ -735,6 +749,7 @@
                         blobs.classList.remove('hidden');
                         body.classList.add('aurora-active');
                         const brand = app.adminBrandTab || 'Foton';
+                        body.setAttribute('data-theme', brand);
                         if (brand === 'Mahindra') {
                             blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 aurora-mahindra";
                         } else {
@@ -743,6 +758,7 @@
                     } else {
                         blobs.classList.add('hidden');
                         body.classList.remove('aurora-active');
+                        body.removeAttribute('data-theme');
                     }
                 }
             },
@@ -4617,9 +4633,13 @@ approveManualDelivery: async (id) => {
                     };
                 });
 
+                const dynamicActiveModels = activeModels.filter(m => 
+                    mappedTerritories.some(mt => mt.modelMap[m] > 0)
+                );
+
                 // Apply Sorting
-                const sortCol = app.pulseSortCol || 'name';
-                const sortDir = app.pulseSortDir || 'asc';
+                const sortCol = app.pulseSortCol || 'sortVal_curr_ach';
+                const sortDir = app.pulseSortDir || 'desc';
                 mappedTerritories.sort((a, b) => {
                     let valA = a[sortCol];
                     let valB = b[sortCol];
@@ -4697,7 +4717,7 @@ approveManualDelivery: async (id) => {
                         <!-- AM / Executive Header -->
                         <div class="mb-4">
                             ${isAM ? `
-                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-lg border border-white/10 relative overflow-hidden mb-4">
+                            <div class="premium-square-card-dark p-3 mb-4">
                                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="relative z-10 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
                                     
@@ -4782,7 +4802,7 @@ approveManualDelivery: async (id) => {
 
                              return `
                                  <!-- YTD Overall -->
-                                 <div class="glass p-4 rounded-xl shadow-sm border border-white/60 mb-4 relative overflow-hidden">
+                                 <div class="premium-square-card p-4 mb-4">
                                      <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
                                      <div class="flex justify-between items-center mb-3">
                                          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -4854,7 +4874,7 @@ approveManualDelivery: async (id) => {
                                     </div>
                                 </div>
 
-                                <div class="bg-gradient-to-br ${brandFilter === 'Foton' ? 'from-foton to-[#03133d]' : 'from-mahindra to-[#b81b31]'} rounded-2xl p-4 mb-4 relative overflow-hidden shadow-lg text-white">
+                                <div class="premium-square-card-dark p-4 mb-4 text-white">
                                     <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
                                     <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
                                         <h3 class="font-bold text-sm">Current Month (${app.currentMonth}) - Area Total</h3>
@@ -4920,7 +4940,7 @@ approveManualDelivery: async (id) => {
                             const predictedAch = ach(predictedFinish, currMonthBudget);
 
                             return `
-                                <div class="glass p-4 rounded-[1.5rem] border border-white shadow-xl mb-6 relative overflow-hidden">
+                                <div class="premium-square-card p-4 mb-6">
                                     <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-4">
                                         <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
@@ -5044,7 +5064,7 @@ approveManualDelivery: async (id) => {
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="glass p-5 rounded-[2rem] border border-white shadow-xl mb-8 relative overflow-hidden">
+                    <div class="premium-square-card p-5 mb-8">
                         <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
@@ -5184,7 +5204,7 @@ approveManualDelivery: async (id) => {
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
+                            <div class="premium-square-card mb-8">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
@@ -5239,7 +5259,7 @@ approveManualDelivery: async (id) => {
 
                     <!-- Charts -->
                     <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-4 mb-6">
-                        <div class="${isAM ? '' : 'lg:col-span-2'} glass p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="${isAM ? '' : 'lg:col-span-2'} premium-square-card p-3">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="bar-chart-2" class="w-3 h-3 text-aci-blue"></i> Territory Performance
                             </h3>
@@ -5247,7 +5267,7 @@ approveManualDelivery: async (id) => {
                                 <canvas id="chartTerritory"></canvas>
                             </div>
                         </div>
-                        <div class="glass p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="premium-square-card p-3">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="pie-chart" class="w-3 h-3 text-aci-blue"></i> Brand Split
                             </h3>
@@ -5259,7 +5279,7 @@ approveManualDelivery: async (id) => {
 
                     <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
                     ${isAM ? `
-                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8 relative">
+                    <div class="premium-square-card overflow-hidden mb-8 relative">
                         <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/30">
                             <div>
@@ -5509,7 +5529,7 @@ approveManualDelivery: async (id) => {
                     ${!isAM ? `
                     <!-- Comprehensive Data Table & Mobile Cards -->
                     <div class="mb-8">
-                        <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden">
+                        <div class="premium-square-card overflow-hidden">
                             <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                                 <div>
                                     <h3 class="font-black text-slate-800 flex items-center gap-2">
@@ -5854,7 +5874,7 @@ approveManualDelivery: async (id) => {
                                             <th class="px-3 py-2 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" colspan="1">Total FY Budget</th>
                                             ${app.adminShowYTD ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-indigo-500/10 to-indigo-500/5 text-indigo-700 border-l border-r-2 border-t border-indigo-500/20 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                             ${app.adminShowLastMonth ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-emerald-500/10 to-emerald-500/5 text-emerald-700 border-l border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            <th class="px-3 py-2 text-center bg-gradient-to-b from-cyan-500/10 to-cyan-500/5 text-cyan-700 border-l border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                            <th class="px-3 py-2 text-center bg-gradient-to-b from-cyan-500/10 to-cyan-500/5 text-cyan-700 border-l border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                         </tr>
                                         <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-200/80 text-center">
                                             <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r border-slate-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
@@ -5885,7 +5905,7 @@ approveManualDelivery: async (id) => {
                                             ` : ''}
                                             <th class="px-2 py-1.5 bg-cyan-50/10 cursor-pointer hover:bg-cyan-100/20 transition-colors border-l border-slate-100/80" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
                                             <th class="px-2 py-1.5 bg-cyan-50/10 font-bold text-slate-600 cursor-pointer hover:bg-cyan-100/20 transition-colors" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
-                                            ${activeModels.map(m => `<th class="px-2 py-1.5 bg-cyan-50/10 text-slate-500 font-bold">${m}</th>`).join('')}
+                                            ${dynamicActiveModels.map(m => `<th class="px-2 py-1.5 bg-cyan-50/10 text-slate-500 font-bold">${m}</th>`).join('')}
                                             <th class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-700 cursor-pointer hover:bg-indigo-100 transition-colors border-l border-indigo-100" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
                                             <th class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-700 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-indigo-100" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
                                         </tr>
@@ -5912,7 +5932,7 @@ approveManualDelivery: async (id) => {
                                                 totalLastMonthSales += mt.perf.lastMonth.sales;
                                                 totalCurrBudget += mt.currBudget;
                                                 totalCurrProj += mt.currProj;
-                                                activeModels.forEach(m => {
+                                                dynamicActiveModels.forEach(m => {
                                                     totalModelMap[m] = (totalModelMap[m] || 0) + (mt.modelMap[m] || 0);
                                                 });
                                                 totalCurrSalesUnits += mt.currSalesUnits;
@@ -5942,9 +5962,9 @@ approveManualDelivery: async (id) => {
                                                         ` : ''}
                                                         <td class="px-2 py-1.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
                                                         <td class="px-2 py-1.5 bg-slate-50/30 font-black text-slate-700 text-center">${mt.currProj}</td>
-                                                        ${activeModels.map(m => `<td class="px-2 py-1.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
+                                                        ${dynamicActiveModels.map(m => `<td class="px-2 py-1.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
                                                         <td class="px-2 py-1.5 bg-indigo-50/30 font-black text-indigo-700 text-center border-l border-indigo-100">${mt.currSalesUnits}</td>
-                                                        <td class="px-2 py-1.5 bg-indigo-50/30 font-black text-emerald-600 text-center border-r border-indigo-100">${mt.currAchVal}%</td>
+                                                        <td class="px-2 py-1.5 bg-indigo-50/30 text-center border-r border-indigo-100">${app.getAchBadge(mt.currAchVal)}</td>
                                                     </tr>
                                                 `;
                                             }).join('');
@@ -5975,9 +5995,9 @@ approveManualDelivery: async (id) => {
                                                     ` : ''}
                                                     <td class="px-2 py-2 bg-slate-100/50 text-slate-700 font-extrabold text-center border-l border-slate-100/80">${totalCurrBudget}</td>
                                                     <td class="px-2 py-2 bg-slate-100/50 font-black text-slate-900 text-center">${totalCurrProj}</td>
-                                                    ${activeModels.map(m => `<td class="px-2 py-2 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
+                                                    ${dynamicActiveModels.map(m => `<td class="px-2 py-2 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
                                                     <td class="px-2 py-2 bg-indigo-100/50 font-black text-indigo-700 text-sm text-center border-l border-indigo-100">${totalCurrSalesUnits}</td>
-                                                    <td class="px-2 py-2 bg-indigo-100/50 font-black text-emerald-600 text-center border-r border-indigo-100">${ach(totalCurrSalesUnits, totalCurrBudget)}%</td>
+                                                    <td class="px-2 py-2 bg-indigo-100/50 text-center border-r border-indigo-100">${app.getAchBadge(ach(totalCurrSalesUnits, totalCurrBudget))}</td>
                                                 </tr>
                                             `;
 
@@ -6171,7 +6191,7 @@ approveManualDelivery: async (id) => {
 
                     ${!isAM ? `
                     <!-- Area (AM) Performance Analytics & Mobile Cards -->
-                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
+                    <div class="premium-square-card overflow-hidden mb-8">
                         <div class="p-5 border-b border-indigo-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-indigo-50/30">
                             <div>
                                 <h3 class="font-black text-indigo-900 flex items-center gap-2">
@@ -6319,7 +6339,7 @@ approveManualDelivery: async (id) => {
 
                     <!-- Detailed Sales Data Table (Like Admin Panel) -->
                     ${isAM ? `
-                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
+                    <div class="premium-square-card overflow-hidden mb-8">
                         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                             <div>
                                 <h3 class="font-black text-slate-800 flex items-center gap-2">
