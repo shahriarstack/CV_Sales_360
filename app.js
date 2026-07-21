@@ -2507,6 +2507,10 @@
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 
                 let manualSales = DB.sales.filter(s => s.is_manual);
+                const saleTypeFilter = app.manualSaleTypeFilter || 'All';
+                if (saleTypeFilter !== 'All') {
+                    manualSales = manualSales.filter(s => s.sale_type === saleTypeFilter);
+                }
 
                 // Date filtering logic
                 if (startDate || endDate) {
@@ -2529,6 +2533,24 @@
                             <div>
                                 <h1 class="text-lg font-bold text-slate-800">Manual Deliveries Tracker</h1>
                                 <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
+                                
+                                <!-- Beautiful & Creative Sale Type Switcher Pill -->
+                                <div class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 shadow-inner mt-2.5 w-max">
+                                    <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()" 
+                                            class="px-3.5 py-1.5 rounded-lg text-[10px] font-bold tracking-wider transition-all duration-300 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-sm scale-102' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 30px;">
+                                        All
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()" 
+                                            class="px-3.5 py-1.5 rounded-lg text-[10px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-sm scale-102' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 30px;">
+                                        <span class="h-1.5 w-1.5 rounded-full ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
+                                        New Sale
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()" 
+                                            class="px-3.5 py-1.5 rounded-lg text-[10px] font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-sm scale-102' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 30px;">
+                                        <span class="h-1.5 w-1.5 rounded-full ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
+                                        Resale
+                                    </button>
+                                </div>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
                                 <!-- Date Range Selector -->
