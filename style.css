@@ -754,3 +754,41 @@
             background-color: rgba(248, 250, 252, 0.85) !important;
             backdrop-filter: blur(8px) !important;
         }
+
+        /* Compact Premium Table Styling for Territory Pulse & AM Sync */
+        body.aurora-active table th,
+        body.aurora-active table td {
+            padding-top: 0.22rem !important; /* Extremely compact rows */
+            padding-bottom: 0.22rem !important;
+            line-height: 1.15 !important;
+            font-size: 10px !important; /* Slightly smaller text for premium clean look */
+        }
+
+        body.aurora-active table thead tr:first-child th {
+            padding-top: 0.35rem !important;
+            padding-bottom: 0.35rem !important;
+            font-size: 9px !important;
+        }
+
+        body.aurora-active table td div.flex {
+            gap: 0.3rem !important;
+        }
+
+        body.aurora-active table span.rounded-lg {
+            padding: 0.1rem 0.3rem !important;
+            font-size: 9px !important;
+        }
+
+        /* Hover animation glow for rows */
+        body.aurora-active tbody tr {
+            transition: all 0.15s ease-in-out !important;
+        }
+
+        body.aurora-active tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.05) !important;
+        }
+
+        body.aurora-active tbody tr:hover td.sticky-left {
+            background-color: rgba(241, 245, 249, 0.95) !important;
+        }
+
