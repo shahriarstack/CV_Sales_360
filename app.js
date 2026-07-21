@@ -712,10 +712,31 @@
             },
 
             // --- UI Utilities ---
+            updateAuroraColors: () => {
+                const blobs = document.getElementById('aurora-blobs');
+                const body = document.body;
+                if (blobs && body) {
+                    if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'subadmin')) {
+                        blobs.classList.remove('hidden');
+                        body.classList.add('aurora-active');
+                        const brand = app.adminBrandTab || 'Foton';
+                        if (brand === 'Mahindra') {
+                            blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 aurora-mahindra";
+                        } else {
+                            blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 aurora-foton";
+                        }
+                    } else {
+                        blobs.classList.add('hidden');
+                        body.classList.remove('aurora-active');
+                    }
+                }
+            },
+
             refreshIcons: () => {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
+                app.updateAuroraColors();
             },
 
             showLoader: (msg = 'Processing...') => {
