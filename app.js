@@ -713,8 +713,23 @@
 
             // --- UI Utilities ---
             updateAuroraColors: () => {
-                const blobs = document.getElementById('aurora-blobs');
+                let blobs = document.getElementById('aurora-blobs');
                 const body = document.body;
+                if (!blobs && body) {
+                    const mainElement = document.querySelector('main');
+                    if (mainElement) {
+                        blobs = document.createElement('div');
+                        blobs.id = 'aurora-blobs';
+                        blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 hidden";
+                        blobs.innerHTML = `
+                            <div class="aurora-blob aurora-1 absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full filter blur-[80px] md:blur-[140px] opacity-10 md:opacity-[0.12] top-[-10%] left-[-10%] transition-all duration-1000"></div>
+                            <div class="aurora-blob aurora-2 absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full filter blur-[80px] md:blur-[140px] opacity-10 md:opacity-[0.12] bottom-[-10%] right-[-10%] transition-all duration-1000"></div>
+                            <div class="aurora-blob aurora-3 absolute w-[250px] md:w-[450px] h-[250px] md:h-[450px] rounded-full filter blur-[80px] md:blur-[100px] opacity-[0.05] md:opacity-[0.07] top-[30%] right-[15%] transition-all duration-1000"></div>
+                        `;
+                        mainElement.insertBefore(blobs, mainElement.firstChild);
+                    }
+                }
+                
                 if (blobs && body) {
                     if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'subadmin')) {
                         blobs.classList.remove('hidden');
