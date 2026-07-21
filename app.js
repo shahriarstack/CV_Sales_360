@@ -2506,15 +2506,9 @@
                 localStorage.setItem('aci_last_page', 'manual');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 
-                let manualSales = DB.sales.filter(s => s.is_manual);
-                const saleTypeFilter = app.manualSaleTypeFilter || 'All';
-                if (saleTypeFilter !== 'All') {
-                    manualSales = manualSales.filter(s => s.sale_type === saleTypeFilter);
-                }
-
-                // Date filtering logic
+                let summarySales = DB.sales.filter(s => s.is_manual);
                 if (startDate || endDate) {
-                    manualSales = manualSales.filter(s => {
+                    summarySales = summarySales.filter(s => {
                         if (!s.timestamp || s.timestamp === 'Recent') return true;
                         const d = new Date(s.timestamp);
                         if (isNaN(d.getTime())) return true;
@@ -2524,7 +2518,11 @@
                     });
                 }
                 
-                // Store globally for CSV export
+                let manualSales = [...summarySales];
+                const saleTypeFilter = app.manualSaleTypeFilter || 'All';
+                if (saleTypeFilter !== 'All') {
+                    manualSales = manualSales.filter(s => s.sale_type === saleTypeFilter);
+                }
                 app.currentManualSales = manualSales;
 
                 const html = `
@@ -2534,25 +2532,1363 @@
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
                                 <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
                                 
-                                <!-- Beautiful & Noticeable Sale Type Switcher Pill -->
-                                <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 shadow-md mt-3.5 w-max">
+                                <!-- Beautiful & Noticeable Sale Type Switcher Pill (Compact) -->
+                                <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner mt-2 w-max">
                                     <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()" 
-                                            class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-black tracking-wide transition-all duration-300 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-md scale-105 border border-slate-200/40' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 38px;">
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-sm scale-102 border border-slate-200/20' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
                                         All
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()" 
-                                            class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-black tracking-wide transition-all duration-300 flex items-center gap-2 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 scale-105' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 38px;">
-                                        <span class="h-2 w-2 rounded-full relative flex">
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                        <span class="h-1.5 w-1.5 rounded-full relative flex">
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-400'} opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
+                                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
                                         </span>
                                         New Sale
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()" 
-                                            class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-black tracking-wide transition-all duration-300 flex items-center gap-2 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 scale-105' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 38px;">
-                                        <span class="h-2 w-2 rounded-full relative flex">
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                        <span class="h-1.5 w-1.5 rounded-full relative flex">
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-400'} opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
+                                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
+                                        </span>
+                                        Resale
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Date Range Selector -->
+                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:border-aci-blue">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                    <div class="flex flex-col">
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Date Range</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="Start Date">
+                                            <span class="text-slate-300 font-bold">-</span>
+                                            <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="End Date">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Batch Approve Button -->
+                                <button id="btn-batch-approve" onclick="app.approveSelectedManualDeliveries()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 animate-pulse">
+                                    <i data-lucide="check-square" class="w-4 h-4"></i> Approve Selected (<span id="batch-select-count">0</span>)
+                                </button>
+                                
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                                    <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                                </button>
+
+                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i> Clear Data
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <!-- Minimal & Compact Summary Section -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                            <!-- Total Entries -->
+                            <div class="bg-gradient-to-br from-indigo-500/5 to-indigo-50/20 border border-indigo-100/60 rounded-xl p-2.5 shadow-sm hover:shadow transition-all duration-200">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-black text-indigo-500 uppercase tracking-wider">Total Logged</span>
+                                    <span class="p-1.5 bg-indigo-500/10 text-indigo-600 rounded-lg"><i data-lucide="clipboard-list" class="w-3 h-3"></i></span>
+                                </div>
+                                <div class="mt-1 flex items-baseline gap-1">
+                                    <span class="text-lg font-black text-slate-800">${summarySales.length}</span>
+                                    <span class="text-[8px] font-bold text-slate-400">entries</span>
+                                </div>
+                            </div>
+
+                            <!-- Pending Sync -->
+                            <div class="bg-gradient-to-br from-amber-500/5 to-amber-50/20 border border-amber-100/60 rounded-xl p-2.5 shadow-sm hover:shadow transition-all duration-200">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-black text-amber-500 uppercase tracking-wider">Pending Sync</span>
+                                    <span class="p-1.5 bg-amber-500/10 text-amber-600 rounded-lg relative flex items-center justify-center">
+                                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-amber-400 opacity-75"></span>
+                                        <i data-lucide="clock" class="w-3 h-3 relative"></i>
+                                    </span>
+                                </div>
+                                <div class="mt-1 flex items-baseline gap-1">
+                                    <span class="text-lg font-black text-amber-600">${summarySales.filter(s => s.approval_status !== 'Done').length}</span>
+                                    <span class="text-[8px] font-bold text-slate-400">pending</span>
+                                </div>
+                            </div>
+
+                            <!-- Brand & Resale Share Split -->
+                            <div class="bg-gradient-to-br from-emerald-500/5 to-emerald-50/20 border border-emerald-100/60 rounded-xl p-2.5 shadow-sm hover:shadow transition-all duration-200 col-span-1">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="text-[8px] font-black text-emerald-600 uppercase tracking-wider">Brand & Sale Split</span>
+                                    <span class="p-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg"><i data-lucide="tag" class="w-3 h-3"></i></span>
+                                </div>
+                                ${(() => {
+                                    const fCount = summarySales.filter(s => s.brand === 'Foton').length;
+                                    const mCount = summarySales.filter(s => s.brand === 'Mahindra').length;
+                                    const rCount = summarySales.filter(s => s.sale_type === 'Resale').length;
+                                    return `
+                                    <div class="flex items-center justify-between gap-1">
+                                        <div class="flex flex-col items-center flex-1 bg-blue-500/5 p-1 rounded-md border border-blue-500/10">
+                                            <span class="text-[7px] font-bold text-blue-600 uppercase tracking-tighter">FOTON</span>
+                                            <span class="text-xs font-black text-slate-800">${fCount}</span>
+                                        </div>
+                                        <div class="flex flex-col items-center flex-1 bg-rose-500/5 p-1 rounded-md border border-rose-500/10">
+                                            <span class="text-[7px] font-bold text-rose-600 uppercase tracking-tighter">MAHINDRA</span>
+                                            <span class="text-xs font-black text-slate-800">${mCount}</span>
+                                        </div>
+                                        <div class="flex flex-col items-center flex-1 bg-amber-500/5 p-1 rounded-md border border-amber-500/10">
+                                            <span class="text-[7px] font-bold text-amber-600 uppercase tracking-tighter">RESALE</span>
+                                            <span class="text-xs font-black text-slate-800">${rCount}</span>
+                                        </div>
+                                    </div>
+                                    `;
+                                })()}
+                            </div>
+
+                            <!-- Combined Trade Value -->
+                            <div class="bg-gradient-to-br from-cyan-500/5 to-cyan-50/20 border border-cyan-100/60 rounded-xl p-2.5 shadow-sm hover:shadow transition-all duration-200">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-black text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
+                                    <span class="p-1.5 bg-cyan-500/10 text-cyan-600 rounded-lg"><i data-lucide="coins" class="w-3 h-3"></i></span>
+                                </div>
+                                <div class="mt-1 flex flex-col">
+                                    <span class="text-sm font-black text-slate-800 truncate" title="${app.formatCurrency(summarySales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(summarySales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
+                                    <span class="text-[7px] font-medium text-slate-400 uppercase tracking-wider">Est. Trade Value</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold">User</th>
+                                            <th class="px-6 py-4 font-semibold">Role</th>
+                                            <th class="px-6 py-4 font-semibold">Status</th>
+                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${admins.map(u => `
+                                            <tr class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-bold text-slate-800">${u.name}</div>
+                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    ${u.role === 'subadmin' 
+                                                        ? `<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-purple-200">Sub Admin</span>`
+                                                        : `<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-rose-200">Admin</span>`
+                                                    }
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
+                                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit Admin"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                    ${u.id === app.currentUser.id ? `
+                                                        <button class="text-slate-200 cursor-not-allowed mx-1" title="You cannot delete yourself" disabled><i data-lucide="trash-2" class="w-4 h-4 text-slate-200"></i></button>
+                                                    ` : `
+                                                        <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete Admin"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                    `}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- AM Section -->
+                        <div class="mb-8">
+                            <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
+                                AM Management
+                            </h2>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold">User</th>
+                                            <th class="px-6 py-4 font-semibold">Role & Area</th>
+                                            <th class="px-6 py-4 font-semibold">Territories</th>
+                                            <th class="px-6 py-4 font-semibold">Status</th>
+                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${ams.map(u => `
+                                            <tr class="hover:bg-slate-50 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-bold text-slate-800">${u.name}</div>
+                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-slate-200">${u.role}</span>
+                                                    ${u.area_name ? `<div class="text-xs text-slate-500 mt-1 font-semibold">${u.area_name}</div>` : ''}
+                                                </td>
+                                                <td class="px-6 py-4 text-slate-600 text-xs">
+                                                    ${u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || '<span class="text-slate-400 italic">Global</span>'}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
+                                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit AM"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                    <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete AM"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- MO / Territory Section -->
+                        <div>
+                            <div class="mb-3 flex justify-between items-center">
+                                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
+                                    MO Management
+                                </h2>
+                                <button onclick="app.showAddTerritoryModal()" class="btn-liquid text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Territory
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold w-16">#</th>
+                                            <th class="px-6 py-4 font-semibold">Territory Name (Username)</th>
+                                            <th class="px-6 py-4 font-semibold">Officer Name</th>
+                                            <th class="px-6 py-4 font-semibold">Employee ID (Password)</th>
+                                            <th class="px-6 py-4 font-semibold text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${DB.territories.map((t, index) => {
+                    const so = DB.users.find(u => u.role === 'so' && u.territories.includes(t.id));
+                    return `
+                                                <tr class="hover:bg-slate-50 transition-colors">
+                                                    <td class="px-6 py-4 font-semibold text-slate-400">${index + 1}</td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="font-bold text-slate-800">${t.name}</div>
+                                                        <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5 uppercase">ID: ${t.id}</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        ${so ? `<div class="font-bold text-slate-700">${so.name}</div>` : `<span class="px-2 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Unassigned</span>`}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        ${so ? `<div class="font-mono text-xs font-semibold text-slate-600">${so.employee_id}</div>` : `<span class="text-slate-300">-</span>`}
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="flex items-center justify-end gap-1">
+                                                            ${so ? `
+                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:text-aci-blue p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit MO"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                                                <button onclick="app.deleteUser('${so.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete MO"><i data-lucide="user-x" class="w-4 h-4"></i></button>
+                                                            ` : `
+                                                                <button onclick="app.showAddUserModal(null, '${t.id}')" class="text-aci-blue hover:text-indigo-600 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md hover:bg-indigo-50 transition-colors">
+                                                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign MO
+                                                                </button>
+                                                            `}
+                                                            <div class="w-px h-5 bg-slate-200 mx-1.5"></div>
+                                                            <button onclick="app.deleteTerritory('${t.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete Territory"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `;
+                }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            showAddUserModal: (userId = null, defaultTerritoryId = null) => {
+                let modal = document.getElementById('add-user-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-user-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                const user = userId ? DB.users.find(u => u.id === userId) : null;
+                const territoryOptions = DB.territories.map(t => {
+                    let isSelected = false;
+                    if (user && user.territories.includes(t.id)) isSelected = true;
+                    else if (!user && defaultTerritoryId === t.id) isSelected = true;
+                    return `<option value="${t.id}" ${isSelected ? 'selected' : ''}>${t.name} (${t.district})</option>`;
+                }).join('');
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAddUserModal()"></div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-lg mx-4 border border-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-black text-slate-800 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-aci-blue/10 flex items-center justify-center text-aci-blue">
+                                    <i data-lucide="${user ? 'edit' : 'user-plus'}" class="w-5 h-5"></i>
+                                </div>
+                                ${user ? 'Edit User Profile' : 'Create User Profile'}
+                            </h2>
+                            <button onclick="app.closeAddUserModal()" class="text-slate-400 hover:text-red-500 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form id="add-user-form" onsubmit="app.handleAddUser(event, ${user ? `'${user.id}'` : 'null'})" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
+                                <input type="text" id="new-user-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. Shakil Ahmed" value="${user ? user.name.replace(/\s\((AM|MO|Sub Admin)\)$/, '') : ''}">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Employee ID</label>
+                                    <input type="text" id="new-user-empid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" required placeholder="e.g. EMP1050" value="${user ? user.employee_id : ''}">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">System Role</label>
+                                    <select id="new-user-role" onchange="app.handleRoleChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all appearance-none" required>
+                                        <option value="so" ${(user && user.role === 'so') || defaultTerritoryId ? 'selected' : ''}>MO</option>
+                                        <option value="am" ${user && user.role === 'am' ? 'selected' : ''}>AM</option>
+                                        <option value="subadmin" ${user && user.role === 'subadmin' && !defaultTerritoryId ? 'selected' : ''}>Sub Admin</option>
+                                        <option value="admin" ${user && user.role === 'admin' && !defaultTerritoryId ? 'selected' : ''}>System Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="area-name-selection-container" class="hidden">
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Area Name</label>
+                                <input type="text" id="new-user-areaname" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" placeholder="e.g. Dhaka Area" value="${user ? (user.area_name || '') : ''}">
+                            </div>
+                            <div id="territory-selection-container">
+                                <div class="flex justify-between items-end mb-1.5 ml-1">
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest">Assigned Territory</label>
+                                    <span class="text-[9px] font-bold text-slate-400" id="terr-hint">Select one area</span>
+                                </div>
+                                <select id="new-user-territories" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue transition-all" ${user && user.role === 'am' ? 'multiple' : ''} required>
+                                    ${territoryOptions}
+                                </select>
+                            </div>
+                            <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                                <button type="button" onclick="app.closeAddUserModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                                <button type="submit" class="flex-1 btn-liquid text-white px-4 py-3 rounded-xl font-black shadow-lg flex items-center justify-center gap-2"><i data-lucide="check" class="w-5 h-5"></i> ${user ? 'Update User' : 'Provision User'}</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                app.handleRoleChange(); // init state
+            },
+
+            closeAddUserModal: () => {
+                const modal = document.getElementById('add-user-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            handleRoleChange: () => {
+                const role = document.getElementById('new-user-role').value;
+                const terrContainer = document.getElementById('territory-selection-container');
+                const terrSelect = document.getElementById('new-user-territories');
+                const terrHint = document.getElementById('terr-hint');
+                const areaContainer = document.getElementById('area-name-selection-container');
+                const areaInput = document.getElementById('new-user-areaname');
+
+                if (role === 'am') {
+                    if (areaContainer) areaContainer.classList.remove('hidden');
+                    if (areaInput) areaInput.setAttribute('required', 'true');
+                } else {
+                    if (areaContainer) areaContainer.classList.add('hidden');
+                    if (areaInput) areaInput.removeAttribute('required');
+                }
+
+                if (role === 'admin' || role === 'subadmin') {
+                    terrContainer.classList.add('hidden');
+                    terrSelect.removeAttribute('required');
+                } else if (role === 'so') {
+                    terrContainer.classList.remove('hidden');
+                    terrSelect.removeAttribute('multiple');
+                    terrSelect.setAttribute('required', 'true');
+                    terrSelect.size = 1;
+                    terrSelect.classList.remove('py-2');
+                    terrSelect.classList.add('py-3');
+                    if (terrHint) terrHint.innerText = 'Select one area';
+                } else if (role === 'am') {
+                    terrContainer.classList.remove('hidden');
+                    terrSelect.setAttribute('multiple', 'true');
+                    terrSelect.setAttribute('required', 'true');
+                    terrSelect.size = 5;
+                    terrSelect.classList.remove('py-3');
+                    terrSelect.classList.add('py-2');
+                    if (terrHint) terrHint.innerText = 'Hold Ctrl/Cmd to select multiple';
+                }
+            },
+
+            handleAddUser: async (e, userId = null) => {
+                e.preventDefault();
+                const name = document.getElementById('new-user-name').value;
+                const empId = document.getElementById('new-user-empid').value;
+                const role = document.getElementById('new-user-role').value;
+                const terrSelect = document.getElementById('new-user-territories');
+                const areaName = role === 'am' ? document.getElementById('new-user-areaname').value : '';
+
+                let territories = [];
+                if (role !== 'admin' && role !== 'subadmin') {
+                    territories = Array.from(terrSelect.selectedOptions).map(opt => opt.value);
+                    if (territories.length === 0) {
+                        app.showToast('Please assign at least one territory.', 'error');
+                        return;
+                    }
+                }
+
+                const appendedName = name + (role === 'am' ? ' (AM)' : role === 'so' ? ' (MO)' : role === 'subadmin' ? ' (Sub Admin)' : '');
+
+                app.showLoader('Saving user...');
+
+                try {
+                    if (userId) {
+                        const user = DB.users.find(u => u.id === userId);
+                        if (user) {
+                            user.name = appendedName;
+                            user.employee_id = empId;
+                            user.role = role;
+                            user.email = `${empId}.${role}.${userId}@acimotors.com`;
+                            user.territories = territories;
+                            user.area_name = areaName;
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`UPDATE users SET name = ${appendedName}, role = ${role}, employee_id = ${empId}, email = ${user.email}, territories = ${JSON.stringify(territories)}, area_name = ${areaName} WHERE id = ${userId}`;
+                            }
+                            app.showToast('User updated successfully.', 'success');
+                        }
+                    } else {
+                        const newId = 'u' + (DB.users.length + 1) + Date.now();
+                        const newUser = {
+                            id: newId,
+                            name: appendedName,
+                            role: role,
+                            employee_id: empId,
+                            territories: territories,
+                            area_name: areaName,
+                            email: `${empId}.${role}.${newId}@acimotors.com`, // unique email structure
+                            password: 'password' // dummy password
+                        };
+                        DB.users.push(newUser);
+                        
+                        if (app.neonSQL) {
+                            await app.neonSQL`INSERT INTO users (id, name, role, email, password, employee_id, territories, area_name) VALUES (${newUser.id}, ${newUser.name}, ${newUser.role}, ${newUser.email}, ${newUser.password}, ${newUser.employee_id}, ${JSON.stringify(newUser.territories)}, ${newUser.area_name})`;
+                        }
+                        app.showToast('User provisioned successfully.', 'success');
+                    }
+
+                    app.closeAddUserModal();
+                    app.renderUserManagement();
+                    app.populateLoginDropdown(); // Update the login screen dropdown
+                } catch (err) {
+                    console.error('Failed to save user:', err);
+                    app.showToast('Failed to save user to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            deleteUser: async (userId) => {
+                if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    app.showLoader('Deleting user...');
+                    try {
+                        const index = DB.users.findIndex(u => u.id === userId);
+                        if (index !== -1) {
+                            DB.users.splice(index, 1);
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM users WHERE id = ${userId}`;
+                            }
+                            
+                            app.showToast('User deleted successfully.', 'success');
+                            app.renderUserManagement();
+                            app.populateLoginDropdown();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete user:', err);
+                        app.showToast('Failed to delete user from database.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            showAddTerritoryModal: () => {
+                let modal = document.getElementById('add-territory-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'add-territory-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAddTerritoryModal()"></div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm mx-4 border border-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-black text-slate-800 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                                </div>
+                                Add Territory
+                            </h2>
+                            <button onclick="app.closeAddTerritoryModal()" class="text-slate-400 hover:text-red-500 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        <form id="add-territory-form" onsubmit="app.handleAddTerritory(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Territory Name</label>
+                                <input type="text" id="new-territory-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all" required placeholder="e.g. Dhaka East">
+                            </div>
+                            <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                                <button type="button" onclick="app.closeAddTerritoryModal()" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                                <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-black shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 transition-colors"><i data-lucide="check" class="w-5 h-5"></i> Create</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                // Ensure focus on input
+                setTimeout(() => document.getElementById('new-territory-name').focus(), 100);
+            },
+
+            closeAddTerritoryModal: () => {
+                const modal = document.getElementById('add-territory-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            handleAddTerritory: async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('new-territory-name').value.trim();
+                if (!name) return;
+
+                app.showLoader('Adding territory...');
+                try {
+                    const newId = 't' + (DB.territories.length > 0 ? Math.max(...DB.territories.map(t => parseInt(t.id.substring(1)))) + 1 : 1);
+                    const newTerritory = {
+                        id: newId,
+                        name: name,
+                        district: name,
+                        upazilas: []
+                    };
+                    DB.territories.push(newTerritory);
+
+                    if (app.neonSQL) {
+                        await app.neonSQL`INSERT INTO territories (id, name, district, upazilas) VALUES (${newId}, ${name}, ${name}, ${JSON.stringify(newTerritory.upazilas)})`;
+                    }
+
+                    app.showToast('Territory added successfully.', 'success');
+                    app.closeAddTerritoryModal();
+                    app.renderUserManagement();
+                } catch (err) {
+                    console.error('Failed to add territory:', err);
+                    app.showToast('Failed to save territory to database.', 'error');
+                } finally {
+                    app.hideLoader();
+                }
+            },
+
+            // Pulse Table Sorting Utilities
+            getSortIcon: (col) => {
+                if (app.pulseSortCol !== col) return '<i data-lucide="arrow-up-down" class="w-3 h-3 text-slate-300"></i>';
+                return app.pulseSortDir === 'asc' ? '<i data-lucide="arrow-up" class="w-3 h-3 text-aci-blue"></i>' : '<i data-lucide="arrow-down" class="w-3 h-3 text-aci-blue"></i>';
+            },
+
+            setPulseSort: (col) => {
+                if (app.pulseSortCol === col) {
+                    app.pulseSortDir = app.pulseSortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    app.pulseSortCol = col;
+                    app.pulseSortDir = 'desc'; // Default to descending for numbers and stats
+                }
+                app.renderAdminDashboard();
+            },
+
+            deleteTerritory: async (territoryId) => {
+                const soAssigned = DB.users.some(u => u.role === 'so' && u.territories.includes(territoryId));
+                if (soAssigned) {
+                    app.showToast('Cannot delete territory. Unassign the active MO first.', 'error');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to delete this territory? This action cannot be undone.')) {
+                    app.showLoader('Deleting territory...');
+                    try {
+                        const index = DB.territories.findIndex(t => t.id === territoryId);
+                        if (index !== -1) {
+                            DB.territories.splice(index, 1);
+                            
+                            // We must await AM territory removal logic in SQL since AM's territory list is a JSON column.
+                            for (let u of DB.users) {
+                                if (u.role === 'am' && u.territories.includes(territoryId)) {
+                                    u.territories = u.territories.filter(id => id !== territoryId);
+                                    if (app.neonSQL) {
+                                        await app.neonSQL`UPDATE users SET territories = ${JSON.stringify(u.territories)} WHERE id = ${u.id}`;
+                                    }
+                                }
+                            }
+                            
+                            if (app.neonSQL) {
+                                await app.neonSQL`DELETE FROM territories WHERE id = ${territoryId}`;
+                            }
+                            
+                            app.showToast('Territory deleted successfully.', 'success');
+                            app.renderUserManagement();
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete territory:', err);
+                        app.showToast('Failed to delete territory from database. Please check if sales exist for this territory.', 'error');
+                    } finally {
+                        app.hideLoader();
+                    }
+                }
+            },
+
+            // Excel-Like Multi-Select Filter Modal
+            showPulseFilterModal: () => {
+                let modal = document.getElementById('pulse-filter-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'pulse-filter-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                if (!app.pulseFilterTerritories) app.pulseFilterTerritories = [];
+
+                const isAM = app.currentUser.role === 'am' || app.currentUser.role === 'so';
+                const activeTerritories = isAM
+                    ? DB.territories.filter(t => app.currentUser.territories.includes(t.id))
+                    : DB.territories;
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closePulseFilterModal()"></div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm mx-4 border border-white flex flex-col max-h-[85vh] fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="filter" class="w-4 h-4"></i></div>
+                                Filter Territories
+                            </h2>
+                            <button type="button" onclick="app.closePulseFilterModal()" class="text-slate-400 hover:text-red-500 p-2 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="pulse-filter-search" onkeyup="app.searchPulseFilterList(this.value)" placeholder="Search..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <button onclick="app.pulseFilterSelectAll(true)" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">Select All</button>
+                            <button onclick="app.pulseFilterSelectAll(false)" class="text-[10px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-widest transition-colors">Clear</button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto min-h-[250px] border border-slate-100 bg-slate-50/50 rounded-xl p-2 space-y-1 custom-scrollbar" id="pulse-filter-list">
+                            ${activeTerritories.map(t => `
+                                <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-100 hover:shadow-sm pulse-filter-item" data-name="${t.name.toLowerCase()}">
+                                    <input type="checkbox" value="${t.id}" class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all" ${app.pulseFilterTerritories.length === 0 || app.pulseFilterTerritories.includes(t.id) ? 'checked' : ''}>
+                                    <span class="text-xs font-bold text-slate-700">${t.name}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+                            <button onclick="app.closePulseFilterModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                            <button onclick="app.applyPulseFilter()" class="flex-[2] btn-liquid text-white py-3 rounded-xl text-xs font-black shadow-lg flex items-center justify-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4"></i> Apply Filter
+                            </button>
+                        </div>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                setTimeout(() => document.getElementById('pulse-filter-search')?.focus(), 100);
+            },
+
+            closePulseFilterModal: () => {
+                const modal = document.getElementById('pulse-filter-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            searchPulseFilterList: (val) => {
+                const term = val.toLowerCase();
+                document.querySelectorAll('.pulse-filter-item').forEach(item => {
+                    item.style.display = item.dataset.name.includes(term) ? 'flex' : 'none';
+                });
+            },
+
+            pulseFilterSelectAll: (select) => {
+                document.querySelectorAll('.pulse-filter-item input[type="checkbox"]').forEach(cb => {
+                    if (cb.closest('.pulse-filter-item').style.display !== 'none') {
+                        cb.checked = select;
+                    }
+                });
+            },
+
+            applyPulseFilter: () => {
+                const checkboxes = Array.from(document.querySelectorAll('.pulse-filter-item input[type="checkbox"]'));
+                const checked = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+
+                if (checked.length === checkboxes.length) {
+                    app.pulseFilterTerritories = []; // Empty array signifies "All"
+                } else {
+                    app.pulseFilterTerritories = checked;
+                }
+
+                app.closePulseFilterModal();
+                app.renderAdminDashboard();
+            },
+
+            // Excel-Like Area Name Filter Modal
+            showAreaFilterModal: () => {
+                let modal = document.getElementById('area-filter-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'area-filter-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                if (!app.areaFilterList) app.areaFilterList = [];
+
+                // Extract unique Area Names directly from AM users in DB
+                const uniqueAreas = [...new Set(DB.users.filter(u => u.role === 'am' && u.area_name).map(u => u.area_name))].sort();
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="app.closeAreaFilterModal()"></div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-sm mx-4 border border-white flex flex-col max-h-[85vh] fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="filter" class="w-4 h-4"></i></div>
+                                Filter Area Names
+                            </h2>
+                            <button type="button" onclick="app.closeAreaFilterModal()" class="text-slate-400 hover:text-red-500 p-2 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="relative">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="area-filter-search" onkeyup="app.searchAreaFilterList(this.value)" placeholder="Search..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <button onclick="app.areaFilterSelectAll(true)" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest transition-colors">Select All</button>
+                            <button onclick="app.areaFilterSelectAll(false)" class="text-[10px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-widest transition-colors">Clear</button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto min-h-[200px] border border-slate-100 bg-slate-50/50 rounded-xl p-2 space-y-1 custom-scrollbar" id="area-filter-list">
+                            ${uniqueAreas.map(a => `
+                                <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-100 hover:shadow-sm area-filter-item" data-name="${a.toLowerCase()}">
+                                    <input type="checkbox" value="${a}" class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all" ${app.areaFilterList.length === 0 || app.areaFilterList.includes(a) ? 'checked' : ''}>
+                                    <span class="text-xs font-bold text-slate-700">${a}</span>
+                                </label>
+                            `).join('')}
+                            ${uniqueAreas.length === 0 ? '<div class="p-4 text-center text-slate-400 text-xs">No areas defined.</div>' : ''}
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+                            <button onclick="app.closeAreaFilterModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                            <button onclick="app.applyAreaFilter()" class="flex-[2] btn-liquid text-white py-3 rounded-xl text-xs font-black shadow-lg flex items-center justify-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4"></i> Apply Filter
+                            </button>
+                        </div>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                app.refreshIcons();
+                setTimeout(() => document.getElementById('area-filter-search')?.focus(), 100);
+            },
+
+            closeAreaFilterModal: () => {
+                const modal = document.getElementById('area-filter-modal');
+                if (modal) modal.classList.add('hidden');
+            },
+
+            searchAreaFilterList: (val) => {
+                const term = val.toLowerCase();
+                document.querySelectorAll('.area-filter-item').forEach(item => {
+                    item.style.display = item.dataset.name.includes(term) ? 'flex' : 'none';
+                });
+            },
+
+            areaFilterSelectAll: (select) => {
+                document.querySelectorAll('.area-filter-item input[type="checkbox"]').forEach(cb => {
+                    if (cb.closest('.area-filter-item').style.display !== 'none') {
+                        cb.checked = select;
+                    }
+                });
+            },
+
+            applyAreaFilter: () => {
+                const checkboxes = Array.from(document.querySelectorAll('.area-filter-item input[type="checkbox"]'));
+                const checked = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+
+                if (checked.length === checkboxes.length) {
+                    app.areaFilterList = []; // Empty array signifies "All"
+                } else {
+                    app.areaFilterList = checked;
+                }
+
+                app.closeAreaFilterModal();
+                app.renderAdminDashboard();
+            },
+
+            filterTableGroup: (triggerElem) => {
+                const thead = triggerElem.closest('thead');
+                const tbody = thead.nextElementSibling;
+                const filterRow = triggerElem.closest('tr');
+                const ths = Array.from(filterRow.children);
+                const rows = tbody.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    if (row.children.length === 1 && row.children[0].colSpan > 1) return;
+                    let show = true;
+                    ths.forEach((th, index) => {
+                        const cell = row.children[index];
+                        if (!cell) return;
+
+                        const text = cell.textContent.trim();
+                        const inputs = Array.from(th.querySelectorAll('input, select'));
+
+                        if (inputs.length === 1 && inputs[0].type !== 'date') {
+                            const filterVal = inputs[0].value.toLowerCase().trim();
+                            if (filterVal && !text.toLowerCase().includes(filterVal)) show = false;
+                        }
+                        else if (inputs.length === 2 && inputs[0].type === 'date' && inputs[1].type === 'date') {
+                            const startStr = inputs[0].value;
+                            const endStr = inputs[1].value;
+                            if (startStr || endStr) {
+                                let cellDate = new Date(text);
+                                if (isNaN(cellDate.getTime()) && text.includes('/')) {
+                                    const parts = text.split('/');
+                                    if (parts.length === 3) cellDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                                }
+                                if (text.toLowerCase() === 'recent' || text.toLowerCase() === 'today') cellDate = new Date();
+
+                                if (!isNaN(cellDate.getTime())) {
+                                    if (startStr) {
+                                        const startDate = new Date(startStr);
+                                        startDate.setHours(0, 0, 0, 0);
+                                        if (cellDate < startDate) show = false;
+                                    }
+                                    if (endStr) {
+                                        const endDate = new Date(endStr);
+                                        endDate.setHours(23, 59, 59, 999);
+                                        if (cellDate > endDate) show = false;
+                                    }
+                                } else {
+                                    if (startStr || endStr) show = false;
+                                }
+                            }
+                        }
+                    });
+                    row.style.display = show ? '' : 'none';
+                });
+            },
+
+            setAdminEMIBrandFilter: (brand) => {
+                app.adminEMIBrandFilter = brand;
+                app.renderAdminEMI();
+            },
+
+            setAdminEMITerritoryFilter: (terrId) => {
+                app.adminEMITerritoryFilter = terrId;
+                app.renderAdminEMI();
+            },
+
+            captureEMIReport: async () => {
+                app.showLoader('Generating EMI Report...');
+
+                // Gather data (unfiltered — all territories, 1st & 2nd installments)
+                const emiData = (DB.emi || []).filter(e => {
+                    const instNo = e.installment_no;
+                    return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                });
+
+                const territorySummary = (DB.territories || []).map(t => {
+                    const tEmi = emiData.filter(e => e.territory_id === t.id);
+                    const totalCust = tEmi.length;
+                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
+                    const nonPayingCust = totalCust - payingCust;
+                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                    const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
+                    return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
+                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name)); // Sort best first (top to bottom)
+
+                // Grand totals
+                const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
+                const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
+                const grandNonPaying = territorySummary.reduce((s, t) => s + t.nonPayingCust, 0);
+                const grandDue = territorySummary.reduce((s, t) => s + t.tTotalDue, 0);
+                const grandCol = territorySummary.reduce((s, t) => s + t.tAmountCol, 0);
+                const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
+
+                const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                // Auto-scale row height so ALL territories fit on one A4 page
+                const n       = territorySummary.length;
+                const budget  = 870;
+                const theadPx = 22;
+                const rh      = Math.max(13, Math.min(20, Math.floor((budget - theadPx) / (n + 1))));
+                const fs      = Math.max(7.5, Math.min(9, rh * 0.52));
+                const cs      = (clr, align, extra) =>
+                    `font-size:${fs}px;color:${clr};padding:0 6px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e8edf2;${extra||''}`;
+
+                const tableRowsHTML = territorySummary.map((t, i) => {
+                    const bg = i % 2 === 0 ? '#fff' : '#f8fafc';
+                    const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                    return `<tr style="height:${rh}px;background:${bg};">
+                        <td style="${cs('#1e293b','left','padding-left:10px;font-weight:600;border-right:1px solid #e8edf2;')}"><span style="color:#bfcad6;font-size:${fs-1}px;">#${i+1} </span>${t.name}</td>
+                        <td style="${cs('#334155','center','border-right:1px solid #e8edf2;font-weight:500;')}">${t.totalCust}</td>
+                        <td style="${cs('#15803d','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.payingCust}</td>
+                        <td style="${cs('#dc2626','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.nonPayingCust}</td>
+                        <td style="${cs('#475569','center','border-right:1px solid #e8edf2;font-weight:500;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                        <td style="${cs('#2563eb','center','border-right:1px solid #e8edf2;font-weight:600;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                        <td style="${cs(rc,'center','font-weight:700;')}">${t.tColRate}%</td>
+                    </tr>`;
+                }).join('');
+
+                const totalRowHTML = `<tr style="height:${rh}px;background:#1e3a8a;">
+                    <td style="${cs('#fff','left','padding-left:10px;font-weight:700;border-right:1px solid rgba(255,255,255,0.15);')}">GRAND TOTAL</td>
+                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandCust}</td>
+                    <td style="${cs('#86efac','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandPaying}</td>
+                    <td style="${cs('#fca5a5','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandNonPaying}</td>
+                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                    <td style="${cs('#93c5fd','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                    <td style="${cs('#fff','center','font-weight:800;')}">${grandRate}%</td>
+                </tr>`;
+
+                // Build A4 off-screen container
+                const container = document.createElement('div');
+                container.id = 'emi-report-capture';
+                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#fff;font-family:'Segoe UI',Arial,sans-serif;box-sizing:border-box;overflow:hidden;";
+
+                container.innerHTML = `
+                <div style="width:794px;height:1123px;background:#fff;padding:22px 26px 16px 26px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;padding-top:2px;flex-shrink:0;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                <span style="background:#1e3a8a;color:#fff;font-size:7.5px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;">ACI Motors</span>
+                                <span style="color:#94a3b8;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Commercial Vehicle</span>
+                            </div>
+                            <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;line-height:1.1;">1st &amp; 2nd EMI Collection Status</div>
+                            <div style="font-size:8px;color:#64748b;margin-top:3px;">Report Date: <b style="color:#1e3a8a;">${today}</b></div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:9px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">Global Dashboard</div>
+                            <div style="font-size:7.5px;color:#94a3b8;margin-top:1px;">Performance Analytics</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #cbd5e1;padding-bottom:5px;margin-bottom:8px;flex-shrink:0;">
+                        <span style="font-size:8px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.8px;">Territory Wise Performance Summary</span>
+                        <span style="font-size:7.5px;color:#94a3b8;">Amounts in BDT (৳)</span>
+                    </div>
+                    <div style="flex:1;">
+                        <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
+                            <colgroup>
+                                <col style="width:26%;"><col style="width:9%;"><col style="width:9%;"><col style="width:11%;"><col style="width:17%;"><col style="width:18%;"><col style="width:10%;">
+                            </colgroup>
+                            <thead>
+                                <tr style="height:${theadPx}px;background:#1e3a8a;color:#fff;">
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 8px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Sales Territory</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Total</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#86efac;">Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#fca5a5;">Non-Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Due (Inst)</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#93c5fd;">Collected</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;">Rate %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowsHTML}
+                                ${totalRowHTML}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;">
+                        <span>Generated from Sales360 System | ACI Motors Ltd.</span>
+                        <span>Page 1 of 1</span>
+                    </div>
+                </div>
+                `;
+
+                document.body.appendChild(container);
+
+                // Small delay for fonts/render
+                await new Promise(r => setTimeout(r, 300));
+
+                try {
+                    const canvas = await html2canvas(container, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#f8fafc',
+                        width: 794,
+                        height: 1123,
+                        windowWidth: 794,
+                        windowHeight: 1123
+                    });
+
+                    const link = document.createElement('a');
+                    link.download = `EMI_Collection_Status_${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    app.showToast('EMI report captured successfully!', 'success');
+                } catch (err) {
+                    console.error('EMI report capture failed:', err);
+                    app.showToast('Failed to capture report. Please try again.', 'error');
+                } finally {
+                    document.body.removeChild(container);
+                    app.hideLoader();
+                }
+            },
+
+            renderAdminEMI: () => {
+                localStorage.setItem('aci_last_page', 'emi');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                const isAM = app.currentUser.role === 'am';
+                app.adminEMIBrandFilter = app.adminEMIBrandFilter || 'Total';
+                app.adminEMITerritoryFilter = app.adminEMITerritoryFilter || 'All';
+
+                let emiData = DB.emi;
+                if (isAM) {
+                    emiData = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
+                }
+
+                // Apply Brand Filter
+                if (app.adminEMIBrandFilter !== 'Total') {
+                    emiData = emiData.filter(e => e.brand === app.adminEMIBrandFilter);
+                }
+
+                // Apply Territory Filter
+                if (app.adminEMITerritoryFilter !== 'All') {
+                    emiData = emiData.filter(e => e.territory_id === app.adminEMITerritoryFilter);
+                }
+
+                // --- Dashboard KPI Calculations ---
+                const totalCust = emiData.length;
+                const paidCust = emiData.filter(e => Number(e.collected || 0) > 0).length;
+                const unpaidCust = totalCust - paidCust;
+                const paidCustPercent = totalCust > 0 ? Math.round((paidCust / totalCust) * 100) : 0;
+
+                const totalInstallment = emiData.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                const totalCol = emiData.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                const collectionRate = totalInstallment > 0 ? Math.round((totalCol / totalInstallment) * 100) : 0;
+
+                // Progress Bar Calculations
+                const overallTotalDue = emiData.reduce((sum, e) => sum + (Number(e.installment || 0) + Number(e.overdue_total || 0)), 0);
+                const overallTotalCollected = totalCol;
+                const collectionProgressPercent = overallTotalDue > 0 ? Math.round((overallTotalCollected / overallTotalDue) * 100) : 0;
+
+                const collectedCust = paidCust; // Since any payment counts as collected
+                const custProgressPercent = totalCust > 0 ? Math.round((collectedCust / totalCust) * 100) : 0;
+                const partialPaidCust = emiData.filter(e => Number(e.collected || 0) > 0 && Number(e.collected || 0) < Number(e.installment || 0)).length;
+
+                // Aggregate Territory Summary Table
+                const territorySummary = DB.territories.map(t => {
+                    const tEmi = emiData.filter(e => e.territory_id === t.id);
+                    if (tEmi.length === 0) return null;
+                    const totalCust = tEmi.length;
+                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
+                    const nonPayingCust = totalCust - payingCust;
+                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0); // Amount Due (inst)
+                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                    const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
+                    return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
+                }).filter(Boolean).sort((a, b) => b.tColRate - a.tColRate);
+
+                // Populate active territories dropdown
+                const activeTerritories = DB.territories.filter(t => {
+                    if (isAM) return app.currentUser.territories.includes(t.id);
+                    return DB.emi.some(e => e.territory_id === t.id);
+                });
+
+                const activeBrand = app.adminEMIBrandFilter || 'Total';
+                const html = `
+                    <div class="max-w-6xl mx-auto fade-in">
+                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area EMI Summary' : 'Global EMI Analytics'}</h1></div>
+                                <p class="text-sm text-slate-500">Overdue collection monitoring and performance tracking</p>
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Territory Dropdown Filter -->
+                                <div class="relative group">
+                                    <select onchange="app.setAdminEMITerritoryFilter(this.value)" class="bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-xs font-black focus:outline-none focus:border-aci-blue appearance-none pr-8 cursor-pointer shadow-sm text-slate-700" style="min-height: 38px;">
+                                        <option value="All" ${app.adminEMITerritoryFilter === 'All' ? 'selected' : ''}>All Territories</option>
+                                        ${activeTerritories.map(t => `<option value="${t.id}" ${app.adminEMITerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                                    </select>
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Premium Brand Selection Pill -->
+                                <div class="flex items-center gap-1.5 bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/50 shadow-inner">
+                                    <button onclick="app.setAdminEMIBrandFilter('Total')" class="px-4 py-2 rounded-xl text-xs font-black transition-all ${activeBrand === 'Total' ? 'bg-white text-slate-800 shadow-md scale-[1.02]' : 'text-slate-400 hover:text-slate-600'}" style="min-height: 38px;">
+                                        Total
+                                    </button>
+                                    <button onclick="app.setAdminEMIBrandFilter('Foton')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Foton' ? 'bg-blue-50/80 border-aci-blue shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Foton Analytics" style="min-height: 38px;">
+                                        <img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-4 object-contain">
+                                    </button>
+                                    <button onclick="app.setAdminEMIBrandFilter('Mahindra')" class="px-4 py-2 rounded-xl transition-all flex items-center justify-center border-2 ${activeBrand === 'Mahindra' ? 'bg-rose-50/80 border-red-500 shadow-md scale-[1.02] bg-white' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'}" title="Mahindra Analytics" style="min-height: 38px;">
+                                        <img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-4 object-contain">
+                                    </button>
+                                </div>
+
+                                <!-- Capture Report Button -->
+                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-black hover:from-indigo-700 hover:to-blue-700 shadow-md hover:shadow-lg transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                                    Capture
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Analytics Panel -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <!-- Card 1: Credit Collection Progress -->
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2.5">
+                                    <div>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Due vs Collection till now</p>
+                                    </div>
+                                    <span class="text-xl font-black text-indigo-600">${collectionProgressPercent}%</span>
+                                </div>
+                                
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                    <span>Collected: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
+                                    <span>Total Due: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Card 2: File Coverage Progress -->
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2.5">
+                                    <div>
+                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
+                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Files vs Collected Files</p>
+                                    </div>
+                                    <span class="text-xl font-black text-emerald-600">${custProgressPercent}%</span>
+                                </div>
+                                
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                                    <span>Collected Files: <span class="text-slate-800 font-extrabold">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
+                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Premium Compact KPI Row -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+                            <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="users" class="absolute -right-2 -bottom-2 w-10 h-10 text-blue-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Total Cust.</p>
+                                <h3 class="text-xl font-extrabold text-blue-700">${totalCust}</h3>
+                            </div>
+                            <div class="bg-green-50 border border-green-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="user-check" class="absolute -right-2 -bottom-2 w-10 h-10 text-green-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Paid Cust.</p>
+                                <h3 class="text-xl font-extrabold text-green-700">${paidCust}</h3>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="user-x" class="absolute -right-2 -bottom-2 w-10 h-10 text-red-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Unpaid Cust.</p>
+                                <h3 class="text-xl font-extrabold text-red-700">${unpaidCust}</h3>
+                            </div>
+                            <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="pie-chart" class="absolute -right-2 -bottom-2 w-10 h-10 text-teal-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-teal-600 uppercase tracking-wider mb-0.5">Paid Cust %</p>
+                                <h3 class="text-xl font-extrabold text-teal-700">${paidCustPercent}%</h3>
+                            </div>
+                            <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="wallet" class="absolute -right-2 -bottom-2 w-10 h-10 text-indigo-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-indigo-500 uppercase tracking-wider mb-0.5 truncate" title="Total Installment Amount">Inst. Amt</p>
+                                <h3 class="text-base sm:text-lg font-extrabold text-indigo-700 truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</h3>
+                            </div>
+                            <div class="bg-cyan-50 border border-cyan-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="coins" class="absolute -right-2 -bottom-2 w-10 h-10 text-cyan-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-cyan-600 uppercase tracking-wider mb-0.5 truncate" title="Total Collected Amount">Collected Amt</p>
+                                <h3 class="text-base sm:text-lg font-extrabold text-cyan-700 truncate" title="${app.formatCurrency(totalCol)}">${app.formatCurrency(totalCol)}</h3>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
+                                <i data-lucide="trending-up" class="absolute -right-2 -bottom-2 w-10 h-10 text-amber-200 opacity-50"></i>
+                                <p class="text-[9px] font-bold text-amber-600 uppercase tracking-wider mb-0.5">Collect %</p>
+                                <h3 class="text-xl font-extrabold text-amber-700">${collectionRate}%</h3>
+                            </div>
+                        </div>
+
+                        <!-- Territory Summary Table -->
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto mb-6">
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 class="font-bold text-slate-800 text-sm">Territory Wise EMI Summary</h3>
+                            </div>
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead class="border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest bg-slate-100/50">
+                                    <tr>
+                                        <th class="px-6 py-1.5 font-bold">Sales Territory</th>
+                                        <th class="px-4 py-1.5 font-bold text-center">Total Customers</th>
+                                        <th class="px-4 py-1.5 font-bold text-center text-green-600">Paying Customers</th>
+                                        <th class="px-4 py-1.5 font-bold text-center text-red-500">Non-Paying Customers</th>
+                                        <th class="px-4 py-1.5 font-bold text-right">Total Due (Inst)</th>
+                                        <th class="px-4 py-1.5 font-bold text-right">Amount Collected</th>
+                                        <th class="px-6 py-1.5 font-bold text-center">Collection Rate %</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/80">
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Total Cust..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Paying..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Unpaid..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Due Amt..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-right shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Rate..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal text-center shadow-inner placeholder-slate-300 transition-all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${territorySummary.map(t => `
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-1.5 font-bold text-slate-800">${t.name}</td>
+                                            <td class="px-4 py-1.5 text-center font-semibold text-slate-700">${t.totalCust}</td>
+                                            <td class="px-4 py-1.5 text-center font-bold text-green-600">${t.payingCust}</td>
+                                            <td class="px-4 py-1.5 text-center font-bold text-red-500">${t.nonPayingCust}</td>
+                                            <td class="px-4 py-1.5 text-right font-semibold text-slate-700">${app.formatCurrency(t.tTotalDue)}</td>
+                                            <td class="px-4 py-1.5 text-right font-semibold text-aci-blue">${app.formatCurrency(t.tAmountCol)}</td>
+                                            <td class="px-6 py-1.5 text-center">
+                                                <span class="px-2 py-0.5 rounded text-[9px] font-bold ${t.tColRate >= 80 ? 'bg-green-100 text-green-700 border border-green-200' : (t.tColRate >= 50 ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-red-100 text-red-700 border border-red-200')}">
+                                                    ${t.tColRate}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                     `).join('')}
+                                     ${territorySummary.length === 0 ? '<tr><td colspan="7" class="px-6 py-4 text-center text-slate-500">No territory data available.</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 class="font-bold text-slate-800 text-sm">Account Level Breakdown</h3>
+                            </div>
+                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                                <thead class="border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest bg-slate-100/50">
+                                    <tr>
+                                        <th class="px-6 py-1.5 font-bold">Customer</th>
+                                        <th class="px-6 py-1.5 font-bold">Territory</th>
+                                        <th class="px-6 py-1.5 font-bold">EMI Size</th>
+                                        <th class="px-6 py-1.5 font-bold">Total Due (EMI+Overdue)</th>
+                                        <th class="px-6 py-1.5 font-bold">Collected</th>
+                                        <th class="px-6 py-1.5 font-bold">Status</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/80">
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Territory..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter EMI..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Total Due..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Status..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${emiData.map(e => {
+                    const totalDue = Number(e.installment || 0) + Number(e.overdue_total || 0);
+                    const isCleared = e.collected >= totalDue;
+                    return `
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-6 py-1.5">
+                                                <div class="font-bold text-slate-800">${e.customer}</div>
+                                                <div class="text-[10px] text-slate-500">${e.customer_code || 'N/A'}</div>
+                                            </td>
+                                            <td class="px-6 py-1.5 text-slate-600 text-xs">${DB.territories.find(t => t.id === e.territory_id)?.name || 'Unknown'}</td>
+                                            <td class="px-6 py-1.5 text-slate-700 font-semibold">${app.formatCurrency(e.installment)}</td>
+                                            <td class="px-6 py-1.5 text-red-600 font-semibold">${app.formatCurrency(totalDue)}</td>
+                                            <td class="px-6 py-1.5 text-green-600 font-semibold">${app.formatCurrency(e.collected)}</td>
+                                            <td class="px-6 py-1.5">
+                                                ${isCleared
+                            ? '<span class="text-green-600 text-[10px] font-bold flex items-center gap-1 bg-green-50 px-2 py-0.5 rounded w-max border border-green-100"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Cleared</span>'
+                            : '<span class="text-amber-600 text-[10px] font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded w-max border border-amber-100"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>'
+                        }
+                                            </td>
+                                        </tr>
+                                    `}).join('')}
+                                    ${emiData.length === 0 ? '<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No EMI data found.</td></tr>' : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            },
+
+            renderAdminManualDeliveries: (startDate = null, endDate = null) => {
+                localStorage.setItem('aci_last_page', 'manual');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                
+                let summarySales = DB.sales.filter(s => s.is_manual);
+                if (startDate || endDate) {
+                    summarySales = summarySales.filter(s => {
+                        if (!s.timestamp || s.timestamp === 'Recent') return true;
+                        const d = new Date(s.timestamp);
+                        if (isNaN(d.getTime())) return true;
+                        if (startDate && new Date(startDate) > d) return false;
+                        if (endDate && new Date(endDate) < d) return false;
+                        return true;
+                    });
+                }
+                
+                let manualSales = [...summarySales];
+                const saleTypeFilter = app.manualSaleTypeFilter || 'All';
+                if (saleTypeFilter !== 'All') {
+                    manualSales = manualSales.filter(s => s.sale_type === saleTypeFilter);
+                }
+                app.currentManualSales = manualSales;
+
+                const html = `
+                    <div class="max-w-7xl mx-auto fade-in">
+                        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                            <div>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
+                                <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
+                                
+                                <!-- Beautiful & Noticeable Sale Type Switcher Pill (Compact) -->
+                                <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner mt-2 w-max">
+                                    <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()" 
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-sm scale-102 border border-slate-200/20' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                        All
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()" 
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                        <span class="h-1.5 w-1.5 rounded-full relative flex">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-400'} opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
+                                        </span>
+                                        New Sale
+                                    </button>
+                                    <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()" 
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                        <span class="h-1.5 w-1.5 rounded-full relative flex">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-400'} opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
                                         </span>
                                         Resale
                                     </button>
