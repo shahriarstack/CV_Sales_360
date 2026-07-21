@@ -2566,7 +2566,12 @@
                                     </div>
                                 </div>
                                 
-                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                                <!-- Batch Approve Button -->
+                                <button id="btn-batch-approve" onclick="app.approveSelectedManualDeliveries()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 animate-pulse">
+                                    <i data-lucide="check-square" class="w-4 h-4"></i> Approve Selected (<span id="batch-select-count">0</span>)
+                                </button>
+                                
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
                                     <i data-lucide="download" class="w-4 h-4"></i> Export CSV
                                 </button>
 
@@ -2580,10 +2585,10 @@
                         <!-- Minimal & Creative Summary Section -->
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                             <!-- Total Entries -->
-                            <div class="bg-gradient-to-br from-indigo-50/50 to-slate-50 border border-indigo-100 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="bg-gradient-to-br from-indigo-500/10 to-indigo-50/30 border border-indigo-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[9px] font-extrabold text-indigo-500 uppercase tracking-wider">Total Logged</span>
-                                    <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
+                                    <span class="p-2 bg-indigo-500/15 text-indigo-600 rounded-xl shadow-inner"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex items-baseline gap-1">
                                     <span class="text-xl font-black text-slate-800">${manualSales.length}</span>
@@ -2592,10 +2597,10 @@
                             </div>
 
                             <!-- Pending Sync -->
-                            <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="bg-gradient-to-br from-amber-500/10 to-amber-50/30 border border-amber-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[9px] font-extrabold text-amber-500 uppercase tracking-wider">Pending Sync</span>
-                                    <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg relative flex items-center justify-center">
+                                    <span class="p-2 bg-amber-500/15 text-amber-600 rounded-xl relative flex items-center justify-center shadow-inner">
                                         <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75"></span>
                                         <i data-lucide="clock" class="w-3.5 h-3.5 relative"></i>
                                     </span>
@@ -2606,30 +2611,36 @@
                                 </div>
                             </div>
 
-                            <!-- Brand Share -->
-                            <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <!-- Brand Share Ratio Bar -->
+                            <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-50/30 border border-emerald-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-extrabold text-emerald-500 uppercase tracking-wider">Brand Share</span>
-                                    <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="tag" class="w-3.5 h-3.5"></i></span>
+                                    <span class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">Brand Share Split</span>
+                                    <span class="p-2 bg-emerald-500/15 text-emerald-600 rounded-xl shadow-inner"><i data-lucide="percent" class="w-3.5 h-3.5"></i></span>
                                 </div>
-                                <div class="mt-2.5 flex items-center justify-between">
-                                    <div class="flex flex-col">
-                                        <span class="text-xs font-black text-slate-800">${manualSales.filter(s => s.brand === 'Foton').length}</span>
-                                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Foton</span>
+                                <div class="mt-2.5">
+                                    <div class="flex justify-between text-xs font-black text-slate-800 mb-1.5">
+                                        <span>Foton: ${manualSales.filter(s => s.brand === 'Foton').length}</span>
+                                        <span>Mahindra: ${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
                                     </div>
-                                    <div class="h-6 w-px bg-slate-100"></div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="text-xs font-black text-slate-800">${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
-                                        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">Mahindra</span>
-                                    </div>
+                                    ${(() => {
+                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton').length;
+                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra').length;
+                                        const total = fotonCount + mahindraCount;
+                                        const fotonPct = total > 0 ? Math.round((fotonCount / total) * 100) : 50;
+                                        return `
+                                        <div class="w-full bg-rose-500 rounded-full h-2 overflow-hidden flex shadow-inner">
+                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton: ${fotonPct}%"></div>
+                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra: ${100 - fotonPct}%"></div>
+                                        </div>
+                                        `;
+                                    })()}
                                 </div>
                             </div>
-
                             <!-- Combined Trade Value -->
-                            <div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow transition-all duration-300">
+                            <div class="bg-gradient-to-br from-cyan-500/10 to-cyan-50/30 border border-cyan-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
                                     <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
-                                    <span class="p-1.5 bg-slate-50 text-slate-600 rounded-lg"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
+                                    <span class="p-2 bg-cyan-500/15 text-cyan-600 rounded-xl shadow-inner"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex flex-col">
                                     <span class="text-sm font-black text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
@@ -2836,7 +2847,69 @@
                 }
             },
 
-            approveManualDelivery: async (id) => {
+            approveSelectedManualDeliveries: async () => {
+                const checkedCheckboxes = document.querySelectorAll('.manual-row-select:checked');
+                if (checkedCheckboxes.length === 0) {
+                    app.showToast('No entries selected', 'error');
+                    return;
+                }
+                
+                const ids = Array.from(checkedCheckboxes).map(cb => cb.dataset.id);
+                if (confirm(`Are you sure you want to approve ${ids.length} selected manual deliveries?`)) {
+                    if (app.neonSQL) {
+                        try {
+                            for (const id of ids) {
+                                await app.neonSQL`UPDATE sales SET approval_status = 'Done' WHERE id = ${id}`;
+                            }
+                        } catch (err) {
+                            console.error("Failed to approve manual deliveries in database", err);
+                            app.showToast('Database update failed', 'error');
+                            return;
+                        }
+                    }
+                    
+                    ids.forEach(id => {
+                        const idx = DB.sales.findIndex(s => s.id === id);
+                        if (idx > -1) {
+                            DB.sales[idx].approval_status = 'Done';
+                        }
+                    });
+                    
+                    app.showToast(`Successfully approved ${ids.length} deliveries.`, 'success');
+                    app.renderAdminManualDeliveries();
+                }
+            },
+
+            toggleAllManualDeliveries: (isChecked) => {
+                const checkboxes = document.querySelectorAll('.manual-row-select');
+                checkboxes.forEach(cb => {
+                    cb.checked = isChecked;
+                });
+                app.updateManualBatchButtonState();
+            },
+            
+            updateManualBatchButtonState: () => {
+                const checkedCheckboxes = document.querySelectorAll('.manual-row-select:checked');
+                const btnApprove = document.getElementById('btn-batch-approve');
+                const countSpan = document.getElementById('batch-select-count');
+                const selectAllCheckbox = document.getElementById('manual-select-all');
+                
+                if (btnApprove && countSpan) {
+                    countSpan.textContent = checkedCheckboxes.length;
+                    if (checkedCheckboxes.length > 0) {
+                        btnApprove.classList.remove('hidden');
+                    } else {
+                        btnApprove.classList.add('hidden');
+                    }
+                }
+                
+                const totalCheckboxes = document.querySelectorAll('.manual-row-select');
+                if (selectAllCheckbox && totalCheckboxes.length > 0) {
+                    selectAllCheckbox.checked = checkedCheckboxes.length === totalCheckboxes.length;
+                }
+            },
+
+approveManualDelivery: async (id) => {
                 const idx = DB.sales.findIndex(s => s.id === id);
                 if (idx > -1) {
                     if (app.neonSQL) {
