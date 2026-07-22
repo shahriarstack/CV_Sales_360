@@ -8922,8 +8922,12 @@ approveManualDelivery: async (id) => {
                                 </div>
 
                                 <!-- Real Interactive BD Map (Leaflet + Instant SVG Nodes) -->
-                                <div id="real-bd-map" style="min-height:500px; height:100%; width:100%; position:relative; z-index:1;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-900">
-                                    ${svgNodesHTML}
+                                <div id="real-bd-map-wrapper" style="min-height:500px; height:100%; width:100%; position:relative; z-index:1;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-900">
+                                    <!-- Fallback SVG wrapper (gets hidden if leaflet succeeds) -->
+                                    <div id="svg-fallback-layer" style="position:absolute; inset:0; z-index:5;">
+                                        ${svgNodesHTML}
+                                    </div>
+                                    <div id="real-bd-map" style="position:absolute; inset:0; z-index:10; background:transparent;"></div>
                                 </div>
                             </div>
 
@@ -9019,7 +9023,14 @@ approveManualDelivery: async (id) => {
                     app.salesMap.invalidateSize();
                     setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 200);
 
-                    // Add Leaflet Markers
+                    // Fade out fallback SVG if Leaflet initializes successfully
+                    const fallbackSvg = document.getElementById('svg-fallback-layer');
+                    if (fallbackSvg) {
+                        fallbackSvg.style.opacity = '0.3';
+                        setTimeout(() => fallbackSvg.style.display = 'none', 1000);
+                    }
+
+                    // Add markers
                     const markersList = [];
                     Object.entries(dataAgg).forEach(([name, sales]) => {
                         const coords = mapCoords[name] || mapCoords[Object.keys(mapCoords).find(k => k.toLowerCase() === name.toLowerCase())];
@@ -9058,6 +9069,144 @@ approveManualDelivery: async (id) => {
                     const markerGroup = L.featureGroup(markersList).addTo(app.salesMap);
                     if (markersList.length > 0) {
                         app.salesMap.fitBounds(markerGroup.getBounds(), { padding: [40, 40], maxZoom: 10 });
+                    }
+
+                    // Asynchronously fetch GeoJSON polygons to overlay boundaries seamlessly
+                    try {
+                        if (!app.geoJsonCache) app.geoJsonCache = {};
+
+                        const primaryGeoUrl = viewMode === 'district'
+                            ? 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json'
+                            : 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm3_492_upozila.json';
+                        
+                        const fallbackGeoUrl = viewMode === 'district'
+                            ? 'https://raw.githubusercontent.com/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh/master/bangladesh_geojson_adm2_64_districts_zillas.json'
+                            : 'https://raw.githubusercontent.com/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh/master/bangladesh_geojson_adm3_492_upozila.json';
+
+                        if (!app.geoJsonCache[viewMode]) {
+                            try {
+                                const res = await fetch(primaryGeoUrl);
+                                if (!res.ok) throw new Error('Primary CDN fetch failed');
+                                app.geoJsonCache[viewMode] = await res.json();
+                            } catch (e1) {
+                                console.warn('Primary GeoJSON fetch failed, trying fallback:', e1);
+                                const res2 = await fetch(fallbackGeoUrl);
+                                if (!res2.ok) throw new Error('Fallback GeoJSON fetch failed');
+                                app.geoJsonCache[viewMode] = await res2.json();
+                            }
+                        }
+
+                        let geoData = app.geoJsonCache[viewMode];
+
+                        // SMART ZOOM FILTER
+                        if (districtTab !== 'All') {
+                            const normSelectedDist = app.getNormalizedKey(districtTab);
+                            const filteredFeatures = geoData.features.filter(f => {
+                                const fDist = f.properties.ADM2_EN || f.properties.NAME_2 || f.properties.district || '';
+                                return app.getNormalizedKey(fDist) === normSelectedDist;
+                            });
+                            if (filteredFeatures.length > 0) {
+                                geoData = { ...geoData, features: filteredFeatures };
+                            }
+                        }
+
+                        // Heatmap Style Logic
+                        const getPolygonColor = (d) => {
+                            if (!d || d === 0) return 'transparent';
+                            const pct = d / maxSales;
+                            if (pct > 0.66) return '#e11d48'; // rose-600
+                            if (pct > 0.33) return '#f59e0b'; // amber-500
+                            return '#3b82f6'; // blue-500
+                        };
+
+                        const style = (feature) => {
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || '');
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+                            return {
+                                fillColor: getPolygonColor(sales),
+                                weight: sales > 0 ? 2 : 1,
+                                opacity: 1,
+                                color: sales > 0 ? '#ffffff' : '#cbd5e1',
+                                fillOpacity: sales > 0 ? 0.7 : 0.1
+                            };
+                        };
+
+                        const highlightFeature = (e) => {
+                            var layer = e.target;
+                            layer.setStyle({ weight: 3, color: '#10b981', fillOpacity: 0.85 });
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); }
+
+                            const propName = viewMode === 'district'
+                                ? (layer.feature.properties.ADM2_EN || layer.feature.properties.name || layer.feature.properties.NAME_2 || '')
+                                : (layer.feature.properties.ADM3_EN || layer.feature.properties.name || layer.feature.properties.NAME_3 || '');
+                            
+                            const listEl = document.querySelector(`[data-area-name="${app.getNormalizedKey(propName)}"]`);
+                            if (listEl) {
+                                document.querySelectorAll('#map-area-list > div').forEach(el => {
+                                    el.classList.remove('bg-emerald-50', 'border-emerald-300');
+                                    el.classList.add('border-slate-100', 'bg-white');
+                                });
+                                listEl.classList.remove('border-slate-100', 'bg-white');
+                                listEl.classList.add('bg-emerald-50', 'border-emerald-300');
+                                listEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        };
+
+                        const resetHighlight = (e) => {
+                            app.geoLayer.resetStyle(e.target);
+                            const propName = viewMode === 'district'
+                                ? (e.target.feature.properties.ADM2_EN || e.target.feature.properties.name || '')
+                                : (e.target.feature.properties.ADM3_EN || e.target.feature.properties.name || '');
+                            const listEl = document.querySelector(`[data-area-name="${app.getNormalizedKey(propName)}"]`);
+                            if (listEl) {
+                                const isActive = (viewMode === 'district' && districtTab === propName);
+                                if (!isActive) {
+                                    listEl.classList.remove('bg-emerald-50', 'border-emerald-300');
+                                    listEl.classList.add('border-slate-100', 'bg-white');
+                                }
+                            }
+                        };
+
+                        const onEachFeature = (feature, layer) => {
+                            layer.on({ mouseover: highlightFeature, mouseout: resetHighlight });
+
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || 'Unknown District')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || 'Unknown Upazila');
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+
+                            let colorName = 'slate';
+                            if (sales > 0) {
+                                const pct = sales / maxSales;
+                                colorName = pct > 0.66 ? 'rose' : (pct > 0.33 ? 'amber' : 'blue');
+                            }
+
+                            const tooltipHtml = `
+                                <div class="bg-slate-900 text-white text-xs rounded-xl py-2 px-3 shadow-2xl border border-slate-700 min-w-[120px]">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        <p class="font-black text-sm text-slate-50 tracking-wide">${propName}</p>
+                                    </div>
+                                    <p class="text-slate-300 font-medium pl-5"><span class="text-${colorName}-400 font-black text-base">${sales}</span> Units Plotted</p>
+                                </div>
+                            `;
+                            layer.bindTooltip(tooltipHtml, {
+                                direction: 'auto', className: 'custom-leaflet-tooltip', opacity: 1, sticky: true
+                            });
+                        };
+
+                        app.geoLayer = L.geoJSON(geoData, { style: style, onEachFeature: onEachFeature }).addTo(app.salesMap);
+
+                        if (app.geoLayer && markersList.length === 0) {
+                            app.salesMap.fitBounds(app.geoLayer.getBounds(), { padding: [10, 10] });
+                        }
+
+                    } catch (err) {
+                        console.warn('Boundary load blocked. Activating visual radar fallback:', err);
                     }
                 }, 100);
             },
