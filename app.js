@@ -12023,10 +12023,6 @@ approveManualDelivery: async (id) => {
                                         <span>Accounts: <strong class="text-indigo-100">${totalEmiCust} Total</strong> (${paidEmiCust} Paid)</span>
                                         <span class="text-rose-300 font-bold">${unpaidEmiCust} Unpaid</span>
                                     </div>
-                                    <div class="mt-1 flex items-center justify-between text-[8px] text-white/60">
-                                        <span>1st & 2nd EMI Action: <strong class="text-indigo-100">${totalFirstTwoCust} Accounts</strong></span>
-                                        <span class="text-amber-300 font-semibold">${unpaidFirstTwoCust} Unpaid</span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
