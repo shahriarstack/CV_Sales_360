@@ -9025,6 +9025,16 @@ approveManualDelivery: async (id) => {
 
                     L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
 
+                    // Add OpenStreetMap Tile Layer
+                    try {
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            opacity: 0.7
+                        }).addTo(app.salesMap);
+                    } catch(e) {
+                        console.warn('Tile layer optional:', e);
+                    }
+
                     app.salesMap.invalidateSize();
                     setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 200);
 

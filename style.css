@@ -792,3 +792,10 @@
             background-color: rgba(241, 245, 249, 0.95) !important;
         }
 
+
+
+/* Force Leaflet container to be transparent so SVG vector map is never hidden */
+#real-bd-map, .leaflet-container, .leaflet-pane {
+    background: transparent !important;
+    background-color: transparent !important;
+}
