@@ -9075,23 +9075,23 @@ approveManualDelivery: async (id) => {
                     try {
                         if (!app.geoJsonCache) app.geoJsonCache = {};
 
-                        const primaryGeoUrl = viewMode === 'district'
+                        const localGeoUrl = viewMode === 'district'
+                            ? 'assets/geo/bd-districts.json'
+                            : 'assets/geo/bd-upazilas.json';
+                        
+                        const cdnFallbackGeoUrl = viewMode === 'district'
                             ? 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json'
                             : 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm3_492_upozila.json';
-                        
-                        const fallbackGeoUrl = viewMode === 'district'
-                            ? 'https://raw.githubusercontent.com/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh/master/bangladesh_geojson_adm2_64_districts_zillas.json'
-                            : 'https://raw.githubusercontent.com/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh/master/bangladesh_geojson_adm3_492_upozila.json';
 
                         if (!app.geoJsonCache[viewMode]) {
                             try {
-                                const res = await fetch(primaryGeoUrl);
-                                if (!res.ok) throw new Error('Primary CDN fetch failed');
+                                const res = await fetch(localGeoUrl);
+                                if (!res.ok) throw new Error('Local GeoJSON fetch failed');
                                 app.geoJsonCache[viewMode] = await res.json();
                             } catch (e1) {
-                                console.warn('Primary GeoJSON fetch failed, trying fallback:', e1);
-                                const res2 = await fetch(fallbackGeoUrl);
-                                if (!res2.ok) throw new Error('Fallback GeoJSON fetch failed');
+                                console.warn('Local GeoJSON fetch failed, trying CDN fallback:', e1);
+                                const res2 = await fetch(cdnFallbackGeoUrl);
+                                if (!res2.ok) throw new Error('CDN Fallback GeoJSON fetch failed');
                                 app.geoJsonCache[viewMode] = await res2.json();
                             }
                         }

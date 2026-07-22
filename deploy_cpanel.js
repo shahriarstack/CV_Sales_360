@@ -219,9 +219,31 @@ async function run() {
             content: fs.readFileSync(f.path)
         }));
 
-        console.log(`Uploading ${preparedFiles.length} files to "${config.docRoot}"...`);
+        console.log(`Uploading ${preparedFiles.length} main files to "${config.docRoot}"...`);
         await uploadFiles(config.docRoot, preparedFiles);
-        console.log(`✓ Files uploaded to ${config.subdomain} successfully!`);
+
+        // Upload local assets (Leaflet & GeoJSON)
+        const leafletFiles = [
+            { name: 'leaflet.css', path: path.join(__dirname, 'assets', 'vendor', 'leaflet', 'leaflet.css') },
+            { name: 'leaflet.js', path: path.join(__dirname, 'assets', 'vendor', 'leaflet', 'leaflet.js') }
+        ].filter(f => fs.existsSync(f.path)).map(f => ({ name: f.name, content: fs.readFileSync(f.path) }));
+
+        if (leafletFiles.length > 0) {
+            console.log(`Uploading Leaflet assets to "${config.docRoot}/assets/vendor/leaflet"...`);
+            await uploadFiles(`${config.docRoot}/assets/vendor/leaflet`, leafletFiles);
+        }
+
+        const geoFiles = [
+            { name: 'bd-districts.json', path: path.join(__dirname, 'assets', 'geo', 'bd-districts.json') },
+            { name: 'bd-upazilas.json', path: path.join(__dirname, 'assets', 'geo', 'bd-upazilas.json') }
+        ].filter(f => fs.existsSync(f.path)).map(f => ({ name: f.name, content: fs.readFileSync(f.path) }));
+
+        if (geoFiles.length > 0) {
+            console.log(`Uploading GeoJSON assets to "${config.docRoot}/assets/geo"...`);
+            await uploadFiles(`${config.docRoot}/assets/geo`, geoFiles);
+        }
+
+        console.log(`✓ All files and local assets uploaded to ${config.subdomain} successfully!`);
         
         // Remove secondary subdomain sales360 if it exists on cPanel
         try {
