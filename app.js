@@ -13324,25 +13324,42 @@ approveManualDelivery: async (id) => {
                             </div>
                         </div>
 
-                        <!-- Customer Status Alerts -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
-                            <div class="bg-blue-50 border border-blue-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
-                                <p class="text-[9px] text-blue-600 font-bold uppercase mb-0.5">Total Customers</p>
-                                <h3 class="text-xl font-bold text-blue-700">${totalCustomers}</h3>
-                            </div>
-                            <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
-                                <p class="text-[9px] text-emerald-600 font-bold uppercase mb-0.5">Fully Paid</p>
-                                <h3 class="text-xl font-bold text-emerald-700">${paidCustomers}</h3>
-                            </div>
-                            <div class="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-300 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden ring-1 ring-amber-400/30">
-                                <p class="text-[9px] text-amber-700 font-bold uppercase mb-0.5 flex items-center justify-center gap-1">
-                                    <i data-lucide="pie-chart" class="w-3 h-3 text-amber-500"></i> Partial Paid
+                        <!-- Customer Status Summary Cards (3 Cards) -->
+                        <div class="grid grid-cols-3 gap-3 mb-5">
+                            <!-- 1. Total Customers -->
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50/40 border border-blue-100 p-3 rounded-2xl shadow-sm text-center relative overflow-hidden group hover:shadow-md transition-all">
+                                <div class="absolute -right-3 -top-3 opacity-10 pointer-events-none group-hover:scale-110 transition-transform">
+                                    <i data-lucide="users" class="w-16 h-16 text-blue-600"></i>
+                                </div>
+                                <p class="text-[9px] text-blue-600 font-bold uppercase tracking-wider mb-0.5 flex items-center justify-center gap-1">
+                                    <i data-lucide="users" class="w-3 h-3 text-blue-500"></i> Total Customers
                                 </p>
-                                <h3 class="text-xl font-black text-amber-800">${partialCustomers}</h3>
+                                <h3 class="text-2xl font-black text-blue-700">${totalCustomers}</h3>
+                                <p class="text-[9px] text-slate-400 font-medium mt-0.5">Total Accounts</p>
                             </div>
-                            <div class="bg-red-50 border border-red-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
-                                <p class="text-[9px] text-red-500 font-bold uppercase mb-0.5">Unpaid</p>
-                                <h3 class="text-xl font-bold text-red-700">${unpaidCustomers}</h3>
+
+                            <!-- 2. Paid Customers (Full + Partial) -->
+                            <div class="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-emerald-50/30 border border-emerald-200/80 p-3 rounded-2xl shadow-sm text-center relative overflow-hidden group hover:shadow-md transition-all">
+                                <div class="absolute -right-3 -top-3 opacity-10 pointer-events-none group-hover:scale-110 transition-transform">
+                                    <i data-lucide="check-circle-2" class="w-16 h-16 text-emerald-600"></i>
+                                </div>
+                                <p class="text-[9px] text-emerald-700 font-bold uppercase tracking-wider mb-0.5 flex items-center justify-center gap-1">
+                                    <i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-600"></i> Paid
+                                </p>
+                                <h3 class="text-2xl font-black text-emerald-700">${paidCustomers}</h3>
+                                <p class="text-[8px] text-emerald-600 font-bold mt-0.5">Full: ${fullyPaidCustomers} • Part: ${partialCustomers}</p>
+                            </div>
+
+                            <!-- 3. Unpaid -->
+                            <div class="bg-gradient-to-br from-rose-50 to-red-50/40 border border-rose-100 p-3 rounded-2xl shadow-sm text-center relative overflow-hidden group hover:shadow-md transition-all">
+                                <div class="absolute -right-3 -top-3 opacity-10 pointer-events-none group-hover:scale-110 transition-transform">
+                                    <i data-lucide="clock" class="w-16 h-16 text-rose-600"></i>
+                                </div>
+                                <p class="text-[9px] text-rose-600 font-bold uppercase tracking-wider mb-0.5 flex items-center justify-center gap-1">
+                                    <i data-lucide="clock" class="w-3 h-3 text-rose-500"></i> Unpaid
+                                </p>
+                                <h3 class="text-2xl font-black text-rose-700">${unpaidCustomers}</h3>
+                                <p class="text-[9px] text-slate-400 font-medium mt-0.5">Pending Collection</p>
                             </div>
                         </div>
 
@@ -13432,10 +13449,9 @@ approveManualDelivery: async (id) => {
                     cardStyle = 'border-emerald-300 bg-emerald-50/20';
                     statusBadge = '<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="check-circle-2" class="w-2.5 h-2.5"></i> Paid</span>';
                 } else if (isPartialPayment) {
-                    // Minimal Red-Yellowish Creative Styling for Partial Payments
-                    cardStyle = 'border-l-4 border-l-rose-500 border-amber-200/80 bg-gradient-to-r from-rose-500/[0.04] via-amber-500/[0.05] to-yellow-500/[0.03] shadow-sm relative';
-                    topAccentBar = '<div class="h-1 w-full bg-gradient-to-r from-rose-500 via-amber-400 to-yellow-400 absolute top-0 left-0 z-20"></div>';
-                    statusBadge = '<span class="bg-amber-100/90 text-amber-900 border border-amber-300/80 px-2 py-0.5 rounded-full text-[9px] font-extrabold ml-1.5 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Partial Paid (' + progressPct + '%)</span>';
+                    cardStyle = 'border-slate-200/80 bg-white';
+                    topAccentBar = '';
+                    statusBadge = '<span class="bg-amber-100 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="pie-chart" class="w-2.5 h-2.5"></i> Partial (' + progressPct + '%)</span>';
                 } else {
                     statusBadge = '<span class="bg-rose-50 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="clock" class="w-2.5 h-2.5"></i> Unpaid</span>';
                 }
@@ -13483,24 +13499,7 @@ approveManualDelivery: async (id) => {
                             </div>
                         </div>
 
-                        <!-- Partial Recovery Progress Indicator for Partial Payments -->
-                        ${isPartialPayment ? `
-                            <div class="mb-2.5 p-2 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200/80 relative z-10">
-                                <div class="flex justify-between items-center text-[9px] mb-1">
-                                    <span class="font-extrabold text-amber-900 flex items-center gap-1">
-                                        <i data-lucide="pie-chart" class="w-3 h-3 text-amber-600"></i> Partial Collection Progress:
-                                    </span>
-                                    <span class="font-black text-amber-900 bg-amber-200/60 px-1.5 py-0.2 rounded">${progressPct}% Collected</span>
-                                </div>
-                                <div class="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden shadow-inner flex">
-                                    <div class="bg-gradient-to-r from-red-500 via-amber-500 to-yellow-400 h-2 rounded-full transition-all duration-500 shadow" style="width: ${progressPct}%"></div>
-                                </div>
-                                <div class="flex justify-between text-[8px] font-bold text-amber-800 mt-1">
-                                    <span>Paid: <b class="text-emerald-700">${app.formatCurrency(collected)}</b></span>
-                                    <span>Remaining: <b class="text-rose-700">${app.formatCurrency(Math.max(0, targetAmount - collected))}</b></span>
-                                </div>
-                            </div>
-                        ` : ''}
+
 
                         <div class="flex items-center justify-between gap-3 relative z-10">
                             <div>
