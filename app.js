@@ -8987,28 +8987,58 @@ approveManualDelivery: async (id) => {
 
                 // Initialize Leaflet Map & Load Choropleth Data After DOM Update
                 setTimeout(async () => {
-                    if (app.salesMap) { app.salesMap.remove(); }
+                    if (app.salesMap) { 
+                        app.salesMap.remove(); 
+                        app.salesMap = null;
+                    }
+
+                    const mapElem = document.getElementById('real-bd-map');
+                    if (!mapElem) return;
 
                     app.salesMap = L.map('real-bd-map', {
                         zoomControl: false,
                         attributionControl: false,
                         maxBounds: [[20.0, 87.5], [27.0, 93.0]],
-                        minZoom: 7,
-                        maxZoom: 11
+                        minZoom: 6,
+                        maxZoom: 12
                     }).setView([23.85, 90.25], 7);
 
                     L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
 
+                    // Add OpenStreetMap / CartoDB Base Tile Layer so interactive map is ALWAYS visible
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 19,
+                        subdomains: 'abcd',
+                        attribution: '&copy; OpenStreetMap &copy; CARTO'
+                    }).addTo(app.salesMap);
+
+                    // Force Leaflet to recalculate container size
+                    app.salesMap.invalidateSize();
+                    setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 300);
+
                     app.showLoader(`Loading ${viewMode} Map Boundaries...`);
                     try {
-                        const geoUrl = viewMode === 'district'
+                        if (!app.geoJsonCache) app.geoJsonCache = {};
+
+                        const primaryGeoUrl = viewMode === 'district'
                             ? 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json'
                             : 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm3_492_upozila.json';
+                        
+                        const fallbackGeoUrl = viewMode === 'district'
+                            ? 'https://raw.githubusercontent.com/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh/master/bangladesh_geojson_adm2_64_districts_zillas.json'
+                            : 'https://raw.githubusercontent.com/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh/master/bangladesh_geojson_adm3_492_upozila.json';
 
                         if (!app.geoJsonCache[viewMode]) {
-                            const res = await fetch(geoUrl);
-                            if (!res.ok) throw new Error('CDN fetch failed');
-                            app.geoJsonCache[viewMode] = await res.json();
+                            try {
+                                const res = await fetch(primaryGeoUrl);
+                                if (!res.ok) throw new Error('Primary CDN fetch failed');
+                                app.geoJsonCache[viewMode] = await res.json();
+                            } catch (e1) {
+                                console.warn('Primary GeoJSON fetch failed, trying fallback:', e1);
+                                const res2 = await fetch(fallbackGeoUrl);
+                                if (!res2.ok) throw new Error('Fallback GeoJSON fetch failed');
+                                app.geoJsonCache[viewMode] = await res2.json();
+                            }
                         }
 
                         let geoData = app.geoJsonCache[viewMode];
