@@ -4629,23 +4629,23 @@
                                     </tr>
                                     <tr class="bg-slate-50/80">
                                         <th class="px-3 py-1 border-b border-slate-200 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
-                                        <th class="px-4 py-1 border-b border-slate-200"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
-                                        <th class="px-4 py-1 border-b border-slate-200"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1 border-b border-slate-200"><input type="text" id="manual-filter-area" onkeyup="app.manualAreaFilter=this.value; app.filterTableGroup(this)" value="${app.manualAreaFilter || ''}" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1 border-b border-slate-200"><input type="text" id="manual-filter-customer" onkeyup="app.manualCustomerFilter=this.value; app.filterTableGroup(this)" value="${app.manualCustomerFilter || ''}" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-4 py-1 border-b border-slate-200">
-                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
-                                                <option value="">All Brands</option>
-                                                <option value="foton">Foton</option>
-                                                <option value="mahindra">Mahindra</option>
+                                            <select id="manual-filter-brand" onchange="app.manualBrandFilter=this.value; app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="" ${!app.manualBrandFilter ? 'selected' : ''}>All Brands</option>
+                                                <option value="foton" ${app.manualBrandFilter === 'foton' ? 'selected' : ''}>Foton</option>
+                                                <option value="mahindra" ${app.manualBrandFilter === 'mahindra' ? 'selected' : ''}>Mahindra</option>
                                             </select>
                                         </th>
                                         <th class="px-4 py-1 border-b border-slate-200 text-right"><span class="text-[9px] text-slate-400 font-normal">No filter</span></th>
                                         <th class="px-4 py-1 border-b border-slate-200"><span class="text-[9px] text-slate-400 font-normal">No filter</span></th>
                                         <th class="px-4 py-1 border-b border-slate-200"><span class="text-[9px] text-slate-400 font-normal">Use top filter</span></th>
                                         <th class="px-4 py-1 border-b border-slate-200 text-center">
-                                            <select onchange="app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
-                                                <option value="">All Status</option>
-                                                <option value="pending approval">Pending</option>
-                                                <option value="done">Done</option>
+                                            <select id="manual-filter-status" onchange="app.manualStatusFilter=this.value; app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="" ${!app.manualStatusFilter ? 'selected' : ''}>All Status</option>
+                                                <option value="pending approval" ${app.manualStatusFilter === 'pending approval' ? 'selected' : ''}>Pending</option>
+                                                <option value="done" ${app.manualStatusFilter === 'done' ? 'selected' : ''}>Done</option>
                                             </select>
                                         </th>
                                         <th class="px-4 py-1 border-b border-slate-200 text-right"><span class="text-[9px] text-slate-400 font-normal">-</span></th>
@@ -4737,6 +4737,12 @@
                 // Restore date inputs
                 if (startDate) document.getElementById('manual-start-date').value = startDate;
                 if (endDate) document.getElementById('manual-end-date').value = endDate;
+
+                // Automatically re-apply saved table filters
+                const activeFilterTrigger = document.getElementById('manual-filter-status') || document.getElementById('manual-filter-area') || document.getElementById('manual-filter-customer') || document.getElementById('manual-filter-brand');
+                if (activeFilterTrigger) {
+                    app.filterTableGroup(activeFilterTrigger);
+                }
             },
 
             filterManualDeliveriesByDate: () => {
