@@ -151,7 +151,7 @@
             downloadPulseCSV: () => {
                 const brandFilter = app.adminBrandTab || 'Foton';
                 const currentSaleType = app.adminSaleTypeTab || 'New Sale';
-                const currentFY = app.selectedFY || app.currentFY;
+                const currentFY = app.selectedFY || app.currentFY || '2025-26';
                 const concludingFY = app.getPreviousFY(app.currentFY);
                 const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : app.currentFY;
                 const activeFY = app.selectedFY || defaultFY;
@@ -8936,10 +8936,10 @@ approveManualDelivery: async (id) => {
                         </div>
 
                         <!-- Map & Insights Layout -->
-                        <div class="flex flex-col lg:flex-row gap-6 min-h-[530px] h-[530px] relative z-10">
+                        <div class="flex flex-col lg:flex-row gap-6 min-h-[450px] h-[480px] relative z-10">
                             
                             <!-- Guaranteed Vector Map Container -->
-                            <div style="height:530px !important;" class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[530px] h-[530px]">
+                            <div style="height:480px !important; min-height:450px;" class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[450px] h-[480px]">
                                 
                                 <div class="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-50">
                                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sales Density (${viewMode})</p>
@@ -8961,7 +8961,7 @@ approveManualDelivery: async (id) => {
                             </div>
 
                             <!-- Right Sidebar List (Scrollable Districts/Upazilas) -->
-                            <div class="w-full lg:w-80 shrink-0 min-h-[530px] h-[530px]">
+                            <div class="w-full lg:w-80 shrink-0 min-h-[450px] h-[480px]">
                                 <div class="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                                     <!-- Sidebar Header & KPI -->
                                     <div class="p-4 bg-slate-50 border-b border-slate-100 space-y-3">
