@@ -8939,7 +8939,7 @@ approveManualDelivery: async (id) => {
                         <div class="flex flex-col lg:flex-row gap-6 min-h-[530px] h-[530px] relative z-10">
                             
                             <!-- Guaranteed Vector Map Container -->
-                            <div class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[530px] h-[530px] style="height:530px !important;">
+                            <div style="height:530px !important;" class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[530px] h-[530px]">
                                 
                                 <div class="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-50">
                                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sales Density (${viewMode})</p>
