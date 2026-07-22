@@ -2516,7 +2516,7 @@
                     const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                     const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name)); // Sort best first (top to bottom)
+                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
 
                 // Grand totals
                 const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
@@ -2527,79 +2527,119 @@
                 const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
 
                 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-                // Auto-scale row height so ALL territories fit on one A4 page
-                const n       = territorySummary.length;
-                const budget  = 870;
-                const theadPx = 22;
-                const rh      = Math.max(13, Math.min(20, Math.floor((budget - theadPx) / (n + 1))));
-                const fs      = Math.max(7.5, Math.min(9, rh * 0.52));
-                const cs      = (clr, align, extra) =>
-                    `font-size:${fs}px;color:${clr};padding:0 6px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e8edf2;${extra||''}`;
+
+                // Auto-scale math to guarantee 100% single A4 page fit
+                const n = territorySummary.length;
+                const budget = 870; // Available vertical pixel height for table
+                const theadPx = 26;
+                const rh = Math.max(12, Math.min(22, Math.floor((budget - theadPx) / (n + 1))));
+                const fs = Math.max(7.5, Math.min(10, rh * 0.52));
+
+                const cs = (clr, align, extra) =>
+                    `font-size:${fs}px;color:${clr};padding:0 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;${extra||''}`;
 
                 const tableRowsHTML = territorySummary.map((t, i) => {
-                    const bg = i % 2 === 0 ? '#fff' : '#f8fafc';
+                    const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
                     const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                    const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
                     return `<tr style="height:${rh}px;background:${bg};">
-                        <td style="${cs('#1e293b','left','padding-left:10px;font-weight:600;border-right:1px solid #e8edf2;')}"><span style="color:#bfcad6;font-size:${fs-1}px;">#${i+1} </span>${t.name}</td>
-                        <td style="${cs('#334155','center','border-right:1px solid #e8edf2;font-weight:500;')}">${t.totalCust}</td>
-                        <td style="${cs('#15803d','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.payingCust}</td>
-                        <td style="${cs('#dc2626','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.nonPayingCust}</td>
-                        <td style="${cs('#475569','center','border-right:1px solid #e8edf2;font-weight:500;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
-                        <td style="${cs('#2563eb','center','border-right:1px solid #e8edf2;font-weight:600;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
-                        <td style="${cs(rc,'center','font-weight:700;')}">${t.tColRate}%</td>
+                        <td style="${cs('#0f172a','left','padding-left:12px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:${fs-1}px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
+                        <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
+                        <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
+                        <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
+                        <td style="${cs('#475569','right','padding-right:12px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                        <td style="${cs('#2563eb','right','padding-right:12px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                        <td style="${cs('#0f172a','center','font-weight:800;')}">
+                            <span style="background:${rBg};color:${rc};padding:1px 6px;border-radius:4px;font-size:${fs-0.5}px;">${t.tColRate}%</span>
+                        </td>
                     </tr>`;
                 }).join('');
 
-                const totalRowHTML = `<tr style="height:${rh}px;background:#1e3a8a;">
-                    <td style="${cs('#fff','left','padding-left:10px;font-weight:700;border-right:1px solid rgba(255,255,255,0.15);')}">GRAND TOTAL</td>
-                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandCust}</td>
-                    <td style="${cs('#86efac','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandPaying}</td>
-                    <td style="${cs('#fca5a5','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandNonPaying}</td>
-                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
-                    <td style="${cs('#93c5fd','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
-                    <td style="${cs('#fff','center','font-weight:800;')}">${grandRate}%</td>
+                const totalRowHTML = `<tr style="height:${rh+2}px;background:#0f172a;">
+                    <td style="${cs('#ffffff','left','padding-left:12px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
+                    <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
+                    <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
+                    <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
+                    <td style="${cs('#f1f5f9','right','padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                    <td style="${cs('#60a5fa','right','padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                    <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
                 </tr>`;
 
-                // Build A4 off-screen container
+                // Build off-screen A4 container
                 const container = document.createElement('div');
                 container.id = 'emi-report-capture';
-                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#fff;font-family:'Segoe UI',Arial,sans-serif;box-sizing:border-box;overflow:hidden;";
+                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#ffffff;font-family:'Inter','Segoe UI',sans-serif;box-sizing:border-box;overflow:hidden;";
 
                 container.innerHTML = `
-                <div style="width:794px;height:1123px;background:#fff;padding:22px 26px 16px 26px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
-                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
-                    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;padding-top:2px;flex-shrink:0;">
+                <div style="width:794px;height:1123px;background:#ffffff;padding:24px 28px 18px 28px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                    <!-- Top Accent Border Line -->
+                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
+
+                    <!-- Header Row -->
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-shrink:0;">
                         <div>
                             <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                                <span style="background:#1e3a8a;color:#fff;font-size:7.5px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;">ACI Motors</span>
-                                <span style="color:#94a3b8;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Commercial Vehicle</span>
+                                <span style="background:#0f172a;color:#ffffff;font-size:8px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
+                                <span style="color:#64748b;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
                             </div>
-                            <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;line-height:1.1;">1st &amp; 2nd EMI Collection Status</div>
-                            <div style="font-size:8px;color:#64748b;margin-top:3px;">Report Date: <b style="color:#1e3a8a;">${today}</b></div>
+                            <h1 style="font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
+                            <div style="font-size:8.5px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
                         </div>
                         <div style="text-align:right;">
-                            <div style="font-size:9px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">Global Dashboard</div>
-                            <div style="font-size:7.5px;color:#94a3b8;margin-top:1px;">Performance Analytics</div>
+                            <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
+                                <div style="font-size:9px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
+                                <div style="font-size:7.5px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
+                            </div>
                         </div>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #cbd5e1;padding-bottom:5px;margin-bottom:8px;flex-shrink:0;">
-                        <span style="font-size:8px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.8px;">Territory Wise Performance Summary</span>
-                        <span style="font-size:7.5px;color:#94a3b8;">Amounts in BDT (৳)</span>
+
+                    <!-- Minimal Metric Cards Row -->
+                    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:14px;flex-shrink:0;">
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#64748b;text-transform:uppercase;">Total Accounts</div>
+                            <div style="font-size:13px;font-weight:900;color:#0f172a;margin-top:1px;">${grandCust}</div>
+                        </div>
+                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#166534;text-transform:uppercase;">Paying / Unpaid</div>
+                            <div style="font-size:13px;font-weight:900;color:#15803d;margin-top:1px;">${grandPaying} <span style="font-size:9px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
+                        </div>
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#1e40af;text-transform:uppercase;">Total Collected</div>
+                            <div style="font-size:13px;font-weight:900;color:#1d4ed8;margin-top:1px;">${app.formatCurrency(grandCol)}</div>
+                        </div>
+                        <div style="background:#fffbeb;border:1px solid #fde68a;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#92400e;text-transform:uppercase;">Recovery Rate</div>
+                            <div style="font-size:13px;font-weight:900;color:#b45309;margin-top:1px;">${grandRate}%</div>
+                        </div>
                     </div>
+
+                    <!-- Table Header Label -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;margin-bottom:6px;border-bottom:1.5px solid #cbd5e1;flex-shrink:0;">
+                        <span style="font-size:8.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.6px;">Territory Performance Ranking</span>
+                        <span style="font-size:8px;font-weight:700;color:#64748b;">Currency in BDT (৳)</span>
+                    </div>
+
+                    <!-- Table Content -->
                     <div style="flex:1;">
                         <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
                             <colgroup>
-                                <col style="width:26%;"><col style="width:9%;"><col style="width:9%;"><col style="width:11%;"><col style="width:17%;"><col style="width:18%;"><col style="width:10%;">
+                                <col style="width:28%;">
+                                <col style="width:9%;">
+                                <col style="width:9%;">
+                                <col style="width:11%;">
+                                <col style="width:18%;">
+                                <col style="width:17%;">
+                                <col style="width:8%;">
                             </colgroup>
                             <thead>
-                                <tr style="height:${theadPx}px;background:#1e3a8a;color:#fff;">
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 8px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Sales Territory</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Total</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#86efac;">Paying</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#fca5a5;">Non-Paying</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Due (Inst)</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#93c5fd;">Collected</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;">Rate %</th>
+                                <tr style="height:${theadPx}px;background:#0f172a;color:#ffffff;">
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 12px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;">Sales Territory</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;">Total</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;color:#4ade80;">Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;color:#f87171;">Unpaid</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 12px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;">Due (Inst)</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 12px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;color:#60a5fa;">Collected</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.5px;">Rate %</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -2608,23 +2648,24 @@
                             </tbody>
                         </table>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;">
-                        <span>Generated from Sales360 System | ACI Motors Ltd.</span>
-                        <span>Page 1 of 1</span>
+
+                    <!-- Minimal Footer -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7.5px;color:#94a3b8;flex-shrink:0;font-weight:600;">
+                        <span>Sales360 System | ACI Motors Limited © ${new Date().getFullYear()}</span>
+                        <span>Page 1 of 1 (Single Page Report)</span>
                     </div>
                 </div>
                 `;
 
                 document.body.appendChild(container);
 
-                // Small delay for fonts/render
                 await new Promise(r => setTimeout(r, 300));
 
                 try {
                     const canvas = await html2canvas(container, {
                         scale: 2,
                         useCORS: true,
-                        backgroundColor: '#f8fafc',
+                        backgroundColor: '#ffffff',
                         width: 794,
                         height: 1123,
                         windowWidth: 794,
@@ -2644,6 +2685,7 @@
                     app.hideLoader();
                 }
             },
+
 
             renderAdminEMI: () => {
                 localStorage.setItem('aci_last_page', 'emi');
@@ -3903,7 +3945,7 @@
                     const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                     const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                     return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name)); // Sort best first (top to bottom)
+                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
 
                 // Grand totals
                 const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
@@ -3914,79 +3956,119 @@
                 const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
 
                 const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-                // Auto-scale row height so ALL territories fit on one A4 page
-                const n       = territorySummary.length;
-                const budget  = 870;
-                const theadPx = 22;
-                const rh      = Math.max(13, Math.min(20, Math.floor((budget - theadPx) / (n + 1))));
-                const fs      = Math.max(7.5, Math.min(9, rh * 0.52));
-                const cs      = (clr, align, extra) =>
-                    `font-size:${fs}px;color:${clr};padding:0 6px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e8edf2;${extra||''}`;
+
+                // Auto-scale math to guarantee 100% single A4 page fit
+                const n = territorySummary.length;
+                const budget = 870; // Available vertical pixel height for table
+                const theadPx = 26;
+                const rh = Math.max(12, Math.min(22, Math.floor((budget - theadPx) / (n + 1))));
+                const fs = Math.max(7.5, Math.min(10, rh * 0.52));
+
+                const cs = (clr, align, extra) =>
+                    `font-size:${fs}px;color:${clr};padding:0 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;${extra||''}`;
 
                 const tableRowsHTML = territorySummary.map((t, i) => {
-                    const bg = i % 2 === 0 ? '#fff' : '#f8fafc';
+                    const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
                     const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                    const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
                     return `<tr style="height:${rh}px;background:${bg};">
-                        <td style="${cs('#1e293b','left','padding-left:10px;font-weight:600;border-right:1px solid #e8edf2;')}"><span style="color:#bfcad6;font-size:${fs-1}px;">#${i+1} </span>${t.name}</td>
-                        <td style="${cs('#334155','center','border-right:1px solid #e8edf2;font-weight:500;')}">${t.totalCust}</td>
-                        <td style="${cs('#15803d','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.payingCust}</td>
-                        <td style="${cs('#dc2626','center','border-right:1px solid #e8edf2;font-weight:600;')}">${t.nonPayingCust}</td>
-                        <td style="${cs('#475569','center','border-right:1px solid #e8edf2;font-weight:500;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
-                        <td style="${cs('#2563eb','center','border-right:1px solid #e8edf2;font-weight:600;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
-                        <td style="${cs(rc,'center','font-weight:700;')}">${t.tColRate}%</td>
+                        <td style="${cs('#0f172a','left','padding-left:12px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:${fs-1}px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
+                        <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
+                        <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
+                        <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
+                        <td style="${cs('#475569','right','padding-right:12px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                        <td style="${cs('#2563eb','right','padding-right:12px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                        <td style="${cs('#0f172a','center','font-weight:800;')}">
+                            <span style="background:${rBg};color:${rc};padding:1px 6px;border-radius:4px;font-size:${fs-0.5}px;">${t.tColRate}%</span>
+                        </td>
                     </tr>`;
                 }).join('');
 
-                const totalRowHTML = `<tr style="height:${rh}px;background:#1e3a8a;">
-                    <td style="${cs('#fff','left','padding-left:10px;font-weight:700;border-right:1px solid rgba(255,255,255,0.15);')}">GRAND TOTAL</td>
-                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandCust}</td>
-                    <td style="${cs('#86efac','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandPaying}</td>
-                    <td style="${cs('#fca5a5','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${grandNonPaying}</td>
-                    <td style="${cs('#e2e8f0','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
-                    <td style="${cs('#93c5fd','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:600;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
-                    <td style="${cs('#fff','center','font-weight:800;')}">${grandRate}%</td>
+                const totalRowHTML = `<tr style="height:${rh+2}px;background:#0f172a;">
+                    <td style="${cs('#ffffff','left','padding-left:12px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
+                    <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
+                    <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
+                    <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
+                    <td style="${cs('#f1f5f9','right','padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                    <td style="${cs('#60a5fa','right','padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                    <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
                 </tr>`;
 
-                // Build A4 off-screen container
+                // Build off-screen A4 container
                 const container = document.createElement('div');
                 container.id = 'emi-report-capture';
-                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#fff;font-family:'Segoe UI',Arial,sans-serif;box-sizing:border-box;overflow:hidden;";
+                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#ffffff;font-family:'Inter','Segoe UI',sans-serif;box-sizing:border-box;overflow:hidden;";
 
                 container.innerHTML = `
-                <div style="width:794px;height:1123px;background:#fff;padding:22px 26px 16px 26px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
-                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1e3a8a,#3b82f6);"></div>
-                    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;padding-top:2px;flex-shrink:0;">
+                <div style="width:794px;height:1123px;background:#ffffff;padding:24px 28px 18px 28px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                    <!-- Top Accent Border Line -->
+                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
+
+                    <!-- Header Row -->
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-shrink:0;">
                         <div>
                             <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                                <span style="background:#1e3a8a;color:#fff;font-size:7.5px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;">ACI Motors</span>
-                                <span style="color:#94a3b8;font-size:7.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Commercial Vehicle</span>
+                                <span style="background:#0f172a;color:#ffffff;font-size:8px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
+                                <span style="color:#64748b;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
                             </div>
-                            <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;line-height:1.1;">1st &amp; 2nd EMI Collection Status</div>
-                            <div style="font-size:8px;color:#64748b;margin-top:3px;">Report Date: <b style="color:#1e3a8a;">${today}</b></div>
+                            <h1 style="font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
+                            <div style="font-size:8.5px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
                         </div>
                         <div style="text-align:right;">
-                            <div style="font-size:9px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.5px;">Global Dashboard</div>
-                            <div style="font-size:7.5px;color:#94a3b8;margin-top:1px;">Performance Analytics</div>
+                            <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
+                                <div style="font-size:9px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
+                                <div style="font-size:7.5px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
+                            </div>
                         </div>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #cbd5e1;padding-bottom:5px;margin-bottom:8px;flex-shrink:0;">
-                        <span style="font-size:8px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.8px;">Territory Wise Performance Summary</span>
-                        <span style="font-size:7.5px;color:#94a3b8;">Amounts in BDT (৳)</span>
+
+                    <!-- Minimal Metric Cards Row -->
+                    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:14px;flex-shrink:0;">
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#64748b;text-transform:uppercase;">Total Accounts</div>
+                            <div style="font-size:13px;font-weight:900;color:#0f172a;margin-top:1px;">${grandCust}</div>
+                        </div>
+                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#166534;text-transform:uppercase;">Paying / Unpaid</div>
+                            <div style="font-size:13px;font-weight:900;color:#15803d;margin-top:1px;">${grandPaying} <span style="font-size:9px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
+                        </div>
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#1e40af;text-transform:uppercase;">Total Collected</div>
+                            <div style="font-size:13px;font-weight:900;color:#1d4ed8;margin-top:1px;">${app.formatCurrency(grandCol)}</div>
+                        </div>
+                        <div style="background:#fffbeb;border:1px solid #fde68a;padding:6px 10px;border-radius:8px;">
+                            <div style="font-size:7.5px;font-weight:800;color:#92400e;text-transform:uppercase;">Recovery Rate</div>
+                            <div style="font-size:13px;font-weight:900;color:#b45309;margin-top:1px;">${grandRate}%</div>
+                        </div>
                     </div>
+
+                    <!-- Table Header Label -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;margin-bottom:6px;border-bottom:1.5px solid #cbd5e1;flex-shrink:0;">
+                        <span style="font-size:8.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.6px;">Territory Performance Ranking</span>
+                        <span style="font-size:8px;font-weight:700;color:#64748b;">Currency in BDT (৳)</span>
+                    </div>
+
+                    <!-- Table Content -->
                     <div style="flex:1;">
                         <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
                             <colgroup>
-                                <col style="width:26%;"><col style="width:9%;"><col style="width:9%;"><col style="width:11%;"><col style="width:17%;"><col style="width:18%;"><col style="width:10%;">
+                                <col style="width:28%;">
+                                <col style="width:9%;">
+                                <col style="width:9%;">
+                                <col style="width:11%;">
+                                <col style="width:18%;">
+                                <col style="width:17%;">
+                                <col style="width:8%;">
                             </colgroup>
                             <thead>
-                                <tr style="height:${theadPx}px;background:#1e3a8a;color:#fff;">
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 8px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Sales Territory</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Total</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#86efac;">Paying</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#fca5a5;">Non-Paying</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;">Due (Inst)</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:0.4px;color:#93c5fd;">Collected</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:700;padding:0 3px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;">Rate %</th>
+                                <tr style="height:${theadPx}px;background:#0f172a;color:#ffffff;">
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 12px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;">Sales Territory</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;">Total</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;color:#4ade80;">Paying</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;color:#f87171;">Unpaid</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 12px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;">Due (Inst)</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 12px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.5px;color:#60a5fa;">Collected</th>
+                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.5px;">Rate %</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3995,23 +4077,24 @@
                             </tbody>
                         </table>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;">
-                        <span>Generated from Sales360 System | ACI Motors Ltd.</span>
-                        <span>Page 1 of 1</span>
+
+                    <!-- Minimal Footer -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7.5px;color:#94a3b8;flex-shrink:0;font-weight:600;">
+                        <span>Sales360 System | ACI Motors Limited © ${new Date().getFullYear()}</span>
+                        <span>Page 1 of 1 (Single Page Report)</span>
                     </div>
                 </div>
                 `;
 
                 document.body.appendChild(container);
 
-                // Small delay for fonts/render
                 await new Promise(r => setTimeout(r, 300));
 
                 try {
                     const canvas = await html2canvas(container, {
                         scale: 2,
                         useCORS: true,
-                        backgroundColor: '#f8fafc',
+                        backgroundColor: '#ffffff',
                         width: 794,
                         height: 1123,
                         windowWidth: 794,
@@ -4031,6 +4114,7 @@
                     app.hideLoader();
                 }
             },
+
 
             renderAdminEMI: () => {
                 localStorage.setItem('aci_last_page', 'emi');
