@@ -68,7 +68,7 @@
     <!-- html2canvas (For PNG Report Capture) -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=2.1.0">
+    <link rel="stylesheet" href="style.css?v=2.1.1">
 </head>
 
 <body class="text-slate-800 antialiased overflow-hidden h-[100dvh] w-screen flex flex-col">
@@ -503,26 +503,23 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- AI CHATBOT (GEMINI) UI -->
+    <!-- AURA AI CHATBOT UI (ADMIN ONLY) -->
     <!-- ========================================== -->
-    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-[100]">
-        <!-- FAB Button (Engaging, Playful, Spark360) -->
-        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative group bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 w-14 h-14 rounded-full shadow-[0_8px_30px_rgb(99,102,241,0.4)] hover:shadow-[0_8px_30px_rgb(236,72,153,0.5)] hover:scale-110 active:scale-95 transition-all duration-500 flex items-center justify-center border border-white/20">
-            <!-- Shimmer effect -->
-            <span class="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></span>
-            <!-- Double Pulse Rings -->
-            <span class="absolute -inset-1.5 rounded-full border-2 border-indigo-400/30 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-60"></span>
-            <span class="absolute -inset-3 rounded-full border border-purple-400/10 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite] opacity-40"></span>
+    <div id="ai-chat-widget" class="fixed bottom-2.5 right-2.5 z-[100] hidden">
+        <!-- Compact Creative Squircle Button (NOT CIRCLE, Very Bottom Right) -->
+        <button id="ai-chat-fab" onclick="app.aiAssistant.toggleChat()" class="relative group bg-gradient-to-tr from-[#0b132b] via-[#1c2541] to-[#3a506b] hover:from-indigo-600 hover:to-purple-600 w-9 h-9 rounded-xl shadow-[0_4px_15px_rgba(15,23,42,0.4)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center border border-indigo-400/40 backdrop-blur-md cursor-pointer">
+            <!-- Glow Border -->
+            <span class="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-400 opacity-30 group-hover:opacity-80 blur-xs transition-opacity duration-300"></span>
             
-            <!-- Engaging Icon (Sparkles + Bot) -->
-            <div class="relative w-8 h-8 flex items-center justify-center">
-                <i data-lucide="bot" class="w-6 h-6 text-white transition-transform duration-500 group-hover:scale-90 group-hover:rotate-6"></i>
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-yellow-300 absolute -top-1.5 -right-1.5 animate-bounce" style="animation-duration: 2s;"></i>
+            <!-- Icon Container -->
+            <div class="relative w-4.5 h-4.5 flex items-center justify-center z-10">
+                <i data-lucide="bot" class="w-4 h-4 text-indigo-200 group-hover:text-white transition-colors duration-300"></i>
+                <i data-lucide="sparkles" class="w-2.5 h-2.5 text-amber-300 absolute -top-1 -right-1 animate-pulse"></i>
             </div>
         </button>
 
         <!-- Chat Panel -->
-        <div id="ai-chat-panel" class="absolute bottom-20 right-0 w-[340px] h-[500px] max-h-[80vh] glass rounded-2xl border border-white/40 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 pointer-events-none">
+        <div id="ai-chat-panel" class="absolute bottom-11 right-0 w-[330px] h-[480px] max-h-[80vh] glass rounded-2xl border border-white/40 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right scale-0 opacity-0 pointer-events-none">
             
             <!-- Header -->
             <div class="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-4 flex justify-between items-center shrink-0 border-b border-white/10 shadow-md">
@@ -532,8 +529,8 @@
                         <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-indigo-600 rounded-full animate-pulse"></span>
                     </div>
                     <div>
-                        <h3 class="text-white font-black text-[13px] leading-tight tracking-wide flex items-center gap-1">Spark360 <span class="text-yellow-300">⚡</span></h3>
-                        <p class="text-white/80 text-[8.5px] font-bold tracking-wider uppercase leading-tight mt-0.5">Intelligent Sales Copilot</p>
+                        <h3 class="text-white font-black text-[13px] leading-tight tracking-wide flex items-center gap-1">Aura AI <span class="text-yellow-300">⚡</span></h3>
+                        <p class="text-white/80 text-[8.5px] font-bold tracking-wider uppercase leading-tight mt-0.5">Admin Sales Intelligence Copilot</p>
                     </div>
                 </div>
                 <button onclick="app.aiAssistant.toggleChat()" class="text-white/70 hover:text-white p-1.5 rounded-lg hover:bg-white/20 transition-colors">
@@ -578,7 +575,7 @@
     <!-- ========================================== -->
     <!-- JAVASCRIPT LOGIC & STATE MANAGEMENT -->
     <!-- ========================================== -->
-    <script src="app.js?v=2.1.0"></script>
+    <script src="app.js?v=2.1.1"></script>
 </body>
 
 </html>

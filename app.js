@@ -1339,6 +1339,27 @@
 
 
 
+            updateAiWidgetVisibility: () => {
+                const widget = document.getElementById('ai-chat-widget');
+                if (!widget) return;
+
+                const isAdmin = app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'subadmin');
+
+                if (isAdmin) {
+                    widget.classList.remove('hidden');
+                } else {
+                    widget.classList.add('hidden');
+                    if (app.aiAssistant && app.aiAssistant.isOpen) {
+                        const panel = document.getElementById('ai-chat-panel');
+                        if (panel) {
+                            panel.classList.remove('scale-100', 'opacity-100');
+                            panel.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+                        }
+                        app.aiAssistant.isOpen = false;
+                    }
+                }
+            },
+
             setupSidebar: () => {
                 document.getElementById('sidebar-user-name').innerText = app.currentUser.name;
                 let roleText = app.currentUser.role.toUpperCase();
@@ -1424,6 +1445,7 @@
                 }
                 nav.innerHTML = links;
                 app.refreshIcons();
+                app.updateAiWidgetVisibility();
             },
 
 
