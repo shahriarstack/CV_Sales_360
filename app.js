@@ -634,6 +634,12 @@
                 app.populateLoginDropdown(); // Setup Login Select Options
                 app.initLoginParticles(); // Initialize background web animation
                 document.getElementById('login-form').addEventListener('submit', app.handleLogin);
+                document.addEventListener('click', (e) => {
+                    const container = document.getElementById('login-select-container');
+                    if (container && !container.contains(e.target)) {
+                        app.closeLoginSelectDropdown();
+                    }
+                });
 
                 // Password visibility toggle handler
                 const pwToggle = document.getElementById('password-toggle');
@@ -749,7 +755,6 @@
                         blobs.classList.remove('hidden');
                         body.classList.add('aurora-active');
                         const brand = app.adminBrandTab || 'Foton';
-                        body.setAttribute('data-theme', brand);
                         if (brand === 'Mahindra') {
                             blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 aurora-mahindra";
                         } else {
@@ -758,7 +763,6 @@
                     } else {
                         blobs.classList.add('hidden');
                         body.classList.remove('aurora-active');
-                        body.removeAttribute('data-theme');
                     }
                 }
             },
@@ -902,7 +906,7 @@
                 if (ams.length > 0) {
                     optionsHtml += `<optgroup label="Area">`;
                     ams.forEach(u => {
-                        const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || 'No Area';
+                        const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).filter(Boolean).join(', ') || 'No Area';
                         const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
                         optionsHtml += `<option value="${u.id}">${areaNames} - ${cleanName}</option>`;
                     });
@@ -921,6 +925,261 @@
                 }
 
                 select.innerHTML = optionsHtml;
+
+                // Sync custom searchable dropdown
+                app.buildCustomLoginSelect();
+            },
+
+            buildCustomLoginSelect: () => {
+                const select = document.getElementById('login-user-select');
+                if (!select) return;
+
+                app.loginSelectItems = [];
+
+                // Admins
+                const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
+                admins.forEach(u => {
+                    app.loginSelectItems.push({
+                        id: u.id,
+                        role: u.role,
+                        category: 'admin',
+                        categoryLabel: 'System Administration',
+                        title: u.role === 'subadmin' ? 'Sub Admin' : 'Global Admin',
+                        subtitle: u.name,
+                        icon: 'shield',
+                        iconBg: 'bg-rose-50 text-rose-600',
+                        badgeClass: 'bg-rose-100 text-rose-700 border-rose-200'
+                    });
+                });
+
+                // Area Managers (AM)
+                const ams = DB.users.filter(u => u.role === 'am');
+                ams.forEach(u => {
+                    const areaNames = u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).filter(Boolean).join(', ') || 'No Area';
+                    const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
+                    app.loginSelectItems.push({
+                        id: u.id,
+                        role: 'am',
+                        category: 'am',
+                        categoryLabel: 'Area Manager',
+                        title: areaNames,
+                        subtitle: `${cleanName} (AM)`,
+                        icon: 'briefcase',
+                        iconBg: 'bg-indigo-50 text-indigo-600',
+                        badgeClass: 'bg-indigo-100 text-indigo-700 border-indigo-200'
+                    });
+                });
+
+                // Territory Officers (SO/MO)
+                const sos = DB.users.filter(u => u.role === 'so');
+                sos.forEach(u => {
+                    const areaName = DB.territories.find(t => t.id === u.territories[0])?.name || 'Unknown';
+                    const cleanName = u.name.replace(/\s*\(\s*(AM|MO)\s*\)/i, '').replace(/\s*(AM|MO)$/i, '').trim();
+                    app.loginSelectItems.push({
+                        id: u.id,
+                        role: 'so',
+                        category: 'so',
+                        categoryLabel: 'Territory Officer',
+                        title: areaName,
+                        subtitle: `${cleanName} (MO)`,
+                        icon: 'map-pin',
+                        iconBg: 'bg-emerald-50 text-emerald-600',
+                        badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                    });
+                });
+
+                app.loginSelectCategory = app.loginSelectCategory || 'all';
+                app.loginSelectSearchQuery = '';
+
+                // Ensure initial selection in hidden select
+                if (!select.value && app.loginSelectItems.length > 0) {
+                    select.value = app.loginSelectItems[0].id;
+                }
+
+                const currentSelected = app.loginSelectItems.find(i => i.id === select.value) || app.loginSelectItems[0];
+                if (currentSelected) {
+                    app.updateLoginSelectTrigger(currentSelected);
+                }
+
+                app.renderLoginSelectOptions();
+            },
+
+            updateLoginSelectTrigger: (item) => {
+                const label = document.getElementById('login-select-label');
+                const badge = document.getElementById('login-select-badge');
+                const iconBox = document.getElementById('login-select-icon-box');
+
+                if (label) label.innerText = `${item.title} — ${item.subtitle}`;
+                if (badge) badge.innerText = item.categoryLabel;
+                if (iconBox) {
+                    iconBox.className = `w-8 h-8 rounded-xl ${item.iconBg} flex items-center justify-center flex-shrink-0 transition-all shadow-sm`;
+                    iconBox.innerHTML = `<i data-lucide="${item.icon}" class="w-4 h-4"></i>`;
+                }
+                app.refreshIcons();
+            },
+
+            renderLoginSelectOptions: () => {
+                const listEl = document.getElementById('login-select-options-list');
+                const emptyEl = document.getElementById('login-select-empty');
+                if (!listEl) return;
+
+                const query = (app.loginSelectSearchQuery || '').toLowerCase().trim();
+                const category = app.loginSelectCategory || 'all';
+                const selectVal = document.getElementById('login-user-select')?.value;
+
+                let filtered = app.loginSelectItems || [];
+
+                if (category !== 'all') {
+                    filtered = filtered.filter(i => i.category === category);
+                }
+
+                if (query) {
+                    filtered = filtered.filter(i => 
+                        i.title.toLowerCase().includes(query) || 
+                        i.subtitle.toLowerCase().includes(query) || 
+                        i.categoryLabel.toLowerCase().includes(query)
+                    );
+                }
+
+                if (filtered.length === 0) {
+                    listEl.innerHTML = '';
+                    if (emptyEl) emptyEl.classList.remove('hidden');
+                    return;
+                }
+
+                if (emptyEl) emptyEl.classList.add('hidden');
+
+                let html = filtered.map(item => {
+                    const isSelected = item.id === selectVal;
+                    return `
+                        <button type="button" 
+                            onclick="app.selectLoginUserItem('${item.id}')"
+                            class="w-full text-left p-2.5 rounded-xl transition-all flex items-center justify-between group cursor-pointer ${isSelected ? 'bg-aci-blue/10 border border-aci-blue/30 text-aci-blue shadow-sm' : 'hover:bg-slate-50 border border-transparent text-slate-700'}">
+                            <div class="flex items-center gap-3 overflow-hidden pr-2">
+                                <div class="w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <i data-lucide="${item.icon}" class="w-4 h-4"></i>
+                                </div>
+                                <div class="truncate">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-extrabold text-xs tracking-tight ${isSelected ? 'text-aci-blue' : 'text-slate-800'} truncate">${item.title}</span>
+                                    </div>
+                                    <div class="text-[10px] font-medium text-slate-500 truncate mt-0.5">${item.subtitle}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border ${item.badgeClass}">
+                                    ${item.category === 'admin' ? 'Admin' : (item.category === 'am' ? 'Area' : 'Territory')}
+                                </span>
+                                ${isSelected ? '<i data-lucide="check-circle-2" class="w-4 h-4 text-aci-blue"></i>' : ''}
+                            </div>
+                        </button>
+                    `;
+                }).join('');
+
+                listEl.innerHTML = html;
+                app.refreshIcons();
+            },
+
+            toggleLoginSelectDropdown: (forceState = null) => {
+                const dropdown = document.getElementById('login-select-dropdown');
+                const chevron = document.getElementById('login-select-chevron');
+                if (!dropdown) return;
+
+                const isHidden = dropdown.classList.contains('hidden');
+                const show = forceState !== null ? forceState : isHidden;
+
+                if (show) {
+                    dropdown.classList.remove('hidden');
+                    setTimeout(() => {
+                        dropdown.classList.remove('scale-95', 'opacity-0');
+                        dropdown.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                    if (chevron) chevron.classList.add('rotate-180');
+
+                    const searchInput = document.getElementById('login-select-search');
+                    if (searchInput) {
+                        searchInput.focus();
+                    }
+                } else {
+                    dropdown.classList.remove('scale-100', 'opacity-100');
+                    dropdown.classList.add('scale-95', 'opacity-0');
+                    if (chevron) chevron.classList.remove('rotate-180');
+                    setTimeout(() => {
+                        dropdown.classList.add('hidden');
+                    }, 200);
+                }
+            },
+
+            closeLoginSelectDropdown: () => {
+                app.toggleLoginSelectDropdown(false);
+            },
+
+            filterLoginSelectOptions: (val) => {
+                app.loginSelectSearchQuery = val;
+                const clearBtn = document.getElementById('login-select-clear-btn');
+                if (clearBtn) {
+                    if (val) clearBtn.classList.remove('hidden');
+                    else clearBtn.classList.add('hidden');
+                }
+                app.renderLoginSelectOptions();
+            },
+
+            clearLoginSelectSearch: () => {
+                const searchInput = document.getElementById('login-select-search');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                }
+                app.filterLoginSelectOptions('');
+            },
+
+            setLoginSelectCategory: (category) => {
+                app.loginSelectCategory = category;
+
+                const tabs = ['all', 'admin', 'am', 'so'];
+                tabs.forEach(t => {
+                    const btn = document.getElementById(`login-tab-${t}`);
+                    if (!btn) return;
+                    if (t === category) {
+                        btn.className = 'flex-1 py-1 px-2 rounded-lg text-center transition-all bg-white text-slate-800 shadow-sm font-extrabold';
+                    } else {
+                        btn.className = 'flex-1 py-1 px-2 rounded-lg text-center transition-all text-slate-500 hover:text-slate-700';
+                    }
+                });
+
+                app.renderLoginSelectOptions();
+            },
+
+            selectLoginUserItem: (userId) => {
+                const select = document.getElementById('login-user-select');
+                if (select) {
+                    select.value = userId;
+                    select.dispatchEvent(new Event('change'));
+                }
+
+                const item = (app.loginSelectItems || []).find(i => i.id === userId);
+                if (item) {
+                    app.updateLoginSelectTrigger(item);
+                }
+
+                app.renderLoginSelectOptions();
+                app.closeLoginSelectDropdown();
+
+                const pwdInput = document.getElementById('password');
+                if (pwdInput) pwdInput.focus();
+            },
+
+            handleLoginSelectKeydown: (e) => {
+                if (e.key === 'Escape') {
+                    app.closeLoginSelectDropdown();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const listEl = document.getElementById('login-select-options-list');
+                    const firstBtn = listEl ? listEl.querySelector('button') : null;
+                    if (firstBtn) {
+                        firstBtn.click();
+                    }
+                }
             },
 
             // --- Authentication ---
@@ -2512,6 +2771,7 @@
                                         <th class="px-6 py-1.5 font-bold">Total Due (EMI+Overdue)</th>
                                         <th class="px-6 py-1.5 font-bold">Collected</th>
                                         <th class="px-6 py-1.5 font-bold">Status</th>
+                                        ${!isAM ? '<th class="px-6 py-1.5 font-bold text-right">Actions</th>' : ''}
                                     </tr>
                                     <tr class="bg-slate-50/80">
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
@@ -2520,6 +2780,7 @@
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Total Due..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Status..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        ${!isAM ? '<th class="px-6 py-1.5"></th>' : ''}
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -2542,9 +2803,16 @@
                             : '<span class="text-amber-600 text-[10px] font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded w-max border border-amber-100"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>'
                         }
                                             </td>
+                                            ${!isAM ? `
+                                            <td class="px-6 py-1.5 text-right">
+                                                <button onclick="app.openEditAdminEMIModal('${e.id}')" class="text-slate-400 hover:text-aci-blue hover:scale-110 active:scale-95 transition-all p-1 rounded-lg inline-flex items-center justify-center bg-slate-50 border border-slate-100 hover:border-aci-blue/20 hover:bg-aci-blue/5 tooltip" title="Edit Customer Details">
+                                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </td>
+                                            ` : ''}
                                         </tr>
                                     `}).join('')}
-                                    ${emiData.length === 0 ? '<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No EMI data found.</td></tr>' : ''}
+                                    ${emiData.length === 0 ? `<tr><td colspan="${!isAM ? 7 : 6}" class="px-6 py-4 text-center text-slate-500">No EMI data found.</td></tr>` : ''}
                                 </tbody>
                             </table>
                         </div>
@@ -3850,6 +4118,7 @@
                                         <th class="px-6 py-1.5 font-bold">Total Due (EMI+Overdue)</th>
                                         <th class="px-6 py-1.5 font-bold">Collected</th>
                                         <th class="px-6 py-1.5 font-bold">Status</th>
+                                        ${!isAM ? '<th class="px-6 py-1.5 font-bold text-right">Actions</th>' : ''}
                                     </tr>
                                     <tr class="bg-slate-50/80">
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
@@ -3858,6 +4127,7 @@
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Total Due..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Collected..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-6 py-1.5"><input type="text" onkeyup="app.filterTableGroup(this)" placeholder="Filter Status..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        ${!isAM ? '<th class="px-6 py-1.5"></th>' : ''}
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -3880,9 +4150,16 @@
                             : '<span class="text-amber-600 text-[10px] font-bold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded w-max border border-amber-100"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span>'
                         }
                                             </td>
+                                            ${!isAM ? `
+                                            <td class="px-6 py-1.5 text-right">
+                                                <button onclick="app.openEditAdminEMIModal('${e.id}')" class="text-slate-400 hover:text-aci-blue hover:scale-110 active:scale-95 transition-all p-1 rounded-lg inline-flex items-center justify-center bg-slate-50 border border-slate-100 hover:border-aci-blue/20 hover:bg-aci-blue/5 tooltip" title="Edit Customer Details">
+                                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </td>
+                                            ` : ''}
                                         </tr>
                                     `}).join('')}
-                                    ${emiData.length === 0 ? '<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No EMI data found.</td></tr>' : ''}
+                                    ${emiData.length === 0 ? `<tr><td colspan="${!isAM ? 7 : 6}" class="px-6 py-4 text-center text-slate-500">No EMI data found.</td></tr>` : ''}
                                 </tbody>
                             </table>
                         </div>
@@ -4717,7 +4994,7 @@ approveManualDelivery: async (id) => {
                         <!-- AM / Executive Header -->
                         <div class="mb-4">
                             ${isAM ? `
-                            <div class="premium-square-card-dark p-3 mb-4">
+                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-lg border border-white/10 relative overflow-hidden mb-4">
                                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="relative z-10 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
                                     
@@ -4802,7 +5079,7 @@ approveManualDelivery: async (id) => {
 
                              return `
                                  <!-- YTD Overall -->
-                                 <div class="premium-square-card p-4 mb-4">
+                                 <div class="glass p-4 rounded-xl shadow-sm border border-white/60 mb-4 relative overflow-hidden">
                                      <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
                                      <div class="flex justify-between items-center mb-3">
                                          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -4874,7 +5151,7 @@ approveManualDelivery: async (id) => {
                                     </div>
                                 </div>
 
-                                <div class="premium-square-card-dark p-4 mb-4 text-white">
+                                <div class="bg-gradient-to-br ${brandFilter === 'Foton' ? 'from-foton to-[#03133d]' : 'from-mahindra to-[#b81b31]'} rounded-2xl p-4 mb-4 relative overflow-hidden shadow-lg text-white">
                                     <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
                                     <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
                                         <h3 class="font-bold text-sm">Current Month (${app.currentMonth}) - Area Total</h3>
@@ -4940,7 +5217,7 @@ approveManualDelivery: async (id) => {
                             const predictedAch = ach(predictedFinish, currMonthBudget);
 
                             return `
-                                <div class="premium-square-card p-4 mb-6">
+                                <div class="glass p-4 rounded-[1.5rem] border border-white shadow-xl mb-6 relative overflow-hidden">
                                     <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-4">
                                         <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
@@ -5064,7 +5341,7 @@ approveManualDelivery: async (id) => {
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="premium-square-card p-5 mb-8">
+                    <div class="glass p-5 rounded-[2rem] border border-white shadow-xl mb-8 relative overflow-hidden">
                         <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
@@ -5204,7 +5481,7 @@ approveManualDelivery: async (id) => {
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="premium-square-card mb-8">
+                            <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
@@ -5259,7 +5536,7 @@ approveManualDelivery: async (id) => {
 
                     <!-- Charts -->
                     <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-4 mb-6">
-                        <div class="${isAM ? '' : 'lg:col-span-2'} premium-square-card p-3">
+                        <div class="${isAM ? '' : 'lg:col-span-2'} glass p-3 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="bar-chart-2" class="w-3 h-3 text-aci-blue"></i> Territory Performance
                             </h3>
@@ -5267,7 +5544,7 @@ approveManualDelivery: async (id) => {
                                 <canvas id="chartTerritory"></canvas>
                             </div>
                         </div>
-                        <div class="premium-square-card p-3">
+                        <div class="glass p-3 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="pie-chart" class="w-3 h-3 text-aci-blue"></i> Brand Split
                             </h3>
@@ -5279,7 +5556,7 @@ approveManualDelivery: async (id) => {
 
                     <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
                     ${isAM ? `
-                    <div class="premium-square-card overflow-hidden mb-8 relative">
+                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8 relative">
                         <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/30">
                             <div>
@@ -5529,7 +5806,7 @@ approveManualDelivery: async (id) => {
                     ${!isAM ? `
                     <!-- Comprehensive Data Table & Mobile Cards -->
                     <div class="mb-8">
-                        <div class="premium-square-card overflow-hidden">
+                        <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden">
                             <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                                 <div>
                                     <h3 class="font-black text-slate-800 flex items-center gap-2">
@@ -6191,7 +6468,7 @@ approveManualDelivery: async (id) => {
 
                     ${!isAM ? `
                     <!-- Area (AM) Performance Analytics & Mobile Cards -->
-                    <div class="premium-square-card overflow-hidden mb-8">
+                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
                         <div class="p-5 border-b border-indigo-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-indigo-50/30">
                             <div>
                                 <h3 class="font-black text-indigo-900 flex items-center gap-2">
@@ -6339,7 +6616,7 @@ approveManualDelivery: async (id) => {
 
                     <!-- Detailed Sales Data Table (Like Admin Panel) -->
                     ${isAM ? `
-                    <div class="premium-square-card overflow-hidden mb-8">
+                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
                         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                             <div>
                                 <h3 class="font-black text-slate-800 flex items-center gap-2">
@@ -10593,6 +10870,7 @@ approveManualDelivery: async (id) => {
                                     <tr>
                                         <th class="px-6 py-1.5 font-bold">Territory</th>
                                         <th class="px-6 py-1.5 font-bold">Status</th>
+
                                         <th class="px-6 py-1.5 font-bold text-right">Total Volume</th>
                                         <th class="px-6 py-1.5 font-bold text-right">Actions</th>
                                     </tr>
@@ -12970,7 +13248,7 @@ approveManualDelivery: async (id) => {
             updateSOBadge: () => {
                 if (app.currentUser.role !== 'so') return;
                 const soEmi = DB.emi.filter(e => app.currentUser.territories.includes(e.territory_id));
-                const overdueCount = soEmi.filter(e => e.installment > 0 && e.collected < e.installment).length;
+                const overdueCount = soEmi.filter(e => e.installment > 0 && Number(e.collected || 0) <= 0).length;
                 
                 const badge = document.getElementById('so-overdue-badge');
                 if (badge) {
@@ -12990,8 +13268,27 @@ approveManualDelivery: async (id) => {
                 const colPercent = totalInstallment > 0 ? Math.round((totalCollected / totalInstallment) * 100) : 0;
 
                 const totalCustomers = soEmi.length;
-                const paidCustomers = soEmi.filter(e => Number(e.collected || 0) >= Number(e.installment || 0)).length;
-                const unpaidCustomers = totalCustomers - paidCustomers;
+                // Partial payments are counted as Paid Count!
+                const paidCustomers = soEmi.filter(e => Number(e.collected || 0) > 0).length;
+                const fullyPaidCustomers = soEmi.filter(e => {
+                    const col = Number(e.collected || 0);
+                    const inst = Number(e.installment || 0);
+                    const overdue = Number(e.overdue_total || 0);
+                    const due = inst + overdue;
+                    const target = due > 0 ? due : inst;
+                    return target > 0 ? col >= target : col >= inst;
+                }).length;
+
+                const partialCustomers = soEmi.filter(e => {
+                    const col = Number(e.collected || 0);
+                    const inst = Number(e.installment || 0);
+                    const overdue = Number(e.overdue_total || 0);
+                    const due = inst + overdue;
+                    const target = due > 0 ? due : inst;
+                    return col > 0 && col < target;
+                }).length;
+
+                const unpaidCustomers = soEmi.filter(e => Number(e.collected || 0) <= 0).length;
 
                 // Preserve search and filter states
                 const searchQuery = document.getElementById('emi-search')?.value || '';
@@ -13028,14 +13325,20 @@ approveManualDelivery: async (id) => {
                         </div>
 
                         <!-- Customer Status Alerts -->
-                        <div class="grid grid-cols-3 gap-2 mb-5">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
                             <div class="bg-blue-50 border border-blue-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
-                                <p class="text-[9px] text-blue-50 font-bold uppercase mb-0.5">Total Customers</p>
+                                <p class="text-[9px] text-blue-600 font-bold uppercase mb-0.5">Total Customers</p>
                                 <h3 class="text-xl font-bold text-blue-700">${totalCustomers}</h3>
                             </div>
-                            <div class="bg-green-50 border border-green-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
-                                <p class="text-[9px] text-green-600 font-bold uppercase mb-0.5">Paid</p>
-                                <h3 class="text-xl font-bold text-green-700">${paidCustomers}</h3>
+                            <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
+                                <p class="text-[9px] text-emerald-600 font-bold uppercase mb-0.5">Fully Paid</p>
+                                <h3 class="text-xl font-bold text-emerald-700">${paidCustomers}</h3>
+                            </div>
+                            <div class="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-300 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden ring-1 ring-amber-400/30">
+                                <p class="text-[9px] text-amber-700 font-bold uppercase mb-0.5 flex items-center justify-center gap-1">
+                                    <i data-lucide="pie-chart" class="w-3 h-3 text-amber-500"></i> Partial Paid
+                                </p>
+                                <h3 class="text-xl font-black text-amber-800">${partialCustomers}</h3>
                             </div>
                             <div class="bg-red-50 border border-red-100 p-2.5 rounded-xl shadow-sm text-center relative overflow-hidden">
                                 <p class="text-[9px] text-red-500 font-bold uppercase mb-0.5">Unpaid</p>
@@ -13049,10 +13352,12 @@ approveManualDelivery: async (id) => {
                                 <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
                                 <input type="text" id="emi-search" placeholder="Search customer or code..." class="w-full bg-white border border-slate-200 text-sm rounded-lg pl-9 pr-4 py-2.5 focus:outline-none focus:border-aci-blue shadow-sm" onkeyup="app.filterEMI()" value="${searchQuery}">
                             </div>
-                            <select id="emi-status-filter" onchange="app.filterEMI()" class="bg-white border border-slate-200 text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:border-aci-blue shadow-sm text-slate-600 font-medium">
-                                <option value="all" ${filterStatus === 'all' ? 'selected' : ''}>All Status</option>
-                                <option value="paid" ${filterStatus === 'paid' ? 'selected' : ''}>Paid</option>
-                                <option value="unpaid" ${filterStatus === 'unpaid' ? 'selected' : ''}>Unpaid</option>
+                            <select id="emi-status-filter" onchange="app.filterEMI()" class="bg-white border border-slate-200 text-xs font-bold rounded-xl px-3 py-2.5 focus:outline-none focus:border-aci-blue shadow-sm text-slate-700 cursor-pointer">
+                                <option value="all" ${filterStatus === 'all' ? 'selected' : ''}>All Status (${totalCustomers})</option>
+                                <option value="paid_all" ${filterStatus === 'paid_all' ? 'selected' : ''}>Paid Customers (${paidCustomers})</option>
+                                <option value="paid" ${filterStatus === 'paid' ? 'selected' : ''}>Fully Paid (${fullyPaidCustomers})</option>
+                                <option value="partial" ${filterStatus === 'partial' ? 'selected' : ''}>Partial Payment (${partialCustomers})</option>
+                                <option value="unpaid" ${filterStatus === 'unpaid' ? 'selected' : ''}>Unpaid (${unpaidCustomers})</option>
                             </select>
                         </div>
 
@@ -13080,13 +13385,10 @@ approveManualDelivery: async (id) => {
                     if (isNaN(firstDate.getTime())) return 1;
 
                     const now = new Date();
-                    // Calculate months elapsed since first installment date
                     const monthsElapsed =
                         (now.getFullYear() - firstDate.getFullYear()) * 12 +
                         (now.getMonth() - firstDate.getMonth());
 
-                    // Installment number = how many months have passed + 1
-                    // But if first_inst_date is in current month or future, it's still #1
                     const instNo = monthsElapsed >= 1 ? monthsElapsed + 1 : 1;
                     return Math.max(1, instNo);
                 } catch(err) {
@@ -13100,12 +13402,15 @@ approveManualDelivery: async (id) => {
                 const overdue_total = parseFloat(e.overdue_total) || 0;
 
                 const hasOverdue = overdue_total > 0;
-                const isInstCleared = collected >= installment;
                 const totalDue = installment + overdue_total;
-                const isFullyCleared = collected >= totalDue && totalDue > 0;
+                const targetAmount = totalDue > 0 ? totalDue : installment;
+                
+                const isFullyCleared = collected >= targetAmount && targetAmount > 0;
+                const isPartialPayment = collected > 0 && !isFullyCleared;
+                const isUnpaid = collected <= 0;
 
-                // Base cleared status for standard filtering
-                const cardCleared = isInstCleared;
+                const cardStatus = isFullyCleared ? 'paid' : (isPartialPayment ? 'partial' : 'unpaid');
+                const progressPct = targetAmount > 0 ? Math.min(Math.round((collected / targetAmount) * 100), 100) : 0;
 
                 // Dynamically compute installment number based on first_inst_date
                 const instNo = app.getInstallmentNo(e.first_inst_date);
@@ -13118,20 +13423,39 @@ approveManualDelivery: async (id) => {
 
                 const instBadge = `<span class="${instBadgeColor} text-[8px] font-bold px-1 py-0.5 rounded ml-1.5 border">Inst. #${instNo}</span>`;
 
-                return `
-                    <div class="emi-card relative bg-white p-3 rounded-lg shadow-sm border ${cardCleared ? 'border-green-200 bg-green-50/30' : 'border-slate-200/80'} transition-all overflow-hidden" data-customer="${e.customer.toLowerCase()}" data-code="${(e.customer_code || '').toLowerCase()}" data-status="${cardCleared ? 'paid' : 'unpaid'}">
-                        
-                        <!-- Fully Cleared Background Watermark -->
-                        ${isFullyCleared ? '<div class="absolute -right-4 -top-4 opacity-5 pointer-events-none"><i data-lucide="check-circle" class="w-24 h-24 text-green-600"></i></div>' : ''}
+                // Creative Styling variations
+                let cardStyle = 'border-slate-200/80 bg-white';
+                let topAccentBar = '';
+                let statusBadge = '';
 
-                        <div class="flex justify-between items-start mb-1 relative z-10">
+                if (isFullyCleared) {
+                    cardStyle = 'border-emerald-300 bg-emerald-50/20';
+                    statusBadge = '<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="check-circle-2" class="w-2.5 h-2.5"></i> Paid</span>';
+                } else if (isPartialPayment) {
+                    // Minimal Red-Yellowish Creative Styling for Partial Payments
+                    cardStyle = 'border-l-4 border-l-rose-500 border-amber-200/80 bg-gradient-to-r from-rose-500/[0.04] via-amber-500/[0.05] to-yellow-500/[0.03] shadow-sm relative';
+                    topAccentBar = '<div class="h-1 w-full bg-gradient-to-r from-rose-500 via-amber-400 to-yellow-400 absolute top-0 left-0 z-20"></div>';
+                    statusBadge = '<span class="bg-amber-100/90 text-amber-900 border border-amber-300/80 px-2 py-0.5 rounded-full text-[9px] font-extrabold ml-1.5 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Partial Paid (' + progressPct + '%)</span>';
+                } else {
+                    statusBadge = '<span class="bg-rose-50 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="clock" class="w-2.5 h-2.5"></i> Unpaid</span>';
+                }
+
+                return `
+                    <div class="emi-card relative ${cardStyle} p-3.5 rounded-2xl shadow-sm transition-all overflow-hidden" data-customer="${e.customer.toLowerCase()}" data-code="${(e.customer_code || '').toLowerCase()}" data-status="${cardStatus}">
+                        ${topAccentBar}
+                        
+                        <!-- Watermark -->
+                        ${isFullyCleared ? '<div class="absolute -right-4 -top-4 opacity-5 pointer-events-none"><i data-lucide="check-circle" class="w-24 h-24 text-emerald-600"></i></div>' : ''}
+                        ${isPartialPayment ? '<div class="absolute -right-4 -top-4 opacity-[0.07] pointer-events-none"><i data-lucide="pie-chart" class="w-24 h-24 text-amber-600"></i></div>' : ''}
+
+                        <div class="flex justify-between items-start mb-1 relative z-10 ${isPartialPayment ? 'mt-1' : ''}">
                             <div class="flex items-start gap-1.5">
                                 <span class="text-xs font-bold text-slate-400 mt-0.5">${serial}.</span>
                                 <div>
                                     <h4 class="font-bold text-slate-800 text-xs flex items-center flex-wrap gap-y-1">
                                         ${e.customer}
                                         ${instBadge}
-                                        ${isFullyCleared ? '<span class="bg-green-100 text-green-700 border border-green-200 px-1.5 py-0.5 rounded text-[8px] font-bold ml-1.5 flex items-center gap-0.5"><i data-lucide="check-circle-2" class="w-2.5 h-2.5"></i> Paid</span>' : ''}
+                                        ${statusBadge}
                                     </h4>
                                     <p class="text-xs font-semibold text-aci-blue mt-0">${e.customer_code || 'N/A'}</p>
                                 </div>
@@ -13159,25 +13483,44 @@ approveManualDelivery: async (id) => {
                             </div>
                         </div>
 
+                        <!-- Partial Recovery Progress Indicator for Partial Payments -->
+                        ${isPartialPayment ? `
+                            <div class="mb-2.5 p-2 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200/80 relative z-10">
+                                <div class="flex justify-between items-center text-[9px] mb-1">
+                                    <span class="font-extrabold text-amber-900 flex items-center gap-1">
+                                        <i data-lucide="pie-chart" class="w-3 h-3 text-amber-600"></i> Partial Collection Progress:
+                                    </span>
+                                    <span class="font-black text-amber-900 bg-amber-200/60 px-1.5 py-0.2 rounded">${progressPct}% Collected</span>
+                                </div>
+                                <div class="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden shadow-inner flex">
+                                    <div class="bg-gradient-to-r from-red-500 via-amber-500 to-yellow-400 h-2 rounded-full transition-all duration-500 shadow" style="width: ${progressPct}%"></div>
+                                </div>
+                                <div class="flex justify-between text-[8px] font-bold text-amber-800 mt-1">
+                                    <span>Paid: <b class="text-emerald-700">${app.formatCurrency(collected)}</b></span>
+                                    <span>Remaining: <b class="text-rose-700">${app.formatCurrency(Math.max(0, targetAmount - collected))}</b></span>
+                                </div>
+                            </div>
+                        ` : ''}
+
                         <div class="flex items-center justify-between gap-3 relative z-10">
                             <div>
                                 <p class="text-[9px] text-slate-400 uppercase font-bold">Installment</p>
                                 <div class="flex items-center gap-1 mt-0.5">
-                                    <p class="text-xs font-bold ${isInstCleared ? 'text-green-600' : 'text-slate-800'}">${app.formatCurrency(installment)}</p>
-                                    ${isInstCleared ? '<i data-lucide="check-circle" class="w-4 h-4 text-green-500 drop-shadow-sm"></i>' : ''}
+                                    <p class="text-xs font-bold ${isFullyCleared ? 'text-emerald-600' : (isPartialPayment ? 'text-amber-800 font-extrabold' : 'text-slate-800')}" >${app.formatCurrency(installment)}</p>
+                                    ${isFullyCleared ? '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 drop-shadow-sm"></i>' : ''}
                                 </div>
                             </div>
                             
                             <div class="flex-1 flex flex-col items-end gap-0.5">
                                 <div class="text-[9px] text-slate-500 font-semibold uppercase flex flex-col items-end gap-0.5">
                                     <div class="flex items-center gap-1">
-                                        Paid: <span class="${collected > 0 ? 'text-green-600 text-sm drop-shadow-sm' : 'text-slate-400 text-xs'} font-black">${app.formatCurrency(collected)}</span>
+                                        Paid: <span class="${collected > 0 ? (isFullyCleared ? 'text-emerald-600 text-sm' : 'text-amber-700 text-sm') : 'text-slate-400 text-xs'} font-black">${app.formatCurrency(collected)}</span>
                                     </div>
-                                    ${collected > totalDue ? `<span class="bg-green-100 text-green-700 border border-green-200 px-1 py-0.5 rounded text-[8px] font-bold mt-0.5">Adv: ${app.formatCurrency(collected - totalDue)}</span>` : ''}
+                                    ${collected > targetAmount ? `<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-1 py-0.5 rounded text-[8px] font-bold mt-0.5">Adv: ${app.formatCurrency(collected - targetAmount)}</span>` : ''}
                                 </div>
                                 <button onclick="app.openCollectEMIModal('${e.id}')"
-                                        class="${isFullyCleared ? 'bg-green-50 hover:bg-green-100 text-green-800 border border-green-200' : ((e.brand || '').toString().toLowerCase().includes('mahindra') ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-aci-blue hover:bg-blue-800 text-white')} px-2.5 py-1.5 rounded-lg text-[10px] font-black tracking-wider uppercase transition-colors shadow-sm flex items-center gap-1 mt-1">
-                                    <i data-lucide="wallet" class="w-3.5 h-3.5"></i> ${isFullyCleared ? 'Details' : 'Collect EMI'}
+                                        class="${isFullyCleared ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200' : (isPartialPayment ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-md' : ((e.brand || '').toString().toLowerCase().includes('mahindra') ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-aci-blue hover:bg-blue-800 text-white'))} px-3 py-1.5 rounded-xl text-[10px] font-black tracking-wider uppercase transition-all shadow-sm flex items-center gap-1 mt-1">
+                                    <i data-lucide="wallet" class="w-3.5 h-3.5"></i> ${isFullyCleared ? 'Details' : (isPartialPayment ? 'Add Collection' : 'Collect EMI')}
                                 </button>
                             </div>
                         </div>
@@ -13195,7 +13538,14 @@ approveManualDelivery: async (id) => {
                     const cardStatus = card.dataset.status || '';
 
                     const matchesSearch = cust.includes(query) || code.includes(query);
-                    const matchesStatus = status === 'all' || status === cardStatus;
+                    let matchesStatus = false;
+                    if (status === 'all') {
+                        matchesStatus = true;
+                    } else if (status === 'paid_all') {
+                        matchesStatus = cardStatus === 'paid' || cardStatus === 'partial';
+                    } else {
+                        matchesStatus = status === cardStatus;
+                    }
 
                     if (matchesSearch && matchesStatus) {
                         card.style.display = 'block';
@@ -13321,6 +13671,267 @@ approveManualDelivery: async (id) => {
                     app.closeCollectEMIModal();
                     app.renderSOEMI(); // Re-render instantly, preserving filter/search states
                     app.updateSOBadge();
+                }
+            },
+
+            openEditAdminEMIModal: (emiId) => {
+                const emi = DB.emi.find(e => e.id === emiId);
+                if (!emi) return;
+
+                let modal = document.getElementById('edit-admin-emi-modal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'edit-admin-emi-modal';
+                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+                    document.body.appendChild(modal);
+                }
+
+                // Get list of territories for the dropdown
+                const territoryOptions = DB.territories.map(t => 
+                    `<option value="${t.id}" ${t.id === emi.territory_id ? 'selected' : ''}>${t.name}</option>`
+                ).join('');
+
+                // Initial collection rate calculation
+                const totalDue = Number(emi.installment || 0) + Number(emi.overdue_total || 0);
+                const rate = totalDue > 0 ? Math.round((Number(emi.collected || 0) / totalDue) * 100) : 0;
+
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="app.closeEditAdminEMIModal()"></div>
+                    <div class="bg-white/95 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg m-4 relative z-10 shadow-2xl border border-white/60 transform transition-all scale-100 flex flex-col max-h-[90vh]">
+                        
+                        <!-- Header -->
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                            <div>
+                                <span class="bg-indigo-500/10 text-indigo-700 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-indigo-500/20">
+                                    Account Configuration
+                                </span>
+                                <h3 class="font-black text-slate-800 text-base mt-1">Edit EMI Account Details</h3>
+                            </div>
+                            <button onclick="app.closeEditAdminEMIModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-red-500 flex items-center justify-center transition-colors">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div class="overflow-y-auto pr-1 flex-1 custom-scrollbar space-y-4">
+                            <!-- Info Bar -->
+                            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-4 flex justify-between items-center relative overflow-hidden shadow-md">
+                                <div class="absolute right-0 top-0 w-24 h-24 bg-white/5 rounded-full blur-xl -mr-6 -mt-6"></div>
+                                <div class="relative z-10">
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Customer Details</div>
+                                    <div class="font-black text-sm mt-0.5" id="lbl-cust-name">${emi.customer}</div>
+                                    <div class="text-[10px] text-indigo-300 font-mono font-bold mt-0.5">CODE: ${emi.customer_code || 'N/A'}</div>
+                                </div>
+                                <div class="text-right relative z-10">
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Model Info</div>
+                                    <div class="font-extrabold text-xs text-indigo-200 mt-0.5">${emi.brand} ${emi.model || ''}</div>
+                                    <div class="text-[9px] text-emerald-400 font-bold mt-0.5">Inst. #${emi.installment_no || 1}</div>
+                                </div>
+                            </div>
+
+                            <form id="edit-emi-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Customer Name</label>
+                                    <input type="text" id="emi-edit-customer" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-bold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.customer || ''}">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Customer Code</label>
+                                    <input type="text" id="emi-edit-code" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-mono font-bold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.customer_code || ''}">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Phone Number</label>
+                                    <input type="text" id="emi-edit-phone" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-bold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.phone || ''}">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Location</label>
+                                    <input type="text" id="emi-edit-location" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-bold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.location || ''}">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Territory</label>
+                                    <select id="emi-edit-territory" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-bold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm cursor-pointer">
+                                        ${territoryOptions}
+                                    </select>
+                                </div>
+
+                                <div class="border-t border-slate-100 pt-3 md:col-span-2 mt-2">
+                                    <h4 class="text-xs font-black text-slate-700 mb-3 flex items-center gap-1.5"><i data-lucide="wallet" class="w-3.5 h-3.5 text-indigo-500"></i> Financial Breakdown</h4>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Installment Amount (৳)</label>
+                                    <input type="number" id="emi-edit-installment" oninput="app.recalculateLiveEMIProgress()" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-extrabold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.installment || 0}">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Overdue Amount (৳)</label>
+                                    <input type="number" id="emi-edit-overdue" oninput="app.recalculateLiveEMIProgress()" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-extrabold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.overdue_total || 0}">
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-[10px] uppercase font-black text-slate-400 tracking-wider mb-1">Collected Amount (৳)</label>
+                                    <input type="number" id="emi-edit-collected" oninput="app.recalculateLiveEMIProgress()" class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white text-xs font-extrabold text-slate-800 rounded-xl px-3 py-2 focus:outline-none transition-all shadow-sm" value="${emi.collected || 0}">
+                                </div>
+                            </form>
+
+                            <!-- Live Visual Progress Calculator -->
+                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mt-2">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Live Recovery Rate</div>
+                                    <div class="text-right">
+                                        <span id="emi-live-rate-badge" class="px-2 py-0.5 rounded text-[9px] font-black transition-all">
+                                            ${rate}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden shadow-inner relative">
+                                    <div id="emi-live-progress-bar" class="h-full rounded-full transition-all duration-300 shadow bg-gradient-to-r" style="width: ${Math.min(rate, 100)}%;"></div>
+                                </div>
+                                <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1.5">
+                                    <span>Collected: <b class="text-green-600 font-extrabold" id="emi-live-collected-lbl">${app.formatCurrency(emi.collected || 0)}</b></span>
+                                    <span>Total Due: <b class="text-slate-700 font-extrabold" id="emi-live-due-lbl">${app.formatCurrency(totalDue)}</b></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div class="flex gap-3 mt-5 pt-3 border-t border-slate-100">
+                            <button onclick="app.closeEditAdminEMIModal()" class="flex-1 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-xs transition-colors flex items-center justify-center gap-1.5">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i> Cancel
+                            </button>
+                            <button onclick="app.saveAdminEMI('${emi.id}')" class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-extrabold text-xs hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-md">
+                                <i data-lucide="check" class="w-3.5 h-3.5"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                // Colorize the live rate badge on load
+                app.recalculateLiveEMIProgress();
+                app.refreshIcons();
+            },
+
+            closeEditAdminEMIModal: () => {
+                const modal = document.getElementById('edit-admin-emi-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            },
+
+            recalculateLiveEMIProgress: () => {
+                const instVal = parseFloat(document.getElementById('emi-edit-installment').value) || 0;
+                const overdueVal = parseFloat(document.getElementById('emi-edit-overdue').value) || 0;
+                const colVal = parseFloat(document.getElementById('emi-edit-collected').value) || 0;
+                const custName = document.getElementById('emi-edit-customer').value;
+
+                if (document.getElementById('lbl-cust-name') && custName) {
+                    document.getElementById('lbl-cust-name').innerText = custName;
+                }
+
+                const totalDue = instVal + overdueVal;
+                const rate = totalDue > 0 ? Math.round((colVal / totalDue) * 100) : 0;
+
+                // Update labels
+                document.getElementById('emi-live-collected-lbl').innerText = app.formatCurrency(colVal);
+                document.getElementById('emi-live-due-lbl').innerText = app.formatCurrency(totalDue);
+                
+                // Update progress bar width
+                const bar = document.getElementById('emi-live-progress-bar');
+                if (bar) {
+                    bar.style.width = `${Math.min(rate, 100)}%`;
+                    // Visual color gradient updates
+                    bar.className = 'h-full rounded-full transition-all duration-300 shadow';
+                    if (rate >= 100) {
+                        bar.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-teal-500');
+                    } else if (rate >= 80) {
+                        bar.classList.add('bg-gradient-to-r', 'from-lime-500', 'to-emerald-500');
+                    } else if (rate >= 60) {
+                        bar.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-orange-500');
+                    } else {
+                        bar.classList.add('bg-gradient-to-r', 'from-rose-500', 'to-red-500');
+                    }
+                }
+
+                // Update badge classes
+                const badge = document.getElementById('emi-live-rate-badge');
+                if (badge) {
+                    badge.innerText = `${rate}% Recovery`;
+                    badge.className = 'px-2 py-0.5 rounded text-[9px] font-black transition-all';
+                    if (rate >= 100) {
+                        badge.classList.add('bg-emerald-100', 'text-emerald-700', 'border', 'border-emerald-200');
+                    } else if (rate >= 80) {
+                        badge.classList.add('bg-lime-100', 'text-lime-700', 'border', 'border-lime-200');
+                    } else if (rate >= 60) {
+                        badge.classList.add('bg-amber-100', 'text-amber-700', 'border', 'border-amber-200');
+                    } else {
+                        badge.classList.add('bg-rose-100', 'text-rose-700', 'border', 'border-rose-200');
+                    }
+                }
+            },
+
+            saveAdminEMI: async (emiId) => {
+                const customer = document.getElementById('emi-edit-customer').value.trim();
+                const code = document.getElementById('emi-edit-code').value.trim();
+                const phone = document.getElementById('emi-edit-phone').value.trim();
+                const location = document.getElementById('emi-edit-location').value.trim();
+                const territoryId = document.getElementById('emi-edit-territory').value;
+                const installment = parseFloat(document.getElementById('emi-edit-installment').value) || 0;
+                const overdue = parseFloat(document.getElementById('emi-edit-overdue').value) || 0;
+                const collected = parseFloat(document.getElementById('emi-edit-collected').value) || 0;
+
+                if (!customer) {
+                    app.showToast('Customer Name cannot be empty.', 'error');
+                    return;
+                }
+
+                app.showLoader('Saving customer details...');
+                try {
+                    const emiRecord = DB.emi.find(e => e.id === emiId);
+                    if (!emiRecord) {
+                        app.showToast('EMI record not found.', 'error');
+                        return;
+                    }
+
+                    // Update local DB safely
+                    emiRecord.customer = customer;
+                    emiRecord.customer_code = code;
+                    emiRecord.phone = phone;
+                    emiRecord.location = location;
+                    emiRecord.territory_id = territoryId;
+                    emiRecord.installment = installment;
+                    emiRecord.overdue_total = overdue;
+                    emiRecord.collected = collected;
+
+                    // Update SQL Database if active
+                    if (app.neonSQL) {
+                        await app.neonSQL`UPDATE emi SET 
+                            customer = ${customer}, 
+                            customer_code = ${code}, 
+                            phone = ${phone}, 
+                            location = ${location}, 
+                            territory_id = ${territoryId}, 
+                            installment = ${installment}, 
+                            overdue_total = ${overdue}, 
+                            collected = ${collected}
+                        WHERE id = ${emiId}`;
+                    }
+
+                    app.showToast('Account details saved successfully.', 'success');
+                    app.closeEditAdminEMIModal();
+                    
+                    // Re-render
+                    app.renderAdminEMI();
+                } catch (err) {
+                    console.error('Failed to save EMI updates:', err);
+                    app.showToast('Failed to save updates to the database.', 'error');
+                } finally {
+                    app.hideLoader();
                 }
             },
 
