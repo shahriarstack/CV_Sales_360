@@ -221,11 +221,17 @@ async function run() {
 
         console.log(`Uploading ${preparedFiles.length} files to "${config.docRoot}"...`);
         await uploadFiles(config.docRoot, preparedFiles);
-        console.log("✓ Files uploaded to sales successfully!");
+        console.log(`✓ Files uploaded to ${config.subdomain} successfully!`);
         
-        console.log(`Uploading ${preparedFiles.length} files to "public_html/sales360"...`);
-        await uploadFiles("public_html/sales360", preparedFiles);
-        console.log("✓ Files uploaded to sales360 successfully!");
+        // Remove secondary subdomain sales360 if it exists on cPanel
+        try {
+            await makeRequest('SubDomain', 'delsubdomain', {
+                domain: 'sales360_' + config.rootDomain
+            });
+            console.log("✓ Secondary subdomain sales360 removed.");
+        } catch (e) {
+            // Ignore if already gone
+        }
         
         console.log("\n=============================================");
         console.log("✓ DEPLOYMENT COMPLETED SUCCESSFULY!");
