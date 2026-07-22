@@ -2501,175 +2501,176 @@
             captureEMIReport: async () => {
                 app.showLoader('Generating EMI Report...');
 
-                // Gather data (unfiltered — all territories, 1st & 2nd installments)
-                const emiData = (DB.emi || []).filter(e => {
-                    const instNo = e.installment_no;
-                    return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
-                });
-
-                const territorySummary = (DB.territories || []).map(t => {
-                    const tEmi = emiData.filter(e => e.territory_id === t.id);
-                    const totalCust = tEmi.length;
-                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
-                    const nonPayingCust = totalCust - payingCust;
-                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
-                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
-                    const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
-                    return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
-
-                // Grand totals
-                const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
-                const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
-                const grandNonPaying = territorySummary.reduce((s, t) => s + t.nonPayingCust, 0);
-                const grandDue = territorySummary.reduce((s, t) => s + t.tTotalDue, 0);
-                const grandCol = territorySummary.reduce((s, t) => s + t.tAmountCol, 0);
-                const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
-
-                const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-                // Strict single A4 page fit math (730px table height budget)
-                const n = territorySummary.length;
-                const budget = 730; 
-                const theadPx = 22;
-                const rh = Math.max(13, Math.min(22, Math.floor((budget - theadPx) / (n + 1))));
-                const fs = Math.max(8, Math.min(10, rh * 0.52));
-
-                const cs = (clr, align, extra) =>
-                    `font-size:${fs}px;line-height:1.15;color:${clr};padding:1px 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;box-sizing:border-box;overflow:hidden;${extra||''}`;
-
-                const tableRowsHTML = territorySummary.map((t, i) => {
-                    const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
-                    const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
-                    const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
-                    return `<tr style="height:${rh}px;background:${bg};">
-                        <td style="${cs('#0f172a','left','padding-left:10px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:${fs-1}px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
-                        <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
-                        <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
-                        <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
-                        <td style="${cs('#475569','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
-                        <td style="${cs('#2563eb','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
-                        <td style="${cs('#0f172a','center','font-weight:800;')}">
-                            <span style="display:inline-block;background:${rBg};color:${rc};padding:1px 5px;border-radius:4px;font-size:${fs-0.5}px;line-height:1;">${t.tColRate}%</span>
-                        </td>
-                    </tr>`;
-                }).join('');
-
-                const totalRowHTML = `<tr style="height:${rh+2}px;background:#0f172a;">
-                    <td style="${cs('#ffffff','left','padding-left:10px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
-                    <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
-                    <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
-                    <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
-                    <td style="${cs('#f1f5f9','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
-                    <td style="${cs('#60a5fa','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
-                    <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
-                </tr>`;
-
-                // Build off-screen A4 container
-                const container = document.createElement('div');
-                container.id = 'emi-report-capture';
-                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#ffffff;font-family:'Inter','Segoe UI',sans-serif;box-sizing:border-box;overflow:hidden;";
-
-                container.innerHTML = `
-                <div style="width:794px;height:1123px;background:#ffffff;padding:18px 24px 14px 24px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;overflow:hidden;">
-                    <!-- Top Accent Border Line -->
-                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
-
-                    <!-- Header Row -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-shrink:0;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-                                <span style="background:#0f172a;color:#ffffff;font-size:7.5px;font-weight:900;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
-                                <span style="color:#64748b;font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
-                            </div>
-                            <h1 style="font-size:15.5px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
-                            <div style="font-size:8px;color:#64748b;margin-top:2px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:3px 8px;border-radius:6px;display:inline-block;">
-                                <div style="font-size:8.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
-                                <div style="font-size:7px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Minimal Metric Cards Row -->
-                    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;margin-bottom:10px;flex-shrink:0;">
-                        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#64748b;text-transform:uppercase;line-height:1;">Total Accounts</div>
-                            <div style="font-size:12px;font-weight:900;color:#0f172a;margin-top:2px;line-height:1;">${grandCust}</div>
-                        </div>
-                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#166534;text-transform:uppercase;line-height:1;">Paying / Unpaid</div>
-                            <div style="font-size:12px;font-weight:900;color:#15803d;margin-top:2px;line-height:1;">${grandPaying} <span style="font-size:8.5px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
-                        </div>
-                        <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#1e40af;text-transform:uppercase;line-height:1;">Total Collected</div>
-                            <div style="font-size:12px;font-weight:900;color:#1d4ed8;margin-top:2px;line-height:1;">${app.formatCurrency(grandCol)}</div>
-                        </div>
-                        <div style="background:#fffbeb;border:1px solid #fde68a;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#92400e;text-transform:uppercase;line-height:1;">Recovery Rate</div>
-                            <div style="font-size:12px;font-weight:900;color:#b45309;margin-top:2px;line-height:1;">${grandRate}%</div>
-                        </div>
-                    </div>
-
-                    <!-- Table Header Label -->
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:4px;margin-bottom:4px;border-bottom:1.5px solid #cbd5e1;flex-shrink:0;">
-                        <span style="font-size:8px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Territory Performance Ranking</span>
-                        <span style="font-size:7.5px;font-weight:700;color:#64748b;">Currency in BDT (৳)</span>
-                    </div>
-
-                    <!-- Table Content -->
-                    <div style="flex:1;overflow:hidden;">
-                        <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
-                            <colgroup>
-                                <col style="width:28%;">
-                                <col style="width:9%;">
-                                <col style="width:9%;">
-                                <col style="width:11%;">
-                                <col style="width:18%;">
-                                <col style="width:17%;">
-                                <col style="width:8%;">
-                            </colgroup>
-                            <thead>
-                                <tr style="height:${theadPx}px;background:#0f172a;color:#ffffff;">
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 10px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Sales Territory</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Total</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#4ade80;line-height:1.15;">Paying</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#f87171;line-height:1.15;">Unpaid</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Due (Inst)</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#60a5fa;line-height:1.15;">Collected</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Rate %</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRowsHTML}
-                                ${totalRowHTML}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Minimal Footer -->
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:4px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;font-weight:600;line-height:1;">
-                        <span>Sales360 System | ACI Motors Limited © ${new Date().getFullYear()}</span>
-                        <span>Page 1 of 1 (Single Page Report)</span>
-                    </div>
-                </div>
-                `;
-
-                document.body.appendChild(container);
-
-                await new Promise(r => setTimeout(r, 300));
-
                 try {
+                    // 1. Await document.fonts.ready to ensure all web fonts are fully loaded
+                    if (document.fonts && document.fonts.ready) {
+                        await document.fonts.ready;
+                    }
+
+                    const emiData = (DB.emi || []).filter(e => {
+                        const instNo = e.installment_no;
+                        return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                    });
+
+                    const territorySummary = (DB.territories || []).map(t => {
+                        const tEmi = emiData.filter(e => e.territory_id === t.id);
+                        const totalCust = tEmi.length;
+                        const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
+                        const nonPayingCust = totalCust - payingCust;
+                        const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                        const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                        const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
+                        return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
+                    }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
+
+                    const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
+                    const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
+                    const grandNonPaying = territorySummary.reduce((s, t) => s + t.nonPayingCust, 0);
+                    const grandDue = territorySummary.reduce((s, t) => s + t.tTotalDue, 0);
+                    const grandCol = territorySummary.reduce((s, t) => s + t.tAmountCol, 0);
+                    const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
+
+                    const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    // Dynamic font size and padding calculation (No fixed row height or overflow clipping)
+                    const n = territorySummary.length;
+                    const fs = n > 30 ? 8 : (n > 20 ? 8.5 : 9);
+                    const padY = n > 30 ? 2 : (n > 20 ? 2.5 : 3.5);
+
+                    const cs = (clr, align, extra) =>
+                        `font-size:${fs}px;line-height:normal;color:${clr};padding:${padY}px 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;${extra||''}`;
+
+                    const tableRowsHTML = territorySummary.map((t, i) => {
+                        const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
+                        const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                        const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
+                        return `<tr style="background:${bg};">
+                            <td style="${cs('#0f172a','left','padding-left:10px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:${fs-1}px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
+                            <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
+                            <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
+                            <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
+                            <td style="${cs('#475569','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                            <td style="${cs('#2563eb','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                            <td style="${cs('#0f172a','center','font-weight:800;')}">
+                                <span style="display:inline-block;background:${rBg};color:${rc};padding:2px 6px;border-radius:4px;font-size:${fs-0.5}px;line-height:normal;font-weight:800;">${t.tColRate}%</span>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    const totalRowHTML = `<tr style="background:#0f172a;">
+                        <td style="${cs('#ffffff','left','padding-left:10px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
+                        <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
+                        <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
+                        <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
+                        <td style="${cs('#f1f5f9','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                        <td style="${cs('#60a5fa','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                        <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
+                    </tr>`;
+
+                    // Off-screen container
+                    const container = document.createElement('div');
+                    container.id = 'emi-report-capture';
+                    container.style.cssText = "position:absolute;left:-9999px;top:0;width:794px;z-index:99999;background:#ffffff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box;";
+
+                    container.innerHTML = `
+                    <div style="width:794px;background:#ffffff;padding:20px 24px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
+
+                        <!-- Header Row -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <div>
+                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                    <span style="background:#0f172a;color:#ffffff;font-size:8px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
+                                    <span style="color:#64748b;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
+                                </div>
+                                <h1 style="font-size:16px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:normal;">1st &amp; 2nd EMI Collection Performance</h1>
+                                <div style="font-size:8.5px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
+                                    <div style="font-size:9px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
+                                    <div style="font-size:7.5px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Minimal Metric Cards Row -->
+                        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:12px;">
+                            <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#64748b;text-transform:uppercase;line-height:normal;">Total Accounts</div>
+                                <div style="font-size:13px;font-weight:900;color:#0f172a;margin-top:2px;line-height:normal;">${grandCust}</div>
+                            </div>
+                            <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#166534;text-transform:uppercase;line-height:normal;">Paying / Unpaid</div>
+                                <div style="font-size:13px;font-weight:900;color:#15803d;margin-top:2px;line-height:normal;">${grandPaying} <span style="font-size:9.5px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
+                            </div>
+                            <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#1e40af;text-transform:uppercase;line-height:normal;">Total Collected</div>
+                                <div style="font-size:13px;font-weight:900;color:#1d4ed8;margin-top:2px;line-height:normal;">${app.formatCurrency(grandCol)}</div>
+                            </div>
+                            <div style="background:#fffbeb;border:1px solid #fde68a;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#92400e;text-transform:uppercase;line-height:normal;">Recovery Rate</div>
+                                <div style="font-size:13px;font-weight:900;color:#b45309;margin-top:2px;line-height:normal;">${grandRate}%</div>
+                            </div>
+                        </div>
+
+                        <!-- Table Label -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:4px;margin-bottom:6px;border-bottom:1.5px solid #cbd5e1;">
+                            <span style="font-size:8.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Territory Performance Ranking</span>
+                            <span style="font-size:8px;font-weight:700;color:#64748b;">Currency in BDT (৳)</span>
+                        </div>
+
+                        <!-- Table Content -->
+                        <div>
+                            <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
+                                <colgroup>
+                                    <col style="width:28%;">
+                                    <col style="width:9%;">
+                                    <col style="width:9%;">
+                                    <col style="width:11%;">
+                                    <col style="width:18%;">
+                                    <col style="width:17%;">
+                                    <col style="width:8%;">
+                                </colgroup>
+                                <thead>
+                                    <tr style="background:#0f172a;color:#ffffff;">
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 10px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Sales Territory</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Total</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#4ade80;line-height:normal;">Paying</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#f87171;line-height:normal;">Unpaid</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Due (Inst)</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#60a5fa;line-height:normal;">Collected</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Rate %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRowsHTML}
+                                    ${totalRowHTML}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7.5px;color:#94a3b8;font-weight:600;line-height:normal;">
+                            <span>Sales360 System | ACI Motors Limited © ${new Date().getFullYear()}</span>
+                            <span>Page 1 of 1 (Executive Report)</span>
+                        </div>
+                    </div>
+                    `;
+
+                    document.body.appendChild(container);
+
+                    // Allow layout pass & fonts to settle
+                    await new Promise(r => setTimeout(r, 250));
+
+                    const scale = Math.max(2, window.devicePixelRatio || 2);
                     const canvas = await html2canvas(container, {
-                        scale: 2,
+                        scale: scale,
                         useCORS: true,
+                        logging: false,
                         backgroundColor: '#ffffff',
                         width: 794,
-                        height: 1123,
-                        windowWidth: 794,
-                        windowHeight: 1123
+                        windowWidth: 794
                     });
 
                     const link = document.createElement('a');
@@ -2681,10 +2682,12 @@
                     console.error('EMI report capture failed:', err);
                     app.showToast('Failed to capture report. Please try again.', 'error');
                 } finally {
-                    document.body.removeChild(container);
+                    const c = document.getElementById('emi-report-capture');
+                    if (c) document.body.removeChild(c);
                     app.hideLoader();
                 }
             },
+
 
 
 
@@ -3931,175 +3934,176 @@
             captureEMIReport: async () => {
                 app.showLoader('Generating EMI Report...');
 
-                // Gather data (unfiltered — all territories, 1st & 2nd installments)
-                const emiData = (DB.emi || []).filter(e => {
-                    const instNo = e.installment_no;
-                    return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
-                });
-
-                const territorySummary = (DB.territories || []).map(t => {
-                    const tEmi = emiData.filter(e => e.territory_id === t.id);
-                    const totalCust = tEmi.length;
-                    const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
-                    const nonPayingCust = totalCust - payingCust;
-                    const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
-                    const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
-                    const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
-                    return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
-
-                // Grand totals
-                const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
-                const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
-                const grandNonPaying = territorySummary.reduce((s, t) => s + t.nonPayingCust, 0);
-                const grandDue = territorySummary.reduce((s, t) => s + t.tTotalDue, 0);
-                const grandCol = territorySummary.reduce((s, t) => s + t.tAmountCol, 0);
-                const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
-
-                const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-                // Strict single A4 page fit math (730px table height budget)
-                const n = territorySummary.length;
-                const budget = 730; 
-                const theadPx = 22;
-                const rh = Math.max(13, Math.min(22, Math.floor((budget - theadPx) / (n + 1))));
-                const fs = Math.max(8, Math.min(10, rh * 0.52));
-
-                const cs = (clr, align, extra) =>
-                    `font-size:${fs}px;line-height:1.15;color:${clr};padding:1px 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;box-sizing:border-box;overflow:hidden;${extra||''}`;
-
-                const tableRowsHTML = territorySummary.map((t, i) => {
-                    const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
-                    const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
-                    const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
-                    return `<tr style="height:${rh}px;background:${bg};">
-                        <td style="${cs('#0f172a','left','padding-left:10px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:${fs-1}px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
-                        <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
-                        <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
-                        <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
-                        <td style="${cs('#475569','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
-                        <td style="${cs('#2563eb','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
-                        <td style="${cs('#0f172a','center','font-weight:800;')}">
-                            <span style="display:inline-block;background:${rBg};color:${rc};padding:1px 5px;border-radius:4px;font-size:${fs-0.5}px;line-height:1;">${t.tColRate}%</span>
-                        </td>
-                    </tr>`;
-                }).join('');
-
-                const totalRowHTML = `<tr style="height:${rh+2}px;background:#0f172a;">
-                    <td style="${cs('#ffffff','left','padding-left:10px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
-                    <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
-                    <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
-                    <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
-                    <td style="${cs('#f1f5f9','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
-                    <td style="${cs('#60a5fa','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
-                    <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
-                </tr>`;
-
-                // Build off-screen A4 container
-                const container = document.createElement('div');
-                container.id = 'emi-report-capture';
-                container.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;height:1123px;z-index:99999;background:#ffffff;font-family:'Inter','Segoe UI',sans-serif;box-sizing:border-box;overflow:hidden;";
-
-                container.innerHTML = `
-                <div style="width:794px;height:1123px;background:#ffffff;padding:18px 24px 14px 24px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;overflow:hidden;">
-                    <!-- Top Accent Border Line -->
-                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
-
-                    <!-- Header Row -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-shrink:0;">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-                                <span style="background:#0f172a;color:#ffffff;font-size:7.5px;font-weight:900;padding:2px 7px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
-                                <span style="color:#64748b;font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
-                            </div>
-                            <h1 style="font-size:15.5px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
-                            <div style="font-size:8px;color:#64748b;margin-top:2px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:3px 8px;border-radius:6px;display:inline-block;">
-                                <div style="font-size:8.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
-                                <div style="font-size:7px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Minimal Metric Cards Row -->
-                    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;margin-bottom:10px;flex-shrink:0;">
-                        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#64748b;text-transform:uppercase;line-height:1;">Total Accounts</div>
-                            <div style="font-size:12px;font-weight:900;color:#0f172a;margin-top:2px;line-height:1;">${grandCust}</div>
-                        </div>
-                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#166534;text-transform:uppercase;line-height:1;">Paying / Unpaid</div>
-                            <div style="font-size:12px;font-weight:900;color:#15803d;margin-top:2px;line-height:1;">${grandPaying} <span style="font-size:8.5px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
-                        </div>
-                        <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#1e40af;text-transform:uppercase;line-height:1;">Total Collected</div>
-                            <div style="font-size:12px;font-weight:900;color:#1d4ed8;margin-top:2px;line-height:1;">${app.formatCurrency(grandCol)}</div>
-                        </div>
-                        <div style="background:#fffbeb;border:1px solid #fde68a;padding:5px 8px;border-radius:6px;box-sizing:border-box;">
-                            <div style="font-size:7px;font-weight:800;color:#92400e;text-transform:uppercase;line-height:1;">Recovery Rate</div>
-                            <div style="font-size:12px;font-weight:900;color:#b45309;margin-top:2px;line-height:1;">${grandRate}%</div>
-                        </div>
-                    </div>
-
-                    <!-- Table Header Label -->
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:4px;margin-bottom:4px;border-bottom:1.5px solid #cbd5e1;flex-shrink:0;">
-                        <span style="font-size:8px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Territory Performance Ranking</span>
-                        <span style="font-size:7.5px;font-weight:700;color:#64748b;">Currency in BDT (৳)</span>
-                    </div>
-
-                    <!-- Table Content -->
-                    <div style="flex:1;overflow:hidden;">
-                        <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
-                            <colgroup>
-                                <col style="width:28%;">
-                                <col style="width:9%;">
-                                <col style="width:9%;">
-                                <col style="width:11%;">
-                                <col style="width:18%;">
-                                <col style="width:17%;">
-                                <col style="width:8%;">
-                            </colgroup>
-                            <thead>
-                                <tr style="height:${theadPx}px;background:#0f172a;color:#ffffff;">
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 10px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Sales Territory</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Total</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#4ade80;line-height:1.15;">Paying</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#f87171;line-height:1.15;">Unpaid</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Due (Inst)</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#60a5fa;line-height:1.15;">Collected</th>
-                                    <th style="font-size:${fs-0.5}px;font-weight:800;padding:0 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.15;">Rate %</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRowsHTML}
-                                ${totalRowHTML}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Minimal Footer -->
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:4px;border-top:1px solid #e2e8f0;font-size:7px;color:#94a3b8;flex-shrink:0;font-weight:600;line-height:1;">
-                        <span>Sales360 System | ACI Motors Limited © ${new Date().getFullYear()}</span>
-                        <span>Page 1 of 1 (Single Page Report)</span>
-                    </div>
-                </div>
-                `;
-
-                document.body.appendChild(container);
-
-                await new Promise(r => setTimeout(r, 300));
-
                 try {
+                    // 1. Await document.fonts.ready to ensure all web fonts are fully loaded
+                    if (document.fonts && document.fonts.ready) {
+                        await document.fonts.ready;
+                    }
+
+                    const emiData = (DB.emi || []).filter(e => {
+                        const instNo = e.installment_no;
+                        return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                    });
+
+                    const territorySummary = (DB.territories || []).map(t => {
+                        const tEmi = emiData.filter(e => e.territory_id === t.id);
+                        const totalCust = tEmi.length;
+                        const payingCust = tEmi.filter(e => Number(e.collected || 0) > 0).length;
+                        const nonPayingCust = totalCust - payingCust;
+                        const tTotalDue = tEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
+                        const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
+                        const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
+                        return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
+                    }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
+
+                    const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
+                    const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
+                    const grandNonPaying = territorySummary.reduce((s, t) => s + t.nonPayingCust, 0);
+                    const grandDue = territorySummary.reduce((s, t) => s + t.tTotalDue, 0);
+                    const grandCol = territorySummary.reduce((s, t) => s + t.tAmountCol, 0);
+                    const grandRate = grandDue > 0 ? Math.round((grandCol / grandDue) * 100) : 0;
+
+                    const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    // Dynamic font size and padding calculation (No fixed row height or overflow clipping)
+                    const n = territorySummary.length;
+                    const fs = n > 30 ? 8 : (n > 20 ? 8.5 : 9);
+                    const padY = n > 30 ? 2 : (n > 20 ? 2.5 : 3.5);
+
+                    const cs = (clr, align, extra) =>
+                        `font-size:${fs}px;line-height:normal;color:${clr};padding:${padY}px 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;${extra||''}`;
+
+                    const tableRowsHTML = territorySummary.map((t, i) => {
+                        const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
+                        const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
+                        const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
+                        return `<tr style="background:${bg};">
+                            <td style="${cs('#0f172a','left','padding-left:10px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:${fs-1}px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
+                            <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
+                            <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
+                            <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
+                            <td style="${cs('#475569','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                            <td style="${cs('#2563eb','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                            <td style="${cs('#0f172a','center','font-weight:800;')}">
+                                <span style="display:inline-block;background:${rBg};color:${rc};padding:2px 6px;border-radius:4px;font-size:${fs-0.5}px;line-height:normal;font-weight:800;">${t.tColRate}%</span>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    const totalRowHTML = `<tr style="background:#0f172a;">
+                        <td style="${cs('#ffffff','left','padding-left:10px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
+                        <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
+                        <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
+                        <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
+                        <td style="${cs('#f1f5f9','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                        <td style="${cs('#60a5fa','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                        <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
+                    </tr>`;
+
+                    // Off-screen container
+                    const container = document.createElement('div');
+                    container.id = 'emi-report-capture';
+                    container.style.cssText = "position:absolute;left:-9999px;top:0;width:794px;z-index:99999;background:#ffffff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box;";
+
+                    container.innerHTML = `
+                    <div style="width:794px;background:#ffffff;padding:20px 24px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
+                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
+
+                        <!-- Header Row -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                            <div>
+                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                    <span style="background:#0f172a;color:#ffffff;font-size:8px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
+                                    <span style="color:#64748b;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
+                                </div>
+                                <h1 style="font-size:16px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:normal;">1st &amp; 2nd EMI Collection Performance</h1>
+                                <div style="font-size:8.5px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
+                                    <div style="font-size:9px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
+                                    <div style="font-size:7.5px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Minimal Metric Cards Row -->
+                        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:12px;">
+                            <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#64748b;text-transform:uppercase;line-height:normal;">Total Accounts</div>
+                                <div style="font-size:13px;font-weight:900;color:#0f172a;margin-top:2px;line-height:normal;">${grandCust}</div>
+                            </div>
+                            <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#166534;text-transform:uppercase;line-height:normal;">Paying / Unpaid</div>
+                                <div style="font-size:13px;font-weight:900;color:#15803d;margin-top:2px;line-height:normal;">${grandPaying} <span style="font-size:9.5px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
+                            </div>
+                            <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#1e40af;text-transform:uppercase;line-height:normal;">Total Collected</div>
+                                <div style="font-size:13px;font-weight:900;color:#1d4ed8;margin-top:2px;line-height:normal;">${app.formatCurrency(grandCol)}</div>
+                            </div>
+                            <div style="background:#fffbeb;border:1px solid #fde68a;padding:6px 10px;border-radius:6px;">
+                                <div style="font-size:7.5px;font-weight:800;color:#92400e;text-transform:uppercase;line-height:normal;">Recovery Rate</div>
+                                <div style="font-size:13px;font-weight:900;color:#b45309;margin-top:2px;line-height:normal;">${grandRate}%</div>
+                            </div>
+                        </div>
+
+                        <!-- Table Label -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:4px;margin-bottom:6px;border-bottom:1.5px solid #cbd5e1;">
+                            <span style="font-size:8.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Territory Performance Ranking</span>
+                            <span style="font-size:8px;font-weight:700;color:#64748b;">Currency in BDT (৳)</span>
+                        </div>
+
+                        <!-- Table Content -->
+                        <div>
+                            <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
+                                <colgroup>
+                                    <col style="width:28%;">
+                                    <col style="width:9%;">
+                                    <col style="width:9%;">
+                                    <col style="width:11%;">
+                                    <col style="width:18%;">
+                                    <col style="width:17%;">
+                                    <col style="width:8%;">
+                                </colgroup>
+                                <thead>
+                                    <tr style="background:#0f172a;color:#ffffff;">
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 10px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Sales Territory</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Total</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#4ade80;line-height:normal;">Paying</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#f87171;line-height:normal;">Unpaid</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Due (Inst)</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#60a5fa;line-height:normal;">Collected</th>
+                                        <th style="font-size:${fs}px;font-weight:800;padding:5px 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:normal;">Rate %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRowsHTML}
+                                    ${totalRowHTML}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:7.5px;color:#94a3b8;font-weight:600;line-height:normal;">
+                            <span>Sales360 System | ACI Motors Limited © ${new Date().getFullYear()}</span>
+                            <span>Page 1 of 1 (Executive Report)</span>
+                        </div>
+                    </div>
+                    `;
+
+                    document.body.appendChild(container);
+
+                    // Allow layout pass & fonts to settle
+                    await new Promise(r => setTimeout(r, 250));
+
+                    const scale = Math.max(2, window.devicePixelRatio || 2);
                     const canvas = await html2canvas(container, {
-                        scale: 2,
+                        scale: scale,
                         useCORS: true,
+                        logging: false,
                         backgroundColor: '#ffffff',
                         width: 794,
-                        height: 1123,
-                        windowWidth: 794,
-                        windowHeight: 1123
+                        windowWidth: 794
                     });
 
                     const link = document.createElement('a');
@@ -4111,10 +4115,12 @@
                     console.error('EMI report capture failed:', err);
                     app.showToast('Failed to capture report. Please try again.', 'error');
                 } finally {
-                    document.body.removeChild(container);
+                    const c = document.getElementById('emi-report-capture');
+                    if (c) document.body.removeChild(c);
                     app.hideLoader();
                 }
             },
+
 
 
 
