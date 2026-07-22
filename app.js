@@ -8766,146 +8766,167 @@ approveManualDelivery: async (id) => {
                 const viewMode = app.mapViewMode || 'district';
                 if (typeof app.mapSaleType === 'undefined') app.mapSaleType = 'All';
                 const saleTypeTab = app.mapSaleType;
-                const currentFY = app.selectedFY || app.currentFY || '2025-26';
+                const currentFY = app.selectedFY || app.currentFY;
 
-                // Calculate actual sales per district/upazila directly
-                let filteredSales = DB.sales.filter(s => (s.fy === currentFY || !s.fy) && app.mapMonths.includes(s.sales_month));
+                // Filter Data (Actual Sales Only)
+                let filteredSales = DB.sales.filter(s => s.fy === currentFY && app.mapMonths.includes(s.sales_month));
                 if (brandTab !== 'All') filteredSales = filteredSales.filter(s => s.brand === brandTab);
                 if (modelTab !== 'All') filteredSales = filteredSales.filter(s => s.model === modelTab);
                 if (districtTab !== 'All') filteredSales = filteredSales.filter(s => s.district === districtTab);
                 if (saleTypeTab !== 'All') filteredSales = filteredSales.filter(s => s.sale_type === saleTypeTab);
 
+                // Aggregate Data based on View Mode
                 const dataAgg = {};
                 filteredSales.forEach(s => {
                     const key = viewMode === 'district' ? s.district : s.upazila;
                     if (key) dataAgg[key] = (dataAgg[key] || 0) + Number(s.unit_qty || 0);
                 });
 
-                // Default mock fallback counts if DB.sales is empty to guarantee visual data
-                const salesData = Object.keys(dataAgg).length > 0 ? dataAgg : {
-                    'Gazipur': 7, 'Chandpur': 6, 'Cumilla': 6, 'Munshiganj': 6, 'Narsingdi': 6,
-                    'Noakhali': 6, 'Dhaka': 18, 'Chattogram': 14, 'Bogura': 9, 'Sylhet': 11,
-                    'Rajshahi': 8, 'Khulna': 7, 'Barishal': 5, 'Rangpur': 6, 'Jashore': 5,
-                    'Feni': 4, 'Tangail': 5, 'Mymensingh': 6, 'Pabna': 4, 'Dinajpur': 3
-                };
+                const maxSales = Math.max(...Object.values(dataAgg), 1);
+                const totalPlotted = Object.values(dataAgg).reduce((a, b) => a + b, 0);
 
-                const maxSales = Math.max(...Object.values(salesData), 1);
-                const totalPlotted = Object.values(salesData).reduce((a, b) => a + b, 0);
+                const normalizedAgg = {};
+                Object.entries(dataAgg).forEach(([k, v]) => {
+                    normalizedAgg[app.getNormalizedKey(k)] = v;
+                });
+
+                const activeModels = brandTab === 'All' ? DB.models : DB.models.filter(m => m.brand === brandTab);
+                
+                const allDistricts = [...new Set(DB.sales.map(s => s.district).filter(Boolean))].sort();
+                const allUpazilas = [...new Set(DB.sales.filter(s => s.fy === currentFY && (districtTab === 'All' || s.district === districtTab)).map(s => s.upazila).filter(Boolean))].sort();
+
+                const rankedAreas = Object.entries(dataAgg).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty);
+                const allMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
 
                 const mapCoords = {
+                    // 64 Districts of Bangladesh
                     'Dhaka': [23.8103, 90.4125], 'Faridpur': [23.6071, 89.8429], 'Gazipur': [24.0023, 90.4264], 'Gopalganj': [23.0051, 89.8266],
                     'Jamalpur': [24.9375, 89.9378], 'Kishoreganj': [24.4449, 90.7765], 'Madaripur': [23.1641, 90.1897], 'Manikganj': [23.8644, 90.0047],
                     'Munshiganj': [23.5422, 90.5305], 'Mymensingh': [24.7471, 90.4203], 'Narayanganj': [23.6238, 90.5000], 'Narsingdi': [23.9193, 90.7206],
                     'Netrokona': [24.8803, 90.7279], 'Rajbari': [23.7574, 89.6444], 'Shariatpur': [23.2423, 90.4348], 'Sherpur': [25.0205, 90.0153],
-                    'Tangail': [24.2513, 89.9167], 'Bogra': [24.8465, 89.3778], 'Bogura': [24.8465, 89.3778], 'Joypurhat': [25.1018, 89.0270],
+                    'Tangail': [24.2513, 89.9167], 'Bogra': [24.8465, 89.3778], 'Joypurhat': [25.1018, 89.0270],
                     'Naogaon': [24.8103, 88.9414], 'Natore': [24.4102, 88.9834], 'Chapai Nawabganj': [24.5965, 88.2775], 'Pabna': [24.0064, 89.2493],
                     'Rajshahi': [24.3636, 88.6241], 'Sirajganj': [24.4534, 89.7008], 'Dinajpur': [25.6217, 88.6355], 'Gaibandha': [25.3288, 89.5404],
                     'Kurigram': [25.8054, 89.6361], 'Lalmonirhat': [25.9166, 89.4532], 'Nilphamari': [25.9318, 88.8560], 'Panchagarh': [26.3411, 88.5541],
                     'Rangpur': [25.7439, 89.2752], 'Thakurgaon': [26.0332, 88.4616], 'Barguna': [22.1570, 90.1259], 'Barisal': [22.7010, 90.3535],
-                    'Barishal': [22.7010, 90.3535], 'Bhola': [22.6859, 90.6482], 'Jhalokati': [22.6406, 90.1987], 'Patuakhali': [22.3596, 90.3299],
+                    'Bhola': [22.6859, 90.6482], 'Jhalokati': [22.6406, 90.1987], 'Patuakhali': [22.3596, 90.3299],
                     'Pirojpur': [22.5841, 89.9720], 'Bandarban': [21.8311, 92.3686], 'Brahmanbaria': [23.9571, 91.1119], 'Chandpur': [23.2333, 90.6667],
-                    'Chattogram': [22.3569, 91.7832], 'Chittagong': [22.3569, 91.7832], 'Comilla': [23.4607, 91.1809], 'Cumilla': [23.4607, 91.1809],
+                    'Chattogram': [22.3569, 91.7832], 'Comilla': [23.4607, 91.1809],
                     'Coxs Bazar': [21.4333, 91.9833], 'Feni': [23.0159, 91.3976], 'Khagrachhari': [23.1193, 91.9847], 'Lakshmipur': [22.9447, 90.8282],
                     'Noakhali': [22.8696, 91.0994], 'Rangamati': [22.6533, 92.1789], 'Habiganj': [24.3749, 91.4114], 'Moulvibazar': [24.4829, 91.7774],
                     'Sunamganj': [25.0658, 91.3950], 'Sylhet': [24.8949, 91.8687], 'Bagerhat': [22.6516, 89.7859], 'Chuadanga': [23.6402, 88.8418],
-                    'Jashore': [23.1664, 89.2081], 'Jessore': [23.1664, 89.2081], 'Jhenaidah': [23.5448, 89.1539], 'Khulna': [22.8456, 89.5403],
+                    'Jashore': [23.1664, 89.2081], 'Jhenaidah': [23.5448, 89.1539], 'Khulna': [22.8456, 89.5403],
                     'Kushtia': [23.9013, 89.1204], 'Magura': [23.4873, 89.4199], 'Meherpur': [23.7622, 88.6318], 'Narail': [23.1725, 89.5127],
-                    'Satkhira': [22.7185, 89.0705]
+                    'Satkhira': [22.7185, 89.0705],
+                    // Upazilas
+                    'Mirpur': [23.8223, 90.3654], 'Uttara': [23.8759, 90.3976], 'Savar': [23.8583, 90.2667], 'Ashulia': [23.8819, 90.3275],
+                    'Motijheel': [23.7330, 90.4172], 'Jatrabari': [23.7104, 90.4344], 'Keraniganj': [23.6980, 90.3575], 'Demra': [23.7073, 90.4497],
+                    'Pahartali': [22.3600, 91.7800], 'Sitakunda': [22.6200, 91.6500], 'Hathazari': [22.4500, 91.8000],
+                    'Bogura Sadar': [24.8500, 89.3667], 'Rajshahi Sadar': [24.3667, 88.6000], 'Khulna Sadar': [22.8167, 89.5500], 'Jashore Sadar': [23.1667, 89.2000],
+                    'Sylhet Sadar': [24.8833, 91.8667], 'Habiganj Sadar': [24.3833, 91.4167], 'Barishal Sadar': [22.7000, 90.3667], 'Rangpur Sadar': [25.7500, 89.2500], 'Dinajpur Sadar': [25.6333, 88.6333]
                 };
 
-                // Build static SVG node markers
-                const staticNodesHTML = Object.entries(mapCoords).map(([name, coords]) => {
+                // Determine display list of locations to guarantee map is ALWAYS populated with all 64 districts
+                const displayLocations = viewMode === 'district'
+                    ? Object.keys(mapCoords).filter(k => !k.includes('Sadar') && !['Mirpur', 'Uttara', 'Savar', 'Ashulia', 'Motijheel', 'Jatrabari', 'Keraniganj', 'Demra', 'Pahartali', 'Sitakunda', 'Hathazari'].includes(k))
+                    : [...new Set([...Object.keys(dataAgg), ...allUpazilas])];
+
+                // Build rich interactive vector map elements
+                const vectorNodesHTML = displayLocations.map(name => {
+                    const coords = mapCoords[name];
+                    if (!coords) return '';
+
                     const lat = coords[0];
                     const lng = coords[1];
 
-                    // 2D SVG canvas projection
+                    // 2D Projection for Bangladesh Map Canvas
                     const xPct = ((lng - 88.0) / (92.7 - 88.0)) * 74 + 13;
                     const yPct = ((26.8 - lat) / (26.8 - 20.5)) * 74 + 13;
 
-                    const sales = salesData[name] || 0;
+                    const sales = normalizedAgg[app.getNormalizedKey(name)] || 0;
                     const pct = maxSales > 0 ? (sales / maxSales) : 0;
 
                     if (sales > 0) {
                         const color = pct > 0.6 ? '#e11d48' : (pct > 0.3 ? '#f59e0b' : '#3b82f6');
-                        const glow = pct > 0.6 ? 'rgba(225,29,72,0.5)' : (pct > 0.3 ? 'rgba(245,158,11,0.5)' : 'rgba(59,130,246,0.5)');
-                        const size = Math.max(26, 22 + pct * 24);
+                        const glowColor = pct > 0.6 ? 'rgba(225,29,72,0.4)' : (pct > 0.3 ? 'rgba(245,158,11,0.4)' : 'rgba(59,130,246,0.4)');
+                        const size = Math.max(24, 20 + pct * 26);
 
                         return `
-                            <div style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); z-index:30;" class="group cursor-pointer">
-                                <div style="position:absolute; inset:-6px; background:${glow}; border-radius:9999px; animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
-                                <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 12px ${glow};" class="relative rounded-full border-2 border-white flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125">
+                            <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:40;" class="group" title="${name}: ${sales} Units">
+                                <div style="position:absolute; inset:-8px; background:${glowColor}; border-radius:9999px; animation:ping 2.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+                                <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 15px ${glowColor};" class="relative rounded-full border-2 border-white flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125 z-10">
                                     ${sales}
                                 </div>
-                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
+                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
                                     <p class="font-extrabold text-slate-100">${name}</p>
-                                    <p class="text-[10px] text-amber-400 font-bold">${sales} Units Sold</p>
+                                    <p class="text-[10px] text-amber-400 font-bold">${sales} Units Plotted</p>
                                 </div>
                             </div>
                         `;
                     } else {
+                        // Empty district marker dot (Guarantees map outline of Bangladesh is visible even with 0 sales)
                         return `
-                            <div style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); z-index:20;" class="group cursor-pointer" title="${name}">
-                                <div class="w-2.5 h-2.5 rounded-full bg-slate-600/70 border border-slate-400/40 hover:bg-emerald-400 transition-colors"></div>
-                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900 text-white text-[10px] font-semibold py-1 px-2 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
-                                    ${name}
+                            <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:30;" class="group" title="${name}">
+                                <div class="w-3 h-3 rounded-full bg-slate-700/80 border border-slate-500/50 transform transition-transform group-hover:scale-150 group-hover:bg-emerald-400"></div>
+                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/90 text-white text-[10px] font-semibold py-1 px-2 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
+                                    ${name} (0 Sales)
                                 </div>
                             </div>
                         `;
                     }
                 }).join('');
 
-                // Pure static SVG vector map of Bangladesh
+                // High-precision Bangladesh Outline SVG Path
                 const bdMapSvgPath = `
-                    <svg viewBox="0 0 800 1000" class="w-full h-full opacity-30 text-emerald-500 fill-current stroke-emerald-400 stroke-2" style="position:absolute; inset:0; pointer-events:none;">
+                    <svg viewBox="0 0 800 1000" class="w-full h-full opacity-25 text-emerald-500 fill-current stroke-emerald-400 stroke-2" style="position:absolute; inset:0; pointer-events:none;">
                         <path d="M 280 40 L 320 30 L 380 45 L 430 70 L 410 120 L 460 160 L 520 180 L 570 230 L 530 280 L 580 320 L 640 310 L 710 350 L 730 420 L 690 480 L 740 550 L 720 630 L 660 690 L 680 770 L 630 830 L 570 880 L 500 850 L 460 890 L 410 860 L 370 910 L 310 880 L 260 820 L 280 750 L 220 710 L 190 640 L 140 610 L 110 530 L 80 470 L 120 410 L 100 340 L 150 280 L 130 210 L 180 160 L 220 170 L 240 110 Z" />
                     </svg>
                 `;
 
-                const sortedList = Object.entries(salesData).map(([name, sales]) => ({ name, sales })).sort((a, b) => b.sales - a.sales);
-
                 const html = `
-                    <div class="w-full pb-10 flex flex-col space-y-6">
+                    <div class="w-full fade-in pb-10 h-full flex flex-col">
                         
                         <!-- Header & Dynamic Filters -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 shrink-0">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 shrink-0 relative z-50">
                             <div>
-                                <div class="flex items-center gap-2.5">
-                                    <div class="h-5 w-1.5 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-full shadow-sm"></div>
-                                    <h1 class="text-xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-                                        <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
-                                        Geospatial Sales Heatmap
-                                    </h1>
-                                </div>
-                                <p class="text-sm text-slate-500 font-medium mt-2 pl-4">Visualizing actual sales distribution across Bangladesh (FY ${currentFY})</p>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-3">
+                                    <div class="p-2 bg-emerald-100 rounded-xl"><i data-lucide="map-pinned" class="w-6 h-6 text-emerald-600"></i></div> 
+                                    Geospatial Sales Heatmap
+                                </h1>
+                                <p class="text-sm text-slate-500 font-medium mt-2">Visualizing actual sales distribution across Bangladesh (FY ${currentFY})</p>
                             </div>
                             
                             <div class="flex flex-col sm:flex-row items-center gap-3 bg-white border border-slate-200 p-2 rounded-xl shadow-sm flex-wrap justify-end">
+                                <!-- View Toggle -->
                                 <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
                                     <button onclick="app.mapViewMode='district'; app.renderAdminSalesMap()" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'district' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">District View</button>
                                     <button onclick="app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'upazila' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}">Upazila View</button>
                                 </div>
                                 <div class="hidden sm:block w-px h-6 bg-slate-200 mx-1"></div>
                                 
+                                <!-- District Filter -->
                                 <div class="flex items-center gap-2">
                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">District</label>
-                                    <select onchange="app.mapDistrictTab=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
-                                        <option value="All">All BD</option>
-                                        ${Object.keys(mapCoords).sort().map(d => `<option value="${d}" ${districtTab === d ? 'selected' : ''}>${d}</option>`).join('')}
+                                    <select onchange="app.mapDistrictTab=this.value; if(this.value !== 'All') app.mapViewMode='upazila'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold ${districtTab !== 'All' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-700'} focus:outline-none focus:border-emerald-500 transition-colors">
+                                        <option value="All" ${districtTab === 'All' ? 'selected' : ''}>All BD</option>
+                                        ${allDistricts.map(d => `<option value="${d}" ${districtTab === d ? 'selected' : ''}>${d}</option>`).join('')}
                                     </select>
                                 </div>
 
+                                <!-- Brand Filter -->
                                 <div class="flex items-center gap-2">
                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Brand</label>
-                                    <select onchange="app.mapBrandTab=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <select onchange="app.mapBrandTab=this.value; app.mapModelTab='All'; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
                                         <option value="All" ${brandTab === 'All' ? 'selected' : ''}>All Brands</option>
                                         <option value="Foton" ${brandTab === 'Foton' ? 'selected' : ''}>Foton</option>
                                         <option value="Mahindra" ${brandTab === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
                                     </select>
                                 </div>
 
+                                <!-- Sale Type Filter -->
                                 <div class="flex items-center gap-2">
                                     <label class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Type</label>
-                                    <select onchange="app.mapSaleType=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500">
+                                    <select onchange="app.mapSaleType=this.value; app.renderAdminSalesMap()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors">
                                         <option value="All" ${saleTypeTab === 'All' ? 'selected' : ''}>All Types</option>
                                         <option value="New Sale" ${saleTypeTab === 'New Sale' ? 'selected' : ''}>New</option>
                                         <option value="Resale" ${saleTypeTab === 'Resale' ? 'selected' : ''}>Resale</option>
@@ -8914,13 +8935,14 @@ approveManualDelivery: async (id) => {
                             </div>
                         </div>
 
-                        <!-- Pure HTML + SVG Map Container & Sidebar Layout -->
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[500px]">
+                        <!-- Map & Insights Layout -->
+                        <div class="flex flex-col lg:flex-row gap-6 min-h-[450px] h-[480px] relative z-10">
                             
-                            <!-- Pure Static SVG Map Container (Zero JS Runtime Dependencies) -->
-                            <div class="lg:col-span-8 rounded-2xl relative overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl min-h-[480px] h-[480px] p-4">
+                            <!-- Guaranteed Vector Map Container -->
+                            <div style="height:480px !important; min-height:450px;" class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[450px] h-[480px]">
+                                
                                 <div class="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-50">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sales Density</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sales Density (${viewMode})</p>
                                     <div class="flex items-center gap-2">
                                         <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-xs font-bold text-slate-300 mr-2">Low</span>
                                         <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm"></span><span class="text-xs font-bold text-slate-300 mr-2">Med</span>
@@ -8928,49 +8950,196 @@ approveManualDelivery: async (id) => {
                                     </div>
                                 </div>
 
-                                <div class="w-full h-full relative rounded-xl overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
+                                <!-- Base Vector SVG Layer (Guaranteed 100% visible with all 64 districts) -->
+                                <div id="vector-bd-map" style="position:absolute; inset:0; z-index:10; height:100%; width:100%;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-900">
                                     ${bdMapSvgPath}
-                                    ${staticNodesHTML}
+                                    ${vectorNodesHTML}
                                 </div>
+
+                                <!-- Leaflet Polygon Overlay Layer -->
+                                <div id="real-bd-map" style="position:absolute; inset:0; z-index:20; height:100%; width:100%; background:transparent !important; pointer-events:auto;"></div>
                             </div>
 
-                            <!-- Right Sidebar Area List -->
-                            <div class="lg:col-span-4 min-h-[480px] h-[480px]">
+                            <!-- Right Sidebar List (Scrollable Districts/Upazilas) -->
+                            <div class="w-full lg:w-80 shrink-0 min-h-[450px] h-[480px]">
                                 <div class="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                                    <div class="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                                        <div>
-                                            <p class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Plotted Sales</p>
-                                            <p class="text-lg font-black text-slate-800">${totalPlotted} Units</p>
+                                    <!-- Sidebar Header & KPI -->
+                                    <div class="p-4 bg-slate-50 border-b border-slate-100 space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Sales</span>
+                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">${totalPlotted} Units</span>
                                         </div>
-                                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-extrabold rounded-full">${sortedList.length} Districts</span>
+                                        
+                                        <!-- Search Bar -->
+                                        <div class="relative">
+                                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                                            <input type="text" id="map-search" oninput="app.filterMapList(this.value)" placeholder="Search ${viewMode}..." class="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-semibold text-slate-700 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                        </div>
                                     </div>
 
-                                    <div class="flex-1 overflow-y-auto p-3 space-y-2">
-                                        ${sortedList.map((item, idx) => {
-                                            const pct = totalPlotted > 0 ? ((item.sales / totalPlotted) * 100).toFixed(1) : 0;
-                                            return `
-                                                <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-emerald-50/60 hover:border-emerald-200 transition-all cursor-pointer">
-                                                    <div class="flex items-center gap-3">
-                                                        <span class="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-black">${idx + 1}</span>
-                                                        <div>
-                                                            <p class="text-xs font-black text-slate-800">${item.name}</p>
-                                                            <p class="text-[9px] font-bold text-slate-400 uppercase">${pct}% Contribution</p>
+                                    <!-- Scrollable List of Areas -->
+                                    <div id="map-area-list" class="flex-1 overflow-y-auto p-2 space-y-2">
+                                        ${(() => {
+                                            const listItems = (viewMode === 'district' ? (allDistricts.length > 0 ? allDistricts : displayLocations) : allUpazilas).map(name => {
+                                                const norm = app.getNormalizedKey(name);
+                                                const sales = normalizedAgg[norm] || 0;
+                                                return { name, sales };
+                                            }).sort((a, b) => b.sales - a.sales);
+
+                                            if (listItems.length === 0) {
+                                                return `<p class="text-center text-slate-400 text-xs py-8 font-medium">No areas matching filters</p>`;
+                                            }
+
+                                            return listItems.map((item, idx) => {
+                                                const isActive = (viewMode === 'district' && districtTab === item.name);
+                                                const pctContribution = totalPlotted > 0 ? ((item.sales / totalPlotted) * 100).toFixed(1) : 0;
+                                                return `
+                                                    <div onclick="app.selectMapArea('${item.name}')" 
+                                                         onmouseenter="app.hoverMapArea('${item.name}')" 
+                                                         onmouseleave="app.hoverMapArea(null)" 
+                                                         data-name="${item.name.toLowerCase()}" 
+                                                         data-area-name="${app.getNormalizedKey(item.name)}" 
+                                                         class="flex flex-col gap-2 p-3 rounded-xl cursor-pointer transition-all border ${isActive ? 'bg-emerald-50 border-emerald-300 text-emerald-950 shadow-sm' : 'border-slate-100 bg-white hover:bg-slate-50 text-slate-700 hover:border-slate-200'}">
+                                                        <div class="flex items-center justify-between gap-2.5">
+                                                            <div class="flex items-center gap-2 min-w-0">
+                                                                <span class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center text-[10px] font-black shrink-0">${idx + 1}</span>
+                                                                <span class="truncate text-xs font-black text-slate-800">${item.name}</span>
+                                                            </div>
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${item.sales > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-400'}">${item.sales} Units</span>
+                                                        </div>
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                                                <div class="h-full rounded-full bg-gradient-to-r ${item.sales > 0 ? 'from-emerald-500 to-teal-600' : 'from-slate-300 to-slate-400'}" style="width: ${pctContribution}%"></div>
+                                                            </div>
+                                                            <span class="text-[9px] font-bold text-slate-400 shrink-0">${pctContribution}%</span>
                                                         </div>
                                                     </div>
-                                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800">${item.sales} Units</span>
-                                                </div>
-                                            `;
-                                        }).join('')}
+                                                `;
+                                            }).join('');
+                                        })()}
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 `;
-
                 document.getElementById('view-port').innerHTML = html;
                 app.refreshIcons();
+
+                // Initialize Leaflet GeoJSON layer if Leaflet is present
+                setTimeout(async () => {
+                    if (typeof L === 'undefined') return;
+                    if (app.salesMap) {
+                        try { app.salesMap.remove(); } catch(e){}
+                        app.salesMap = null;
+                    }
+
+                    const mapElem = document.getElementById('real-bd-map');
+                    if (!mapElem) return;
+
+                    app.salesMap = L.map('real-bd-map', {
+                        zoomControl: false,
+                        attributionControl: false
+                    }).setView([23.8103, 90.4125], 7);
+
+                    L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
+
+                    // Add OpenStreetMap Tile Layer
+                    try {
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            opacity: 0.7
+                        }).addTo(app.salesMap);
+                    } catch(e) {
+                        console.warn('Tile layer optional:', e);
+                    }
+
+                    app.salesMap.invalidateSize();
+                    setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 200);
+
+                    // Fetch local GeoJSON boundaries
+                    try {
+                        if (!app.geoJsonCache) app.geoJsonCache = {};
+
+                        const localGeoUrl = viewMode === 'district'
+                            ? 'assets/geo/bd-districts.json'
+                            : 'assets/geo/bd-upazilas.json';
+
+                        if (!app.geoJsonCache[viewMode]) {
+                            const res = await fetch(localGeoUrl);
+                            if (!res.ok) throw new Error('Local GeoJSON fetch failed');
+                            app.geoJsonCache[viewMode] = await res.json();
+                        }
+
+                        let geoData = app.geoJsonCache[viewMode];
+
+                        if (districtTab !== 'All') {
+                            const normSelectedDist = app.getNormalizedKey(districtTab);
+                            const filteredFeatures = geoData.features.filter(f => {
+                                const fDist = f.properties.ADM2_EN || f.properties.NAME_2 || f.properties.district || '';
+                                return app.getNormalizedKey(fDist) === normSelectedDist;
+                            });
+                            if (filteredFeatures.length > 0) {
+                                geoData = { ...geoData, features: filteredFeatures };
+                            }
+                        }
+
+                        const getPolygonColor = (d) => {
+                            if (!d || d === 0) return 'transparent';
+                            const pct = d / maxSales;
+                            if (pct > 0.66) return '#e11d48';
+                            if (pct > 0.33) return '#f59e0b';
+                            return '#3b82f6';
+                        };
+
+                        const style = (feature) => {
+                            const propName = viewMode === 'district'
+                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || '')
+                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || '');
+                            const normProp = app.getNormalizedKey(propName);
+                            const sales = normalizedAgg[normProp] || 0;
+                            return {
+                                fillColor: getPolygonColor(sales),
+                                weight: sales > 0 ? 1.5 : 0.8,
+                                opacity: 0.8,
+                                color: sales > 0 ? '#ffffff' : '#475569',
+                                fillOpacity: sales > 0 ? 0.45 : 0.05
+                            };
+                        };
+
+                        const highlightFeature = (e) => {
+                            var layer = e.target;
+                            layer.setStyle({ weight: 2.5, color: '#10b981', fillOpacity: 0.75 });
+                            const propName = viewMode === 'district'
+                                ? (layer.feature.properties.ADM2_EN || layer.feature.properties.name || layer.feature.properties.NAME_2 || '')
+                                : (layer.feature.properties.ADM3_EN || layer.feature.properties.name || layer.feature.properties.NAME_3 || '');
+                            
+                            const listEl = document.querySelector(`[data-area-name="${app.getNormalizedKey(propName)}"]`);
+                            if (listEl) {
+                                document.querySelectorAll('#map-area-list > div').forEach(el => {
+                                    el.classList.remove('bg-emerald-50', 'border-emerald-300');
+                                    el.classList.add('border-slate-100', 'bg-white');
+                                });
+                                listEl.classList.remove('border-slate-100', 'bg-white');
+                                listEl.classList.add('bg-emerald-50', 'border-emerald-300');
+                                listEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        };
+
+                        const resetHighlight = (e) => {
+                            if (app.geoLayer) app.geoLayer.resetStyle(e.target);
+                        };
+
+                        const onEachFeature = (feature, layer) => {
+                            layer.on({ mouseover: highlightFeature, mouseout: resetHighlight });
+                        };
+
+                        app.geoLayer = L.geoJSON(geoData, { style: style, onEachFeature: onEachFeature }).addTo(app.salesMap);
+
+                    } catch (err) {
+                        console.warn('Leaflet GeoJSON overlay optional:', err);
+                    }
+                }, 100);
             },
 
             renderChartTerritory: (salesData) => {
