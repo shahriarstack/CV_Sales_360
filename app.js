@@ -8903,7 +8903,7 @@ approveManualDelivery: async (id) => {
                                 </div>
 
                                 <!-- Real Interactive BD Map -->
-                                <div id="real-bd-map" class="w-full h-full z-10 flex-1"></div>
+                                <div id="real-bd-map" style="min-height:480px; height:100%; width:100%; position:relative; z-index:1;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-100"></div>
                             </div>
 
                             <!-- Right Sidebar List (Scrollable Districts/Upazilas) -->
@@ -8988,7 +8988,7 @@ approveManualDelivery: async (id) => {
                 // Initialize Leaflet Map & Load Choropleth Data After DOM Update
                 setTimeout(async () => {
                     if (app.salesMap) { 
-                        app.salesMap.remove(); 
+                        try { app.salesMap.remove(); } catch(e){}
                         app.salesMap = null;
                     }
 
@@ -8997,26 +8997,66 @@ approveManualDelivery: async (id) => {
 
                     app.salesMap = L.map('real-bd-map', {
                         zoomControl: false,
-                        attributionControl: false,
-                        maxBounds: [[20.0, 87.5], [27.0, 93.0]],
-                        minZoom: 6,
-                        maxZoom: 12
-                    }).setView([23.85, 90.25], 7);
+                        attributionControl: false
+                    }).setView([23.8103, 90.4125], 7);
 
                     L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
 
-                    // Add OpenStreetMap / CartoDB Base Tile Layer so interactive map is ALWAYS visible
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    // Add standard, highly reliable OpenStreetMap tile layer
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
-                        subdomains: 'abcd',
-                        attribution: '&copy; OpenStreetMap &copy; CARTO'
+                        attribution: '&copy; OpenStreetMap contributors'
                     }).addTo(app.salesMap);
 
                     // Force Leaflet to recalculate container size
                     app.salesMap.invalidateSize();
-                    setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 300);
+                    setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 200);
+                    setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 600);
 
-                    app.showLoader(`Loading ${viewMode} Map Boundaries...`);
+                    // Render heatmap markers immediately so data is ALWAYS visible even before polygon fetch
+                    const markersList = [];
+                    Object.entries(dataAgg).forEach(([name, sales]) => {
+                        const coords = mapCoords[name] || mapCoords[Object.keys(mapCoords).find(k => k.toLowerCase() === name.toLowerCase())];
+                        if (!coords) return;
+
+                        const intensity = maxSales > 0 ? (sales / maxSales) : 0;
+                        let bgClass = 'bg-blue-600 text-white';
+                        let glowClass = 'bg-blue-400';
+                        if (intensity > 0.6) { bgClass = 'bg-rose-600 text-white'; glowClass = 'bg-rose-500'; }
+                        else if (intensity > 0.3) { bgClass = 'bg-amber-500 text-white'; glowClass = 'bg-amber-400'; }
+
+                        const size = 26 + (intensity * 32);
+
+                        const iconHtml = `
+                        <div class="relative group transition-transform hover:scale-110 flex items-center justify-center h-full w-full">
+                            <div class="absolute inset-0 ${glowClass} rounded-full animate-ping opacity-[0.5] scale-125" style="animation-duration: 2.5s;"></div>
+                            <div class="relative rounded-full ${bgClass} shadow-[0_4px_12px_rgba(0,0,0,0.3)] border-2 border-white flex items-center justify-center font-black transition-all" style="width: ${size}px; height: ${size}px; font-size: ${Math.max(10, size / 2.6)}px;">
+                                ${sales}
+                            </div>
+                        </div>
+                        `;
+
+                        const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+                        const marker = L.marker(coords, { icon: icon });
+
+                        const tooltipHtml = `
+                            <div class="bg-slate-900 text-white text-xs rounded-xl py-2 px-3 shadow-2xl border border-slate-700 min-w-[120px]">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <p class="font-black text-sm text-slate-50 tracking-wide">${name}</p>
+                                </div>
+                                <p class="text-slate-300 font-medium"><span class="text-amber-400 font-black text-base">${sales}</span> Units Plotted</p>
+                            </div>
+                        `;
+                        marker.bindTooltip(tooltipHtml, { direction: 'top', offset: [0, -size / 2 - 5], className: 'custom-leaflet-tooltip', opacity: 1 });
+                        markersList.push(marker);
+                    });
+
+                    const markerGroup = L.featureGroup(markersList).addTo(app.salesMap);
+                    if (markersList.length > 0) {
+                        app.salesMap.fitBounds(markerGroup.getBounds(), { padding: [40, 40], maxZoom: 10 });
+                    }
+
+                    // Asynchronously fetch GeoJSON polygons to overlay boundaries seamlessly
                     try {
                         if (!app.geoJsonCache) app.geoJsonCache = {};
 
