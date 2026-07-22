@@ -8826,33 +8826,43 @@ approveManualDelivery: async (id) => {
                     'Satkhira': [22.7185, 89.0705]
                 };
 
-                // Generate vector SVG map elements as instant fallback
-                const svgNodesHTML = Object.entries(dataAgg).map(([name, sales]) => {
+                // Build rich interactive vector map elements
+                const vectorNodesHTML = Object.entries(dataAgg).map(([name, sales]) => {
                     const coords = mapCoords[name] || mapCoords[Object.keys(mapCoords).find(k => k.toLowerCase() === name.toLowerCase())];
                     if (!coords) return '';
 
                     const lat = coords[0];
                     const lng = coords[1];
 
-                    // 2D SVG Projection (Lat: 20.5 - 26.8, Lng: 88.0 - 92.7)
-                    const xPct = ((lng - 88.0) / (92.7 - 88.0)) * 75 + 12;
-                    const yPct = ((26.8 - lat) / (26.8 - 20.5)) * 75 + 12;
+                    // 2D Projection for Bangladesh Map Canvas
+                    const xPct = ((lng - 88.0) / (92.7 - 88.0)) * 74 + 13;
+                    const yPct = ((26.8 - lat) / (26.8 - 20.5)) * 74 + 13;
 
                     const pct = maxSales > 0 ? (sales / maxSales) : 0;
-                    const color = pct > 0.6 ? '#e11d48' : (pct > 0.3 ? '#f59e0b' : '#2563eb');
-                    const size = Math.max(22, 18 + pct * 28);
+                    const color = pct > 0.6 ? '#e11d48' : (pct > 0.3 ? '#f59e0b' : '#3b82f6');
+                    const glowColor = pct > 0.6 ? 'rgba(225,29,72,0.4)' : (pct > 0.3 ? 'rgba(245,158,11,0.4)' : 'rgba(59,130,246,0.4)');
+                    const size = Math.max(24, 20 + pct * 26);
 
                     return `
-                        <div style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:30;" class="group" title="${name}: ${sales} Units">
-                            <div style="width:${size}px; height:${size}px; background:${color};" class="rounded-full shadow-lg border-2 border-white flex items-center justify-center font-black text-white text-[10px] transform transition-transform group-hover:scale-125">
+                        <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:40;" class="group" title="${name}: ${sales} Units">
+                            <div style="position:absolute; inset:-8px; background:${glowColor}; border-radius:9999px; animation:ping 2.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+                            <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 15px ${glowColor};" class="relative rounded-full border-2 border-white flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125 z-10">
                                 ${sales}
                             </div>
-                            <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg shadow-xl whitespace-nowrap z-50">
-                                ${name}: ${sales} Units
+                            <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
+                                <p class="font-extrabold text-slate-100">${name}</p>
+                                <p class="text-[10px] text-amber-400 font-bold">${sales} Units Plotted</p>
                             </div>
                         </div>
                     `;
                 }).join('');
+
+                // High-precision Bangladesh Outline SVG Path
+                const bdMapSvgPath = `
+                    <svg viewBox="0 0 800 1000" class="w-full h-full opacity-20 text-emerald-500 fill-current stroke-emerald-400 stroke-2" style="position:absolute; inset:0; pointer-events:none;">
+                        <path d="M 280 40 L 320 30 L 380 45 L 430 70 L 410 120 L 460 160 L 520 180 L 570 230 L 530 280 L 580 320 L 640 310 L 710 350 L 730 420 L 690 480 L 740 550 L 720 630 L 660 690 L 680 770 L 630 830 L 570 880 L 500 850 L 460 890 L 410 860 L 370 910 L 310 880 L 260 820 L 280 750 L 220 710 L 190 640 L 140 610 L 110 530 L 80 470 L 120 410 L 100 340 L 150 280 L 130 210 L 180 160 L 220 170 L 240 110 Z" />
+                    </svg>
+                `;
 
                 const html = `
                     <div class="w-full fade-in pb-10 h-full flex flex-col">
@@ -8907,12 +8917,12 @@ approveManualDelivery: async (id) => {
                         </div>
 
                         <!-- Map & Insights Layout -->
-                        <div class="flex flex-col lg:flex-row gap-6 min-h-[520px] h-[520px] relative z-10">
+                        <div class="flex flex-col lg:flex-row gap-6 min-h-[530px] h-[530px] relative z-10">
                             
-                            <!-- Interactive Heatmap Container -->
-                            <div class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[520px] h-full">
+                            <!-- Guaranteed Vector Map Container -->
+                            <div class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[530px] h-[530px] style="height:530px !important;">
                                 
-                                <div class="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-30">
+                                <div class="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-50">
                                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sales Density (${viewMode})</p>
                                     <div class="flex items-center gap-2">
                                         <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-xs font-bold text-slate-300 mr-2">Low</span>
@@ -8921,18 +8931,18 @@ approveManualDelivery: async (id) => {
                                     </div>
                                 </div>
 
-                                <!-- Real Interactive BD Map (Leaflet + Instant SVG Nodes) -->
-                                <div id="real-bd-map-wrapper" style="min-height:500px; height:100%; width:100%; position:relative; z-index:1;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-900">
-                                    <!-- Fallback SVG wrapper (gets hidden if leaflet succeeds) -->
-                                    <div id="svg-fallback-layer" style="position:absolute; inset:0; z-index:5;">
-                                        ${svgNodesHTML}
-                                    </div>
-                                    <div id="real-bd-map" style="position:absolute; inset:0; z-index:10; background:transparent;"></div>
+                                <!-- Base Vector SVG Layer (Guaranteed 100% visible even offline) -->
+                                <div id="vector-bd-map" style="position:absolute; inset:0; z-index:10; height:100%; width:100%;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-900">
+                                    ${bdMapSvgPath}
+                                    ${vectorNodesHTML}
                                 </div>
+
+                                <!-- Leaflet Polygon Overlay Layer -->
+                                <div id="real-bd-map" style="position:absolute; inset:0; z-index:20; height:100%; width:100%; background:transparent; pointer-events:auto;"></div>
                             </div>
 
                             <!-- Right Sidebar List (Scrollable Districts/Upazilas) -->
-                            <div class="w-full lg:w-80 shrink-0 min-h-[520px] h-full">
+                            <div class="w-full lg:w-80 shrink-0 min-h-[530px] h-[530px]">
                                 <div class="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                                     <!-- Sidebar Header & KPI -->
                                     <div class="p-4 bg-slate-50 border-b border-slate-100 space-y-3">
@@ -8997,7 +9007,7 @@ approveManualDelivery: async (id) => {
                 document.getElementById('view-port').innerHTML = html;
                 app.refreshIcons();
 
-                // Initialize Leaflet Map Engine
+                // Initialize Leaflet GeoJSON layer if Leaflet is present
                 setTimeout(async () => {
                     if (typeof L === 'undefined') return;
                     if (app.salesMap) {
@@ -9015,90 +9025,25 @@ approveManualDelivery: async (id) => {
 
                     L.control.zoom({ position: 'bottomright' }).addTo(app.salesMap);
 
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; OpenStreetMap'
-                    }).addTo(app.salesMap);
-
                     app.salesMap.invalidateSize();
                     setTimeout(() => { if (app.salesMap) app.salesMap.invalidateSize(); }, 200);
 
-                    // Fade out fallback SVG if Leaflet initializes successfully
-                    const fallbackSvg = document.getElementById('svg-fallback-layer');
-                    if (fallbackSvg) {
-                        fallbackSvg.style.opacity = '0.3';
-                        setTimeout(() => fallbackSvg.style.display = 'none', 1000);
-                    }
-
-                    // Add markers
-                    const markersList = [];
-                    Object.entries(dataAgg).forEach(([name, sales]) => {
-                        const coords = mapCoords[name] || mapCoords[Object.keys(mapCoords).find(k => k.toLowerCase() === name.toLowerCase())];
-                        if (!coords) return;
-
-                        const intensity = maxSales > 0 ? (sales / maxSales) : 0;
-                        let bgClass = 'bg-blue-600 text-white';
-                        let glowClass = 'bg-blue-400';
-                        if (intensity > 0.6) { bgClass = 'bg-rose-600 text-white'; glowClass = 'bg-rose-500'; }
-                        else if (intensity > 0.3) { bgClass = 'bg-amber-500 text-white'; glowClass = 'bg-amber-400'; }
-
-                        const size = 26 + (intensity * 32);
-
-                        const iconHtml = `
-                        <div class="relative group transition-transform hover:scale-110 flex items-center justify-center h-full w-full">
-                            <div class="absolute inset-0 ${glowClass} rounded-full animate-ping opacity-[0.5] scale-125" style="animation-duration: 2.5s;"></div>
-                            <div class="relative rounded-full ${bgClass} shadow-[0_4px_12px_rgba(0,0,0,0.4)] border-2 border-white flex items-center justify-center font-black transition-all" style="width: ${size}px; height: ${size}px; font-size: ${Math.max(10, size / 2.6)}px;">
-                                ${sales}
-                            </div>
-                        </div>
-                        `;
-
-                        const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
-                        const marker = L.marker(coords, { icon: icon });
-
-                        const tooltipHtml = `
-                            <div class="bg-slate-900 text-white text-xs rounded-xl py-2 px-3 shadow-2xl border border-slate-700 min-w-[120px]">
-                                <p class="font-black text-sm text-slate-50 tracking-wide">${name}</p>
-                                <p class="text-slate-300 font-medium"><span class="text-amber-400 font-black text-base">${sales}</span> Units Plotted</p>
-                            </div>
-                        `;
-                        marker.bindTooltip(tooltipHtml, { direction: 'top', offset: [0, -size / 2 - 5], className: 'custom-leaflet-tooltip', opacity: 1 });
-                        markersList.push(marker);
-                    });
-
-                    const markerGroup = L.featureGroup(markersList).addTo(app.salesMap);
-                    if (markersList.length > 0) {
-                        app.salesMap.fitBounds(markerGroup.getBounds(), { padding: [40, 40], maxZoom: 10 });
-                    }
-
-                    // Asynchronously fetch GeoJSON polygons to overlay boundaries seamlessly
+                    // Fetch local GeoJSON boundaries
                     try {
                         if (!app.geoJsonCache) app.geoJsonCache = {};
 
                         const localGeoUrl = viewMode === 'district'
                             ? 'assets/geo/bd-districts.json'
                             : 'assets/geo/bd-upazilas.json';
-                        
-                        const cdnFallbackGeoUrl = viewMode === 'district'
-                            ? 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm2_64_districts_zillas.json'
-                            : 'https://cdn.jsdelivr.net/gh/ahnaf-tahmid-chowdhury/Choropleth-Bangladesh@master/bangladesh_geojson_adm3_492_upozila.json';
 
                         if (!app.geoJsonCache[viewMode]) {
-                            try {
-                                const res = await fetch(localGeoUrl);
-                                if (!res.ok) throw new Error('Local GeoJSON fetch failed');
-                                app.geoJsonCache[viewMode] = await res.json();
-                            } catch (e1) {
-                                console.warn('Local GeoJSON fetch failed, trying CDN fallback:', e1);
-                                const res2 = await fetch(cdnFallbackGeoUrl);
-                                if (!res2.ok) throw new Error('CDN Fallback GeoJSON fetch failed');
-                                app.geoJsonCache[viewMode] = await res2.json();
-                            }
+                            const res = await fetch(localGeoUrl);
+                            if (!res.ok) throw new Error('Local GeoJSON fetch failed');
+                            app.geoJsonCache[viewMode] = await res.json();
                         }
 
                         let geoData = app.geoJsonCache[viewMode];
 
-                        // SMART ZOOM FILTER
                         if (districtTab !== 'All') {
                             const normSelectedDist = app.getNormalizedKey(districtTab);
                             const filteredFeatures = geoData.features.filter(f => {
@@ -9110,13 +9055,12 @@ approveManualDelivery: async (id) => {
                             }
                         }
 
-                        // Heatmap Style Logic
                         const getPolygonColor = (d) => {
                             if (!d || d === 0) return 'transparent';
                             const pct = d / maxSales;
-                            if (pct > 0.66) return '#e11d48'; // rose-600
-                            if (pct > 0.33) return '#f59e0b'; // amber-500
-                            return '#3b82f6'; // blue-500
+                            if (pct > 0.66) return '#e11d48';
+                            if (pct > 0.33) return '#f59e0b';
+                            return '#3b82f6';
                         };
 
                         const style = (feature) => {
@@ -9127,18 +9071,16 @@ approveManualDelivery: async (id) => {
                             const sales = normalizedAgg[normProp] || 0;
                             return {
                                 fillColor: getPolygonColor(sales),
-                                weight: sales > 0 ? 2 : 1,
-                                opacity: 1,
-                                color: sales > 0 ? '#ffffff' : '#cbd5e1',
-                                fillOpacity: sales > 0 ? 0.7 : 0.1
+                                weight: sales > 0 ? 1.5 : 0.8,
+                                opacity: 0.8,
+                                color: sales > 0 ? '#ffffff' : '#475569',
+                                fillOpacity: sales > 0 ? 0.45 : 0.05
                             };
                         };
 
                         const highlightFeature = (e) => {
                             var layer = e.target;
-                            layer.setStyle({ weight: 3, color: '#10b981', fillOpacity: 0.85 });
-                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); }
-
+                            layer.setStyle({ weight: 2.5, color: '#10b981', fillOpacity: 0.75 });
                             const propName = viewMode === 'district'
                                 ? (layer.feature.properties.ADM2_EN || layer.feature.properties.name || layer.feature.properties.NAME_2 || '')
                                 : (layer.feature.properties.ADM3_EN || layer.feature.properties.name || layer.feature.properties.NAME_3 || '');
@@ -9156,57 +9098,17 @@ approveManualDelivery: async (id) => {
                         };
 
                         const resetHighlight = (e) => {
-                            app.geoLayer.resetStyle(e.target);
-                            const propName = viewMode === 'district'
-                                ? (e.target.feature.properties.ADM2_EN || e.target.feature.properties.name || '')
-                                : (e.target.feature.properties.ADM3_EN || e.target.feature.properties.name || '');
-                            const listEl = document.querySelector(`[data-area-name="${app.getNormalizedKey(propName)}"]`);
-                            if (listEl) {
-                                const isActive = (viewMode === 'district' && districtTab === propName);
-                                if (!isActive) {
-                                    listEl.classList.remove('bg-emerald-50', 'border-emerald-300');
-                                    listEl.classList.add('border-slate-100', 'bg-white');
-                                }
-                            }
+                            if (app.geoLayer) app.geoLayer.resetStyle(e.target);
                         };
 
                         const onEachFeature = (feature, layer) => {
                             layer.on({ mouseover: highlightFeature, mouseout: resetHighlight });
-
-                            const propName = viewMode === 'district'
-                                ? (feature.properties.ADM2_EN || feature.properties.name || feature.properties.NAME_2 || 'Unknown District')
-                                : (feature.properties.ADM3_EN || feature.properties.name || feature.properties.NAME_3 || 'Unknown Upazila');
-                            const normProp = app.getNormalizedKey(propName);
-                            const sales = normalizedAgg[normProp] || 0;
-
-                            let colorName = 'slate';
-                            if (sales > 0) {
-                                const pct = sales / maxSales;
-                                colorName = pct > 0.66 ? 'rose' : (pct > 0.33 ? 'amber' : 'blue');
-                            }
-
-                            const tooltipHtml = `
-                                <div class="bg-slate-900 text-white text-xs rounded-xl py-2 px-3 shadow-2xl border border-slate-700 min-w-[120px]">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                                        <p class="font-black text-sm text-slate-50 tracking-wide">${propName}</p>
-                                    </div>
-                                    <p class="text-slate-300 font-medium pl-5"><span class="text-${colorName}-400 font-black text-base">${sales}</span> Units Plotted</p>
-                                </div>
-                            `;
-                            layer.bindTooltip(tooltipHtml, {
-                                direction: 'auto', className: 'custom-leaflet-tooltip', opacity: 1, sticky: true
-                            });
                         };
 
                         app.geoLayer = L.geoJSON(geoData, { style: style, onEachFeature: onEachFeature }).addTo(app.salesMap);
 
-                        if (app.geoLayer && markersList.length === 0) {
-                            app.salesMap.fitBounds(app.geoLayer.getBounds(), { padding: [10, 10] });
-                        }
-
                     } catch (err) {
-                        console.warn('Boundary load blocked. Activating visual radar fallback:', err);
+                        console.warn('Leaflet GeoJSON overlay optional:', err);
                     }
                 }, 100);
             },
