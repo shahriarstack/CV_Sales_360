@@ -2747,85 +2747,125 @@
                             </div>
                         </div>
 
-                        <!-- Progress Analytics Panel -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <!-- Progress Analytics Panel (Compact & Sleek) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                             <!-- Card 1: Credit Collection Progress -->
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-                                <div class="flex justify-between items-center mb-2.5">
-                                    <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
-                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Due vs Collection till now</p>
+                            <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-xs border border-slate-200 p-3.5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></div>
+                                        <div>
+                                            <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider">Credit Collection</h4>
+                                            <p class="text-[9.5px] text-slate-400 font-medium">Total Due vs Collection</p>
+                                        </div>
                                     </div>
-                                    <span class="text-xl font-black text-indigo-600">${collectionProgressPercent}%</span>
+                                    <span class="text-xs font-black bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md border border-indigo-100">${collectionProgressPercent}%</span>
                                 </div>
                                 
-                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-blue-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
                                 </div>
                                 
-                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
-                                    <span>Collected: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
-                                    <span>Total Due: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
+                                <div class="flex justify-between items-center text-[11px] font-semibold text-slate-500">
+                                    <span>Collected: <span class="text-emerald-600 font-black">${app.formatCurrency(overallTotalCollected)}</span></span>
+                                    <span>Total Due: <span class="text-slate-800 font-black">${app.formatCurrency(overallTotalDue)}</span></span>
                                 </div>
                             </div>
                             
                             <!-- Card 2: File Coverage Progress -->
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-                                <div class="flex justify-between items-center mb-2.5">
-                                    <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
-                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Files vs Collected Files</p>
+                            <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-xs border border-slate-200 p-3.5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="users" class="w-3.5 h-3.5"></i></div>
+                                        <div>
+                                            <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider">File Coverage</h4>
+                                            <p class="text-[9.5px] text-slate-400 font-medium">Total vs Paying Accounts</p>
+                                        </div>
                                     </div>
-                                    <span class="text-xl font-black text-emerald-600">${custProgressPercent}%</span>
+                                    <span class="text-xs font-black bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100">${custProgressPercent}%</span>
                                 </div>
                                 
-                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
                                 </div>
                                 
-                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
-                                    <span>Collected Files: <span class="text-slate-800 font-extrabold">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
-                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
+                                <div class="flex justify-between items-center text-[11px] font-semibold text-slate-500">
+                                    <span>Collected Files: <span class="text-slate-800 font-black">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
+                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded text-[9.5px] font-extrabold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Premium Compact KPI Row -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
-                            <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="users" class="absolute -right-2 -bottom-2 w-10 h-10 text-blue-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Total Cust.</p>
-                                <h3 class="text-xl font-extrabold text-blue-700">${totalCust}</h3>
+                        <!-- Ultra Compact Creative KPI Cards Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mb-6">
+                            <!-- Total Cust -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-blue-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Total Cust</span>
+                                    <i data-lucide="users" class="w-3.5 h-3.5 text-blue-500"></i>
+                                </div>
+                                <div class="text-base font-black text-slate-800 tracking-tight">${totalCust}</div>
                             </div>
-                            <div class="bg-green-50 border border-green-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="user-check" class="absolute -right-2 -bottom-2 w-10 h-10 text-green-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Paid Cust.</p>
-                                <h3 class="text-xl font-extrabold text-green-700">${paidCust}</h3>
+
+                            <!-- Paid Cust -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-emerald-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Paid Cust</span>
+                                    <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                </div>
+                                <div class="text-base font-black text-emerald-700 tracking-tight">${paidCust}</div>
                             </div>
-                            <div class="bg-red-50 border border-red-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="user-x" class="absolute -right-2 -bottom-2 w-10 h-10 text-red-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Unpaid Cust.</p>
-                                <h3 class="text-xl font-extrabold text-red-700">${unpaidCust}</h3>
+
+                            <!-- Unpaid Cust -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-rose-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Unpaid Cust</span>
+                                    <i data-lucide="user-x" class="w-3.5 h-3.5 text-rose-500"></i>
+                                </div>
+                                <div class="text-base font-black text-rose-700 tracking-tight">${unpaidCust}</div>
                             </div>
-                            <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="pie-chart" class="absolute -right-2 -bottom-2 w-10 h-10 text-teal-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-teal-600 uppercase tracking-wider mb-0.5">Paid Cust %</p>
-                                <h3 class="text-xl font-extrabold text-teal-700">${paidCustPercent}%</h3>
+
+                            <!-- Paid % -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-teal-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Paid %</span>
+                                    <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-teal-500"></i>
+                                </div>
+                                <div class="text-base font-black text-teal-700 tracking-tight">${paidCustPercent}%</div>
                             </div>
-                            <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="wallet" class="absolute -right-2 -bottom-2 w-10 h-10 text-indigo-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-indigo-500 uppercase tracking-wider mb-0.5 truncate" title="Total Installment Amount">Inst. Amt</p>
-                                <h3 class="text-base sm:text-lg font-extrabold text-indigo-700 truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</h3>
+
+                            <!-- Inst Amt -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-indigo-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Inst Amt</span>
+                                    <i data-lucide="wallet" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                </div>
+                                <div class="text-sm font-black text-indigo-700 tracking-tight truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</div>
                             </div>
-                            <div class="bg-cyan-50 border border-cyan-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="coins" class="absolute -right-2 -bottom-2 w-10 h-10 text-cyan-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-cyan-600 uppercase tracking-wider mb-0.5 truncate" title="Total Collected Amount">Collected Amt</p>
-                                <h3 class="text-base sm:text-lg font-extrabold text-cyan-700 truncate" title="${app.formatCurrency(totalCol)}">${app.formatCurrency(totalCol)}</h3>
+
+                            <!-- Collected -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-cyan-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Collected</span>
+                                    <i data-lucide="coins" class="w-3.5 h-3.5 text-cyan-500"></i>
+                                </div>
+                                <div class="text-sm font-black text-cyan-700 tracking-tight truncate" title="${app.formatCurrency(totalCol)}">${app.formatCurrency(totalCol)}</div>
                             </div>
-                            <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="trending-up" class="absolute -right-2 -bottom-2 w-10 h-10 text-amber-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-amber-600 uppercase tracking-wider mb-0.5">Collect %</p>
-                                <h3 class="text-xl font-extrabold text-amber-700">${collectionRate}%</h3>
+
+                            <!-- Collect % -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-amber-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Collect %</span>
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-500"></i>
+                                </div>
+                                <div class="text-base font-black text-amber-700 tracking-tight">${collectionRate}%</div>
                             </div>
                         </div>
 
@@ -4094,85 +4134,125 @@
                             </div>
                         </div>
 
-                        <!-- Progress Analytics Panel -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <!-- Progress Analytics Panel (Compact & Sleek) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                             <!-- Card 1: Credit Collection Progress -->
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-                                <div class="flex justify-between items-center mb-2.5">
-                                    <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">Credit Collection</h4>
-                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Due vs Collection till now</p>
+                            <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-xs border border-slate-200 p-3.5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></div>
+                                        <div>
+                                            <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider">Credit Collection</h4>
+                                            <p class="text-[9.5px] text-slate-400 font-medium">Total Due vs Collection</p>
+                                        </div>
                                     </div>
-                                    <span class="text-xl font-black text-indigo-600">${collectionProgressPercent}%</span>
+                                    <span class="text-xs font-black bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md border border-indigo-100">${collectionProgressPercent}%</span>
                                 </div>
                                 
-                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                                    <div class="bg-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-blue-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${collectionProgressPercent}%"></div>
                                 </div>
                                 
-                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
-                                    <span>Collected: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalCollected)}</span></span>
-                                    <span>Total Due: <span class="text-slate-800 font-extrabold">${app.formatCurrency(overallTotalDue)}</span></span>
+                                <div class="flex justify-between items-center text-[11px] font-semibold text-slate-500">
+                                    <span>Collected: <span class="text-emerald-600 font-black">${app.formatCurrency(overallTotalCollected)}</span></span>
+                                    <span>Total Due: <span class="text-slate-800 font-black">${app.formatCurrency(overallTotalDue)}</span></span>
                                 </div>
                             </div>
                             
                             <!-- Card 2: File Coverage Progress -->
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-                                <div class="flex justify-between items-center mb-2.5">
-                                    <div>
-                                        <h4 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">File Coverage</h4>
-                                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Total Files vs Collected Files</p>
+                            <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-xs border border-slate-200 p-3.5 relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="users" class="w-3.5 h-3.5"></i></div>
+                                        <div>
+                                            <h4 class="text-xs font-black uppercase text-slate-700 tracking-wider">File Coverage</h4>
+                                            <p class="text-[9.5px] text-slate-400 font-medium">Total vs Paying Accounts</p>
+                                        </div>
                                     </div>
-                                    <span class="text-xl font-black text-emerald-600">${custProgressPercent}%</span>
+                                    <span class="text-xs font-black bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100">${custProgressPercent}%</span>
                                 </div>
                                 
-                                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-3 overflow-hidden">
-                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-500 ease-out" style="width: ${custProgressPercent}%"></div>
                                 </div>
                                 
-                                <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
-                                    <span>Collected Files: <span class="text-slate-800 font-extrabold">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
-                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
+                                <div class="flex justify-between items-center text-[11px] font-semibold text-slate-500">
+                                    <span>Collected Files: <span class="text-slate-800 font-black">${collectedCust}</span> / <span class="text-slate-600 font-bold">${totalCust}</span></span>
+                                    ${partialPaidCust > 0 ? `<span class="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded text-[9.5px] font-extrabold border border-amber-100 flex items-center gap-1"><span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-pulse"></span> Partial: ${partialPaidCust}</span>` : ''}
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Premium Compact KPI Row -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
-                            <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="users" class="absolute -right-2 -bottom-2 w-10 h-10 text-blue-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Total Cust.</p>
-                                <h3 class="text-xl font-extrabold text-blue-700">${totalCust}</h3>
+                        <!-- Ultra Compact Creative KPI Cards Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mb-6">
+                            <!-- Total Cust -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-blue-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Total Cust</span>
+                                    <i data-lucide="users" class="w-3.5 h-3.5 text-blue-500"></i>
+                                </div>
+                                <div class="text-base font-black text-slate-800 tracking-tight">${totalCust}</div>
                             </div>
-                            <div class="bg-green-50 border border-green-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="user-check" class="absolute -right-2 -bottom-2 w-10 h-10 text-green-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Paid Cust.</p>
-                                <h3 class="text-xl font-extrabold text-green-700">${paidCust}</h3>
+
+                            <!-- Paid Cust -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-emerald-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Paid Cust</span>
+                                    <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                </div>
+                                <div class="text-base font-black text-emerald-700 tracking-tight">${paidCust}</div>
                             </div>
-                            <div class="bg-red-50 border border-red-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="user-x" class="absolute -right-2 -bottom-2 w-10 h-10 text-red-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-red-500 uppercase tracking-wider mb-0.5">Unpaid Cust.</p>
-                                <h3 class="text-xl font-extrabold text-red-700">${unpaidCust}</h3>
+
+                            <!-- Unpaid Cust -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-rose-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Unpaid Cust</span>
+                                    <i data-lucide="user-x" class="w-3.5 h-3.5 text-rose-500"></i>
+                                </div>
+                                <div class="text-base font-black text-rose-700 tracking-tight">${unpaidCust}</div>
                             </div>
-                            <div class="bg-teal-50 border border-teal-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="pie-chart" class="absolute -right-2 -bottom-2 w-10 h-10 text-teal-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-teal-600 uppercase tracking-wider mb-0.5">Paid Cust %</p>
-                                <h3 class="text-xl font-extrabold text-teal-700">${paidCustPercent}%</h3>
+
+                            <!-- Paid % -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-teal-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Paid %</span>
+                                    <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-teal-500"></i>
+                                </div>
+                                <div class="text-base font-black text-teal-700 tracking-tight">${paidCustPercent}%</div>
                             </div>
-                            <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="wallet" class="absolute -right-2 -bottom-2 w-10 h-10 text-indigo-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-indigo-500 uppercase tracking-wider mb-0.5 truncate" title="Total Installment Amount">Inst. Amt</p>
-                                <h3 class="text-base sm:text-lg font-extrabold text-indigo-700 truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</h3>
+
+                            <!-- Inst Amt -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-indigo-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Inst Amt</span>
+                                    <i data-lucide="wallet" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                </div>
+                                <div class="text-sm font-black text-indigo-700 tracking-tight truncate" title="${app.formatCurrency(totalInstallment)}">${app.formatCurrency(totalInstallment)}</div>
                             </div>
-                            <div class="bg-cyan-50 border border-cyan-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="coins" class="absolute -right-2 -bottom-2 w-10 h-10 text-cyan-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-cyan-600 uppercase tracking-wider mb-0.5 truncate" title="Total Collected Amount">Collected Amt</p>
-                                <h3 class="text-base sm:text-lg font-extrabold text-cyan-700 truncate" title="${app.formatCurrency(totalCol)}">${app.formatCurrency(totalCol)}</h3>
+
+                            <!-- Collected -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-cyan-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Collected</span>
+                                    <i data-lucide="coins" class="w-3.5 h-3.5 text-cyan-500"></i>
+                                </div>
+                                <div class="text-sm font-black text-cyan-700 tracking-tight truncate" title="${app.formatCurrency(totalCol)}">${app.formatCurrency(totalCol)}</div>
                             </div>
-                            <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl shadow-sm relative overflow-hidden">
-                                <i data-lucide="trending-up" class="absolute -right-2 -bottom-2 w-10 h-10 text-amber-200 opacity-50"></i>
-                                <p class="text-[9px] font-bold text-amber-600 uppercase tracking-wider mb-0.5">Collect %</p>
-                                <h3 class="text-xl font-extrabold text-amber-700">${collectionRate}%</h3>
+
+                            <!-- Collect % -->
+                            <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 p-2.5 rounded-xl shadow-xs hover:shadow-md transition-all relative overflow-hidden group">
+                                <div class="h-0.5 w-full bg-amber-500 absolute top-0 left-0"></div>
+                                <div class="flex items-center justify-between text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1">
+                                    <span>Collect %</span>
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-500"></i>
+                                </div>
+                                <div class="text-base font-black text-amber-700 tracking-tight">${collectionRate}%</div>
                             </div>
                         </div>
 
