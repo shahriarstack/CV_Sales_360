@@ -8760,11 +8760,11 @@ approveManualDelivery: async (id) => {
                 app.setupSidebar();
 
                 if (typeof app.mapMonths === 'undefined') app.mapMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
-                const brandTab = app.mapBrandTab || 'Foton';
+                const brandTab = app.mapBrandTab || 'All';
                 const modelTab = app.mapModelTab || 'All';
                 const districtTab = app.mapDistrictTab || 'All';
                 const viewMode = app.mapViewMode || 'district';
-                if (typeof app.mapSaleType === 'undefined') app.mapSaleType = 'New Sale';
+                if (typeof app.mapSaleType === 'undefined') app.mapSaleType = 'All';
                 const saleTypeTab = app.mapSaleType;
                 const currentFY = app.selectedFY || app.currentFY;
 
@@ -8799,36 +8799,41 @@ approveManualDelivery: async (id) => {
                 const allMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
 
                 const mapCoords = {
-                    // Upazilas
-                    'Mirpur': [23.8223, 90.3654], 'Uttara': [23.8759, 90.3976], 'Savar': [23.8583, 90.2667], 'Ashulia': [23.8819, 90.3275],
-                    'Motijheel': [23.7330, 90.4172], 'Jatrabari': [23.7104, 90.4344], 'Keraniganj': [23.6980, 90.3575], 'Demra': [23.7073, 90.4497],
-                    'Pahartali': [22.3600, 91.7800], 'Sitakunda': [22.6200, 91.6500], 'Hathazari': [22.4500, 91.8000], 'Coxs Bazar': [21.4333, 91.9833],
-                    'Bogura Sadar': [24.8500, 89.3667], 'Rajshahi Sadar': [24.3667, 88.6000], 'Khulna Sadar': [22.8167, 89.5500], 'Jashore Sadar': [23.1667, 89.2000],
-                    'Sylhet Sadar': [24.8833, 91.8667], 'Habiganj Sadar': [24.3833, 91.4167], 'Barishal Sadar': [22.7000, 90.3667], 'Rangpur Sadar': [25.7500, 89.2500], 'Dinajpur Sadar': [25.6333, 88.6333],
-                    // All 64 Districts
+                    // 64 Districts of Bangladesh
                     'Dhaka': [23.8103, 90.4125], 'Faridpur': [23.6071, 89.8429], 'Gazipur': [24.0023, 90.4264], 'Gopalganj': [23.0051, 89.8266],
                     'Jamalpur': [24.9375, 89.9378], 'Kishoreganj': [24.4449, 90.7765], 'Madaripur': [23.1641, 90.1897], 'Manikganj': [23.8644, 90.0047],
                     'Munshiganj': [23.5422, 90.5305], 'Mymensingh': [24.7471, 90.4203], 'Narayanganj': [23.6238, 90.5000], 'Narsingdi': [23.9193, 90.7206],
                     'Netrokona': [24.8803, 90.7279], 'Rajbari': [23.7574, 89.6444], 'Shariatpur': [23.2423, 90.4348], 'Sherpur': [25.0205, 90.0153],
-                    'Tangail': [24.2513, 89.9167], 'Bogra': [24.8465, 89.3778], 'Bogura': [24.8465, 89.3778], 'Joypurhat': [25.1018, 89.0270],
+                    'Tangail': [24.2513, 89.9167], 'Bogra': [24.8465, 89.3778], 'Joypurhat': [25.1018, 89.0270],
                     'Naogaon': [24.8103, 88.9414], 'Natore': [24.4102, 88.9834], 'Chapai Nawabganj': [24.5965, 88.2775], 'Pabna': [24.0064, 89.2493],
                     'Rajshahi': [24.3636, 88.6241], 'Sirajganj': [24.4534, 89.7008], 'Dinajpur': [25.6217, 88.6355], 'Gaibandha': [25.3288, 89.5404],
                     'Kurigram': [25.8054, 89.6361], 'Lalmonirhat': [25.9166, 89.4532], 'Nilphamari': [25.9318, 88.8560], 'Panchagarh': [26.3411, 88.5541],
                     'Rangpur': [25.7439, 89.2752], 'Thakurgaon': [26.0332, 88.4616], 'Barguna': [22.1570, 90.1259], 'Barisal': [22.7010, 90.3535],
-                    'Barishal': [22.7010, 90.3535], 'Bhola': [22.6859, 90.6482], 'Jhalokati': [22.6406, 90.1987], 'Patuakhali': [22.3596, 90.3299],
+                    'Bhola': [22.6859, 90.6482], 'Jhalokati': [22.6406, 90.1987], 'Patuakhali': [22.3596, 90.3299],
                     'Pirojpur': [22.5841, 89.9720], 'Bandarban': [21.8311, 92.3686], 'Brahmanbaria': [23.9571, 91.1119], 'Chandpur': [23.2333, 90.6667],
-                    'Chattogram': [22.3569, 91.7832], 'Chittagong': [22.3569, 91.7832], 'Comilla': [23.4607, 91.1809], 'Cumilla': [23.4607, 91.1809],
+                    'Chattogram': [22.3569, 91.7832], 'Comilla': [23.4607, 91.1809],
                     'Coxs Bazar': [21.4333, 91.9833], 'Feni': [23.0159, 91.3976], 'Khagrachhari': [23.1193, 91.9847], 'Lakshmipur': [22.9447, 90.8282],
                     'Noakhali': [22.8696, 91.0994], 'Rangamati': [22.6533, 92.1789], 'Habiganj': [24.3749, 91.4114], 'Moulvibazar': [24.4829, 91.7774],
                     'Sunamganj': [25.0658, 91.3950], 'Sylhet': [24.8949, 91.8687], 'Bagerhat': [22.6516, 89.7859], 'Chuadanga': [23.6402, 88.8418],
-                    'Jashore': [23.1664, 89.2081], 'Jessore': [23.1664, 89.2081], 'Jhenaidah': [23.5448, 89.1539], 'Khulna': [22.8456, 89.5403],
+                    'Jashore': [23.1664, 89.2081], 'Jhenaidah': [23.5448, 89.1539], 'Khulna': [22.8456, 89.5403],
                     'Kushtia': [23.9013, 89.1204], 'Magura': [23.4873, 89.4199], 'Meherpur': [23.7622, 88.6318], 'Narail': [23.1725, 89.5127],
-                    'Satkhira': [22.7185, 89.0705]
+                    'Satkhira': [22.7185, 89.0705],
+                    // Upazilas
+                    'Mirpur': [23.8223, 90.3654], 'Uttara': [23.8759, 90.3976], 'Savar': [23.8583, 90.2667], 'Ashulia': [23.8819, 90.3275],
+                    'Motijheel': [23.7330, 90.4172], 'Jatrabari': [23.7104, 90.4344], 'Keraniganj': [23.6980, 90.3575], 'Demra': [23.7073, 90.4497],
+                    'Pahartali': [22.3600, 91.7800], 'Sitakunda': [22.6200, 91.6500], 'Hathazari': [22.4500, 91.8000],
+                    'Bogura Sadar': [24.8500, 89.3667], 'Rajshahi Sadar': [24.3667, 88.6000], 'Khulna Sadar': [22.8167, 89.5500], 'Jashore Sadar': [23.1667, 89.2000],
+                    'Sylhet Sadar': [24.8833, 91.8667], 'Habiganj Sadar': [24.3833, 91.4167], 'Barishal Sadar': [22.7000, 90.3667], 'Rangpur Sadar': [25.7500, 89.2500], 'Dinajpur Sadar': [25.6333, 88.6333]
                 };
 
+                // Determine display list of locations to guarantee map is ALWAYS populated with all 64 districts
+                const displayLocations = viewMode === 'district'
+                    ? Object.keys(mapCoords).filter(k => !k.includes('Sadar') && !['Mirpur', 'Uttara', 'Savar', 'Ashulia', 'Motijheel', 'Jatrabari', 'Keraniganj', 'Demra', 'Pahartali', 'Sitakunda', 'Hathazari'].includes(k))
+                    : [...new Set([...Object.keys(dataAgg), ...allUpazilas])];
+
                 // Build rich interactive vector map elements
-                const vectorNodesHTML = Object.entries(dataAgg).map(([name, sales]) => {
-                    const coords = mapCoords[name] || mapCoords[Object.keys(mapCoords).find(k => k.toLowerCase() === name.toLowerCase())];
+                const vectorNodesHTML = displayLocations.map(name => {
+                    const coords = mapCoords[name];
                     if (!coords) return '';
 
                     const lat = coords[0];
@@ -8838,28 +8843,42 @@ approveManualDelivery: async (id) => {
                     const xPct = ((lng - 88.0) / (92.7 - 88.0)) * 74 + 13;
                     const yPct = ((26.8 - lat) / (26.8 - 20.5)) * 74 + 13;
 
+                    const sales = normalizedAgg[app.getNormalizedKey(name)] || 0;
                     const pct = maxSales > 0 ? (sales / maxSales) : 0;
-                    const color = pct > 0.6 ? '#e11d48' : (pct > 0.3 ? '#f59e0b' : '#3b82f6');
-                    const glowColor = pct > 0.6 ? 'rgba(225,29,72,0.4)' : (pct > 0.3 ? 'rgba(245,158,11,0.4)' : 'rgba(59,130,246,0.4)');
-                    const size = Math.max(24, 20 + pct * 26);
 
-                    return `
-                        <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:40;" class="group" title="${name}: ${sales} Units">
-                            <div style="position:absolute; inset:-8px; background:${glowColor}; border-radius:9999px; animation:ping 2.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
-                            <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 15px ${glowColor};" class="relative rounded-full border-2 border-white flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125 z-10">
-                                ${sales}
+                    if (sales > 0) {
+                        const color = pct > 0.6 ? '#e11d48' : (pct > 0.3 ? '#f59e0b' : '#3b82f6');
+                        const glowColor = pct > 0.6 ? 'rgba(225,29,72,0.4)' : (pct > 0.3 ? 'rgba(245,158,11,0.4)' : 'rgba(59,130,246,0.4)');
+                        const size = Math.max(24, 20 + pct * 26);
+
+                        return `
+                            <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:40;" class="group" title="${name}: ${sales} Units">
+                                <div style="position:absolute; inset:-8px; background:${glowColor}; border-radius:9999px; animation:ping 2.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+                                <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 15px ${glowColor};" class="relative rounded-full border-2 border-white flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125 z-10">
+                                    ${sales}
+                                </div>
+                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
+                                    <p class="font-extrabold text-slate-100">${name}</p>
+                                    <p class="text-[10px] text-amber-400 font-bold">${sales} Units Plotted</p>
+                                </div>
                             </div>
-                            <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
-                                <p class="font-extrabold text-slate-100">${name}</p>
-                                <p class="text-[10px] text-amber-400 font-bold">${sales} Units Plotted</p>
+                        `;
+                    } else {
+                        // Empty district marker dot (Guarantees map outline of Bangladesh is visible even with 0 sales)
+                        return `
+                            <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:30;" class="group" title="${name}">
+                                <div class="w-3 h-3 rounded-full bg-slate-700/80 border border-slate-500/50 transform transition-transform group-hover:scale-150 group-hover:bg-emerald-400"></div>
+                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/90 text-white text-[10px] font-semibold py-1 px-2 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
+                                    ${name} (0 Sales)
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }).join('');
 
                 // High-precision Bangladesh Outline SVG Path
                 const bdMapSvgPath = `
-                    <svg viewBox="0 0 800 1000" class="w-full h-full opacity-20 text-emerald-500 fill-current stroke-emerald-400 stroke-2" style="position:absolute; inset:0; pointer-events:none;">
+                    <svg viewBox="0 0 800 1000" class="w-full h-full opacity-25 text-emerald-500 fill-current stroke-emerald-400 stroke-2" style="position:absolute; inset:0; pointer-events:none;">
                         <path d="M 280 40 L 320 30 L 380 45 L 430 70 L 410 120 L 460 160 L 520 180 L 570 230 L 530 280 L 580 320 L 640 310 L 710 350 L 730 420 L 690 480 L 740 550 L 720 630 L 660 690 L 680 770 L 630 830 L 570 880 L 500 850 L 460 890 L 410 860 L 370 910 L 310 880 L 260 820 L 280 750 L 220 710 L 190 640 L 140 610 L 110 530 L 80 470 L 120 410 L 100 340 L 150 280 L 130 210 L 180 160 L 220 170 L 240 110 Z" />
                     </svg>
                 `;
@@ -8931,14 +8950,14 @@ approveManualDelivery: async (id) => {
                                     </div>
                                 </div>
 
-                                <!-- Base Vector SVG Layer (Guaranteed 100% visible even offline) -->
+                                <!-- Base Vector SVG Layer (Guaranteed 100% visible with all 64 districts) -->
                                 <div id="vector-bd-map" style="position:absolute; inset:0; z-index:10; height:100%; width:100%;" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-900">
                                     ${bdMapSvgPath}
                                     ${vectorNodesHTML}
                                 </div>
 
                                 <!-- Leaflet Polygon Overlay Layer -->
-                                <div id="real-bd-map" style="position:absolute; inset:0; z-index:20; height:100%; width:100%; background:transparent; pointer-events:auto;"></div>
+                                <div id="real-bd-map" style="position:absolute; inset:0; z-index:20; height:100%; width:100%; background:transparent !important; pointer-events:auto;"></div>
                             </div>
 
                             <!-- Right Sidebar List (Scrollable Districts/Upazilas) -->
@@ -8961,7 +8980,7 @@ approveManualDelivery: async (id) => {
                                     <!-- Scrollable List of Areas -->
                                     <div id="map-area-list" class="flex-1 overflow-y-auto p-2 space-y-2">
                                         ${(() => {
-                                            const listItems = (viewMode === 'district' ? allDistricts : allUpazilas).map(name => {
+                                            const listItems = (viewMode === 'district' ? (allDistricts.length > 0 ? allDistricts : displayLocations) : allUpazilas).map(name => {
                                                 const norm = app.getNormalizedKey(name);
                                                 const sales = normalizedAgg[norm] || 0;
                                                 return { name, sales };
