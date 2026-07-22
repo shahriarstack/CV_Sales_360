@@ -11864,10 +11864,15 @@ approveManualDelivery: async (id) => {
                 const totalEmiInstallment = soEmi.reduce((sum, e) => sum + Number(e.installment || 0), 0);
                 const totalEmiCollected = soEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
 
+                const totalEmiCust = soEmi.length;
+                const paidEmiCust = soEmi.filter(e => Number(e.collected || 0) > 0).length; // Full Pay + Partial Pay
+                const unpaidEmiCust = Math.max(0, totalEmiCust - paidEmiCust); // Total - (Full Pay + Partial Pay)
+
                 // Calculate 1st & 2nd EMI details
                 const soEmiFirstTwo = soEmi.filter(e => Number(e.installment_no) === 1 || Number(e.installment_no) === 2);
                 const totalFirstTwoCust = soEmiFirstTwo.length;
-                const unpaidFirstTwoCust = soEmiFirstTwo.filter(e => Number(e.collected || 0) < Number(e.installment || 0)).length;
+                const paidFirstTwoCust = soEmiFirstTwo.filter(e => Number(e.collected || 0) > 0).length;
+                const unpaidFirstTwoCust = Math.max(0, totalFirstTwoCust - paidFirstTwoCust); // Total - (Full Pay + Partial Pay)
                 const totalFirstTwoInstallment = soEmiFirstTwo.reduce((sum, e) => sum + Number(e.installment || 0), 0);
                 const totalFirstTwoCollected = soEmiFirstTwo.reduce((sum, e) => sum + Number(e.collected || 0), 0);
 
@@ -12014,9 +12019,13 @@ approveManualDelivery: async (id) => {
                                             <p class="font-black text-xs text-green-300">${app.formatCurrency(totalEmiCollected)}</p>
                                         </div>
                                     </div>
-                                    <div class="mt-2 flex items-center justify-between text-[9px] text-white/80 border-t border-white/10 pt-1.5">
+                                    <div class="mt-2 flex items-center justify-between text-[9px] text-white/90 border-t border-white/10 pt-1.5">
+                                        <span>Accounts: <strong class="text-indigo-100">${totalEmiCust} Total</strong> (${paidEmiCust} Paid)</span>
+                                        <span class="text-rose-300 font-bold">${unpaidEmiCust} Unpaid</span>
+                                    </div>
+                                    <div class="mt-1 flex items-center justify-between text-[8px] text-white/60">
                                         <span>1st & 2nd EMI Action: <strong class="text-indigo-100">${totalFirstTwoCust} Accounts</strong></span>
-                                        <span class="text-rose-300 font-bold">${unpaidFirstTwoCust} Unpaid</span>
+                                        <span class="text-amber-300 font-semibold">${unpaidFirstTwoCust} Unpaid</span>
                                     </div>
                                 </div>
                             </div>
