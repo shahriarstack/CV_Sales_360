@@ -1606,6 +1606,97 @@
                 }
             },
 
+            exportUsersToCSV: () => {
+                try {
+                    const headers = ["Territory Name", "Employee Name", "Staff ID", "Area Name", "Supervisor Name", "Supervisor Staff ID"];
+                    const rows = [];
+
+                    // Process all users in DB.users
+                    DB.users.forEach(u => {
+                        const empName = u.name || '';
+                        const staffId = u.employee_id || u.id || '';
+                        let terrName = 'N/A';
+                        let areaName = u.area_name || 'N/A';
+                        let supervisorName = 'N/A';
+                        let supervisorStaffId = 'N/A';
+
+                        if (u.role === 'admin' || u.role === 'subadmin') {
+                            terrName = 'Global / Head Office';
+                            areaName = u.role === 'subadmin' ? 'Sub Administration' : 'Global Administration';
+                            supervisorName = 'System Management';
+                            supervisorStaffId = 'ADMIN';
+                        } else if (u.role === 'am') {
+                            const assignedTerritories = (u.territories || [])
+                                .map(tId => DB.territories.find(t => t.id === tId)?.name)
+                                .filter(Boolean);
+                            terrName = assignedTerritories.length > 0 ? assignedTerritories.join('; ') : 'All Area Territories';
+                            areaName = u.area_name || 'Area Management';
+
+                            const sysAdmin = DB.users.find(adm => adm.role === 'admin');
+                            supervisorName = sysAdmin ? sysAdmin.name : 'System Management';
+                            supervisorStaffId = sysAdmin ? sysAdmin.employee_id : 'ADMIN';
+                        } else if (u.role === 'so') {
+                            const primaryTerrId = (u.territories && u.territories.length > 0) ? u.territories[0] : null;
+                            const terrObj = DB.territories.find(t => t.id === primaryTerrId);
+                            terrName = terrObj ? terrObj.name : 'Unassigned Territory';
+
+                            const amSupervisor = DB.users.find(am => am.role === 'am' && primaryTerrId && am.territories.includes(primaryTerrId));
+                            if (amSupervisor) {
+                                supervisorName = amSupervisor.name;
+                                supervisorStaffId = amSupervisor.employee_id;
+                                areaName = amSupervisor.area_name || terrName || 'Area';
+                            } else {
+                                const defaultAM = DB.users.find(am => am.role === 'am');
+                                supervisorName = defaultAM ? defaultAM.name : 'Area Manager';
+                                supervisorStaffId = defaultAM ? defaultAM.employee_id : 'N/A';
+                                areaName = terrName || 'Territory Area';
+                            }
+                        }
+
+                        rows.push([
+                            `"${terrName.replace(/"/g, '""')}"`,
+                            `"${empName.replace(/"/g, '""')}"`,
+                            `"${staffId.replace(/"/g, '""')}"`,
+                            `"${areaName.replace(/"/g, '""')}"`,
+                            `"${supervisorName.replace(/"/g, '""')}"`,
+                            `"${supervisorStaffId.replace(/"/g, '""')}"`
+                        ]);
+                    });
+
+                    // Check for unassigned territories
+                    DB.territories.forEach(t => {
+                        const hasUser = DB.users.some(u => u.role === 'so' && u.territories.includes(t.id));
+                        if (!hasUser) {
+                            const amSupervisor = DB.users.find(am => am.role === 'am' && am.territories.includes(t.id));
+                            rows.push([
+                                `"${t.name.replace(/"/g, '""')}"`,
+                                `"Unassigned Officer"`,
+                                `"UNASSIGNED"`,
+                                `"${(amSupervisor?.area_name || t.name).replace(/"/g, '""')}"`,
+                                `"${(amSupervisor?.name || 'Area Manager').replace(/"/g, '""')}"`,
+                                `"${(amSupervisor?.employee_id || 'N/A').replace(/"/g, '""')}"`
+                            ]);
+                        }
+                    });
+
+                    const csvString = "\uFEFF" + headers.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
+                    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Sales360_User_List_${new Date().toISOString().split('T')[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    app.showToast('User list exported as CSV successfully!', 'success');
+                } catch(err) {
+                    console.error('CSV Export Error:', err);
+                    app.showToast('Failed to export CSV.', 'error');
+                }
+            },
+
             renderUserManagement: () => {
                 localStorage.setItem('aci_last_page', 'users');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
@@ -1619,9 +1710,14 @@
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">User Management</h1></div>
                                 <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
                             </div>
-                            <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
-                                <i data-lucide="plus" class="w-4 h-4"></i> Add User
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="app.exportUsersToCSV()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-bold shadow-sm flex items-center gap-2 transition-all hover:border-emerald-500 hover:text-emerald-700 active:scale-95">
+                                    <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i> Download CSV
+                                </button>
+                                <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> Add User
+                                </button>
+                            </div>
                         </div>
 
                         <!-- System Admin Section -->
