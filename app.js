@@ -8766,7 +8766,7 @@ approveManualDelivery: async (id) => {
                 const viewMode = app.mapViewMode || 'district';
                 if (typeof app.mapSaleType === 'undefined') app.mapSaleType = 'All';
                 const saleTypeTab = app.mapSaleType;
-                const currentFY = app.selectedFY || app.currentFY;
+                const currentFY = app.selectedFY || app.currentFY || '2025-26';
 
                 // Filter Data (Actual Sales Only)
                 let filteredSales = DB.sales.filter(s => s.fy === currentFY && app.mapMonths.includes(s.sales_month));
@@ -8884,7 +8884,7 @@ approveManualDelivery: async (id) => {
                 `;
 
                 const html = `
-                    <div class="w-full fade-in pb-10 h-full flex flex-col">
+                    <div class="w-full fade-in pb-10 flex flex-col">
                         
                         <!-- Header & Dynamic Filters -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 shrink-0 relative z-50">
