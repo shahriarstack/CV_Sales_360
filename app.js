@@ -1374,33 +1374,31 @@
 
                 const renderSidebarBtn = (page, label, iconName, defaultIconColorClass, onClickAction, badgeHtml = '', specialClass = '') => {
                     const isActive = activePage === page;
-                    const isSO = app.currentUser.role === 'so';
                     
                     let btnClass = '';
                     let indicator = '';
-                    let iconColorClass = defaultIconColorClass;
+                    let iconBox = '';
 
                     if (isActive) {
-                        btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-white bg-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-white/15 backdrop-blur-md font-bold relative pl-7 transition-all`;
-                        indicator = `<div class="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-aci-gold shadow-[0_0_12px_#F4A915] transition-all duration-300"></div>`;
-                        iconColorClass = 'text-aci-gold';
+                        btnClass = `w-full flex items-center justify-between px-3.5 py-2.5 my-1 text-xs font-black rounded-xl text-white bg-gradient-to-r from-slate-800/90 via-slate-800/70 to-slate-900/90 shadow-[0_4px_16px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.15)] border border-white/15 backdrop-blur-xl relative pl-4 transition-all duration-300 group`;
+                        indicator = `<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.2 h-5 rounded-r-full bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.7)]"></div>`;
+                        iconBox = `<div class="p-1.5 rounded-lg bg-amber-400/15 border border-amber-400/30 shadow-inner flex items-center justify-center shrink-0"><i data-lucide="${iconName}" class="w-4 h-4 text-amber-400"></i></div>`;
                     } else {
-                        const hoverBg = isSO ? 'hover:bg-slate-800' : 'hover:bg-white/5';
-                        if (specialClass) {
-                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5 ${specialClass}`;
-                        } else {
-                            btnClass = `w-full flex items-center justify-between px-4 py-3 text-sm rounded-lg text-slate-400 hover:text-white ${hoverBg} transition-all mt-1 pl-5`;
-                        }
+                        btnClass = `w-full flex items-center justify-between px-3.5 py-2.5 my-0.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 hover:border-slate-700/60 border border-transparent transition-all duration-300 group ${specialClass || ''}`;
+                        iconBox = `<div class="p-1.5 rounded-lg bg-slate-800/40 group-hover:bg-white/10 group-hover:scale-105 border border-slate-700/30 group-hover:border-white/10 transition-all duration-300 flex items-center justify-center shrink-0"><i data-lucide="${iconName}" class="w-4 h-4 ${defaultIconColorClass} group-hover:text-amber-300 transition-colors"></i></div>`;
                     }
 
                     return `
                         <button onclick="app.closeSidebar(); ${onClickAction}" class="${btnClass}">
                             ${indicator}
                             <div class="flex items-center gap-3">
-                                <i data-lucide="${iconName}" class="w-5 h-5 ${iconColorClass}"></i>
-                                <span>${label}</span>
+                                ${iconBox}
+                                <span class="tracking-wide">${label}</span>
                             </div>
-                            ${badgeHtml}
+                            <div class="flex items-center gap-1.5">
+                                ${badgeHtml}
+                                ${isActive ? '<i data-lucide="chevron-right" class="w-3.5 h-3.5 text-amber-400/80"></i>' : ''}
+                            </div>
                         </button>
                     `;
                 };
