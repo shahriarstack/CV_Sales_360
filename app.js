@@ -2624,15 +2624,6 @@
                         <!-- Table Content -->
                         <div>
                             <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-                                <colgroup>
-                                    <col style="width:26%;">
-                                    <col style="width:10%;">
-                                    <col style="width:10%;">
-                                    <col style="width:10%;">
-                                    <col style="width:17%;">
-                                    <col style="width:17%;">
-                                    <col style="width:10%;">
-                                </colgroup>
                                 <thead>
                                     <tr style="background:#0f172a;color:#ffffff;">
                                         <th style="font-size:12px;font-weight:800;padding:10px 12px;text-align:left;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Sales Territory</th>
@@ -4040,15 +4031,6 @@
                         <!-- Table Content -->
                         <div>
                             <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-                                <colgroup>
-                                    <col style="width:26%;">
-                                    <col style="width:10%;">
-                                    <col style="width:10%;">
-                                    <col style="width:10%;">
-                                    <col style="width:17%;">
-                                    <col style="width:17%;">
-                                    <col style="width:10%;">
-                                </colgroup>
                                 <thead>
                                     <tr style="background:#0f172a;color:#ffffff;">
                                         <th style="font-size:12px;font-weight:800;padding:10px 12px;text-align:left;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Sales Territory</th>
