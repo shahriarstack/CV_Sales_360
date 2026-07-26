@@ -1,0 +1,87 @@
+// --- Sales360 Database ---
+window.DB = {
+            users: [
+                { id: 'u1', name: 'System Administrator', role: 'admin', employee_id: 'ADMIN001', territories: [] },
+                { id: 'u2', name: 'Md. Shafiqul (AM)', role: 'am', employee_id: 'AM001', territories: ['t1', 't2'], area_name: 'Dhaka Area' },
+                { id: 'u3', name: 'Rahim Uddin (MO)', role: 'so', employee_id: 'SO001', territories: ['t1'] },
+                { id: 'u4', name: 'Karim Hasan (MO)', role: 'so', employee_id: 'SO002', territories: ['t2'] }
+            ],
+            territories: [
+                { id: 't1', name: 'Cox\'s Bazar', district: 'Cox\'s Bazar', upazilas: [] },
+                { id: 't2', name: 'Narayanganj', district: 'Narayanganj', upazilas: [] },
+                { id: 't3', name: 'Savar', district: 'Savar', upazilas: [] },
+                { id: 't4', name: 'Noakhali', district: 'Noakhali', upazilas: [] },
+                { id: 't5', name: 'Borguna', district: 'Borguna', upazilas: [] },
+                { id: 't6', name: 'Rajshahi', district: 'Rajshahi', upazilas: [] },
+                { id: 't7', name: 'Sylhet', district: 'Sylhet', upazilas: [] },
+                { id: 't8', name: 'Khulna', district: 'Khulna', upazilas: [] },
+                { id: 't9', name: 'Hobiganj', district: 'Hobiganj', upazilas: [] },
+                { id: 't10', name: 'Chattogram North', district: 'Chattogram North', upazilas: [] },
+                { id: 't11', name: 'Narshingdi', district: 'Narshingdi', upazilas: [] },
+                { id: 't12', name: 'B. Baria', district: 'B. Baria', upazilas: [] },
+                { id: 't13', name: 'Thakurgaon', district: 'Thakurgaon', upazilas: [] },
+                { id: 't14', name: 'Feni', district: 'Feni', upazilas: [] },
+                { id: 't15', name: 'Gopalganj', district: 'Gopalganj', upazilas: [] },
+                { id: 't16', name: 'Kishoreganj', district: 'Kishoreganj', upazilas: [] },
+                { id: 't17', name: 'Munshiganj', district: 'Munshiganj', upazilas: [] },
+                { id: 't18', name: 'Rangpur', district: 'Rangpur', upazilas: [] },
+                { id: 't19', name: 'Manikganj', district: 'Manikganj', upazilas: [] },
+                { id: 't20', name: 'Cumilla 1', district: 'Cumilla 1', upazilas: [] },
+                { id: 't21', name: 'Tongi', district: 'Tongi', upazilas: [] },
+                { id: 't22', name: 'Chapainawabgonj', district: 'Chapainawabgonj', upazilas: [] },
+                { id: 't23', name: 'Nilphamari', district: 'Nilphamari', upazilas: [] },
+                { id: 't24', name: 'Sirajganj', district: 'Sirajganj', upazilas: [] },
+                { id: 't25', name: 'Tangail', district: 'Tangail', upazilas: [] },
+                { id: 't26', name: 'Jashore', district: 'Jashore', upazilas: [] },
+                { id: 't27', name: 'Gazipur', district: 'Gazipur', upazilas: [] },
+                { id: 't28', name: 'Mymensingh', district: 'Mymensingh', upazilas: [] },
+                { id: 't29', name: 'Cumilla-2', district: 'Cumilla-2', upazilas: [] },
+                { id: 't30', name: 'Chattogram South', district: 'Chattogram South', upazilas: [] },
+                { id: 't31', name: 'Dinajpur', district: 'Dinajpur', upazilas: [] },
+                { id: 't32', name: 'Dhaka North', district: 'Dhaka North', upazilas: [] },
+                { id: 't33', name: 'Dhaka-3', district: 'Dhaka-3', upazilas: [] },
+                { id: 't34', name: 'Laxmipur', district: 'Laxmipur', upazilas: [] },
+                { id: 't35', name: 'Madaripur', district: 'Madaripur', upazilas: [] },
+                { id: 't36', name: 'Bogura', district: 'Bogura', upazilas: [] },
+                { id: 't37', name: 'Barisal', district: 'Barisal', upazilas: [] },
+                { id: 't38', name: 'Chandpur', district: 'Chandpur', upazilas: [] },
+                { id: 't39', name: 'Jamalpur', district: 'Jamalpur', upazilas: [] },
+                { id: 't40', name: 'Natore', district: 'Natore', upazilas: [] },
+                { id: 't41', name: 'Dhaka South', district: 'Dhaka South', upazilas: [] },
+                { id: 't42', name: 'Jhenaidah', district: 'Jhenaidah', upazilas: [] },
+                { id: 't43', name: 'Kushtia', district: 'Kushtia', upazilas: [] },
+                { id: 't44', name: 'Netrokona', district: 'Netrokona', upazilas: [] }
+            ],
+            models: [
+                { id: 'm1', brand: 'Foton', name: 'TM3' },
+                { id: 'm2', brand: 'Foton', name: 'Auman' },
+                { id: 'm3', brand: 'Foton', name: 'Tunland' },
+                { id: 'm4', brand: 'Mahindra', name: 'Bolero' },
+                { id: 'm5', brand: 'Mahindra', name: 'Supro' },
+                { id: 'm6', brand: 'Mahindra', name: 'Treo' }
+            ],
+            targets: [],
+            notices: [
+                { id: 'n1', title: 'System Live: ACI Sales360', message: 'Welcome to the production environment. Please upload your monthly targets and sales data via the Admin Panel to begin.', timestamp: '15/05/2026', fileType: 'pdf', fileName: 'User_Guide.pdf' }
+            ],
+            links: [
+                { id: 'lnk1', title: 'ACI Motors Web Portal', url: 'https://acimotors.com', type: 'web', icon: 'globe' },
+                { id: 'lnk2', title: 'Dealer Connect App', url: '#', type: 'app', icon: 'smartphone' }
+            ],
+            projections: [],
+            sales: [],
+            so_performance_sply_mock: {},
+            emi: [],
+            recovery_od: [],
+            tiv_brands: [
+                { name: 'TATA', models: ['TATA ACE EX2', 'TATA intra V20', 'TATA 407', 'TATA 709 EX CH'] },
+                { name: 'Ashok Leyland', models: ['Dost Strong 1 Ton', 'Dost Plus 1.2 Ton', 'Phoenix 1.2 Ton', 'Partner 1.5 Ton', 'Partner 3 Ton', 'Leo'] },
+                { name: 'JAC', models: ['JAC 1.2 Ton', 'JAC 1.5 Ton', 'JAC 3 Ton'] },
+                { name: 'Eicher', models: ['EicherPro 1049 CT', 'Eicher 1050', 'Eicher 1075'] },
+                { name: 'Forland', models: ['Forland 1 Ton', 'Forland 1.2 Ton'] },
+                { name: 'Mahindra', models: ['Mahindra Bolero 1 Ton', 'Mahindra Bolero 1.2 Ton', 'Mahindra Load king OPTIMO'] },
+                { name: 'JMC', models: ['JMC 1.5 Ton', 'JMC 3 Ton'] },
+                { name: 'SML', models: ['SML ISUZU 3 Ton'] }
+            ],
+            tiv_submissions: []
+        };

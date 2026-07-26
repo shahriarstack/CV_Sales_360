@@ -243,6 +243,19 @@ async function run() {
             await uploadFiles(`${config.docRoot}/assets/geo`, geoFiles);
         }
 
+        // Upload JS modules
+        const jsDir = path.join(__dirname, 'js');
+        if (fs.existsSync(jsDir)) {
+            const jsFiles = fs.readdirSync(jsDir)
+                .filter(f => f.endsWith('.js'))
+                .map(f => ({ name: f, content: fs.readFileSync(path.join(jsDir, f)) }));
+            
+            if (jsFiles.length > 0) {
+                console.log(`Uploading ${jsFiles.length} JS module files to "${config.docRoot}/js"...`);
+                await uploadFiles(`${config.docRoot}/js`, jsFiles);
+            }
+        }
+
         console.log(`✓ All files and local assets uploaded to ${config.subdomain} successfully!`);
         
         // Remove secondary subdomain sales360 if it exists on cPanel
