@@ -20,7 +20,7 @@ window.app.downloadRawCSV = () => {
 window.app.downloadPulseCSV = () => {
                 const brandFilter = app.adminBrandTab || 'Foton';
                 const currentSaleType = app.adminSaleTypeTab || 'New Sale';
-                const currentFY = app.selectedFY || app.currentFY || '2025-26';
+                const currentFY = app.selectedFY || app.currentFY;
                 const concludingFY = app.getPreviousFY(app.currentFY);
                 const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : app.currentFY;
                 const activeFY = app.selectedFY || defaultFY;

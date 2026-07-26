@@ -25,29 +25,20 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                 app.currentManualSales = manualSales;
 
                 const html = `
-                    <div class="w-full fade-in space-y-4">
-                        <!-- Top Header & Action Controls Bar -->
-                        <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="h-4.5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500' : 'from-foton to-sky-500'} rounded-full shadow-xs"></div>
-                                        <h1 class="text-base font-black text-slate-800 tracking-tight flex items-center gap-2">
-                                            <i data-lucide="clipboard-check" class="w-4.5 h-4.5 text-indigo-600"></i>
-                                            Manual Deliveries Tracker
-                                        </h1>
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 font-medium pl-3.5 mt-0.5">Unsynced sales logged manually by Field Officers</p>
-                                </div>
-
-                                <!-- Compact Sale Type Switcher Pill -->
-                                <div class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 shadow-inner">
+                    <div class="w-full fade-in">
+                        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                            <div>
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
+                                <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
+                                
+                                <!-- Beautiful & Noticeable Sale Type Switcher Pill (Compact) -->
+                                <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner mt-2 w-max">
                                     <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()" 
-                                            class="px-3 py-1 rounded-lg text-[10px] font-extrabold transition-all duration-200 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'}">
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-sm scale-102 border border-slate-200/20' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
                                         All
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()" 
-                                            class="px-3 py-1 rounded-lg text-[10px] font-extrabold transition-all duration-200 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'}">
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
                                         <span class="h-1.5 w-1.5 rounded-full relative flex">
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-400'} opacity-75"></span>
                                             <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
@@ -55,7 +46,7 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                         New Sale
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()" 
-                                            class="px-3 py-1 rounded-lg text-[10px] font-extrabold transition-all duration-200 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'}">
+                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
                                         <span class="h-1.5 w-1.5 rounded-full relative flex">
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-400'} opacity-75"></span>
                                             <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
@@ -64,255 +55,236 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                     </button>
                                 </div>
                             </div>
-
-                            <!-- Right Controls: Date Range & Action Buttons -->
-                            <div class="flex flex-wrap items-center gap-2.5">
+                            <div class="flex flex-wrap items-center gap-3">
                                 <!-- Date Range Selector -->
-                                <div class="flex items-center gap-2 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/80 shadow-xs hover:border-indigo-400 transition-all">
-                                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
-                                    <div class="flex items-center gap-1 text-[11px]">
-                                        <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="Start Date">
-                                        <span class="text-slate-300 font-bold">-</span>
-                                        <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="End Date">
+                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:border-aci-blue">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                    <div class="flex flex-col">
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Date Range</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="Start Date">
+                                            <span class="text-slate-300 font-bold">-</span>
+                                            <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="End Date">
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 <!-- Batch Approve Button -->
-                                <button id="btn-batch-approve" onclick="app.approveSelectedManualDeliveries()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs hover:shadow flex items-center gap-1.5 transition-all transform active:scale-95 animate-pulse">
-                                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i> Approve Selected (<span id="batch-select-count">0</span>)
+                                <button id="btn-batch-approve" onclick="app.approveSelectedManualDeliveries()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 animate-pulse">
+                                    <i data-lucide="check-square" class="w-4 h-4"></i> Approve Selected (<span id="batch-select-count">0</span>)
                                 </button>
                                 
-                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs hover:shadow flex items-center gap-1.5 transition-all transform active:scale-95">
-                                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
+                                    <i data-lucide="download" class="w-4 h-4"></i> Export CSV
                                 </button>
 
-                                <button onclick="app.clearManualDeliveries()" class="bg-slate-50 hover:bg-rose-50 text-rose-600 border border-slate-200/80 hover:border-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all active:scale-95">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Data
+                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i> Clear Data
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Compact & Modern Glassmorphic Summary KPI Cards -->
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                            <!-- Card 1: Total Logged -->
-                            <div class="bg-white/80 backdrop-blur-md border border-indigo-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
+
+                        <!-- Minimal & Creative Summary Section -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <!-- Total Entries -->
+                            <div class="bg-gradient-to-br from-indigo-500/10 to-indigo-50/30 border border-indigo-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-indigo-600 uppercase tracking-wider">Total Logged</span>
-                                    <span class="p-1.5 bg-indigo-500/10 text-indigo-600 rounded-lg shadow-inner"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
+                                    <span class="text-[9px] font-extrabold text-indigo-500 uppercase tracking-wider">Total Logged</span>
+                                    <span class="p-2 bg-indigo-500/15 text-indigo-600 rounded-xl shadow-inner"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
                                 </div>
-                                <div class="mt-2 flex items-baseline gap-1.5">
-                                    <span class="text-lg font-black text-slate-800">${manualSales.length}</span>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Deliveries</span>
+                                <div class="mt-2 flex items-baseline gap-1">
+                                    <span class="text-xl font-black text-slate-800">${manualSales.length}</span>
+                                    <span class="text-[9px] font-bold text-slate-400">Deliveries</span>
                                 </div>
                             </div>
 
-                            <!-- Card 2: Pending Sync -->
-                            <div class="bg-white/80 backdrop-blur-md border border-amber-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
+                            <!-- Pending Sync -->
+                            <div class="bg-gradient-to-br from-amber-500/10 to-amber-50/30 border border-amber-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-amber-600 uppercase tracking-wider">Pending Sync</span>
-                                    <span class="p-1.5 bg-amber-500/10 text-amber-600 rounded-lg relative flex items-center justify-center shadow-inner">
-                                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-amber-400 opacity-75"></span>
+                                    <span class="text-[9px] font-extrabold text-amber-500 uppercase tracking-wider">Pending Sync</span>
+                                    <span class="p-2 bg-amber-500/15 text-amber-600 rounded-xl relative flex items-center justify-center shadow-inner">
+                                        <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75"></span>
                                         <i data-lucide="clock" class="w-3.5 h-3.5 relative"></i>
                                     </span>
                                 </div>
-                                <div class="mt-2 flex items-baseline gap-1.5">
-                                    <span class="text-lg font-black text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Pending</span>
+                                <div class="mt-2 flex items-baseline gap-1">
+                                    <span class="text-xl font-black text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
+                                    <span class="text-[9px] font-bold text-slate-400">Pending</span>
                                 </div>
                             </div>
 
-                            <!-- Card 3: Brand Share Split (New Sales) -->
-                            <div class="bg-white/80 backdrop-blur-md border border-emerald-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[9px] font-black text-emerald-600 uppercase tracking-wider">Brand Share (New)</span>
-                                    <span class="p-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg shadow-inner"><i data-lucide="percent" class="w-3.5 h-3.5"></i></span>
+                            <!-- Brand Share Ratio Bar -->
+                            <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-50/30 border border-emerald-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">Brand Share Split</span>
+                                    <span class="p-2 bg-emerald-500/15 text-emerald-600 rounded-xl shadow-inner"><i data-lucide="percent" class="w-3.5 h-3.5"></i></span>
                                 </div>
-                                <div>
-                                    <div class="flex justify-between text-[11px] font-black text-slate-700 mb-1">
-                                        <span>Foton: ${manualSales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length}</span>
-                                        <span>Mahindra: ${manualSales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length}</span>
+                                <div class="mt-2.5">
+                                    <div class="flex justify-between text-xs font-black text-slate-800 mb-1.5">
+                                        <span>Foton: ${manualSales.filter(s => s.brand === 'Foton').length}</span>
+                                        <span>Mahindra: ${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
                                     </div>
                                     ${(() => {
-                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
-                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
+                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton').length;
+                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra').length;
                                         const total = fotonCount + mahindraCount;
                                         const fotonPct = total > 0 ? Math.round((fotonCount / total) * 100) : 50;
                                         return `
-                                        <div class="w-full bg-rose-500 rounded-full h-1.5 overflow-hidden flex shadow-inner">
-                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton (New): ${fotonPct}%"></div>
-                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra (New): ${100 - fotonPct}%"></div>
+                                        <div class="w-full bg-rose-500 rounded-full h-2 overflow-hidden flex shadow-inner">
+                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton: ${fotonPct}%"></div>
+                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra: ${100 - fotonPct}%"></div>
                                         </div>
                                         `;
                                     })()}
                                 </div>
                             </div>
-
-                            <!-- Card 4: Total Value (TP) -->
-                            <div class="bg-white/80 backdrop-blur-md border border-cyan-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
+                            <!-- Combined Trade Value -->
+                            <div class="bg-gradient-to-br from-cyan-500/10 to-cyan-50/30 border border-cyan-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-black text-cyan-600 uppercase tracking-wider">Total Value (TP)</span>
-                                    <span class="p-1.5 bg-cyan-500/10 text-cyan-600 rounded-lg shadow-inner"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
+                                    <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
+                                    <span class="p-2 bg-cyan-500/15 text-cyan-600 rounded-xl shadow-inner"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex flex-col">
-                                    <span class="text-base font-black text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
+                                    <span class="text-sm font-black text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
                                     <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Est. Trade Value</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
-                                <table class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
-                                        <tr>
-                                            <th class="px-6 py-4 font-semibold">User</th>
-                                            <th class="px-6 py-4 font-semibold">Role</th>
-                                            <th class="px-6 py-4 font-semibold">Status</th>
-                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        ${admins.map(u => `
-                                            <tr class="hover:bg-slate-50 transition-colors">
-                                                <td class="px-6 py-4">
-                                                    <div class="font-bold text-slate-800">${u.name}</div>
-                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    ${u.role === 'subadmin' 
-                                                        ? `<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-purple-200">Sub Admin</span>`
-                                                        : `<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-rose-200">Admin</span>`
-                                                    }
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
-                                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 text-right">
-                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit Admin"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                                    ${u.id === app.currentUser.id ? `
-                                                        <button class="text-slate-200 cursor-not-allowed mx-1" title="You cannot delete yourself" disabled><i data-lucide="trash-2" class="w-4 h-4 text-slate-200"></i></button>
-                                                    ` : `
-                                                        <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete Admin"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                                    `}
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 class="font-bold text-slate-800 text-sm">Pending Actuals Integration <span class="bg-aci-blue text-white px-2 py-0.5 rounded-full text-xs ml-2">${manualSales.length} Entries</span></h3>
                             </div>
-                        </div>
-
-                        <!-- AM Section -->
-                        <div class="mb-8">
-                            <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
-                                AM Management
-                            </h2>
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
-                                <table class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
-                                        <tr>
-                                            <th class="px-6 py-4 font-semibold">User</th>
-                                            <th class="px-6 py-4 font-semibold">Role & Area</th>
-                                            <th class="px-6 py-4 font-semibold">Territories</th>
-                                            <th class="px-6 py-4 font-semibold">Status</th>
-                                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        ${ams.map(u => `
-                                            <tr class="hover:bg-slate-50 transition-colors">
-                                                <td class="px-6 py-4">
-                                                    <div class="font-bold text-slate-800">${u.name}</div>
-                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id}</div>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-slate-200">${u.role}</span>
-                                                    ${u.area_name ? `<div class="text-xs text-slate-500 mt-1 font-semibold">${u.area_name}</div>` : ''}
-                                                </td>
-                                                <td class="px-6 py-4 text-slate-600 text-xs">
-                                                    ${u.territories.map(tId => DB.territories.find(t => t.id === tId)?.name).join(', ') || '<span class="text-slate-400 italic">Global</span>'}
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <span class="bg-green-50 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 w-max border border-green-100">
-                                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Active
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4 text-right">
-                                                    <button onclick="app.showAddUserModal('${u.id}')" class="text-slate-400 hover:text-aci-blue mx-1 transition-colors tooltip" title="Edit AM"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                                    <button onclick="app.deleteUser('${u.id}')" class="text-slate-400 hover:text-red-500 mx-1 transition-colors tooltip" title="Delete AM"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- MO / Territory Section -->
-                        <div>
-                            <div class="mb-3 flex justify-between items-center">
-                                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
-                                    MO Management
-                                </h2>
-                                <button onclick="app.showAddTerritoryModal()" class="btn-liquid text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors">
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Territory
-                                </button>
-                            </div>
-                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
-                                <table class="w-full text-left text-sm whitespace-nowrap">
-                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
-                                        <tr>
-                                            <th class="px-6 py-4 font-semibold w-16">#</th>
-                                            <th class="px-6 py-4 font-semibold">Territory Name (Username)</th>
-                                            <th class="px-6 py-4 font-semibold">Officer Name</th>
-                                            <th class="px-6 py-4 font-semibold">Employee ID (Password)</th>
-                                            <th class="px-6 py-4 font-semibold text-right">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        ${DB.territories.map((t, index) => {
-                    const so = DB.users.find(u => u.role === 'so' && u.territories.includes(t.id));
+                            <table class="w-full text-left text-[11px] whitespace-nowrap min-w-[1000px]">
+                                <thead class="border-b border-slate-200 text-slate-500 uppercase text-[9px] tracking-widest bg-slate-100/50">
+                                    <tr>
+                                        <th class="px-3 py-1.5 font-bold text-center w-12">S/N</th>
+                                        <th class="px-4 py-1.5 font-bold">Territory & Area</th>
+                                        <th class="px-4 py-1.5 font-bold">Customer Details</th>
+                                        <th class="px-4 py-1.5 font-bold">Product Info</th>
+                                        <th class="px-4 py-1.5 font-bold text-right">Financials (BDT)</th>
+                                        <th class="px-4 py-1.5 font-bold">Offers & Gifts</th>
+                                        <th class="px-4 py-1.5 font-bold">Logged On</th>
+                                        <th class="px-4 py-1.5 font-bold text-center">Status</th>
+                                        <th class="px-4 py-1.5 font-bold text-right">Actions</th>
+                                    </tr>
+                                    <tr class="bg-slate-50/80">
+                                        <th class="px-3 py-1 border-b border-slate-200 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
+                                        <th class="px-4 py-1 border-b border-slate-200"><input type="text" id="manual-filter-area" onkeyup="app.manualAreaFilter=this.value; app.filterTableGroup(this)" value="${app.manualAreaFilter || ''}" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1 border-b border-slate-200"><input type="text" id="manual-filter-customer" onkeyup="app.manualCustomerFilter=this.value; app.filterTableGroup(this)" value="${app.manualCustomerFilter || ''}" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1 border-b border-slate-200">
+                                            <select id="manual-filter-brand" onchange="app.manualBrandFilter=this.value; app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="" ${!app.manualBrandFilter ? 'selected' : ''}>All Brands</option>
+                                                <option value="foton" ${app.manualBrandFilter === 'foton' ? 'selected' : ''}>Foton</option>
+                                                <option value="mahindra" ${app.manualBrandFilter === 'mahindra' ? 'selected' : ''}>Mahindra</option>
+                                            </select>
+                                        </th>
+                                        <th class="px-4 py-1 border-b border-slate-200 text-right"><span class="text-[9px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-4 py-1 border-b border-slate-200"><span class="text-[9px] text-slate-400 font-normal">No filter</span></th>
+                                        <th class="px-4 py-1 border-b border-slate-200"><span class="text-[9px] text-slate-400 font-normal">Use top filter</span></th>
+                                        <th class="px-4 py-1 border-b border-slate-200 text-center">
+                                            <select id="manual-filter-status" onchange="app.manualStatusFilter=this.value; app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
+                                                <option value="" ${!app.manualStatusFilter ? 'selected' : ''}>All Status</option>
+                                                <option value="pending approval" ${app.manualStatusFilter === 'pending approval' ? 'selected' : ''}>Pending</option>
+                                                <option value="done" ${app.manualStatusFilter === 'done' ? 'selected' : ''}>Done</option>
+                                            </select>
+                                        </th>
+                                        <th class="px-4 py-1 border-b border-slate-200 text-right"><span class="text-[9px] text-slate-400 font-normal">-</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${manualSales.map((s, idx) => {
+                    const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
                     return `
-                                                <tr class="hover:bg-slate-50 transition-colors">
-                                                    <td class="px-6 py-4 font-semibold text-slate-400">${index + 1}</td>
-                                                    <td class="px-6 py-4">
-                                                        <div class="font-bold text-slate-800">${t.name}</div>
-                                                        <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5 uppercase">ID: ${t.id}</div>
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        ${so ? `<div class="font-bold text-slate-700">${so.name}</div>` : `<span class="px-2 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Unassigned</span>`}
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        ${so ? `<div class="font-mono text-xs font-semibold text-slate-600">${so.employee_id}</div>` : `<span class="text-slate-300">-</span>`}
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <div class="flex items-center justify-end gap-1">
-                                                            ${so ? `
-                                                                <button onclick="app.showAddUserModal('${so.id}')" class="text-slate-400 hover:text-aci-blue p-1.5 rounded hover:bg-slate-50 transition-colors tooltip" title="Edit MO"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                                                <button onclick="app.deleteUser('${so.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete MO"><i data-lucide="user-x" class="w-4 h-4"></i></button>
-                                                            ` : `
-                                                                <button onclick="app.showAddUserModal(null, '${t.id}')" class="text-aci-blue hover:text-indigo-600 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded-md hover:bg-indigo-50 transition-colors">
-                                                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Assign MO
-                                                                </button>
-                                                            `}
-                                                            <div class="w-px h-5 bg-slate-200 mx-1.5"></div>
-                                                            <button onclick="app.deleteTerritory('${t.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors tooltip" title="Delete Territory"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            `;
-                }).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        <tr class="hover:bg-slate-50 transition-colors group">
+                                            <td class="px-3 py-1.5 border-b border-slate-100 text-center font-bold text-slate-400">
+                                                ${idx + 1}
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100">
+                                                <div class="font-bold text-slate-800 flex items-center gap-2">
+                                                    ${terrName}
+                                                </div>
+                                                <div class="text-[9px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1">
+                                                    <i data-lucide="map-pin" class="w-2.5 h-2.5 text-slate-400"></i>
+                                                    ${s.upazila || 'N/A'} ${s.district ? `(${s.district})` : ''}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100">
+                                                <div class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
+                                                <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                                    <span class="text-[9px] font-bold text-aci-blue bg-blue-50 px-1 py-0.2 rounded">ID: ${s.customer_id}</span>
+                                                    ${s.chassis_no ? `<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded" title="Chassis No">Chassis: ${s.chassis_no}</span>` : ''}
+                                                    ${s.old_customer_id ? `<span class="text-[8px] font-semibold text-slate-500 bg-slate-100 px-1 py-0.2 rounded" title="Old Customer ID">Old: ${s.old_customer_id}</span>` : ''}
+                                                    ${s.purpose_of_use ? `<span class="text-[8px] font-bold text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded flex items-center gap-0.5" title="Purpose of Use"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> ${s.purpose_of_use}</span>` : ''}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100">
+                                                <div class="font-bold text-slate-700 text-[11px]">${s.model}</div>
+                                                <div class="flex items-center gap-1 mt-0.5">
+                                                    <img src="${s.brand === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-2.5 object-contain">
+                                                    <span class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">${s.brand}</span>
+                                                    <span class="px-1 py-0.2 rounded-full text-[8px] font-bold ml-1 ${s.sale_type === 'New Sale' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${s.sale_type}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100 text-right">
+                                                <div class="text-[11px] font-bold text-slate-800">TP: ${app.formatCurrency(s.financials?.tp || 0)}</div>
+                                                <div class="text-[10px] text-slate-600 font-medium mt-0.2">DP: ${app.formatCurrency(s.financials?.dp || 0)}</div>
+                                                <div class="text-[9px] text-slate-400 font-medium mt-0.2">Tenure: ${s.financials?.tenure || 0} Mos</div>
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100">
+                                                ${s.discounts?.amount > 0 ? `<div class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5"><i data-lucide="tags" class="w-2.5 h-2.5"></i> -${app.formatCurrency(s.discounts.amount)} (${s.discounts.type})</div>` : '<div class="text-[10px] text-slate-400 italic">No Discount</div>'}
+                                                ${s.discounts?.gift ? `<div class="text-[9px] text-indigo-600 font-bold mt-0.5 flex items-center gap-0.5"><i data-lucide="gift" class="w-2.5 h-2.5"></i> ${s.discounts.gift}</div>` : ''}
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100 text-[10px] text-slate-500 font-medium whitespace-nowrap">
+                                                <div class="flex flex-col gap-0.5">
+                                                    <div class="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded w-max">
+                                                        <i data-lucide="calendar-clock" class="w-3 h-3 text-slate-400"></i>
+                                                        ${s.timestamp || 'Recent'}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100 text-center">
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${s.approval_status === 'Done' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                                    ${s.approval_status || 'Pending Approval'}
+                                                </span>
+                                                ${s.admin_comments ? `<div class="text-[8px] text-slate-400 mt-0.5 truncate max-w-[100px] mx-auto" title="${s.admin_comments}">Note: ${s.admin_comments}</div>` : ''}
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100 text-right">
+                                                <div class="flex items-center justify-end gap-1.5">
+                                                    ${s.approval_status !== 'Done' ? `
+                                                        <button onclick="app.approveManualDelivery('${s.id}')" title="Approve" class="p-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded transition-colors shadow-sm">
+                                                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    ` : ''}
+                                                    <button onclick="app.editManualDeliveryModal('${s.id}')" title="Edit/Comment" class="p-1 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded transition-colors shadow-sm">
+                                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                    <button onclick="app.deleteManualDelivery('${s.id}')" title="Delete" class="p-1 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded transition-colors shadow-sm">
+                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `}).join('')}
+                                    ${manualSales.length === 0 ? '<tr><td colspan="9" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center gap-3"><i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i><p>No manual deliveries found matching criteria.</p></div></td></tr>' : ''}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 `;
                 document.getElementById('view-port').innerHTML = html;
                 app.refreshIcons();
+
+                // Restore date inputs
+                if (startDate) document.getElementById('manual-start-date').value = startDate;
+                if (endDate) document.getElementById('manual-end-date').value = endDate;
+
+                // Automatically re-apply saved table filters
+                const activeFilterTrigger = document.getElementById('manual-filter-status') || document.getElementById('manual-filter-area') || document.getElementById('manual-filter-customer') || document.getElementById('manual-filter-brand');
+                if (activeFilterTrigger) {
+                    app.filterTableGroup(activeFilterTrigger);
+                }
             };
 
 window.app.filterManualDeliveriesByDate = () => {

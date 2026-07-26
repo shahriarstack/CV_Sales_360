@@ -1,10 +1,7 @@
 // --- Sales360 Module: ai.js ---
 window.app = window.app || {};
 
-// ==========================================
-        // AI CHATBOT LOGIC
-        // ==========================================
-        app.aiAssistant = {
+window.app.aiAssistant = {
             isOpen: false,
             history: [],
             apiKey: 'AQ.Ab8RN6LGdOwowIzn' + 'StmsoTuxhJushIfFkDvNF7LM_ZLNZvDmKA',
@@ -223,3 +220,6 @@ window.app = window.app || {};
                 app.aiAssistant.sendPrompt(input.value);
             }
         };
+
+
+        // Initialize App on Load
