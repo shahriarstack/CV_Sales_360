@@ -2599,21 +2599,22 @@
                         <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
 
                         <!-- Header Row -->
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
-                            <div>
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                                    <span style="background:#0f172a;color:#ffffff;font-size:8.5px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
-                                    <span style="color:#64748b;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
-                                </div>
-                                <h1 style="font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
-                                <div style="font-size:9px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
-                                    <div style="font-size:9.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics - ${brandFilter === 'ALL' ? 'Foton + Mahindra' : 'Only ' + brandFilter}</div>
-                                    <div style="font-size:8px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
-                                </div>
-                            </div>
+                        <table style="width:100%; margin-bottom:14px; border:none; table-layout:fixed;">
+                            <tr>
+                                <td style="text-align:left; vertical-align:top; border:none; padding:0;">
+                                    <div style="display:inline-block; vertical-align:middle; background:#0f172a; color:#ffffff; font-size:8.5px; font-weight:900; padding:3px 8px; border-radius:4px; letter-spacing:1px; text-transform:uppercase; margin-right:6px; margin-bottom:4px;">ACI MOTORS</div>
+                                    <div style="display:inline-block; vertical-align:middle; color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px;">Commercial Vehicle Division</div>
+                                    <h1 style="font-size:17px; font-weight:900; color:#0f172a; letter-spacing:-0.4px; margin:0; line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
+                                    <div style="font-size:9px; color:#64748b; margin-top:3px; font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
+                                </td>
+                                <td style="text-align:right; vertical-align:top; border:none; padding:0; width:220px;">
+                                    <div style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; display:inline-block; text-align:right;">
+                                        <div style="font-size:9.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">Global Analytics<br>${brandFilter === 'ALL' ? 'Foton + Mahindra' : 'Only ' + brandFilter}</div>
+                                        <div style="font-size:8px; color:#64748b; font-weight:700;">Executive Performance Summary</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                         </div>
                         <!-- Table Label -->
                         <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;margin-bottom:8px;border-bottom:1.5px solid #cbd5e1;">
@@ -4006,21 +4007,22 @@
                         <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
 
                         <!-- Header Row -->
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
-                            <div>
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                                    <span style="background:#0f172a;color:#ffffff;font-size:8.5px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
-                                    <span style="color:#64748b;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
-                                </div>
-                                <h1 style="font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
-                                <div style="font-size:9px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
-                                    <div style="font-size:9.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics - ${brandFilter === 'ALL' ? 'Foton + Mahindra' : 'Only ' + brandFilter}</div>
-                                    <div style="font-size:8px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
-                                </div>
-                            </div>
+                        <table style="width:100%; margin-bottom:14px; border:none; table-layout:fixed;">
+                            <tr>
+                                <td style="text-align:left; vertical-align:top; border:none; padding:0;">
+                                    <div style="display:inline-block; vertical-align:middle; background:#0f172a; color:#ffffff; font-size:8.5px; font-weight:900; padding:3px 8px; border-radius:4px; letter-spacing:1px; text-transform:uppercase; margin-right:6px; margin-bottom:4px;">ACI MOTORS</div>
+                                    <div style="display:inline-block; vertical-align:middle; color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px;">Commercial Vehicle Division</div>
+                                    <h1 style="font-size:17px; font-weight:900; color:#0f172a; letter-spacing:-0.4px; margin:0; line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
+                                    <div style="font-size:9px; color:#64748b; margin-top:3px; font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
+                                </td>
+                                <td style="text-align:right; vertical-align:top; border:none; padding:0; width:220px;">
+                                    <div style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; display:inline-block; text-align:right;">
+                                        <div style="font-size:9.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">Global Analytics<br>${brandFilter === 'ALL' ? 'Foton + Mahindra' : 'Only ' + brandFilter}</div>
+                                        <div style="font-size:8px; color:#64748b; font-weight:700;">Executive Performance Summary</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                         </div>
                         <!-- Table Label -->
                         <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;margin-bottom:8px;border-bottom:1.5px solid #cbd5e1;">
