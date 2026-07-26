@@ -1,4 +1,8 @@
 <?php
+// Disable error reporting output to prevent warning leakages from contaminating JSON responses
+error_reporting(0);
+ini_set('display_errors', 0);
+
 // Set secure cookie flags
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_use_only_cookies', 1);
