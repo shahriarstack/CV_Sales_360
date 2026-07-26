@@ -25,20 +25,29 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                 app.currentManualSales = manualSales;
 
                 const html = `
-                    <div class="w-full fade-in">
-                        <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                            <div>
-                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">Manual Deliveries Tracker</h1></div>
-                                <p class="text-sm text-slate-500">Unsynced sales logged manually by Field Officers</p>
-                                
-                                <!-- Beautiful & Noticeable Sale Type Switcher Pill (Compact) -->
-                                <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60 shadow-inner mt-2 w-max">
+                    <div class="w-full fade-in space-y-4">
+                        <!-- Top Header & Action Controls Bar -->
+                        <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-4.5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500' : 'from-foton to-sky-500'} rounded-full shadow-xs"></div>
+                                        <h1 class="text-base font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                            <i data-lucide="clipboard-check" class="w-4.5 h-4.5 text-indigo-600"></i>
+                                            Manual Deliveries Tracker
+                                        </h1>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 font-medium pl-3.5 mt-0.5">Unsynced sales logged manually by Field Officers</p>
+                                </div>
+
+                                <!-- Compact Sale Type Switcher Pill -->
+                                <div class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 shadow-inner">
                                     <button onclick="app.manualSaleTypeFilter='All'; app.renderAdminManualDeliveries()" 
-                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-sm scale-102 border border-slate-200/20' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                            class="px-3 py-1 rounded-lg text-[10px] font-extrabold transition-all duration-200 ${saleTypeFilter === 'All' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'}">
                                         All
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='New Sale'; app.renderAdminManualDeliveries()" 
-                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                            class="px-3 py-1 rounded-lg text-[10px] font-extrabold transition-all duration-200 flex items-center gap-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'}">
                                         <span class="h-1.5 w-1.5 rounded-full relative flex">
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-400'} opacity-75"></span>
                                             <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'New Sale' ? 'bg-white' : 'bg-emerald-500'}"></span>
@@ -46,7 +55,7 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                         New Sale
                                     </button>
                                     <button onclick="app.manualSaleTypeFilter='Resale'; app.renderAdminManualDeliveries()" 
-                                            class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md scale-102' : 'text-slate-500 hover:text-slate-800 hover:bg-white/40'}" style="min-height: 30px;">
+                                            class="px-3 py-1 rounded-lg text-[10px] font-extrabold transition-all duration-200 flex items-center gap-1.5 ${saleTypeFilter === 'Resale' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-800'}">
                                         <span class="h-1.5 w-1.5 rounded-full relative flex">
                                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-400'} opacity-75"></span>
                                             <span class="relative inline-flex rounded-full h-1.5 w-1.5 ${saleTypeFilter === 'Resale' ? 'bg-white' : 'bg-amber-500'}"></span>
@@ -55,98 +64,97 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                     </button>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap items-center gap-3">
+
+                            <!-- Right Controls: Date Range & Action Buttons -->
+                            <div class="flex flex-wrap items-center gap-2.5">
                                 <!-- Date Range Selector -->
-                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:border-aci-blue">
-                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
-                                    <div class="flex flex-col">
-                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Date Range</span>
-                                        <div class="flex items-center gap-1.5">
-                                            <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="Start Date">
-                                            <span class="text-slate-300 font-bold">-</span>
-                                            <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="text-xs focus:outline-none text-slate-600 bg-transparent cursor-pointer" title="End Date">
-                                        </div>
+                                <div class="flex items-center gap-2 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/80 shadow-xs hover:border-indigo-400 transition-all">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                                    <div class="flex items-center gap-1 text-[11px]">
+                                        <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="Start Date">
+                                        <span class="text-slate-300 font-bold">-</span>
+                                        <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="End Date">
                                     </div>
                                 </div>
                                 
                                 <!-- Batch Approve Button -->
-                                <button id="btn-batch-approve" onclick="app.approveSelectedManualDeliveries()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5 animate-pulse">
-                                    <i data-lucide="check-square" class="w-4 h-4"></i> Approve Selected (<span id="batch-select-count">0</span>)
+                                <button id="btn-batch-approve" onclick="app.approveSelectedManualDeliveries()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs hover:shadow flex items-center gap-1.5 transition-all transform active:scale-95 animate-pulse">
+                                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i> Approve Selected (<span id="batch-select-count">0</span>)
                                 </button>
                                 
-                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 px-4 py-2.5 rounded-lg text-sm font-bold shadow-md hover:shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5">
-                                    <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                                <button onclick="app.downloadManualCSV()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs hover:shadow flex items-center gap-1.5 transition-all transform active:scale-95">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
                                 </button>
 
-                                <button onclick="app.clearManualDeliveries()" class="bg-white text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:shadow flex items-center gap-2 transition-all">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i> Clear Data
+                                <button onclick="app.clearManualDeliveries()" class="bg-slate-50 hover:bg-rose-50 text-rose-600 border border-slate-200/80 hover:border-rose-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all active:scale-95">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Data
                                 </button>
                             </div>
                         </div>
 
-
-                        <!-- Minimal & Creative Summary Section -->
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                            <!-- Total Entries -->
-                            <div class="bg-gradient-to-br from-indigo-500/10 to-indigo-50/30 border border-indigo-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
+                        <!-- Compact & Modern Glassmorphic Summary KPI Cards -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <!-- Card 1: Total Logged -->
+                            <div class="bg-white/80 backdrop-blur-md border border-indigo-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-extrabold text-indigo-500 uppercase tracking-wider">Total Logged</span>
-                                    <span class="p-2 bg-indigo-500/15 text-indigo-600 rounded-xl shadow-inner"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
+                                    <span class="text-[9px] font-black text-indigo-600 uppercase tracking-wider">Total Logged</span>
+                                    <span class="p-1.5 bg-indigo-500/10 text-indigo-600 rounded-lg shadow-inner"><i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i></span>
                                 </div>
-                                <div class="mt-2 flex items-baseline gap-1">
-                                    <span class="text-xl font-black text-slate-800">${manualSales.length}</span>
-                                    <span class="text-[9px] font-bold text-slate-400">Deliveries</span>
+                                <div class="mt-2 flex items-baseline gap-1.5">
+                                    <span class="text-lg font-black text-slate-800">${manualSales.length}</span>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Deliveries</span>
                                 </div>
                             </div>
 
-                            <!-- Pending Sync -->
-                            <div class="bg-gradient-to-br from-amber-500/10 to-amber-50/30 border border-amber-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <!-- Card 2: Pending Sync -->
+                            <div class="bg-white/80 backdrop-blur-md border border-amber-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-extrabold text-amber-500 uppercase tracking-wider">Pending Sync</span>
-                                    <span class="p-2 bg-amber-500/15 text-amber-600 rounded-xl relative flex items-center justify-center shadow-inner">
-                                        <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-amber-400 opacity-75"></span>
+                                    <span class="text-[9px] font-black text-amber-600 uppercase tracking-wider">Pending Sync</span>
+                                    <span class="p-1.5 bg-amber-500/10 text-amber-600 rounded-lg relative flex items-center justify-center shadow-inner">
+                                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-amber-400 opacity-75"></span>
                                         <i data-lucide="clock" class="w-3.5 h-3.5 relative"></i>
                                     </span>
                                 </div>
-                                <div class="mt-2 flex items-baseline gap-1">
-                                    <span class="text-xl font-black text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
-                                    <span class="text-[9px] font-bold text-slate-400">Pending</span>
+                                <div class="mt-2 flex items-baseline gap-1.5">
+                                    <span class="text-lg font-black text-amber-600">${manualSales.filter(s => s.approval_status !== 'Done').length}</span>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Pending</span>
                                 </div>
                             </div>
 
-                            <!-- Brand Share Ratio Bar -->
-                            <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-50/30 border border-emerald-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">Brand Share Split</span>
-                                    <span class="p-2 bg-emerald-500/15 text-emerald-600 rounded-xl shadow-inner"><i data-lucide="percent" class="w-3.5 h-3.5"></i></span>
+                            <!-- Card 3: Brand Share Split (New Sales) -->
+                            <div class="bg-white/80 backdrop-blur-md border border-emerald-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[9px] font-black text-emerald-600 uppercase tracking-wider">Brand Share (New)</span>
+                                    <span class="p-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg shadow-inner"><i data-lucide="percent" class="w-3.5 h-3.5"></i></span>
                                 </div>
-                                <div class="mt-2.5">
-                                    <div class="flex justify-between text-xs font-black text-slate-800 mb-1.5">
-                                        <span>Foton: ${manualSales.filter(s => s.brand === 'Foton').length}</span>
-                                        <span>Mahindra: ${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
+                                <div>
+                                    <div class="flex justify-between text-[11px] font-black text-slate-700 mb-1">
+                                        <span>Foton: ${manualSales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length}</span>
+                                        <span>Mahindra: ${manualSales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length}</span>
                                     </div>
                                     ${(() => {
-                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton').length;
-                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra').length;
+                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
+                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
                                         const total = fotonCount + mahindraCount;
                                         const fotonPct = total > 0 ? Math.round((fotonCount / total) * 100) : 50;
                                         return `
-                                        <div class="w-full bg-rose-500 rounded-full h-2 overflow-hidden flex shadow-inner">
-                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton: ${fotonPct}%"></div>
-                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra: ${100 - fotonPct}%"></div>
+                                        <div class="w-full bg-rose-500 rounded-full h-1.5 overflow-hidden flex shadow-inner">
+                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton (New): ${fotonPct}%"></div>
+                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra (New): ${100 - fotonPct}%"></div>
                                         </div>
                                         `;
                                     })()}
                                 </div>
                             </div>
-                            <!-- Combined Trade Value -->
-                            <div class="bg-gradient-to-br from-cyan-500/10 to-cyan-50/30 border border-cyan-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
+
+                            <!-- Card 4: Total Value (TP) -->
+                            <div class="bg-white/80 backdrop-blur-md border border-cyan-100/80 rounded-xl p-3 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider">Total Value (TP)</span>
-                                    <span class="p-2 bg-cyan-500/15 text-cyan-600 rounded-xl shadow-inner"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
+                                    <span class="text-[9px] font-black text-cyan-600 uppercase tracking-wider">Total Value (TP)</span>
+                                    <span class="p-1.5 bg-cyan-500/10 text-cyan-600 rounded-lg shadow-inner"><i data-lucide="coins" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2 flex flex-col">
-                                    <span class="text-sm font-black text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
+                                    <span class="text-base font-black text-slate-800 truncate" title="${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}">${app.formatCurrency(manualSales.reduce((sum, s) => sum + Number(s.financials?.tp || 0), 0))}</span>
                                     <span class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Est. Trade Value</span>
                                 </div>
                             </div>

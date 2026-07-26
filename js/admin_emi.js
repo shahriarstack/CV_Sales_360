@@ -1,7 +1,25 @@
 // --- Sales360 Module: admin_emi.js ---
 window.app = window.app || {};
 
-window.app.captureEMIReport = async () => {
+window.app.openCaptureEMIModal = () => {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-2xl p-6 w-[350px] animate-fade-in-up">
+                        <h3 class="text-lg font-black text-slate-800 mb-4">Export EMI Report</h3>
+                        <p class="text-xs text-slate-500 mb-4">Select the brand data you want to capture.</p>
+                        <div class="space-y-3">
+                            <button onclick="app.captureEMIReport('ALL'); this.closest('.fixed').remove()" class="w-full px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold rounded-xl transition-colors">All Brands</button>
+                            <button onclick="app.captureEMIReport('Foton'); this.closest('.fixed').remove()" class="w-full px-4 py-3 bg-sky-50 hover:bg-sky-100 text-sky-700 text-sm font-bold rounded-xl transition-colors border border-sky-200">Only Foton</button>
+                            <button onclick="app.captureEMIReport('Mahindra'); this.closest('.fixed').remove()" class="w-full px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-sm font-bold rounded-xl transition-colors border border-rose-200">Only Mahindra</button>
+                            <button onclick="this.closest('.fixed').remove()" class="w-full px-4 py-2 mt-2 text-slate-400 hover:text-slate-600 text-xs font-bold transition-colors">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            };
+
+window.app.captureEMIReport = async (brandFilter = 'ALL') => {
                 app.showLoader('Generating EMI Report...');
 
                 try {
@@ -12,7 +30,10 @@ window.app.captureEMIReport = async () => {
 
                     const emiData = (DB.emi || []).filter(e => {
                         const instNo = e.installment_no;
-                        return instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                        const matchInst = instNo === null || instNo === undefined || instNo === '' || Number(instNo) === 1 || Number(instNo) === 2;
+                        if (!matchInst) return false;
+                        if (brandFilter !== 'ALL' && e.brand !== brandFilter) return false;
+                        return true;
                     });
 
                     const territorySummary = (DB.territories || []).map(t => {
@@ -24,7 +45,7 @@ window.app.captureEMIReport = async () => {
                         const tAmountCol = tEmi.reduce((sum, e) => sum + Number(e.collected || 0), 0);
                         const tColRate = tTotalDue > 0 ? Math.round((tAmountCol / tTotalDue) * 100) : 0;
                         return { name: t.name, totalCust, payingCust, nonPayingCust, tTotalDue, tAmountCol, tColRate };
-                    }).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
+                    }).filter(t => t.totalCust > 0).sort((a, b) => b.tColRate - a.tColRate || a.name.localeCompare(b.name));
 
                     const grandCust = territorySummary.reduce((s, t) => s + t.totalCust, 0);
                     const grandPaying = territorySummary.reduce((s, t) => s + t.payingCust, 0);
@@ -37,19 +58,19 @@ window.app.captureEMIReport = async () => {
 
                     // Print/Export Page Styles: padding: 6px; line-height: 1.2; font-size: 11px
                     const cs = (clr, align, extra) =>
-                        `font-size:11px;line-height:1.2;color:${clr};padding:6px 6px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;${extra||''}`;
+                        `font-size:12px;line-height:1.2;color:${clr};padding:10px 8px;vertical-align:middle;text-align:${align||'center'};border-bottom:1px solid #e2e8f0;${extra||''}`;
 
                     const tableRowsHTML = territorySummary.map((t, i) => {
                         const bg = i % 2 === 0 ? '#ffffff' : '#f8fafc';
                         const rc = t.tColRate >= 80 ? '#15803d' : (t.tColRate >= 50 ? '#b45309' : '#b91c1c');
                         const rBg = t.tColRate >= 80 ? '#dcfce7' : (t.tColRate >= 50 ? '#fef3c7' : '#fee2e2');
                         return `<tr style="background:${bg};">
-                            <td style="${cs('#0f172a','left','padding-left:10px;font-weight:700;border-right:1px solid #e2e8f0;')}"><span style="color:#94a3b8;font-weight:500;font-size:10px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
-                            <td style="${cs('#334155','center','border-right:1px solid #e2e8f0;font-weight:600;')}">${t.totalCust}</td>
-                            <td style="${cs('#15803d','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.payingCust}</td>
-                            <td style="${cs('#dc2626','center','border-right:1px solid #e2e8f0;font-weight:700;')}">${t.nonPayingCust}</td>
-                            <td style="${cs('#475569','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
-                            <td style="${cs('#2563eb','right','padding-right:10px;border-right:1px solid #e2e8f0;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
+                            <td style="${cs('#0f172a','left','padding-left:10px;font-weight:700;')}"><span style="color:#94a3b8;font-weight:500;font-size:11px;">${(i+1).toString().padStart(2,'0')}. </span>${t.name}</td>
+                            <td style="${cs('#334155','center','font-weight:600;')}">${t.totalCust}</td>
+                            <td style="${cs('#15803d','center','font-weight:700;')}">${t.payingCust}</td>
+                            <td style="${cs('#dc2626','center','font-weight:700;')}">${t.nonPayingCust}</td>
+                            <td style="${cs('#475569','right','padding-right:10px;font-weight:600;')}">${app.formatCurrency(t.tTotalDue).replace('৳','')}</td>
+                            <td style="${cs('#2563eb','right','padding-right:10px;font-weight:700;')}">${app.formatCurrency(t.tAmountCol).replace('৳','')}</td>
                             <td style="${cs('#0f172a','center','font-weight:800;')}">
                                 <span style="display:inline-block;background:${rBg};color:${rc};padding:2px 6px;border-radius:4px;font-size:10.5px;line-height:1.2;font-weight:800;">${t.tColRate}%</span>
                             </td>
@@ -57,62 +78,42 @@ window.app.captureEMIReport = async () => {
                     }).join('');
 
                     const totalRowHTML = `<tr style="background:#0f172a;">
-                        <td style="${cs('#ffffff','left','padding-left:10px;font-weight:800;border-right:1px solid rgba(255,255,255,0.15);letter-spacing:0.5px;')}">GRAND TOTAL</td>
-                        <td style="${cs('#f1f5f9','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${grandCust}</td>
-                        <td style="${cs('#4ade80','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandPaying}</td>
-                        <td style="${cs('#f87171','center','border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${grandNonPaying}</td>
-                        <td style="${cs('#f1f5f9','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
-                        <td style="${cs('#60a5fa','right','padding-right:10px;border-right:1px solid rgba(255,255,255,0.15);font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
+                        <td style="${cs('#ffffff','left','padding-left:10px;font-weight:800;letter-spacing:0.5px;')}">GRAND TOTAL</td>
+                        <td style="${cs('#f1f5f9','center','font-weight:700;')}">${grandCust}</td>
+                        <td style="${cs('#4ade80','center','font-weight:800;')}">${grandPaying}</td>
+                        <td style="${cs('#f87171','center','font-weight:800;')}">${grandNonPaying}</td>
+                        <td style="${cs('#f1f5f9','right','padding-right:10px;font-weight:700;')}">${app.formatCurrency(grandDue).replace('৳','')}</td>
+                        <td style="${cs('#60a5fa','right','padding-right:10px;font-weight:800;')}">${app.formatCurrency(grandCol).replace('৳','')}</td>
                         <td style="${cs('#fbbf24','center','font-weight:900;')}">${grandRate}%</td>
                     </tr>`;
 
                     // Off-screen container without fixed height or CSS transform scaling (height: auto)
                     const container = document.createElement('div');
                     container.id = 'emi-report-capture';
-                    container.style.cssText = "position:absolute;left:-9999px;top:0;width:794px;height:auto;transform:none;zoom:1;z-index:99999;background:#ffffff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box;";
+                    container.style.cssText = "position:absolute;left:-9999px;top:0;width:794px;min-height:1123px;height:auto;transform:none;zoom:1;z-index:99999;background:#ffffff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-sizing:border-box;";
 
                     container.innerHTML = `
                     <div style="width:794px;height:auto;background:#ffffff;padding:24px 28px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;">
                         <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #0f172a, #2563eb, #06b6d4, #10b981);"></div>
 
                         <!-- Header Row -->
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
-                            <div>
-                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                                    <span style="background:#0f172a;color:#ffffff;font-size:8.5px;font-weight:900;padding:2.5px 8px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">ACI MOTORS</span>
-                                    <span style="color:#64748b;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Commercial Vehicle Division</span>
-                                </div>
-                                <h1 style="font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-0.4px;margin:0;line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
-                                <div style="font-size:9px;color:#64748b;margin-top:3px;font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:4px 10px;border-radius:6px;display:inline-block;">
-                                    <div style="font-size:9.5px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Global Analytics</div>
-                                    <div style="font-size:8px;color:#64748b;margin-top:1px;font-weight:700;">Executive Performance Summary</div>
-                                </div>
-                            </div>
+                        <table style="width:100%; margin-bottom:14px; border:none; table-layout:fixed;">
+                            <tr>
+                                <td style="text-align:left; vertical-align:top; border:none; padding:0;">
+                                    <div style="display:inline-block; vertical-align:middle; background:#0f172a; color:#ffffff; font-size:8.5px; font-weight:900; padding:3px 8px; border-radius:4px; letter-spacing:1px; text-transform:uppercase; margin-right:6px; margin-bottom:4px;">ACI MOTORS</div>
+                                    <div style="display:inline-block; vertical-align:middle; color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px;">Commercial Vehicle Division</div>
+                                    <h1 style="font-size:17px; font-weight:900; color:#0f172a; letter-spacing:-0.4px; margin:0; line-height:1.2;">1st &amp; 2nd EMI Collection Performance</h1>
+                                    <div style="font-size:9px; color:#64748b; margin-top:3px; font-weight:600;">Report Generated On: <b style="color:#1e293b;">${today}</b></div>
+                                </td>
+                                <td style="text-align:right; vertical-align:top; border:none; padding:0; width:220px;">
+                                    <div style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; display:inline-block; text-align:right;">
+                                        <div style="font-size:9.5px; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">Global Analytics<br>${brandFilter === 'ALL' ? 'Foton + Mahindra' : 'Only ' + brandFilter}</div>
+                                        <div style="font-size:8px; color:#64748b; font-weight:700;">Executive Performance Summary</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                         </div>
-
-                        <!-- Minimal Metric Cards Row -->
-                        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;margin-bottom:14px;">
-                            <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;">
-                                <div style="font-size:8px;font-weight:800;color:#64748b;text-transform:uppercase;line-height:1.2;">Total Accounts</div>
-                                <div style="font-size:14px;font-weight:900;color:#0f172a;margin-top:3px;line-height:1.2;">${grandCust}</div>
-                            </div>
-                            <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:8px 12px;border-radius:6px;">
-                                <div style="font-size:8px;font-weight:800;color:#166534;text-transform:uppercase;line-height:1.2;">Paying / Unpaid</div>
-                                <div style="font-size:14px;font-weight:900;color:#15803d;margin-top:3px;line-height:1.2;">${grandPaying} <span style="font-size:10px;color:#dc2626;font-weight:800;">/ ${grandNonPaying}</span></div>
-                            </div>
-                            <div style="background:#eff6ff;border:1px solid #bfdbfe;padding:8px 12px;border-radius:6px;">
-                                <div style="font-size:8px;font-weight:800;color:#1e40af;text-transform:uppercase;line-height:1.2;">Total Collected</div>
-                                <div style="font-size:14px;font-weight:900;color:#1d4ed8;margin-top:3px;line-height:1.2;">${app.formatCurrency(grandCol)}</div>
-                            </div>
-                            <div style="background:#fffbeb;border:1px solid #fde68a;padding:8px 12px;border-radius:6px;">
-                                <div style="font-size:8px;font-weight:800;color:#92400e;text-transform:uppercase;line-height:1.2;">Recovery Rate</div>
-                                <div style="font-size:14px;font-weight:900;color:#b45309;margin-top:3px;line-height:1.2;">${grandRate}%</div>
-                            </div>
-                        </div>
-
                         <!-- Table Label -->
                         <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;margin-bottom:8px;border-bottom:1.5px solid #cbd5e1;">
                             <span style="font-size:9px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">Territory Performance Ranking</span>
@@ -121,25 +122,16 @@ window.app.captureEMIReport = async () => {
 
                         <!-- Table Content -->
                         <div>
-                            <table style="width:100%;border-collapse:collapse;table-layout:fixed;border:1px solid #cbd5e1;">
-                                <colgroup>
-                                    <col style="width:28%;">
-                                    <col style="width:9%;">
-                                    <col style="width:9%;">
-                                    <col style="width:11%;">
-                                    <col style="width:18%;">
-                                    <col style="width:17%;">
-                                    <col style="width:8%;">
-                                </colgroup>
+                            <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
                                 <thead>
                                     <tr style="background:#0f172a;color:#ffffff;">
-                                        <th style="font-size:11px;font-weight:800;padding:6px 10px;text-align:left;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Sales Territory</th>
-                                        <th style="font-size:11px;font-weight:800;padding:6px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Total</th>
-                                        <th style="font-size:11px;font-weight:800;padding:6px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#4ade80;line-height:1.2;">Paying</th>
-                                        <th style="font-size:11px;font-weight:800;padding:6px 4px;text-align:center;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#f87171;line-height:1.2;">Unpaid</th>
-                                        <th style="font-size:11px;font-weight:800;padding:6px 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Due (Inst)</th>
-                                        <th style="font-size:11px;font-weight:800;padding:6px 10px;text-align:right;vertical-align:middle;border-right:1px solid rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:0.4px;color:#60a5fa;line-height:1.2;">Collected</th>
-                                        <th style="font-size:11px;font-weight:800;padding:6px 4px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Rate %</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 12px;text-align:left;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Sales Territory</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 8px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Total</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 8px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;color:#4ade80;line-height:1.2;">Paying</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 8px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;color:#f87171;line-height:1.2;">Unpaid</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 12px;text-align:right;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Due (Inst)</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 12px;text-align:right;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;color:#60a5fa;line-height:1.2;">Collected</th>
+                                        <th style="font-size:12px;font-weight:800;padding:10px 8px;text-align:center;vertical-align:middle;text-transform:uppercase;letter-spacing:0.4px;line-height:1.2;">Rate %</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -168,7 +160,7 @@ window.app.captureEMIReport = async () => {
                         useCORS: true,
                         logging: false,
                         backgroundColor: '#ffffff',
-                        width: 794,
+                        width: 794, height: container.scrollHeight, windowHeight: container.scrollHeight,
                         windowWidth: 794
                     });
 
@@ -282,7 +274,7 @@ window.app.renderAdminEMI = () => {
                                 </div>
 
                                 <!-- Capture Report Button -->
-                                <button onclick="app.captureEMIReport()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-black hover:from-indigo-700 hover:to-blue-700 shadow-md hover:shadow-lg transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
+                                <button onclick="app.openCaptureEMIModal()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl text-xs font-black hover:from-indigo-700 hover:to-blue-700 shadow-md hover:shadow-lg transition-all active:scale-95" style="min-height: 38px;" title="Capture EMI Report as PNG">
                                     <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                                     Capture
                                 </button>
