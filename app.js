@@ -3141,17 +3141,17 @@
                                     <span class="p-1.5 bg-emerald-500/10 text-emerald-600 rounded-lg"><i data-lucide="tag" class="w-3 h-3"></i></span>
                                 </div>
                                 ${(() => {
-                                    const fCount = summarySales.filter(s => s.brand === 'Foton').length;
-                                    const mCount = summarySales.filter(s => s.brand === 'Mahindra').length;
-                                    const rCount = summarySales.filter(s => s.sale_type === 'Resale').length;
+                                    const fCount = summarySales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
+                                    const mCount = summarySales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
+                                    const rCount = summarySales.filter(s => s.sale_type === 'Resale' || s.sale_type === 'resale').length;
                                     return `
                                     <div class="flex items-center justify-between gap-1">
                                         <div class="flex flex-col items-center flex-1 bg-blue-500/5 p-1 rounded-md border border-blue-500/10">
-                                            <span class="text-[7px] font-bold text-blue-600 uppercase tracking-tighter">FOTON</span>
+                                            <span class="text-[7px] font-bold text-blue-600 uppercase tracking-tighter">FOTON (NEW)</span>
                                             <span class="text-xs font-black text-slate-800">${fCount}</span>
                                         </div>
                                         <div class="flex flex-col items-center flex-1 bg-rose-500/5 p-1 rounded-md border border-rose-500/10">
-                                            <span class="text-[7px] font-bold text-rose-600 uppercase tracking-tighter">MAHINDRA</span>
+                                            <span class="text-[7px] font-bold text-rose-600 uppercase tracking-tighter">MAHINDRA (NEW)</span>
                                             <span class="text-xs font-black text-slate-800">${mCount}</span>
                                         </div>
                                         <div class="flex flex-col items-center flex-1 bg-amber-500/5 p-1 rounded-md border border-amber-500/10">
@@ -4567,23 +4567,23 @@
                             <!-- Brand Share Ratio Bar -->
                             <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-50/30 border border-emerald-100/80 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">Brand Share Split</span>
+                                    <span class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">Brand Share Split (New Sales)</span>
                                     <span class="p-2 bg-emerald-500/15 text-emerald-600 rounded-xl shadow-inner"><i data-lucide="percent" class="w-3.5 h-3.5"></i></span>
                                 </div>
                                 <div class="mt-2.5">
                                     <div class="flex justify-between text-xs font-black text-slate-800 mb-1.5">
-                                        <span>Foton: ${manualSales.filter(s => s.brand === 'Foton').length}</span>
-                                        <span>Mahindra: ${manualSales.filter(s => s.brand === 'Mahindra').length}</span>
+                                        <span>Foton (New): ${manualSales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length}</span>
+                                        <span>Mahindra (New): ${manualSales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length}</span>
                                     </div>
                                     ${(() => {
-                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton').length;
-                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra').length;
+                                        const fotonCount = manualSales.filter(s => s.brand === 'Foton' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
+                                        const mahindraCount = manualSales.filter(s => s.brand === 'Mahindra' && s.sale_type !== 'Resale' && s.sale_type !== 'resale').length;
                                         const total = fotonCount + mahindraCount;
                                         const fotonPct = total > 0 ? Math.round((fotonCount / total) * 100) : 50;
                                         return `
                                         <div class="w-full bg-rose-500 rounded-full h-2 overflow-hidden flex shadow-inner">
-                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton: ${fotonPct}%"></div>
-                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra: ${100 - fotonPct}%"></div>
+                                            <div class="bg-blue-600 h-full rounded-l-full transition-all duration-300" style="width: ${fotonPct}%" title="Foton (New): ${fotonPct}%"></div>
+                                            <div class="bg-rose-500 h-full rounded-r-full transition-all duration-300" style="width: ${100 - fotonPct}%" title="Mahindra (New): ${100 - fotonPct}%"></div>
                                         </div>
                                         `;
                                     })()}
