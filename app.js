@@ -1190,6 +1190,7 @@
 
                 app.showLoader('Authenticating...');
 
+                let result = null;
                 try {
                     const response = await fetch('api.php', {
                         method: 'POST',
@@ -1201,25 +1202,31 @@
                         })
                     });
                     
-                    const result = await response.json();
-                    app.hideLoader();
-
-                    if (result.success && result.user) {
-                        app.currentUser = result.user;
-                        localStorage.setItem('aci_user', JSON.stringify(result.user));
-                        app.showToast('Login successful!');
-                        
-                        // Re-fetch data tables now that we are authenticated
-                        await app.init();
-                        
-                        app.loadAppLayout();
-                    } else {
-                        app.showToast(result.error || 'Invalid Employee ID for the selected Area/User.', 'error');
-                    }
+                    result = await response.json();
                 } catch (err) {
-                    console.error("Login authentication error:", err);
+                    console.error("Login authentication network error:", err);
                     app.hideLoader();
                     app.showToast('Failed to authenticate with security server.', 'error');
+                    return;
+                }
+
+                app.hideLoader();
+
+                if (result && result.success && result.user) {
+                    app.currentUser = result.user;
+                    localStorage.setItem('aci_user', JSON.stringify(result.user));
+                    app.showToast('Login successful!');
+                    
+                    try {
+                        // Re-fetch data tables now that we are authenticated
+                        await app.init();
+                    } catch (initErr) {
+                        console.warn("Post-login data initialization warning:", initErr);
+                    }
+                    
+                    app.loadAppLayout();
+                } else {
+                    app.showToast((result && result.error) ? result.error : 'Invalid Employee ID for the selected Area/User.', 'error');
                 }
             },
 

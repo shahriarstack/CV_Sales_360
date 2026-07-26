@@ -35,9 +35,16 @@ try {
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
     ]);
 
-    // Self-healing database check: if 'users' table doesn't exist, seed database automatically
-    $checkTable = $pdo->query("SHOW TABLES LIKE 'users'")->rowCount();
-    if ($checkTable === 0 && file_exists('cpanel_setup.sql')) {
+    // Self-healing database check: if any required table is missing, seed database automatically from cpanel_setup.sql
+    $requiredTables = ['users', 'territories', 'models', 'targets', 'notices', 'links', 'projections', 'sales', 'emi', 'recovery_od', 'tiv_brands', 'tiv_submissions', 'app_settings'];
+    $missingTable = false;
+    foreach ($requiredTables as $t) {
+        if ($pdo->query("SHOW TABLES LIKE '$t'")->rowCount() === 0) {
+            $missingTable = true;
+            break;
+        }
+    }
+    if ($missingTable && file_exists('cpanel_setup.sql')) {
         $setupSql = file_get_contents('cpanel_setup.sql');
         $pdo->exec($setupSql);
     }
@@ -111,7 +118,7 @@ try {
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
 
-        if ($user && $user['employee_id'] === $employeeId) {
+        if ($user && trim((string)$user['employee_id']) === trim((string)$employeeId)) {
             // Authentication successful!
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_role'] = $user['role'];
