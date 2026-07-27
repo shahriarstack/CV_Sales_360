@@ -526,8 +526,7 @@ window.app.editManualDeliveryModal = (id) => {
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sale Type</label>
                                                 <select id="em-type" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
                                                     <option value="New Sale" ${s.sale_type === 'New Sale' ? 'selected' : ''}>New Sale</option>
-                                                    <option value="Exchange" ${s.sale_type === 'Exchange' ? 'selected' : ''}>Exchange</option>
-                                                    <option value="Corporate" ${s.sale_type === 'Corporate' ? 'selected' : ''}>Corporate</option>
+                                                    <option value="Resale" ${s.sale_type === 'Resale' ? 'selected' : ''}>Resale</option>
                                                 </select>
                                             </div>
                                             <div>
