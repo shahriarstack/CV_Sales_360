@@ -66,23 +66,6 @@ try {
     ]);
 
     // Self-healing database check: if any required table is missing, seed database automatically from cpanel_setup.sql
-    
-    // Table check for active_sessions
-    $checkSessions = $pdo->query("SHOW TABLES LIKE 'active_sessions'")->rowCount();
-    if ($checkSessions === 0) {
-        $pdo->exec("CREATE TABLE IF NOT EXISTS active_sessions (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            session_id VARCHAR(128) NOT NULL UNIQUE,
-            user_id VARCHAR(50) NOT NULL,
-            user_name VARCHAR(100),
-            user_role VARCHAR(50) NOT NULL,
-            ip_address VARCHAR(100),
-            user_agent TEXT,
-            device_info VARCHAR(255),
-            last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-    }
-
     $requiredTables = ['users', 'territories', 'models', 'targets', 'notices', 'links', 'projections', 'sales', 'emi', 'recovery_od', 'tiv_brands', 'tiv_submissions', 'app_settings'];
     $missingTable = false;
     foreach ($requiredTables as $t) {
@@ -109,11 +92,6 @@ try {
         $pdo->exec("ALTER TABLE sales ADD COLUMN approval_status VARCHAR(50) DEFAULT NULL");
         $pdo->exec("ALTER TABLE sales ADD COLUMN admin_comments TEXT DEFAULT NULL");
         $pdo->exec("ALTER TABLE sales ADD COLUMN timestamp VARCHAR(50) DEFAULT NULL");
-    }
-
-    $checkSalesCF = $pdo->query("SHOW COLUMNS FROM sales LIKE 'is_carried_forward'")->rowCount();
-    if ($checkSalesCF === 0) {
-        $pdo->exec("ALTER TABLE sales ADD COLUMN is_carried_forward BOOLEAN DEFAULT FALSE");
     }
 
     // Migrate any existing manual deliveries from settings to sales table
@@ -175,7 +153,6 @@ try {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['user_territories'] = $user['territories'];
-            $_SESSION['user_name'] = $user['name'];
 
             // Set remember me cookie for 30 days
             $salt = 'aci_sales360_secure_salt_2026';
@@ -222,39 +199,6 @@ try {
                 }
             }
         }
-    }
-
-    
-    // Update active_sessions for authenticated requests
-    if (isset($_SESSION['user_id'])) {
-        $sessId = session_id();
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-        
-        $deviceInfo = 'Desktop PC';
-        if (preg_match('/mobile/i', $ua)) $deviceInfo = 'Mobile Device';
-        if (preg_match('/android/i', $ua)) $deviceInfo = 'Android Phone';
-        if (preg_match('/iphone/i', $ua)) $deviceInfo = 'iPhone';
-        if (preg_match('/ipad/i', $ua)) $deviceInfo = 'iPad';
-        if (preg_match('/macintosh|mac os x/i', $ua)) $deviceInfo = 'Mac computer';
-        if (preg_match('/windows/i', $ua)) $deviceInfo = 'Windows PC';
-        if (preg_match('/linux/i', $ua) && !preg_match('/android/i', $ua)) $deviceInfo = 'Linux PC';
-        
-        $browser = 'Browser';
-        if (preg_match('/chrome/i', $ua)) $browser = 'Chrome';
-        else if (preg_match('/firefox/i', $ua)) $browser = 'Firefox';
-        else if (preg_match('/safari/i', $ua)) $browser = 'Safari';
-        else if (preg_match('/edge/i', $ua)) $browser = 'Edge';
-        
-        $deviceFull = "$deviceInfo ($browser)";
-        $userName = $_SESSION['user_name'] ?? $_SESSION['user_id'];
-        
-        try {
-            $stmtSess = $pdo->prepare("INSERT INTO active_sessions (session_id, user_id, user_name, user_role, ip_address, user_agent, device_info, last_active) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW()) 
-                ON DUPLICATE KEY UPDATE last_active = NOW(), user_name = VALUES(user_name), ip_address = VALUES(ip_address), device_info = VALUES(device_info)");
-            $stmtSess->execute([$sessId, $_SESSION['user_id'], $userName, $_SESSION['user_role'], $ip, $ua, $deviceFull]);
-        } catch (Exception $e) {}
     }
 
     // Otherwise, check if user is authenticated
@@ -343,8 +287,7 @@ try {
 
         // Compile regex whitelist of allowed SQL statement structures
         $whitelist = [
-            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|active_sessions)(\s+ORDER\s+BY\s+[a-z0-9_]+\s+(ASC|DESC))?$/i',
-            '/^DELETE\s+FROM\s+active_sessions\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions)$/i',
             '/^UPDATE\s+models\s+SET\s+brand\s*=\s*\?,\s*name\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+models\s*\(id,\s*brand,\s*name\)\s*VALUES\s*\(\?,\s*\?,\s*\?\)$/i',
             '/^DELETE\s+FROM\s+models\s+WHERE\s+id\s*=\s*\?$/i',
@@ -358,23 +301,23 @@ try {
             '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
             '/^DELETE\s+FROM\s+(targets|projections|emi|recovery_od|notices|links)$/i',
-            '/^DELETE\s+FROM\s+sales(\s+WHERE\s+.*?)?$/i',
-            
+            '/^DELETE\s+FROM\s+sales\s+WHERE\s+fy\s*=\s*\'2025-26\'$/i',
+            '/^DELETE\s+FROM\s+sales\s+WHERE\s+fy\s*=\s*\'2024-25\'$/i',
             '/^INSERT\s+INTO\s+targets\s*\(id,\s*fy,\s*month,\s*territory_id,\s*upazila,\s*district,\s*brand,\s*sale_type,\s*target_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^INSERT\s+INTO\s+projections\s*\(id,\s*fy,\s*month,\s*territory_id,\s*brand,\s*sale_type,\s*projection_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^INSERT\s+INTO\s+emi\s*\(id,\s*customer_code,\s*customer,\s*phone,\s*location,\s*delivery_date,\s*first_inst_date,\s*overdue_count,\s*overdue_total,\s*installment,\s*collected,\s*territory_id,\s*brand,\s*model,\s*installment_no\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
-            '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)(\s+ON\s+DUPLICATE\s+KEY\s+UPDATE\s+.*?)?$/i',
+            '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type,\s*customer_name,\s*chassis_no,\s*purpose_of_use,\s*financials,\s*discounts,\s*old_customer_id,\s*is_manual,\s*approval_status,\s*admin_comments,\s*timestamp\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+sales\s+SET\s+customer_name\s*=\s*\?,\s*chassis_no\s*=\s*\?,\s*brand\s*=\s*\?,\s*model\s*=\s*\?,\s*sale_type\s*=\s*\?,\s*purpose_of_use\s*=\s*\?,\s*admin_comments\s*=\s*\?,\s*financials\s*=\s*\?,\s*discounts\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^UPDATE\s+sales\s+SET\s+approval_status\s*=\s*\'Done\'\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+sales\s+WHERE\s+is_manual\s*=\s*1$/i',
             '/^INSERT\s+INTO\s+recovery_od\s*\(id,\s*fy,\s*month,\s*territory_id,\s*perfile_od,\s*total_overdue\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
-            '/^UPDATE\s+emi\s+SET\s+collected\s*=\s*\?\s+WHERE\s+(id|customer_code)\s*=\s*\?$/i',
+            '/^UPDATE\s+emi\s+SET\s+collected\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^UPDATE\s+app_settings\s+SET\s+settings_json\s*=\s*\?(?:\s+WHERE\s+id\s*=\s*\'1\')?$/i',
             '/^INSERT\s+INTO\s+tiv_submissions\s*\(id,\s*territory,\s*month,\s*brand,\s*submission_data\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+links\s*\(id,\s*title,\s*url,\s*type,\s*icon\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+links\s+SET\s+title\s*=\s*\?,\s*url\s*=\s*\?,\s*type\s*=\s*\?,\s*icon\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+.*?$/i'
+            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+id\s*=\s*\?$/i'
         ];
 
         foreach ($whitelist as $pattern) {
@@ -416,7 +359,7 @@ try {
         }
 
         // --- Security Patch: Row-Level Security (RLS) ---
-        if (!$isAdmin && $_SESSION['user_role'] !== 'subadmin' && preg_match('/^SELECT\s+\*\s+FROM\s+(sales|emi|targets|projections|recovery_od)$/i', $trimmedQuery, $matches)) {
+        if (!$isAdmin && preg_match('/^SELECT\s+\*\s+FROM\s+(sales|emi|targets|projections|recovery_od)$/i', $trimmedQuery, $matches)) {
             $table = strtolower($matches[1]);
             $territories = json_decode($_SESSION['user_territories'], true);
             if (!is_array($territories)) $territories = [];

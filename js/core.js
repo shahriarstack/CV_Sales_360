@@ -237,6 +237,7 @@ window.app.initNeonDB = async () => {
                         return {
                             ...s,
                             is_manual: s.is_manual === 1 || s.is_manual === true || s.is_manual === '1',
+                            is_carried_forward: s.is_carried_forward === 1 || s.is_carried_forward === true || s.is_carried_forward === '1',
                             financials: typeof s.financials === 'string' ? JSON.parse(s.financials) : s.financials,
                             discounts: typeof s.discounts === 'string' ? JSON.parse(s.discounts) : s.discounts
                         };
@@ -496,6 +497,9 @@ window.app.init = async () => {
                     originalSetItem.apply(localStorage, arguments);
                     if (key === 'aci_last_page' && app.currentUser) {
                         app.setupSidebar();
+                        if (typeof app.initCopyrightFooterHandler === 'function') {
+                            app.initCopyrightFooterHandler();
+                        }
                     }
                 };
 
@@ -601,35 +605,11 @@ window.app.getAchBadge = (val) => {
             };
 
 window.app.updateAuroraColors = () => {
-                let blobs = document.getElementById('aurora-blobs');
                 const body = document.body;
-                if (!blobs && body) {
-                    const mainElement = document.querySelector('main');
-                    if (mainElement) {
-                        blobs = document.createElement('div');
-                        blobs.id = 'aurora-blobs';
-                        blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 hidden";
-                        blobs.innerHTML = `
-                            <div class="aurora-blob aurora-1 absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full filter blur-[80px] md:blur-[140px] opacity-10 md:opacity-[0.12] top-[-10%] left-[-10%] transition-all duration-1000"></div>
-                            <div class="aurora-blob aurora-2 absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full filter blur-[80px] md:blur-[140px] opacity-10 md:opacity-[0.12] bottom-[-10%] right-[-10%] transition-all duration-1000"></div>
-                            <div class="aurora-blob aurora-3 absolute w-[250px] md:w-[450px] h-[250px] md:h-[450px] rounded-full filter blur-[80px] md:blur-[100px] opacity-[0.05] md:opacity-[0.07] top-[30%] right-[15%] transition-all duration-1000"></div>
-                        `;
-                        mainElement.insertBefore(blobs, mainElement.firstChild);
-                    }
-                }
-                
-                if (blobs && body) {
+                if (body) {
                     if (app.currentUser && (app.currentUser.role === 'admin' || app.currentUser.role === 'subadmin')) {
-                        blobs.classList.remove('hidden');
                         body.classList.add('aurora-active');
-                        const brand = app.adminBrandTab || 'Foton';
-                        if (brand === 'Mahindra') {
-                            blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 aurora-mahindra";
-                        } else {
-                            blobs.className = "absolute inset-0 pointer-events-none overflow-hidden z-0 aurora-foton";
-                        }
                     } else {
-                        blobs.classList.add('hidden');
                         body.classList.remove('aurora-active');
                     }
                 }
@@ -850,6 +830,7 @@ window.app.loadAppLayout = () => {
                                 case 'tiv': app.renderTIVManagement(); break;
                                 case 'settings': app.renderSystemSettings(); break;
                                 case 'pulse': app.renderAMPulseMatrix(); break;
+                                case 'incentive': app.renderIncentiveCalculation(); break;
                                 default: app.renderAdminDashboard();
                             }
                         } else {
@@ -955,6 +936,7 @@ window.app.setupSidebar = () => {
                         renderSidebarBtn('manual', 'Manual Deliveries', 'clipboard-list', 'text-indigo-400', 'app.renderAdminManualDeliveries()'),
                         renderSidebarBtn('tiv', 'TIV Management', 'bar-chart', 'text-amber-400', 'app.renderTIVManagement()'),
                         renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),
+                        renderSidebarBtn('incentive', 'Incentive Calculation', 'calculator', 'text-teal-400', 'app.renderIncentiveCalculation()'),
                         renderSidebarBtn('analytics', 'Historical Analytics', 'bar-chart-2', 'text-sky-400', 'app.renderAdminAnalytics()'),
                         renderSidebarBtn('notices', 'Notices & Links', 'megaphone', 'text-amber-500', 'app.renderAdminNotices()', '', 'border border-amber-600/20 bg-amber-600/10 text-slate-200'),
                         renderSidebarBtn('upload', 'Data Upload (Bulk)', 'upload-cloud', 'text-slate-400', 'app.renderDataUpload()'),
@@ -971,6 +953,7 @@ window.app.setupSidebar = () => {
                         renderSidebarBtn('dashboard', 'My Territories', 'layout-dashboard', 'text-aci-gold', 'app.renderAdminDashboard()'),
                         renderSidebarBtn('pulse', 'Performance Matrix', 'calendar-range', 'text-violet-400', 'app.renderAMPulseMatrix()'),
                         renderSidebarBtn('emi', 'Area EMI Summary', 'banknote', 'text-slate-400', 'app.renderAdminEMI()'),
+                        renderSidebarBtn('incentive', 'Incentive Calculation', 'calculator', 'text-teal-400', 'app.renderIncentiveCalculation()'),
                         renderSidebarBtn('profile', 'Profile', 'user', 'text-slate-400', 'app.renderUserProfile()')
                     ].join('');
                     
@@ -978,8 +961,10 @@ window.app.setupSidebar = () => {
                     links = [
                         renderSidebarBtn('dashboard', 'Sales Dashboard', 'layout-dashboard', 'text-slate-400', "app.navigateSO('dashboard')"),
                         renderSidebarBtn('pulse', 'Performance Matrix', 'calendar-range', 'text-violet-400', "app.navigateSO('pulse')"),
+                        renderSidebarBtn('credit_note', 'Credit Notes', 'file-minus', 'text-rose-400', "app.navigateSO('credit_note')"),
                         renderSidebarBtn('emi', 'EMI Collection', 'wallet', 'text-slate-400', "app.navigateSO('emi')", '<span id="so-overdue-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>'),
                         renderSidebarBtn('tiv', 'TIV Reporting', 'bar-chart-3', 'text-slate-400', "app.navigateSO('tiv')"),
+                        renderSidebarBtn('incentive', 'Incentive Calculation', 'calculator', 'text-teal-400', "app.navigateSO('incentive')"),
                         renderSidebarBtn('profile', 'Profile', 'user', 'text-slate-400', "app.navigateSO('profile')")
                     ].join('');
                 }
@@ -988,3 +973,192 @@ window.app.setupSidebar = () => {
                 app.updateAiWidgetVisibility();
             };
 
+
+
+window.app.renderIncentiveCalculation = () => {
+    localStorage.setItem('aci_last_page', 'incentive');
+    localStorage.setItem('aci_last_role', app.currentUser.role);
+    
+    // Clear active states in navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-aci-blue');
+        btn.classList.add('text-slate-400');
+        if (btn.dataset.target === 'incentive') {
+            btn.classList.add('text-aci-blue');
+            btn.classList.remove('text-slate-400');
+        }
+    });
+
+    const html = `
+        <div class="w-full min-h-[75vh] flex items-center justify-center fade-in p-4">
+            <div class="relative w-full max-w-lg bg-white/70 backdrop-blur-xl border border-white/40 rounded-3xl p-8 shadow-[0_20px_50px_rgba(99,102,241,0.15)] flex flex-col items-center text-center overflow-hidden">
+                <!-- Decorative background gradients -->
+                <div class="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
+                
+                <!-- Rotating/pulsing badge -->
+                <div class="relative flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/30 mb-6 group hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 animate-ping opacity-25"></div>
+                    <i data-lucide="calculator" class="w-10 h-10 text-white animate-pulse"></i>
+                </div>
+                
+                <!-- Title & Subtitle -->
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Incentive Calculation</h1>
+                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100/50 mt-2.5 flex items-center gap-1.5">
+                    <span class="relative flex h-1.5 w-1.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
+                    </span>
+                    Module under development
+                </span>
+                
+                <!-- Content description -->
+                <p class="text-xs text-slate-500 font-medium max-w-sm mt-5 leading-relaxed">
+                    We are building an advanced real-time incentive tracker. This module will automatically compute slab-wise sales commissions, recovery bonuses, and target achievements.
+                </p>
+                
+                <!-- Progress indicator -->
+                <div class="w-full bg-slate-100 rounded-full h-2 mt-8 overflow-hidden relative shadow-inner">
+                    <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 h-full rounded-full w-2/3 animate-pulse"></div>
+                </div>
+                <div class="flex justify-between w-full text-[10px] text-slate-400 font-extrabold uppercase mt-2">
+                    <span>Designing UI/UX</span>
+                    <span class="text-indigo-600 animate-pulse">Working on Progress...</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('view-port').innerHTML = html;
+    app.refreshIcons();
+};
+
+
+window.app.initCopyrightFooterHandler = () => {
+    const viewPort = document.getElementById('view-port');
+    const footer = document.getElementById('copyright-footer');
+    if (!viewPort || !footer) return;
+
+    const updateFooterVisibility = () => {
+        const isMobile = window.innerWidth < 768;
+        if (app.currentUser && app.currentUser.role === 'so') {
+            if (isMobile) {
+                const hasScrollbar = viewPort.scrollHeight > viewPort.clientHeight;
+                if (!hasScrollbar) {
+                    footer.style.opacity = '0';
+                    footer.style.pointerEvents = 'none';
+                } else {
+                    const isAtBottom = viewPort.scrollHeight - viewPort.scrollTop - viewPort.clientHeight < 20;
+                    if (isAtBottom) {
+                        footer.style.opacity = '1';
+                        footer.style.pointerEvents = 'auto';
+                    } else {
+                        footer.style.opacity = '0';
+                        footer.style.pointerEvents = 'none';
+                    }
+                }
+            } else {
+                const hasScrollbar = viewPort.scrollHeight > viewPort.clientHeight;
+                if (!hasScrollbar) {
+                    footer.style.opacity = '1';
+                    footer.style.pointerEvents = 'auto';
+                } else {
+                    const isAtBottom = viewPort.scrollHeight - viewPort.scrollTop - viewPort.clientHeight < 20;
+                    if (isAtBottom) {
+                        footer.style.opacity = '1';
+                        footer.style.pointerEvents = 'auto';
+                    } else {
+                        footer.style.opacity = '0';
+                        footer.style.pointerEvents = 'none';
+                    }
+                }
+            }
+        } else {
+            footer.style.opacity = '1';
+            footer.style.pointerEvents = 'auto';
+        }
+    };
+
+    if (app._updateFooterVisibility) {
+        viewPort.removeEventListener('scroll', app._updateFooterVisibility);
+        window.removeEventListener('resize', app._updateFooterVisibility);
+    }
+
+    app._updateFooterVisibility = updateFooterVisibility;
+    viewPort.addEventListener('scroll', updateFooterVisibility);
+    window.addEventListener('resize', updateFooterVisibility);
+
+    const observer = new MutationObserver(() => {
+        setTimeout(updateFooterVisibility, 100);
+    });
+    observer.observe(viewPort, { childList: true, subtree: true });
+
+};
+
+// Security Feature: Admin Password Prompt
+window.app.promptAdminPassword = (callback) => {
+    if (sessionStorage.getItem('aci_admin_unlocked') === 'true') {
+        callback();
+        return;
+    }
+    
+    const modalHtml = `
+        <div id="admin-pass-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
+                <div class="p-5 border-b border-slate-100 bg-slate-50 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">Restricted Access</h3>
+                        <p class="text-[11px] text-slate-500">Admin authorization required</p>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <input type="password" id="admin-pass-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all" placeholder="Enter PIN/Password">
+                    <div id="admin-pass-error" class="text-red-500 text-[11px] mt-2 hidden font-medium">Incorrect password. Please try again.</div>
+                </div>
+                <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+                    <button id="admin-pass-cancel" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Cancel</button>
+                    <button id="admin-pass-submit" class="px-5 py-2 text-sm font-bold bg-red-500 text-white rounded-xl shadow-lg shadow-red-500/30 hover:bg-red-600 transition-colors">Unlock</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const existing = document.getElementById('admin-pass-modal');
+    if (existing) existing.remove();
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    if (window.lucide) window.lucide.createIcons();
+    
+    const input = document.getElementById('admin-pass-input');
+    const submitBtn = document.getElementById('admin-pass-submit');
+    const cancelBtn = document.getElementById('admin-pass-cancel');
+    const errorMsg = document.getElementById('admin-pass-error');
+    
+    input.focus();
+    
+    const verify = () => {
+        if (input.value === 'Imon@0123') {
+            sessionStorage.setItem('aci_admin_unlocked', 'true');
+            document.getElementById('admin-pass-modal').remove();
+            callback();
+        } else {
+            errorMsg.classList.remove('hidden');
+            input.classList.add('border-red-500', 'bg-red-50');
+            setTimeout(() => {
+                input.classList.remove('border-red-500', 'bg-red-50');
+            }, 1000);
+        }
+    };
+    
+    submitBtn.addEventListener('click', verify);
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') verify(); });
+    cancelBtn.addEventListener('click', () => {
+        document.getElementById('admin-pass-modal').remove();
+        if (window.app.renderAdminManual) {
+            window.app.renderAdminManual();
+        }
+    });
+};

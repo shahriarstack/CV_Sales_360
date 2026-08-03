@@ -2,6 +2,11 @@
 window.app = window.app || {};
 
 window.app.renderDataUpload = () => {
+    if (sessionStorage.getItem('aci_admin_unlocked') !== 'true') {
+        app.promptAdminPassword(() => app.renderDataUpload());
+        return;
+    }
+
                 localStorage.setItem('aci_last_page', 'upload');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 if (app.currentUser.role !== 'admin') {
@@ -161,6 +166,100 @@ window.app.renderDataUpload = () => {
                                 </div>
                             </div>
 
+                        </div>
+
+
+                        <!-- Custom Report Builder -->
+                        <div class="mt-8 mb-4">
+                            <div class="flex items-center gap-2.5 mb-4">
+                                <div class="h-5 w-1.5 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full shadow-sm"></div>
+                                <h2 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-indigo-800 tracking-tight">Custom Report Export</h2>
+                            </div>
+                            <div class="glass p-6 rounded-2xl border border-indigo-100/50 shadow-lg relative overflow-hidden group">
+                                <div class="absolute -right-20 -top-20 w-40 h-40 bg-indigo-400/10 rounded-full blur-3xl"></div>
+                                <div class="relative z-10 grid grid-cols-1 md:grid-cols-6 gap-5">
+                                    <!-- Month Select -->
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Report Month</label>
+                                        <select id="export-month" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                                            <option value="January">January</option>
+                                            <option value="February">February</option>
+                                            <option value="March">March</option>
+                                            <option value="April">April</option>
+                                            <option value="May">May</option>
+                                            <option value="June">June</option>
+                                            <option value="July">July</option>
+                                            <option value="August" selected>August</option>
+                                            <option value="September">September</option>
+                                            <option value="October">October</option>
+                                            <option value="November">November</option>
+                                            <option value="December">December</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- FY Select -->
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Financial Year</label>
+                                        <select id="export-fy" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                                            <!-- Dynamically populated or static, assuming 2026-27 is current -->
+                                            <option value="2026-27">FY 2026-27</option>
+                                            <option value="2025-26">FY 2025-26</option>
+                                            <option value="2024-25">FY 2024-25</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Territory Select -->
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Territory</label>
+                                        <select id="export-territory" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                                            <option value="ALL">All Territories</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Brand Select -->
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Brand</label>
+                                        <select id="export-brand" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                                            <option value="ALL">All Brands</option>
+                                            <option value="Foton">Foton</option>
+                                            <option value="Mahindra">Mahindra</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Sale Type Select -->
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sale Type</label>
+                                        <select id="export-sale-type" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                                            <option value="ALL">All Types</option>
+                                            <option value="New Sale">New Sale</option>
+                                            <option value="Resale">Resale</option>
+                                            <option value="Credit Note">Credit Note</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Action Button -->
+                                    <div class="flex items-end">
+                                        <button onclick="app.generateCustomReport()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                            <i data-lucide="download-cloud" class="w-4 h-4"></i> Export Report
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap gap-4">
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" id="export-inc-budget" checked class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="text-xs font-semibold text-slate-600 group-hover:text-indigo-600 transition-colors">Include Target/Budget</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" id="export-inc-actual" checked class="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500">
+                                        <span class="text-xs font-semibold text-slate-600 group-hover:text-green-600 transition-colors">Include Actual Sales</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" id="export-inc-sply" checked class="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-400">
+                                        <span class="text-xs font-semibold text-slate-600 group-hover:text-amber-500 transition-colors">Include SPLY Data</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Creative Data Lifecycle Guideline -->
@@ -613,7 +712,7 @@ window.app.downloadTemplate = (type) => {
                         csvContent = headers + rows;
                         filename = "ACI_Current_Month_Projection_Export.csv";
                     } else if (type === 'sales') {
-                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Units,FY,Sales_Year,Sales_Month,Sale_Type\n";
                         const rows = DB.sales.filter(s => s.fy === currentFY).map(s => {
                             const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
                             return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
@@ -621,7 +720,7 @@ window.app.downloadTemplate = (type) => {
                         csvContent = headers + rows;
                         filename = "ACI_System_Sales_Export.csv";
                     } else if (type === 'last_year_sales') {
-                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Units,FY,Sales_Year,Sales_Month,Sale_Type\n";
                         const rows = DB.sales.filter(s => s.fy === lastFY).map(s => {
                             const tName = DB.territories.find(ter => ter.id === s.territory_id)?.name || '';
                             return [s.customer_id, s.district, tName, s.upazila, s.brand, s.model, s.unit_qty, s.fy, s.sales_year, s.sales_month, s.sale_type].map(csvCell).join(',');
@@ -656,12 +755,13 @@ window.app.downloadTemplate = (type) => {
                         headers += `${currentFY},April,Dhaka North,Mahindra,Resale,10\n`;
                         filename = "ACI_Current_Month_Projection_Template.csv";
                     } else if (type === 'sales') {
-                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Units,FY,Sales_Year,Sales_Month,Sale_Type\n";
                         headers += `C-1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,${currentFY},2026,April,New Sale\n`;
                         headers += `C-1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${currentFY},2026,April,Resale\n`;
+                        headers += `C-1003,Dhaka,Dhaka North,Uttara,Foton,TM3,-1,${currentFY},2026,April,Credit Note\n`;
                         filename = "ACI_System_Sales_Template.csv";
                     } else if (type === 'last_year_sales') {
-                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Unit_Qty,FY,Sales_Year,Sales_Month,Sale_Type\n";
+                        headers = "Customer_ID,District,Territory_Name,Upazila,Brand,Model,Units,FY,Sales_Year,Sales_Month,Sale_Type\n";
                         headers += `C-LY1001,Dhaka,Dhaka North,Mirpur,Foton,TM3,1,${lastFY},2025,April,New Sale\n`;
                         headers += `C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${lastFY},2025,April,Resale\n`;
                         filename = "ACI_Last_Year_Sales_Template.csv";
@@ -777,6 +877,7 @@ window.app.normalizeBrand = (b) => {
 window.app.normalizeSaleType = (s) => {
                 if (!s) return 'New Sale';
                 const str = s.toString().trim().toLowerCase();
+                if (str.includes('credit') || str.includes('cn') || str.includes('note')) return 'Credit Note';
                 if (str.includes('resale') || str.includes('re-sale') || str.includes('re sale')) return 'Resale';
                 return 'New Sale';
             };
@@ -996,6 +1097,11 @@ window.app.simulateUpload = (input, typeName, dataKey) => {
                                                 }
                                                 const model = app.getCSVValue(row, ['Model']) || 'TM3';
                                                 
+                                                const parsedSaleType = app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']));
+                                                let parsedUnits = Math.abs(parseInt(app.getCSVValue(row, ['Units', 'Unit_Qty', 'UnitQty', 'Qty', 'Quantity', 'Unit'])) || 1);
+                                                if (parsedSaleType === 'Credit Note') {
+                                                    parsedUnits = -parsedUnits;
+                                                }
                                                 const record = {
                                                     id: `s_u_${customerId}_${model}_${salesYear}_${recordMonth}`.replace(/\s+/g, '_'),
                                                     customer_id: customerId,
@@ -1004,11 +1110,11 @@ window.app.simulateUpload = (input, typeName, dataKey) => {
                                                     upazila: app.getCSVValue(row, ['Upazila', 'Thana']) || 'General',
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     model: app.getCSVValue(row, ['Model']) || 'TM3',
-                                                    unit_qty: parseInt(app.getCSVValue(row, ['Unit_Qty', 'UnitQty', 'Qty', 'Quantity'])) || 0,
+                                                    unit_qty: parsedUnits,
                                                     fy: recordFY,
                                                     sales_year: salesYear,
                                                     sales_month: recordMonth,
-                                                    sale_type: app.normalizeSaleType(app.getCSVValue(row, ['Sale_Type', 'SaleType', 'Type']))
+                                                    sale_type: parsedSaleType
                                                 };
                                                 DB.sales.push(record);
                                                 newRecords.push(record);
@@ -1032,11 +1138,11 @@ window.app.simulateUpload = (input, typeName, dataKey) => {
                                             for(let i=0; i<newRecords.length; i+=batchSize) {
                                                 const chunk = newRecords.slice(i, i+batchSize);
                                                 const promises = chunk.map(r => {
-                                                     if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, district, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.district}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`;
-                                                     if(dataKey === 'projections') return app.neonSQL`INSERT INTO projections (id, fy, month, territory_id, brand, sale_type, projection_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.brand}, ${r.sale_type}, ${r.projection_qty})`;
-                                                     if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no}) ON CONFLICT (id) DO NOTHING`;
-                                                     if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type}) ON CONFLICT (id) DO NOTHING`;
-                                                     if(dataKey === 'recovery_od') return app.neonSQL`INSERT INTO recovery_od (id, fy, month, territory_id, perfile_od, total_overdue) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.perfile_od}, ${r.total_overdue}) ON CONFLICT (id) DO NOTHING`;
+                                                     if(dataKey === 'targets') return app.neonSQL`INSERT INTO targets (id, fy, month, territory_id, upazila, district, brand, sale_type, target_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.upazila}, ${r.district}, ${r.brand}, ${r.sale_type}, ${r.target_qty})`.catch(e => console.warn('Row insert warning:', e));
+                                                     if(dataKey === 'projections') return app.neonSQL`INSERT INTO projections (id, fy, month, territory_id, brand, sale_type, projection_qty) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.brand}, ${r.sale_type}, ${r.projection_qty})`.catch(e => console.warn('Row insert warning:', e));
+                                                     if(dataKey === 'emi') return app.neonSQL`INSERT INTO emi (id, customer_code, customer, phone, location, delivery_date, first_inst_date, overdue_count, overdue_total, installment, collected, territory_id, brand, model, installment_no) VALUES (${r.id}, ${r.customer_code}, ${r.customer}, ${r.phone}, ${r.location}, ${r.delivery_date}, ${r.first_inst_date}, ${r.overdue_count}, ${r.overdue_total}, ${r.installment}, ${r.collected}, ${r.territory_id}, ${r.brand}, ${r.model}, ${r.installment_no}) ON CONFLICT (id) DO NOTHING`.catch(e => console.warn('Row insert warning:', e));
+                                                     if(dataKey === 'sales' || dataKey === 'last_year_sales') return app.neonSQL`INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES (${r.id}, ${r.customer_id}, ${r.district}, ${r.territory_id}, ${r.upazila}, ${r.brand}, ${r.model}, ${r.unit_qty}, ${r.fy}, ${r.sales_year}, ${r.sales_month}, ${r.sale_type}) ON CONFLICT (id) DO NOTHING`.catch(e => console.warn('Row insert warning:', e));
+                                                     if(dataKey === 'recovery_od') return app.neonSQL`INSERT INTO recovery_od (id, fy, month, territory_id, perfile_od, total_overdue) VALUES (${r.id}, ${r.fy}, ${r.month}, ${r.territory_id}, ${r.perfile_od}, ${r.total_overdue}) ON CONFLICT (id) DO NOTHING`.catch(e => console.warn('Row insert warning:', e));
                                                 });
                                                 await Promise.all(promises);
                                             }
@@ -1072,3 +1178,111 @@ window.app.processRawData = () => {
                 }, 1000);
             };
 
+
+
+window.app.generateCustomReport = () => {
+    if (app.currentUser.role !== 'admin') {
+        app.showToast("Permission Denied: Reports are for Admins only.", "error");
+        return;
+    }
+
+    const month = document.getElementById('export-month').value;
+    const fy = document.getElementById('export-fy').value;
+    const territoryId = document.getElementById('export-territory').value;
+    const brand = document.getElementById('export-brand').value;
+    const saleType = document.getElementById('export-sale-type').value;
+    
+    const incBudget = document.getElementById('export-inc-budget').checked;
+    const incActual = document.getElementById('export-inc-actual').checked;
+    const incSply = document.getElementById('export-inc-sply').checked;
+
+    if (!incBudget && !incActual && !incSply) {
+        app.showToast("Please select at least one data type to include.", "error");
+        return;
+    }
+
+    // Determine SPLY FY
+    const parts = fy.split('-');
+    let lastFY = '2024-25';
+    if (parts.length === 2) {
+        const y1 = parseInt(parts[0]);
+        const y2 = parseInt(parts[1]);
+        if (!isNaN(y1) && !isNaN(y2)) lastFY = `${y1 - 1}-${y2 - 1}`;
+    }
+
+    // Prepare data structures based on territories
+    let territoriesToProcess = DB.territories;
+    if (territoryId !== 'ALL') {
+        territoriesToProcess = DB.territories.filter(t => t.id === territoryId);
+    }
+
+    const reportData = [];
+
+    territoriesToProcess.forEach(t => {
+        let budgetTotal = 0;
+        let actualTotal = 0;
+        let splyTotal = 0;
+
+        if (incBudget) {
+            const targets = DB.targets.filter(tg => tg.fy === fy && tg.month === month && tg.territory_id === t.id && (brand === 'ALL' || tg.brand === brand) && (saleType === 'ALL' || tg.sale_type === saleType));
+            budgetTotal = targets.reduce((sum, tg) => sum + (parseInt(tg.target_qty) || 0), 0);
+        }
+
+        if (incActual) {
+            const sales = DB.sales.filter(s => s.fy === fy && s.sales_month === month && s.territory_id === t.id && (brand === 'ALL' || s.brand === brand) && (saleType === 'ALL' || s.sale_type === saleType));
+            actualTotal = sales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
+        }
+
+        if (incSply) {
+            const splySales = DB.sales.filter(s => s.fy === lastFY && s.sales_month === month && s.territory_id === t.id && (brand === 'ALL' || s.brand === brand) && (saleType === 'ALL' || s.sale_type === saleType));
+            splyTotal = splySales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
+        }
+
+        const growthVsBudget = budgetTotal > 0 ? (((actualTotal - budgetTotal) / budgetTotal) * 100).toFixed(1) + '%' : (actualTotal > 0 ? '100%' : '0%');
+        const growthVsSply = splyTotal > 0 ? (((actualTotal - splyTotal) / splyTotal) * 100).toFixed(1) + '%' : (actualTotal > 0 ? '100%' : '0%');
+
+        const row = {
+            'Territory': t.name,
+            'Month': month,
+            'FY': fy
+        };
+
+        if (incBudget) row['Budget_Qty'] = budgetTotal;
+        if (incActual) row['Actual_Sales_Qty'] = actualTotal;
+        if (incSply) {
+            row['SPLY_FY'] = lastFY;
+            row['SPLY_Sales_Qty'] = splyTotal;
+        }
+
+        if (incBudget && incActual) row['Growth_vs_Budget'] = growthVsBudget;
+        if (incSply && incActual) row['Growth_vs_SPLY'] = growthVsSply;
+
+        reportData.push(row);
+    });
+
+    if (reportData.length === 0) {
+        app.showToast("No data found for the selected criteria.");
+        return;
+    }
+
+    // Generate CSV
+    const headers = Object.keys(reportData[0]);
+    let csvContent = headers.join(',') + '\n';
+
+    reportData.forEach(row => {
+        const values = headers.map(h => `"${row[h]}"`);
+        csvContent += values.join(',') + '\n';
+    });
+
+    const filename = `Custom_Report_${month}_${fy}.csv`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    app.showToast(`Exported ${filename} successfully`, 'success');
+};

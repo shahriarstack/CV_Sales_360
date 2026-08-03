@@ -214,6 +214,20 @@ async function run() {
             filesToUpload.push({ name: 'favicon.png', path: faviconPath });
         }
 
+        // Automatically bump cache-busting timestamp in index.html for all JS & CSS files
+        const timestamp = Date.now();
+        let indexHtmlContent = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+        indexHtmlContent = indexHtmlContent.replace(/(\.js\?v=[^"'\s]+)/g, (match) => {
+            const base = match.split('&t=')[0];
+            return `${base}&t=${timestamp}`;
+        });
+        indexHtmlContent = indexHtmlContent.replace(/(\.css\?v=[^"'\s]+)/g, (match) => {
+            const base = match.split('&t=')[0];
+            return `${base}&t=${timestamp}`;
+        });
+        fs.writeFileSync(path.join(__dirname, 'index.html'), indexHtmlContent, 'utf8');
+        console.log(`✓ Automatically updated index.html cache-buster timestamp: ${timestamp}`);
+
         const preparedFiles = filesToUpload.map(f => ({
             name: f.name,
             content: fs.readFileSync(f.path)

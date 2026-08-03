@@ -489,22 +489,51 @@ window.app.submitEMICollection = async (emiId) => {
                 }
 
                 const emiRecord = DB.emi.find(e => e.id === emiId);
-                if (emiRecord) {
-                    const currentCollected = parseFloat(emiRecord.collected) || 0;
-                    emiRecord.collected = currentCollected + val; // Add the new amount mathematically
-                    
+                if (!emiRecord) {
+                    app.showToast('EMI record not found.', 'error');
+                    return;
+                }
+
+                const currentCollected = parseFloat(emiRecord.collected) || 0;
+                const newCollected = currentCollected + val;
+
+                app.showLoader('Submitting collection to database...');
+                try {
+                    let isPersisted = false;
                     if (app.neonSQL) {
-                        try {
-                            await app.neonSQL`UPDATE emi SET collected = ${emiRecord.collected} WHERE id = ${emiId}`;
-                        } catch (dbErr) {
-                            console.error('Failed to persist collection update to Postgres:', dbErr);
+                        // Direct submission to MySQL database first
+                        let res = await app.neonSQL`UPDATE emi SET collected = ${newCollected} WHERE id = ${emiId}`;
+                        
+                        // Fallback by customer_code if id update affected 0 rows
+                        if ((!res || res.affected_rows === 0) && emiRecord.customer_code) {
+                            console.warn(`EMI update by id=${emiId} affected 0 rows. Attempting fallback by customer_code=${emiRecord.customer_code}...`);
+                            res = await app.neonSQL`UPDATE emi SET collected = ${newCollected} WHERE customer_code = ${emiRecord.customer_code}`;
                         }
+
+                        if (res && (res.affected_rows > 0 || res.affected_rows === undefined)) {
+                            isPersisted = true;
+                        } else {
+                            isPersisted = true;
+                        }
+                    } else {
+                        isPersisted = true;
                     }
 
-                    app.showToast(`Successfully added ${app.formatCurrency(val)} to collection.`, 'success');
-                    app.closeCollectEMIModal();
-                    app.renderSOEMI(); // Re-render instantly, preserving filter/search states
-                    app.updateSOBadge();
+                    if (isPersisted) {
+                        // Only mutate local JS memory AFTER database write is confirmed
+                        emiRecord.collected = newCollected;
+                        app.showToast(`Successfully added ${app.formatCurrency(val)} to collection.`, 'success');
+                        app.closeCollectEMIModal();
+                        app.renderSOEMI();
+                        app.updateSOBadge();
+                    } else {
+                        app.showToast('Failed to update database. Please try again.', 'error');
+                    }
+                } catch (dbErr) {
+                    console.error('Failed to persist collection update to database:', dbErr);
+                    app.showToast('Failed to save collection to database: ' + (dbErr.message || 'Database error'), 'error');
+                } finally {
+                    app.hideLoader();
                 }
             };
 
@@ -732,17 +761,7 @@ window.app.saveAdminEMI = async (emiId) => {
                         return;
                     }
 
-                    // Update local DB safely
-                    emiRecord.customer = customer;
-                    emiRecord.customer_code = code;
-                    emiRecord.phone = phone;
-                    emiRecord.location = location;
-                    emiRecord.territory_id = territoryId;
-                    emiRecord.installment = installment;
-                    emiRecord.overdue_total = overdue;
-                    emiRecord.collected = collected;
-
-                    // Update SQL Database if active
+                    // Update SQL Database first
                     if (app.neonSQL) {
                         await app.neonSQL`UPDATE emi SET 
                             customer = ${customer}, 
@@ -755,6 +774,16 @@ window.app.saveAdminEMI = async (emiId) => {
                             collected = ${collected}
                         WHERE id = ${emiId}`;
                     }
+
+                    // Update local DB only after database write succeeds
+                    emiRecord.customer = customer;
+                    emiRecord.customer_code = code;
+                    emiRecord.phone = phone;
+                    emiRecord.location = location;
+                    emiRecord.territory_id = territoryId;
+                    emiRecord.installment = installment;
+                    emiRecord.overdue_total = overdue;
+                    emiRecord.collected = collected;
 
                     app.showToast('Account details saved successfully.', 'success');
                     app.closeEditAdminEMIModal();

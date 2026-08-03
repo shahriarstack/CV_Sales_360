@@ -268,6 +268,10 @@ window.app.exportUsersToCSV = () => {
             };
 
 window.app.renderUserManagement = () => {
+                if (sessionStorage.getItem('aci_admin_unlocked') !== 'true') {
+                    app.promptAdminPassword(() => app.renderUserManagement());
+                    return;
+                }
                 localStorage.setItem('aci_last_page', 'users');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');

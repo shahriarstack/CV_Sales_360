@@ -696,32 +696,6 @@
             border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
-        /* Aurora UI Glowing Background Blobs */
-        .aurora-blob {
-            mix-blend-mode: plus-lighter;
-            filter: blur(100px);
-            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .aurora-foton .aurora-1 {
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.18) 0%, transparent 70%);
-        }
-        .aurora-foton .aurora-2 {
-            background: radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, transparent 70%);
-        }
-        .aurora-foton .aurora-3 {
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.10) 0%, transparent 70%);
-        }
-
-        .aurora-mahindra .aurora-1 {
-            background: radial-gradient(circle, rgba(225, 29, 72, 0.16) 0%, transparent 70%);
-        }
-        .aurora-mahindra .aurora-2 {
-            background: radial-gradient(circle, rgba(234, 88, 12, 0.14) 0%, transparent 70%);
-        }
-        .aurora-mahindra .aurora-3 {
-            background: radial-gradient(circle, rgba(185, 28, 28, 0.08) 0%, transparent 70%);
-        }
 
         /* Glassmorphism Conversion for Admin Panels */
         body.aurora-active {

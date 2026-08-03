@@ -17,9 +17,11 @@ window.app.navigateSO = (view) => {
 
                 if (view === 'dashboard') app.renderSODashboard();
                 else if (view === 'pulse') app.renderSOPulseMatrix();
+                else if (view === 'credit_note') app.renderSOCreditNotes();
                 else if (view === 'emi') app.renderSOEMI();
                 else if (view === 'profile') app.renderUserProfile();
                 else if (view === 'tiv') app.renderTIVReporting();
+                else if (view === 'incentive') app.renderIncentiveCalculation();
             };
 
 window.app.renderSODashboard = () => {
@@ -971,6 +973,7 @@ window.app.showAddDeliveryModal = () => {
                                         ">
                                             <option value="New Sale">New Sale</option>
                                             <option value="Resale">Resale</option>
+                                            <option value="Credit Note">Credit Note</option>
                                         </select>
                                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
                                             <i data-lucide="chevron-down" class="w-4 h-4"></i>
@@ -1056,16 +1059,16 @@ window.app.showAddDeliveryModal = () => {
                             <!-- Product Selection -->
                             <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-100">
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 text-center">Vehicle Portfolio Details</p>
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div class="space-y-1.5">
                                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Brand</label>
                                         <div class="relative group">
-                                            <select id="del-brand" onchange="app.updateModelDropdown(this.value)" class="w-full border-2 border-white rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-white shadow-sm appearance-none pr-10" required>
+                                            <select id="del-brand" onchange="app.updateModelDropdown(this.value)" class="w-full border-2 border-white rounded-xl px-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-white shadow-sm appearance-none pr-8" required>
                                                 <option value="">Select Brand</option>
                                                 <option value="Foton">Foton</option>
                                                 <option value="Mahindra">Mahindra</option>
                                             </select>
-                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
                                                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                             </div>
                                         </div>
@@ -1073,12 +1076,18 @@ window.app.showAddDeliveryModal = () => {
                                     <div class="space-y-1.5">
                                         <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Model</label>
                                         <div class="relative group">
-                                            <select id="del-model" class="w-full border-2 border-white rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-white shadow-sm disabled:opacity-50 appearance-none pr-10" required disabled>
+                                            <select id="del-model" class="w-full border-2 border-white rounded-xl px-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-white shadow-sm disabled:opacity-50 appearance-none pr-8" required disabled>
                                                 <option value="">Pick Model</option>
                                             </select>
-                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
+                                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-aci-blue transition-colors">
                                                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Units (Qty)</label>
+                                        <div class="relative">
+                                            <input type="number" id="del-units" min="1" value="1" class="w-full border-2 border-white rounded-xl px-3 py-3 text-sm font-extrabold focus:outline-none focus:border-aci-blue bg-white shadow-sm text-center" required placeholder="1">
                                         </div>
                                     </div>
                                 </div>
@@ -1356,6 +1365,10 @@ window.app.saveManualDelivery = (e) => {
                 const oldCustomerId = document.getElementById('del-old-customer-id')?.value || '';
                 const brand = document.getElementById('del-brand').value;
                 const model = document.getElementById('del-model').value;
+                let unitQty = Math.abs(parseInt(document.getElementById('del-units')?.value) || 1);
+                if (type === 'Credit Note') {
+                    unitQty = -unitQty;
+                }
                 const tp = document.getElementById('del-tp').value;
                 const dp = document.getElementById('del-dp').value;
                 const tenure = document.getElementById('del-tenure').value;
@@ -1403,7 +1416,7 @@ window.app.saveManualDelivery = (e) => {
                         brand: brand,
                         model: model,
                         purpose_of_use: purpose,
-                        unit_qty: 1,
+                        unit_qty: unitQty,
                         fy: app.currentFY,
                         sales_year: currentYear,
                         sales_month: app.currentMonth,
@@ -1451,3 +1464,216 @@ window.app.saveManualDelivery = (e) => {
                 }, 800);
             };
 
+
+window.app.renderSOCreditNotes = (selectedMonth = null) => {
+    localStorage.setItem('aci_last_page', 'credit_note');
+    localStorage.setItem('aci_last_role', 'so');
+
+    const terrId = app.currentUser ? app.currentUser.territories[0] : 't1';
+    const territory = DB.territories.find(t => t.id === terrId);
+    const activeFY = app.currentFY;
+    const currentMonth = selectedMonth !== null ? selectedMonth : (app.soCreditNoteMonthFilter || app.currentMonth);
+    app.soCreditNoteMonthFilter = currentMonth;
+
+    // Filter Credit Note sales for SO territory & active FY
+    let territorySales = DB.sales.filter(s => s.territory_id === terrId && s.fy === activeFY);
+    let creditNotes = territorySales.filter(s => s.sale_type === 'Credit Note' || (s.unit_qty && Number(s.unit_qty) < 0));
+
+    let filteredCN = [...creditNotes];
+    if (currentMonth && currentMonth !== 'All') {
+        filteredCN = filteredCN.filter(s => s.sales_month === currentMonth);
+    }
+
+    // Filter search text
+    const searchFilter = (document.getElementById('cn-search-input')?.value || '').toLowerCase().trim();
+    if (searchFilter) {
+        filteredCN = filteredCN.filter(s => 
+            (s.customer_name || '').toLowerCase().includes(searchFilter) ||
+            (s.customer_id || '').toLowerCase().includes(searchFilter) ||
+            (s.model || '').toLowerCase().includes(searchFilter) ||
+            (s.chassis_no || '').toLowerCase().includes(searchFilter)
+        );
+    }
+
+    const totalCNCount = filteredCN.length;
+    const totalUnitsDeducted = Math.abs(filteredCN.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0));
+    const fotonCNCount = filteredCN.filter(s => s.brand === 'Foton').length;
+    const mahindraCNCount = filteredCN.filter(s => s.brand === 'Mahindra').length;
+
+    const months = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+
+    const html = `
+        <div class="w-full fade-in space-y-5 pb-10">
+            <!-- Top Banner Header -->
+            <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 text-white rounded-3xl p-6 shadow-xl border border-rose-900/30">
+                <div class="absolute right-0 top-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">
+                                Officer Intelligence
+                            </span>
+                            <span class="text-xs text-slate-300 font-bold">${territory ? territory.name : 'Territory'}</span>
+                        </div>
+                        <h1 class="text-2xl font-black tracking-tight text-white mt-1.5 flex items-center gap-2.5">
+                            <i data-lucide="file-minus" class="w-7 h-7 text-rose-400"></i>
+                            Credit Notes & Sales Adjustments
+                        </h1>
+                        <p class="text-xs text-rose-200/80 font-medium mt-1">Track vehicle credit notes, sales deductions, and returned units for your territory.</p>
+                    </div>
+
+                    <!-- Month Filter Dropdown -->
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
+                        <span class="text-[10px] uppercase font-black text-rose-200 pl-2">Filter Month:</span>
+                        <select onchange="app.renderSOCreditNotes(this.value)" class="bg-slate-900 text-white border border-rose-500/40 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none focus:border-rose-400 cursor-pointer shadow-sm">
+                            <option value="All" ${currentMonth === 'All' ? 'selected' : ''}>All Months (${activeFY})</option>
+                            ${months.map(m => `<option value="${m}" ${currentMonth === m ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-rose-300 transition-all">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] uppercase font-black tracking-wider text-slate-400">Credit Note Files</span>
+                        <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 mt-2">${totalCNCount} <span class="text-xs text-slate-400 font-bold">Files</span></div>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1">Period: <strong class="text-rose-600">${currentMonth}</strong></p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-rose-300 transition-all">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] uppercase font-black tracking-wider text-slate-400">Total Deducted Units</span>
+                        <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+                            <i data-lucide="minus-circle" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-rose-600 mt-2">-${totalUnitsDeducted} <span class="text-xs text-rose-400 font-bold">Units</span></div>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1">Deducted from gross total</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-foton/30 transition-all">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] uppercase font-black tracking-wider text-slate-400">Foton Credit Notes</span>
+                        <div class="w-8 h-8 rounded-xl bg-sky-50 text-foton flex items-center justify-center font-bold">
+                            <i data-lucide="truck" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 mt-2">${fotonCNCount} <span class="text-xs text-slate-400 font-bold">Records</span></div>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1">Foton commercial vehicles</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-mahindra/30 transition-all">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] uppercase font-black tracking-wider text-slate-400">Mahindra Credit Notes</span>
+                        <div class="w-8 h-8 rounded-xl bg-rose-50 text-mahindra flex items-center justify-center font-bold">
+                            <i data-lucide="truck" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 mt-2">${mahindraCNCount} <span class="text-xs text-slate-400 font-bold">Records</span></div>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1">Mahindra commercial vehicles</p>
+                </div>
+            </div>
+
+            <!-- Quick Month Selector Pills -->
+            <div class="bg-white/80 backdrop-blur-md rounded-2xl p-3 border border-slate-200/80 shadow-xs flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
+                <span class="text-[10px] uppercase font-black text-slate-400 px-2 shrink-0">Month Quick Toggle:</span>
+                <button onclick="app.renderSOCreditNotes('All')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${currentMonth === 'All' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                    All Months
+                </button>
+                ${months.map(m => `
+                    <button onclick="app.renderSOCreditNotes('${m}')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${currentMonth === m ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                        ${m}
+                    </button>
+                `).join('')}
+            </div>
+
+            <!-- Search & Actions Bar -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="relative w-full sm:w-72">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="cn-search-input" onkeyup="app.renderSOCreditNotes('${currentMonth}')" value="${searchFilter}" placeholder="Search customer, ID, or model..." class="w-full text-xs font-bold pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-rose-400 transition-all">
+                </div>
+                <div class="text-xs text-slate-500 font-bold">
+                    Showing <strong class="text-rose-600">${filteredCN.length}</strong> Credit Note file(s) for <strong class="text-slate-800">${currentMonth} (${activeFY})</strong>
+                </div>
+            </div>
+
+            <!-- Credit Note Files Table / List -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200/80 text-[10px] uppercase font-black tracking-wider text-slate-400">
+                                <th class="px-4 py-3">Customer & Code</th>
+                                <th class="px-4 py-3">Brand & Model</th>
+                                <th class="px-4 py-3 text-center">Deducted Units</th>
+                                <th class="px-4 py-3">Location / Region</th>
+                                <th class="px-4 py-3">Month & FY</th>
+                                <th class="px-4 py-3">Chassis / Reason</th>
+                                <th class="px-4 py-3 text-right">Date Logged</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs">
+                            ${filteredCN.length > 0 ? filteredCN.map(s => `
+                                <tr class="hover:bg-rose-50/20 transition-colors">
+                                    <td class="px-4 py-3">
+                                        <div class="font-extrabold text-slate-800">${s.customer_name || s.customer || 'Unknown Customer'}</div>
+                                        <div class="text-[10px] font-mono text-rose-600 font-bold mt-0.5">${s.customer_id || s.customer_code || 'N/A'}</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="font-bold text-slate-800">${s.model || 'N/A'}</div>
+                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase ${s.brand === 'Foton' ? 'bg-sky-100 text-sky-700' : 'bg-rose-100 text-rose-700'}">${s.brand}</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-black">
+                                            ${s.unit_qty || -1} Units
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="font-bold text-slate-700">${s.district || 'Dhaka'}</div>
+                                        <div class="text-[10px] text-slate-400 font-medium">${s.upazila || 'General'}</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="font-extrabold text-slate-800">${s.sales_month}</span>
+                                        <div class="text-[10px] text-slate-400 font-mono font-bold">${s.fy}</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-[11px] font-mono font-bold text-slate-700">${s.chassis_no || 'N/A'}</div>
+                                        <div class="text-[10px] text-slate-500 italic mt-0.5">${s.purpose_of_use || 'Credit Note Return'}</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                        <div class="text-[11px] font-bold text-slate-600">${s.timestamp || 'Recorded'}</div>
+                                    </td>
+                                </tr>
+                            `).join('') : `
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center text-slate-400">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-400 flex items-center justify-center">
+                                                <i data-lucide="file-check-2" class="w-6 h-6"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-slate-700 text-sm">No Credit Notes found for ${currentMonth}.</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">No vehicle deductions or credit note records logged for this period.</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('view-port').innerHTML = html;
+    app.refreshIcons();
+};

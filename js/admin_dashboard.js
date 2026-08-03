@@ -605,9 +605,11 @@ window.app.renderAdminDashboard = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="h-64 relative w-full">
+                                <div class="h-64 relative w-full mb-3">
                                     <canvas id="chartYoyTrend"></canvas>
                                 </div>
+                                <!-- Creative Month-by-Month Performance Ribbon -->
+                                <div id="yoy-monthly-ribbon" class="w-full flex items-center gap-1.5 overflow-x-auto pt-2 pb-1 custom-scrollbar"></div>
                             </div>
                             
                             <!-- Right: Bangladesh Sales Heatmap (Col span 1) -->
@@ -1028,38 +1030,39 @@ window.app.renderAdminDashboard = () => {
                     ${!isAM ? `
                     <!-- Comprehensive Data Table & Mobile Cards -->
                     <div class="mb-8">
-                        <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden">
-                            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/90">
                                 <div>
-                                    <h3 class="font-black text-slate-800 flex items-center gap-2">
-                                        <div class="p-1.5 bg-white rounded-lg shadow-sm border border-slate-100">
+                                    <h3 class="font-black text-slate-900 flex items-center gap-2 text-base">
+                                        <div class="p-1.5 bg-white rounded-lg shadow-sm border border-slate-200">
                                             <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="h-5 object-contain">
                                         </div>
                                         Territory Pulse
+                                        <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 uppercase tracking-wider">Live Matrix</span>
                                     </h3>
-                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">${app.currentMonth} Analytics</p>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">${app.currentMonth} Analytics & Territory Performance</p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
                                     <div class="flex items-center gap-2">
                                         <button onclick="app.adminShowYTD = !app.adminShowYTD; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.adminShowYTD ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' : 'bg-white text-slate-500 border border-slate-300 hover:bg-slate-50'}">
                                             <i data-lucide="${app.adminShowYTD ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> YTD
                                         </button>
                                         <button onclick="app.adminShowLastMonth = !app.adminShowLastMonth; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-400 border border-slate-200'}">
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.adminShowLastMonth ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' : 'bg-white text-slate-500 border border-slate-300 hover:bg-slate-50'}">
                                             <i data-lucide="${app.adminShowLastMonth ? 'eye' : 'eye-off'}" class="w-3 h-3"></i> L.Month
                                         </button>
                                         <button onclick="app.pulseDetailedView = !app.pulseDetailedView; app.renderAdminDashboard()" 
-                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-indigo-200 border border-indigo-500/20' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}">
+                                                class="shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 ${app.pulseDetailedView ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-indigo-200 border border-indigo-500/20' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'}">
                                             <i data-lucide="${app.pulseDetailedView ? 'layout-grid' : 'list'}" class="w-3.5 h-3.5"></i>
                                             Detailed View
                                         </button>
-                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
+                                        <select onchange="app.adminBrandTab=this.value; app.renderAdminDashboard()" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-700 focus:outline-none focus:border-indigo-500 shadow-sm">
                                             <option value="Foton" ${brandFilter === 'Foton' ? 'selected' : ''}>Foton</option>
                                             <option value="Mahindra" ${brandFilter === 'Mahindra' ? 'selected' : ''}>Mahindra</option>
                                         </select>
                                         <button onclick="app.downloadPulseCSV()" 
-                                                class="shrink-0 p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-sm hover:shadow hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5"
+                                                class="shrink-0 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm hover:shadow active:scale-95 transition-all duration-200 flex items-center justify-center gap-1.5"
                                                 title="Download Territory Pulse CSV">
                                             <i data-lucide="download" class="w-3.5 h-3.5"></i>
                                             <span class="text-[10px] font-black uppercase tracking-wider hidden sm:inline">Export</span>
@@ -1070,84 +1073,73 @@ window.app.renderAdminDashboard = () => {
                             <!-- DESKTOP TABLE VIEW -->
                             ${app.pulseDetailedView ? `
                             <div class="hidden md:block overflow-x-auto custom-scrollbar border-t border-slate-200">
-                                <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-slate-200">
                                     <thead>
                                         <!-- Row 1: Quarters -->
-                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200">
-                                            <th class="px-6 py-2 font-black sticky left-0 z-10 bg-slate-50 border-r border-slate-200/80 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
+                                        <tr class="bg-slate-100 text-slate-700 uppercase tracking-wider text-[9px] border-b-2 border-slate-300">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-slate-100 border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)]" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
                                                     <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
                                                         Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-200 text-slate-500'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" rowspan="3">Total FY Budget</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July - September)</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October - December)</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January - March)</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-amber-100/80 text-amber-900 font-black border-r-2 border-slate-300 shadow-sm" rowspan="3">Total FY Budget</th>
+                                            <th class="px-3 py-2.5 text-center bg-violet-100/70 text-violet-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q1 (July - September)</th>
+                                            <th class="px-3 py-2.5 text-center bg-amber-100/70 text-amber-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q2 (October - December)</th>
+                                            <th class="px-3 py-2.5 text-center bg-emerald-100/70 text-emerald-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q3 (January - March)</th>
+                                            <th class="px-3 py-2.5 text-center bg-cyan-100/70 text-cyan-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-slate-800 text-white font-black border-r-2 border-slate-900 shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
-                                        <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
+                                        <tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[9px] border-b-2 border-slate-300 text-center font-bold">
                                             <!-- Q1 Months -->
-                                            <th class="px-2 py-1.5 border-l-2 border-violet-200/60" colspan="5">July</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">August</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">September</th>
-                                            <th class="px-2 py-1.5 bg-violet-500/10 text-violet-800 font-extrabold border-l-2 border-violet-300" colspan="5">Q1 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">July</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">August</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">September</th>
+                                            <th class="px-2 py-1.5 bg-violet-100 text-violet-900 font-black border-r-2 border-slate-300" colspan="5">Q1 Total</th>
                                             <!-- Q2 Months -->
-                                            <th class="px-2 py-1.5 border-l-2 border-amber-200/60" colspan="5">October</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">November</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">December</th>
-                                            <th class="px-2 py-1.5 bg-amber-500/10 text-amber-800 font-extrabold border-l-2 border-amber-300" colspan="5">Q2 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">October</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">November</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">December</th>
+                                            <th class="px-2 py-1.5 bg-amber-100 text-amber-900 font-black border-r-2 border-slate-300" colspan="5">Q2 Total</th>
                                             <!-- Q3 Months -->
-                                            <th class="px-2 py-1.5 border-l-2 border-emerald-200/60" colspan="5">January</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">February</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">March</th>
-                                            <th class="px-2 py-1.5 bg-emerald-500/10 text-emerald-800 font-extrabold border-l-2 border-emerald-300" colspan="5">Q3 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">January</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">February</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">March</th>
+                                            <th class="px-2 py-1.5 bg-emerald-100 text-emerald-900 font-black border-r-2 border-slate-300" colspan="5">Q3 Total</th>
                                             <!-- Q4 Months -->
-                                            <th class="px-2 py-1.5 border-l-2 border-cyan-200/60" colspan="5">April</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">May</th>
-                                            <th class="px-2 py-1.5 border-l border-slate-200" colspan="5">June</th>
-                                            <th class="px-2 py-1.5 bg-cyan-500/10 text-cyan-800 font-extrabold border-l-2 border-cyan-300" colspan="5">Q4 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">April</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">May</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">June</th>
+                                            <th class="px-2 py-1.5 bg-cyan-100 text-cyan-900 font-black border-r-2 border-slate-300" colspan="5">Q4 Total</th>
                                             <!-- FY Total -->
-                                            <th class="px-2 py-1.5 bg-slate-800/20 text-slate-900 font-black border-l-2 border-slate-400" colspan="5">FY Total</th>
+                                            <th class="px-2 py-1.5 bg-slate-800 text-white font-black border-r-2 border-slate-900" colspan="5">FY Total</th>
                                         </tr>
                                         <!-- Row 3: Metrics -->
-                                        <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/80 text-center font-bold">
+                                        <tr class="text-slate-500 uppercase tracking-tighter text-[8.5px] border-b-2 border-slate-300 text-center font-black">
                                             ${(() => {
                                                 let result = '';
                                                 for (let i = 0; i < 17; i++) {
                                                     const isQuarterTotal = i < 16 ? (i + 1) % 4 === 0 : false;
                                                     const isFYTotal = i === 16;
-                                                    const quarterName = i < 4 ? 'Q1' : i < 8 ? 'Q2' : i < 12 ? 'Q3' : 'Q4';
-                                                    let qBorder = 'border-l border-slate-100';
-                                                    if (i % 4 === 0 && i < 16) {
-                                                         if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-200';
-                                                         else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-200';
-                                                         else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-200';
-                                                         else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-200';
-                                                    } else if (isQuarterTotal) {
-                                                         if (quarterName === 'Q1') qBorder = 'border-l-2 border-violet-300 bg-violet-500/5';
-                                                         else if (quarterName === 'Q2') qBorder = 'border-l-2 border-amber-300 bg-amber-500/5';
-                                                         else if (quarterName === 'Q3') qBorder = 'border-l-2 border-emerald-300 bg-emerald-500/5';
-                                                         else if (quarterName === 'Q4') qBorder = 'border-l-2 border-cyan-300 bg-cyan-500/5';
-                                                    } else if (isFYTotal) {
-                                                         qBorder = 'border-l-2 border-slate-400 bg-slate-800/10';
+                                                    let qBorder = 'border-r border-slate-200';
+                                                    if (isQuarterTotal || isFYTotal) {
+                                                        qBorder = 'border-r-2 border-slate-300';
                                                     }
                                                     const metrics = ['Bgt', 'Sal', 'Ach%', 'SPLY', 'Gr%'];
                                                     result += metrics.map((m, mIdx) => `
-                                                         <th class="px-1.5 py-1 ${mIdx === 0 ? qBorder : ''} ${(isQuarterTotal || isFYTotal) ? 'bg-slate-100/30 font-extrabold' : ''} text-center">${m}</th>
+                                                         <th class="px-1.5 py-1 ${mIdx === 4 ? qBorder : 'border-r border-slate-200'} ${(isQuarterTotal || isFYTotal) ? 'bg-slate-200/60 font-black text-slate-800' : 'bg-slate-50'} text-center">${m}</th>
                                                     `).join('');
                                                 }
                                                 return result;
                                             })()}
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100">
+                                    <tbody class="divide-y divide-slate-200 bg-white">
                                         ${(() => {
                                             const fiscalMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
                                             const quarters = {
@@ -1199,28 +1191,28 @@ window.app.renderAdminDashboard = () => {
                                                     qMonths.forEach(m => {
                                                         const p = monthlyPerf[m];
                                                         cellsHTML += `
-                                                            <td class="px-2 py-1.5 text-slate-400 font-medium border-l border-slate-100">${p.budget}</td>
-                                                            <td class="px-2 py-1.5 font-bold text-slate-700">${p.sales}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-800">${p.ach}%</td>
-                                                            <td class="px-2 py-1.5 text-slate-400 font-medium">${p.sply}</td>
-                                                            <td class="px-2 py-1.5 font-black text-[10px]">${formatDetailedGrw(p.growth)}</td>
+                                                            <td class="px-2 py-1.5 text-slate-500 font-medium border-r border-slate-200 bg-slate-50/40">${p.budget}</td>
+                                                            <td class="px-2 py-1.5 font-bold text-slate-700 border-r border-slate-200 bg-white">${p.sales}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-800 border-r border-slate-200 bg-slate-50/40">${p.ach}%</td>
+                                                            <td class="px-2 py-1.5 text-slate-500 font-medium border-r border-slate-200 bg-white">${p.sply}</td>
+                                                            <td class="px-2 py-1.5 font-black text-[10px] border-r border-slate-200 bg-slate-50/40">${formatDetailedGrw(p.growth)}</td>
                                                         `;
                                                     });
                                                     const q = quarterPerf[qName];
                                                     let qBg = '';
                                                     let qText = '';
                                                     let qPill = '';
-                                                    if (qName === 'Q1') { qBg = 'bg-violet-500/[0.04]'; qText = 'text-violet-800'; qPill = 'bg-violet-50 text-violet-600'; }
-                                                    else if (qName === 'Q2') { qBg = 'bg-amber-500/[0.04]'; qText = 'text-amber-800'; qPill = 'bg-amber-50 text-amber-600'; }
-                                                    else if (qName === 'Q3') { qBg = 'bg-emerald-500/[0.04]'; qText = 'text-emerald-800'; qPill = 'bg-emerald-50 text-emerald-600'; }
-                                                    else if (qName === 'Q4') { qBg = 'bg-cyan-500/[0.04]'; qText = 'text-cyan-800'; qPill = 'bg-cyan-50 text-cyan-600'; }
+                                                    if (qName === 'Q1') { qBg = 'bg-violet-500/10'; qText = 'text-violet-900'; qPill = 'bg-violet-100 text-violet-700'; }
+                                                    else if (qName === 'Q2') { qBg = 'bg-amber-500/10'; qText = 'text-amber-900'; qPill = 'bg-amber-100 text-amber-700'; }
+                                                    else if (qName === 'Q3') { qBg = 'bg-emerald-500/10'; qText = 'text-emerald-900'; qPill = 'bg-emerald-100 text-emerald-700'; }
+                                                    else if (qName === 'Q4') { qBg = 'bg-cyan-500/10'; qText = 'text-cyan-900'; qPill = 'bg-cyan-100 text-cyan-700'; }
 
                                                     cellsHTML += `
-                                                        <td class="px-2 py-1.5 font-bold ${qBg} ${qText} border-l-2 border-slate-200">${q.budget}</td>
-                                                        <td class="px-2 py-1.5 font-black ${qBg} ${qText}">${q.sales}</td>
-                                                        <td class="px-2 py-1.5 font-black ${qBg}"><span class="px-1.5 py-0.5 rounded-lg ${qPill} font-black">${q.ach}%</span></td>
-                                                        <td class="px-2 py-1.5 font-bold ${qBg} ${qText}">${q.sply}</td>
-                                                        <td class="px-2 py-1.5 font-black ${qBg} text-[10px] border-r border-slate-200">${formatDetailedGrw(q.growth)}</td>
+                                                        <td class="px-2 py-1.5 font-bold ${qBg} ${qText} border-r border-slate-200">${q.budget}</td>
+                                                        <td class="px-2 py-1.5 font-black ${qBg} ${qText} border-r border-slate-200">${q.sales}</td>
+                                                        <td class="px-2 py-1.5 font-black ${qBg} border-r border-slate-200"><span class="px-1.5 py-0.5 rounded-lg ${qPill} font-black">${q.ach}%</span></td>
+                                                        <td class="px-2 py-1.5 font-bold ${qBg} ${qText} border-r border-slate-200">${q.sply}</td>
+                                                        <td class="px-2 py-1.5 font-black ${qBg} text-[10px] border-r-2 border-slate-300">${formatDetailedGrw(q.growth)}</td>
                                                     `;
                                                 });
 
@@ -1232,23 +1224,23 @@ window.app.renderAdminDashboard = () => {
                                                 const fyGrowth = calcGrw(fySales, fySply);
 
                                                 cellsHTML += `
-                                                    <td class="px-2 py-1.5 font-extrabold bg-slate-800/10 text-slate-900 border-l-2 border-slate-400 shadow-inner">${fyBudget}</td>
-                                                    <td class="px-2 py-1.5 font-black bg-slate-800/10 text-slate-900 shadow-inner">${fySales}</td>
-                                                    <td class="px-2 py-1.5 bg-slate-800/10 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-800 text-white font-black">${fyAch}%</span></td>
-                                                    <td class="px-2 py-1.5 font-extrabold bg-slate-800/10 text-slate-900 shadow-inner">${fySply}</td>
-                                                    <td class="px-2 py-1.5 font-black bg-slate-800/10 text-[10px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(fyGrowth)}</td>
+                                                    <td class="px-2 py-1.5 font-extrabold bg-slate-100 text-slate-900 border-r border-slate-200">${fyBudget}</td>
+                                                    <td class="px-2 py-1.5 font-black bg-slate-100 text-slate-900 border-r border-slate-200">${fySales}</td>
+                                                    <td class="px-2 py-1.5 bg-slate-100 border-r border-slate-200"><span class="px-1.5 py-0.5 rounded-lg bg-slate-800 text-white font-black">${fyAch}%</span></td>
+                                                    <td class="px-2 py-1.5 font-extrabold bg-slate-100 text-slate-900 border-r border-slate-200">${fySply}</td>
+                                                    <td class="px-2 py-1.5 font-black bg-slate-100 text-[10px] border-r-2 border-slate-400">${formatDetailedGrw(fyGrowth)}</td>
                                                 `;
 
                                                 return `
-                                                    <tr class="pulse-tr-premium text-center border-b border-slate-100 group">
-                                                        <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-200/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)] sticky-left">
+                                                    <tr class="pulse-tr-premium text-center border-b border-slate-200 hover:bg-indigo-50/40 transition-colors group">
+                                                        <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)] sticky-left">
                                                             <div class="flex items-center gap-2">
                                                                 <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
                                                                 <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full shadow-sm"></div>
-                                                                <span class="font-black text-slate-700">${mt.name}</span>
+                                                                <span class="font-black text-slate-800">${mt.name}</span>
                                                             </div>
                                                         </td>
-                                                        <td class="px-3 py-1.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[10px]">${totalFYBudget}</span></td>
+                                                        <td class="px-3 py-1.5 font-bold text-amber-800 bg-amber-500/[0.04] border-r-2 border-slate-300 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-900 font-black bg-amber-100 border border-amber-200 text-[10px]">${totalFYBudget}</span></td>
                                                         ${cellsHTML}
                                                     </tr>
                                                 `;
@@ -1297,31 +1289,29 @@ window.app.renderAdminDashboard = () => {
                                                     const gAch = ach(g.sales, g.budget);
                                                     const gGrw = calcGrw(g.sales, g.sply);
                                                     grandCellsHTML += `
-                                                        <td class="px-2 py-2 text-slate-700 font-extrabold border-l border-slate-200/50 bg-slate-50/50">${g.budget}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-900 bg-slate-50/50">${g.sales}</td>
-                                                        <td class="px-2 py-2 bg-slate-50/50 font-black text-slate-800">${gAch}%</td>
-                                                        <td class="px-2 py-2 text-slate-700 font-extrabold bg-slate-50/50">${g.sply}</td>
-                                                        <td class="px-2 py-2 font-black text-[10px] bg-slate-50/50">${formatDetailedGrw(gGrw)}</td>
+                                                        <td class="px-2 py-2 text-slate-800 font-extrabold border-r border-slate-700 bg-slate-800/90">${g.budget}</td>
+                                                        <td class="px-2 py-2 font-black text-white border-r border-slate-700 bg-slate-900">${g.sales}</td>
+                                                        <td class="px-2 py-2 border-r border-slate-700 bg-slate-800/90 font-black text-amber-300">${gAch}%</td>
+                                                        <td class="px-2 py-2 text-slate-300 font-bold border-r border-slate-700 bg-slate-900">${g.sply}</td>
+                                                        <td class="px-2 py-2 font-black text-[10px] border-r border-slate-700 bg-slate-800/90">${formatDetailedGrw(gGrw)}</td>
                                                     `;
                                                 });
                                                 const gq = grandQuarter[qName];
                                                 const gqAch = ach(gq.sales, gq.budget);
                                                 const gqGrw = calcGrw(gq.sales, gq.sply);
                                                 
-                                                let qBg = '';
-                                                let qText = '';
                                                 let pillBg = '';
-                                                if (qName === 'Q1') { qBg = 'bg-violet-500/10'; qText = 'text-violet-900'; pillBg = 'bg-violet-100 text-violet-700'; }
-                                                else if (qName === 'Q2') { qBg = 'bg-amber-500/10'; qText = 'text-amber-900'; pillBg = 'bg-amber-100 text-amber-700'; }
-                                                else if (qName === 'Q3') { qBg = 'bg-emerald-500/10'; qText = 'text-emerald-900'; pillBg = 'bg-emerald-100 text-emerald-700'; }
-                                                else if (qName === 'Q4') { qBg = 'bg-cyan-500/10'; qText = 'text-cyan-900'; pillBg = 'bg-cyan-100 text-cyan-700'; }
+                                                if (qName === 'Q1') { pillBg = 'bg-violet-600 text-white'; }
+                                                else if (qName === 'Q2') { pillBg = 'bg-amber-600 text-white'; }
+                                                else if (qName === 'Q3') { pillBg = 'bg-emerald-600 text-white'; }
+                                                else if (qName === 'Q4') { pillBg = 'bg-cyan-600 text-white'; }
 
                                                 grandCellsHTML += `
-                                                    <td class="px-2 py-2 font-extrabold ${qBg} ${qText} border-l-2 border-slate-300 shadow-inner">${gq.budget}</td>
-                                                    <td class="px-2 py-2 font-black ${qBg} ${qText} shadow-inner">${gq.sales}</td>
-                                                    <td class="px-2 py-2 ${qBg} shadow-inner"><span class="px-1.5 py-0.5 rounded-lg ${pillBg} font-black">${gqAch}%</span></td>
-                                                    <td class="px-2 py-2 font-extrabold ${qBg} ${qText} shadow-inner">${gq.sply}</td>
-                                                    <td class="px-2 py-2 font-black ${qBg} text-[10px] border-r border-slate-300 shadow-inner">${formatDetailedGrw(gqGrw)}</td>
+                                                    <td class="px-2 py-2 font-extrabold text-white border-r border-slate-700 bg-slate-800/95">${gq.budget}</td>
+                                                    <td class="px-2 py-2 font-black text-white border-r border-slate-700 bg-slate-900">${gq.sales}</td>
+                                                    <td class="px-2 py-2 border-r border-slate-700 bg-slate-800/95"><span class="px-1.5 py-0.5 rounded-lg ${pillBg} font-black">${gqAch}%</span></td>
+                                                    <td class="px-2 py-2 font-extrabold text-white border-r border-slate-700 bg-slate-900">${gq.sply}</td>
+                                                    <td class="px-2 py-2 font-black text-[10px] border-r-2 border-slate-600 bg-slate-800/95">${formatDetailedGrw(gqGrw)}</td>
                                                 `;
                                             });
 
@@ -1338,23 +1328,23 @@ window.app.renderAdminDashboard = () => {
                                             const grandFYGrowth = calcGrw(grandFYTotalSales, grandFYTotalSply);
 
                                             grandCellsHTML += `
-                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-slate-950 border-l-2 border-slate-400 shadow-inner">${grandFYTotalBudget}</td>
-                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-slate-950 shadow-inner">${grandFYTotalSales}</td>
-                                                <td class="px-2 py-2 bg-slate-800/20 shadow-inner"><span class="px-1.5 py-0.5 rounded-lg bg-slate-900 text-white font-black">${grandFYAch}%</span></td>
-                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-slate-950 shadow-inner">${grandFYTotalSply}</td>
-                                                <td class="px-2 py-2 font-black bg-slate-800/20 text-[10px] border-r-2 border-slate-400 shadow-inner">${formatDetailedGrw(grandFYGrowth)}</td>
+                                                <td class="px-2 py-2 font-black bg-slate-950 text-white border-r border-slate-700">${grandFYTotalBudget}</td>
+                                                <td class="px-2 py-2 font-black bg-slate-950 text-emerald-400 border-r border-slate-700">${grandFYTotalSales}</td>
+                                                <td class="px-2 py-2 bg-slate-950 border-r border-slate-700"><span class="px-2 py-0.5 rounded-lg bg-emerald-500 text-slate-950 font-black">${grandFYAch}%</span></td>
+                                                <td class="px-2 py-2 font-black bg-slate-950 text-slate-300 border-r border-slate-700">${grandFYTotalSply}</td>
+                                                <td class="px-2 py-2 font-black bg-slate-950 text-[10px] border-r-2 border-slate-600">${formatDetailedGrw(grandFYGrowth)}</td>
                                             `;
 
                                             const grandTotalRowHTML = `
-                                                <tr class="bg-indigo-50/20 font-black text-slate-800 text-center border-t-2 border-indigo-200">
-                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-indigo-50 border-r-2 border-indigo-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                                <tr class="bg-slate-900 text-white font-black text-center border-t-2 border-slate-900 shadow-lg">
+                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-slate-900 border-r-2 border-slate-700 shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
-                                                            <div class="w-1.5 h-4.5 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div>
-                                                            <span class="font-extrabold text-slate-800 text-[10px]">GRAND TOTAL</span>
+                                                            <div class="w-1.5 h-4.5 bg-indigo-500 rounded-full shadow shadow-indigo-400/50"></div>
+                                                            <span class="font-black text-white text-[10px] uppercase tracking-wider">GRAND TOTAL</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-2 font-black text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-xs shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-black text-xs shadow-md shadow-amber-500/20">${grandFYBudget}</span></td>
+                                                    <td class="px-3 py-2 font-black text-amber-300 bg-slate-900 border-r-2 border-slate-700 text-center text-xs"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">${grandFYBudget}</span></td>
                                                     ${grandCellsHTML}
                                                 </tr>
                                             `;
@@ -1366,50 +1356,50 @@ window.app.renderAdminDashboard = () => {
                             </div>
                             ` : `
                             <div class="hidden md:block overflow-x-auto">
-                                <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
+                                <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-slate-200">
                                     <thead>
-                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200">
-                                            <th class="px-6 py-2 font-black sticky left-0 z-10 bg-slate-50 border-r border-slate-200/80 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">Territory</th>
-                                            <th class="px-3 py-2 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" colspan="1">Total FY Budget</th>
-                                            ${app.adminShowYTD ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-indigo-500/10 to-indigo-500/5 text-indigo-700 border-l border-r-2 border-t border-indigo-500/20 font-extrabold shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2 text-center bg-gradient-to-b from-emerald-500/10 to-emerald-500/5 text-emerald-700 border-l border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            <th class="px-3 py-2 text-center bg-gradient-to-b from-cyan-500/10 to-cyan-500/5 text-cyan-700 border-l border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                        <tr class="bg-slate-100 text-slate-700 uppercase tracking-widest text-[9px] border-b-2 border-slate-300">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-slate-100 border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)]">Territory</th>
+                                            <th class="px-3 py-2.5 text-center bg-amber-100/80 text-amber-900 font-black border-r-2 border-slate-300 shadow-sm" colspan="1">Total FY Budget</th>
+                                            ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-indigo-100/80 text-indigo-950 border-r-2 border-slate-300 font-black shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-emerald-100/80 text-emerald-950 border-r-2 border-slate-300 font-black shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            <th class="px-3 py-2.5 text-center bg-cyan-100/80 text-cyan-950 border-r-2 border-slate-300 font-black shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                         </tr>
-                                        <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-slate-200/80 text-center">
-                                            <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r border-slate-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                        <tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[9px] border-b-2 border-slate-300 text-center font-bold">
+                                            <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)]">
                                                 <div class="flex items-center justify-between gap-2">
                                                     <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
-                                                        <span class="w-4 text-right text-slate-300">#</span> Territory ${app.getSortIcon('name')}
+                                                        <span class="w-4 text-right text-slate-400">#</span> Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-200 text-slate-500'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-1.5 bg-amber-500/[0.02] border-l-2 border-r-2 border-amber-500/20 cursor-pointer hover:bg-amber-100/50 transition-colors text-center font-bold text-amber-800" onclick="app.setPulseSort('sortVal_fy_budget')">
+                                            <th class="px-3 py-1.5 bg-amber-50 border-r-2 border-slate-300 cursor-pointer hover:bg-amber-100 transition-colors text-center font-black text-amber-900" onclick="app.setPulseSort('sortVal_fy_budget')">
                                                 <div class="flex items-center justify-center gap-1 font-black">
                                                     Total ${app.getSortIcon('sortVal_fy_budget')}
                                                 </div>
                                             </th>
                                             ${app.adminShowYTD ? `
-                                                <th class="px-2 py-1.5 bg-indigo-50/50 cursor-pointer hover:bg-indigo-100/50 transition-colors border-l border-slate-100/80" onclick="app.setPulseSort('sortVal_ytd_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_ytd_budget')}</div></th>
-                                                <th class="px-2 py-1.5 bg-indigo-50/50 cursor-pointer hover:bg-indigo-100/50 transition-colors" onclick="app.setPulseSort('sortVal_ytd_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_ytd_actual')}</div></th>
-                                                <th class="px-2 py-1.5 bg-indigo-50/50 cursor-pointer hover:bg-indigo-100/50 transition-colors" onclick="app.setPulseSort('sortVal_ytd_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_ytd_ach')}</div></th>
-                                                <th class="px-2 py-1.5 bg-indigo-50/50 cursor-pointer hover:bg-indigo-100/50 transition-colors border-r-2 border-indigo-500/20" onclick="app.setPulseSort('sortVal_ytd_short')"><div class="flex items-center justify-center gap-1">Short ${app.getSortIcon('sortVal_ytd_short')}</div></th>
+                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-slate-200 font-bold" onclick="app.setPulseSort('sortVal_ytd_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_ytd_budget')}</div></th>
+                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-slate-200 font-black text-slate-700" onclick="app.setPulseSort('sortVal_ytd_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_ytd_actual')}</div></th>
+                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-slate-200 font-black" onclick="app.setPulseSort('sortVal_ytd_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_ytd_ach')}</div></th>
+                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r-2 border-slate-300 font-bold text-rose-600" onclick="app.setPulseSort('sortVal_ytd_short')"><div class="flex items-center justify-center gap-1">Short ${app.getSortIcon('sortVal_ytd_short')}</div></th>
                                             ` : ''}
                                             ${app.adminShowLastMonth ? `
-                                                <th class="px-2 py-1.5 bg-emerald-50/20 cursor-pointer hover:bg-emerald-100/30 transition-colors border-l border-slate-100/80" onclick="app.setPulseSort('sortVal_lm_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_lm_budget')}</div></th>
-                                                <th class="px-2 py-1.5 bg-emerald-50/20 font-bold text-slate-600 cursor-pointer hover:bg-emerald-100/30 transition-colors" onclick="app.setPulseSort('sortVal_lm_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_lm_actual')}</div></th>
-                                                <th class="px-2 py-1.5 bg-emerald-50/20 cursor-pointer hover:bg-emerald-100/30 transition-colors border-r-2 border-emerald-500/20" onclick="app.setPulseSort('sortVal_lm_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_lm_ach')}</div></th>
+                                                <th class="px-2 py-1.5 bg-emerald-50/80 cursor-pointer hover:bg-emerald-100 transition-colors border-r border-slate-200 font-bold" onclick="app.setPulseSort('sortVal_lm_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_lm_budget')}</div></th>
+                                                <th class="px-2 py-1.5 bg-emerald-50/80 font-black text-slate-700 cursor-pointer hover:bg-emerald-100 transition-colors border-r border-slate-200" onclick="app.setPulseSort('sortVal_lm_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_lm_actual')}</div></th>
+                                                <th class="px-2 py-1.5 bg-emerald-50/80 cursor-pointer hover:bg-emerald-100 transition-colors border-r-2 border-slate-300 font-black" onclick="app.setPulseSort('sortVal_lm_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_lm_ach')}</div></th>
                                             ` : ''}
-                                            <th class="px-2 py-1.5 bg-cyan-50/10 cursor-pointer hover:bg-cyan-100/20 transition-colors border-l border-slate-100/80" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
-                                            <th class="px-2 py-1.5 bg-cyan-50/10 font-bold text-slate-600 cursor-pointer hover:bg-cyan-100/20 transition-colors" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
-                                            ${dynamicActiveModels.map(m => `<th class="px-2 py-1.5 bg-cyan-50/10 text-slate-500 font-bold">${m}</th>`).join('')}
-                                            <th class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-700 cursor-pointer hover:bg-indigo-100 transition-colors border-l border-indigo-100" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
-                                            <th class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-700 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-indigo-100" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
+                                            <th class="px-2 py-1.5 bg-cyan-50/80 cursor-pointer hover:bg-cyan-100 transition-colors border-r border-slate-200 font-bold" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
+                                            <th class="px-2 py-1.5 bg-cyan-50/80 font-black text-slate-700 cursor-pointer hover:bg-cyan-100 transition-colors border-r border-slate-200" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
+                                            ${dynamicActiveModels.map(m => `<th class="px-2 py-1.5 bg-cyan-50/80 text-slate-700 font-bold border-r border-slate-200">${m}</th>`).join('')}
+                                            <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-black cursor-pointer hover:bg-indigo-200 transition-colors border-r border-indigo-200" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
+                                            <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-black cursor-pointer hover:bg-indigo-200 transition-colors border-r-2 border-slate-300" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100">
+                                    <tbody class="divide-y divide-slate-200 bg-white">
                                         ${(() => {
                                             let totalFYBudget = 0;
                                             let totalYtdBudget = 0;
@@ -1437,33 +1427,33 @@ window.app.renderAdminDashboard = () => {
                                                 totalCurrSalesUnits += mt.currSalesUnits;
 
                                                 return `
-                                                    <tr class="hover:bg-slate-50/50 transition-colors group text-center border-b border-slate-100">
-                                                        <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-200/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)] font-medium">
+                                                    <tr class="hover:bg-indigo-50/40 transition-colors group text-center border-b border-slate-200">
+                                                        <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)] font-bold">
                                                             <div class="flex items-center justify-between gap-2">
                                                                 <div class="flex items-center gap-1.5">
                                                                     <span class="text-[9px] font-bold text-slate-400 w-4 text-right">${idx + 1}.</span>
-                                                                    <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full"></div>
-                                                                    <span class="font-black text-slate-700">${mt.name}</span>
+                                                                    <div class="w-1.5 h-4.5 bg-${mt.h}-500 rounded-full shadow-xs"></div>
+                                                                    <span class="font-black text-slate-800">${mt.name}</span>
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="px-3 py-1.5 font-bold text-amber-800 bg-amber-500/[0.01] border-l-2 border-r-2 border-amber-500/10 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-800 font-extrabold pulse-badge-amber text-[10px]">${mt.totalFYBudget}</span></td>
+                                                        <td class="px-3 py-1.5 font-bold text-amber-900 bg-amber-500/[0.04] border-r-2 border-slate-300 text-center"><span class="px-2 py-0.5 rounded-lg text-amber-900 font-black bg-amber-100 border border-amber-200 text-[10px]">${mt.totalFYBudget}</span></td>
                                                         ${app.adminShowYTD ? `
-                                                            <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
-                                                            <td class="px-2 py-1.5 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-600 font-black">${mt.ytdAchVal}%</span>`}</td>
-                                                            <td class="px-2 py-1.5 font-bold text-rose-500 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
+                                                            <td class="px-2 py-1.5 text-slate-500 font-medium text-center border-r border-slate-200 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.budget}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-800 text-center border-r border-slate-200">${app.currentMonth === 'July' ? '-' : mt.perf.ytd.sales}</td>
+                                                            <td class="px-2 py-1.5 text-center border-r border-slate-200 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${mt.h}-50 text-${mt.h}-700 font-black">${mt.ytdAchVal}%</span>`}</td>
+                                                            <td class="px-2 py-1.5 font-bold text-rose-600 text-center border-r-2 border-slate-300 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : mt.ytdShortVal}</td>
                                                         ` : ''}
                                                         ${app.adminShowLastMonth ? `
-                                                            <td class="px-2 py-1.5 text-slate-400 font-medium text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.sales}</td>
-                                                            <td class="px-2 py-1.5 font-black text-slate-600 text-center border-r-2 border-emerald-500/20">${app.currentMonth === 'July' ? '-' : `${mt.lmAchVal}%`}</td>
+                                                            <td class="px-2 py-1.5 text-slate-500 font-medium text-center border-r border-slate-200 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.budget}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-800 text-center border-r border-slate-200">${app.currentMonth === 'July' ? '-' : mt.perf.lastMonth.sales}</td>
+                                                            <td class="px-2 py-1.5 font-black text-slate-700 text-center border-r-2 border-slate-300 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : `${mt.lmAchVal}%`}</td>
                                                         ` : ''}
-                                                        <td class="px-2 py-1.5 bg-slate-50/30 text-slate-400 font-medium text-center border-l border-slate-100/80">${mt.currBudget}</td>
-                                                        <td class="px-2 py-1.5 bg-slate-50/30 font-black text-slate-700 text-center">${mt.currProj}</td>
-                                                        ${dynamicActiveModels.map(m => `<td class="px-2 py-1.5 bg-slate-50/30 font-bold text-center ${mt.modelMap[m] ? 'text-indigo-600' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
-                                                        <td class="px-2 py-1.5 bg-indigo-50/30 font-black text-indigo-700 text-center border-l border-indigo-100">${mt.currSalesUnits}</td>
-                                                        <td class="px-2 py-1.5 bg-indigo-50/30 text-center border-r border-indigo-100">${app.getAchBadge(mt.currAchVal)}</td>
+                                                        <td class="px-2 py-1.5 bg-slate-50/50 text-slate-500 font-medium text-center border-r border-slate-200">${mt.currBudget}</td>
+                                                        <td class="px-2 py-1.5 bg-slate-50/50 font-black text-slate-800 text-center border-r border-slate-200">${mt.currProj}</td>
+                                                        ${dynamicActiveModels.map(m => `<td class="px-2 py-1.5 bg-slate-50/50 font-bold text-center border-r border-slate-200 ${mt.modelMap[m] ? 'text-indigo-700 font-black' : 'text-slate-300'}">${mt.modelMap[m] || '-'}</td>`).join('')}
+                                                        <td class="px-2 py-1.5 bg-indigo-50/60 font-black text-indigo-900 text-center border-r border-indigo-200">${mt.currSalesUnits}</td>
+                                                        <td class="px-2 py-1.5 bg-indigo-50/60 text-center border-r-2 border-slate-300">${app.getAchBadge(mt.currAchVal)}</td>
                                                     </tr>
                                                 `;
                                             }).join('');
@@ -1472,31 +1462,31 @@ window.app.renderAdminDashboard = () => {
                                             const totalH = totalYtdAchVal >= 90 ? 'emerald' : (totalYtdAchVal >= 70 ? 'blue' : 'rose');
 
                                             const totalRowHTML = `
-                                                <tr class="bg-indigo-50/20 font-black text-slate-800 text-center border-t-2 border-indigo-200">
-                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-indigo-50 border-r border-slate-200/85 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                                <tr class="bg-slate-900 text-white font-black text-center border-t-2 border-slate-900 shadow-lg">
+                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-slate-900 border-r-2 border-slate-700 shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
-                                                            <div class="w-1.5 h-4.5 bg-indigo-600 rounded-full shadow shadow-indigo-500/50"></div>
-                                                            <span class="font-extrabold text-slate-800 text-[10px]">GRAND TOTAL</span>
+                                                            <div class="w-1.5 h-4.5 bg-indigo-500 rounded-full shadow shadow-indigo-400/50"></div>
+                                                            <span class="font-black text-white text-[10px] uppercase tracking-wider">GRAND TOTAL</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-2 font-black text-amber-700 bg-amber-500/10 border-l-2 border-r-2 border-amber-500/20 text-center text-xs shadow-inner"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-white font-black text-xs shadow-md shadow-amber-500/20">${totalFYBudget}</span></td>
+                                                    <td class="px-3 py-2 font-black text-amber-300 bg-slate-900 border-r-2 border-slate-700 text-center text-xs"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">${totalFYBudget}</span></td>
                                                     ${app.adminShowYTD ? `
-                                                        <td class="px-2 py-2 text-slate-700 font-extrabold bg-indigo-50/10 text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-900 bg-indigo-50/10 text-center">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
-                                                        <td class="px-2 py-2 bg-indigo-50/10 text-center">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-50 text-${totalH}-600 font-black">${totalYtdAchVal}%</span>`}</td>
-                                                        <td class="px-2 py-2 font-bold text-rose-600 bg-indigo-50/10 text-center border-r-2 border-indigo-500/20">${app.currentMonth === 'July' ? '-' : totalYtdShort}</td>
+                                                        <td class="px-2 py-2 text-slate-200 font-extrabold bg-slate-900 text-center border-r border-slate-700">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
+                                                        <td class="px-2 py-2 font-black text-white bg-slate-950 text-center border-r border-slate-700">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
+                                                        <td class="px-2 py-2 bg-slate-900 text-center border-r border-slate-700">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-500 text-slate-950 font-black">${totalYtdAchVal}%</span>`}</td>
+                                                        <td class="px-2 py-2 font-bold text-rose-400 bg-slate-900 text-center border-r-2 border-slate-700">${app.currentMonth === 'July' ? '-' : totalYtdShort}</td>
                                                     ` : ''}
                                                     ${app.adminShowLastMonth ? `
-                                                        <td class="px-2 py-2 text-slate-700 font-extrabold text-center border-l border-slate-100/80">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-900 text-center">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
-                                                        <td class="px-2 py-2 font-black text-slate-800 text-center border-r-2 border-emerald-500/20">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
+                                                        <td class="px-2 py-2 text-slate-200 font-extrabold text-center border-r border-slate-700 bg-slate-900">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
+                                                        <td class="px-2 py-2 font-black text-white text-center border-r border-slate-700 bg-slate-950">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
+                                                        <td class="px-2 py-2 font-black text-amber-300 text-center border-r-2 border-slate-700 bg-slate-900">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
                                                     ` : ''}
-                                                    <td class="px-2 py-2 bg-slate-100/50 text-slate-700 font-extrabold text-center border-l border-slate-100/80">${totalCurrBudget}</td>
-                                                    <td class="px-2 py-2 bg-slate-100/50 font-black text-slate-900 text-center">${totalCurrProj}</td>
-                                                    ${dynamicActiveModels.map(m => `<td class="px-2 py-2 bg-slate-100/50 font-bold text-indigo-700 text-center">${totalModelMap[m] || 0}</td>`).join('')}
-                                                    <td class="px-2 py-2 bg-indigo-100/50 font-black text-indigo-700 text-sm text-center border-l border-indigo-100">${totalCurrSalesUnits}</td>
-                                                    <td class="px-2 py-2 bg-indigo-100/50 text-center border-r border-indigo-100">${app.getAchBadge(ach(totalCurrSalesUnits, totalCurrBudget))}</td>
+                                                    <td class="px-2 py-2 bg-slate-900 text-slate-200 font-extrabold text-center border-r border-slate-700">${totalCurrBudget}</td>
+                                                    <td class="px-2 py-2 bg-slate-950 font-black text-white text-center border-r border-slate-700">${totalCurrProj}</td>
+                                                    ${dynamicActiveModels.map(m => `<td class="px-2 py-2 bg-slate-900 font-bold text-indigo-300 text-center border-r border-slate-700">${totalModelMap[m] || 0}</td>`).join('')}
+                                                    <td class="px-2 py-2 bg-indigo-950 font-black text-emerald-400 text-sm text-center border-r border-slate-700">${totalCurrSalesUnits}</td>
+                                                    <td class="px-2 py-2 bg-indigo-950 text-center border-r-2 border-slate-700">${app.getAchBadge(ach(totalCurrSalesUnits, totalCurrBudget))}</td>
                                                 </tr>
                                             `;
 
@@ -1690,91 +1680,93 @@ window.app.renderAdminDashboard = () => {
 
                     ${!isAM ? `
                     <!-- Area (AM) Performance Analytics & Mobile Cards -->
-                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
-                        <div class="p-5 border-b border-indigo-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-indigo-50/30">
+                    <div class="bg-white rounded-2xl border border-indigo-200/90 shadow-xl overflow-hidden mb-8">
+                        <div class="p-5 border-b border-indigo-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-indigo-50/90 via-slate-50 to-purple-50/90">
                             <div>
-                                <h3 class="font-black text-indigo-900 flex items-center gap-2">
-                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-100">
+                                <h3 class="font-black text-indigo-950 flex items-center gap-2 text-base">
+                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-200">
                                         <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
                                     </div>
                                     AM Sync
+                                    <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 uppercase tracking-wider">Area Matrix</span>
                                 </h3>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Insights</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Manager Insights & Performance</p>
                             </div>
                         </div>
                         
                         <!-- DESKTOP TABLE VIEW -->
-                        <div class="hidden md:block overflow-x-auto">
-                            <table class="w-full text-left text-[11px] whitespace-nowrap">
+                        <div class="hidden md:block overflow-x-auto border-t border-indigo-200">
+                            <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-indigo-200">
                                 <thead>
-                                    <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[9px] border-b border-indigo-100">
-                                        <th class="px-6 py-2 font-black sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
-                                        <th class="px-6 py-2 font-black bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-2 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-2 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="bg-indigo-100/90 text-indigo-950 uppercase tracking-wider text-[9.5px] border-b-2 border-indigo-300 font-black">
+                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-indigo-100 border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)]">Area Name</th>
+                                        <th class="px-6 py-2.5 font-black bg-indigo-100 border-r-2 border-indigo-300">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-indigo-200/60 text-indigo-950 border-r-2 border-indigo-300 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-emerald-100 text-emerald-950 border-r-2 border-indigo-300 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2.5 text-center bg-cyan-100 text-cyan-950 border-r-2 border-indigo-300 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[9px] border-b border-indigo-100 text-center font-bold">
-                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                    <tr class="bg-indigo-50 text-indigo-900 uppercase tracking-wider text-[9px] border-b-2 border-indigo-300 text-center font-bold">
+                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)]">
                                             <div class="flex items-center justify-between gap-2">
-                                                <span>Area</span>
-                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
+                                                <span class="font-black">Area</span>
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-200 text-indigo-800 shadow-inner scale-110' : 'hover:bg-indigo-100 text-indigo-500'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-6 py-1.5 bg-white border-r border-indigo-100 text-left">
-                                            <span>AM Name</span>
+                                        <th class="px-6 py-1.5 bg-white border-r-2 border-indigo-300 text-left">
+                                            <span class="font-black text-indigo-900">AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
-                                            <th class="px-2 py-1.5">Budget</th>
-                                            <th class="px-2 py-1.5 font-bold text-slate-600">Actual</th>
-                                            <th class="px-2 py-1.5">Ach%</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-slate-800 border-r border-slate-200">Actual</th>
+                                            <th class="px-2 py-1.5 font-black border-r-2 border-indigo-300 text-indigo-900">Ach%</th>
                                         ` : ''}
                                         ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-1.5">Budget</th>
-                                            <th class="px-2 py-1.5 font-bold text-slate-600">Actual</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-slate-800 border-r-2 border-indigo-300">Actual</th>
                                         ` : ''}
-                                        <th class="px-2 py-1.5 bg-indigo-50/30">Budget</th>
-                                        <th class="px-2 py-1.5 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-indigo-50/30">${m}</th>`).join('')}
-                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-extrabold border-l border-indigo-200">Total</th>
-                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-extrabold">Ach%</th>
+                                        <th class="px-2 py-1.5 bg-indigo-50/80 border-r border-slate-200 font-bold">Budget</th>
+                                        <th class="px-2 py-1.5 bg-indigo-50/80 font-black text-slate-800 border-r border-slate-200">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-indigo-50/80 text-slate-700 font-bold border-r border-slate-200">${m}</th>`).join('')}
+                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-950 font-black border-r border-indigo-200">Total</th>
+                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-950 font-black border-r-2 border-indigo-300">Ach%</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-50 bg-white">
+                                <tbody class="divide-y divide-slate-200 bg-white">
                                     ${areaStats.map(area => {
                             const modelCells = activeModels.map(mName => {
                                 const qty = area.modelSales[mName] || 0;
-                                return `<td class="px-2 py-1.5 bg-slate-50/30 ${qty > 0 ? 'font-bold text-slate-700' : 'text-slate-300'} border-r border-slate-100/60">${qty > 0 ? qty : '-'}</td>`;
+                                return `<td class="px-2 py-1.5 bg-slate-50/40 ${qty > 0 ? 'font-black text-indigo-700' : 'text-slate-300'} border-r border-slate-200 text-center">${qty > 0 ? qty : '-'}</td>`;
                             }).join('');
-                            const totalSalesDisplay = area.currSales > 0 ? `<div class="font-bold text-[11px]">${area.currSales}</div>` : '<span class="text-slate-400">0</span>';
+                            const totalSalesDisplay = area.currSales > 0 ? `<div class="font-black text-[11px] text-indigo-950">${area.currSales}</div>` : '<span class="text-slate-400">0</span>';
+                            const amAchVal = ach(area.currSales, area.currBudget);
 
                             return `
-                                            <tr class="hover:bg-indigo-50/20 transition-colors text-center">
-                                                <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r border-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                            <tr class="hover:bg-indigo-50/40 transition-colors text-center border-b border-slate-200">
+                                                <td class="px-6 py-1.5 text-left sticky left-0 z-10 bg-white border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)] font-bold">
                                                     <div class="flex items-center gap-2">
-                                                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[9px] font-black shrink-0">${area.name.charAt(0)}</div>
-                                                        <span class="font-black text-slate-700">${area.name}</span>
+                                                        <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[9px] font-black shrink-0 shadow-sm">${area.name.charAt(0)}</div>
+                                                        <span class="font-black text-slate-800">${area.name}</span>
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-1.5 text-left font-bold text-indigo-600 border-r border-indigo-50 bg-slate-50/30 whitespace-nowrap">
+                                                <td class="px-6 py-1.5 text-left font-bold text-indigo-700 border-r-2 border-indigo-300 bg-indigo-50/30 whitespace-nowrap">
                                                     ${area.areaName}
                                                 </td>
                                                 ${app.adminShowYTD ? `
-                                                    <td class="px-2 py-1.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
-                                                    <td class="px-2 py-1.5 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
-                                                    <td class="px-2 py-1.5 font-black text-indigo-600">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
+                                                    <td class="px-2 py-1.5 text-slate-500 font-medium border-r border-slate-200 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : area.ytd.budget}</td>
+                                                    <td class="px-2 py-1.5 font-black text-slate-800 border-r border-slate-200">${app.currentMonth === 'July' ? '-' : area.ytd.sales}</td>
+                                                    <td class="px-2 py-1.5 font-black text-indigo-700 border-r-2 border-indigo-300 bg-indigo-50/40">${app.currentMonth === 'July' ? '-' : `${ach(area.ytd.sales, area.ytd.budget)}%`}</td>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
-                                                    <td class="px-2 py-1.5 text-slate-400">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
-                                                    <td class="px-2 py-1.5 font-black text-slate-700">${app.currentMonth === 'July' ? '-' : area.lastMonth.sales}</td>
+                                                    <td class="px-2 py-1.5 text-slate-500 font-medium border-r border-slate-200 bg-slate-50/40">${app.currentMonth === 'July' ? '-' : area.lastMonth.budget}</td>
+                                                    <td class="px-2 py-1.5 font-black text-slate-800 border-r-2 border-indigo-300">${app.currentMonth === 'July' ? '-' : area.lastMonth.sales}</td>
                                                 ` : ''}
-                                                <td class="px-2 py-1.5 bg-slate-50/50 text-slate-400">${area.currBudget}</td>
-                                                <td class="px-2 py-1.5 bg-slate-50/50 font-black text-slate-700">${area.currProj}</td>
+                                                <td class="px-2 py-1.5 bg-slate-50/40 text-slate-500 font-medium border-r border-slate-200">${area.currBudget}</td>
+                                                <td class="px-2 py-1.5 bg-slate-50/40 font-black text-slate-800 border-r border-slate-200">${area.currProj}</td>
                                                 ${modelCells}
-                                                <td class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-900 border-l border-indigo-100/50">${totalSalesDisplay}</td>
-                                                <td class="px-2 py-1.5 bg-indigo-50 font-black text-indigo-900">${ach(area.currSales, area.currBudget)}%</td>
+                                                <td class="px-2 py-1.5 bg-indigo-50/80 font-black text-indigo-950 border-r border-indigo-200">${totalSalesDisplay}</td>
+                                                <td class="px-2 py-1.5 bg-indigo-50/80 border-r-2 border-indigo-300">${app.getAchBadge(amAchVal)}</td>
                                             </tr>
                                         `;
                         }).join('')}
@@ -1895,10 +1887,133 @@ window.app.renderAdminDashboard = () => {
                     </div>
                     ` : ''}
 
+                        <!-- Custom Report Engine -->
+                        <div class="mt-5 mb-2">
+                            <div class="glass p-5 rounded-2xl border border-slate-200/80 shadow-md relative overflow-hidden bg-white/90 backdrop-blur-md">
+                                <div class="relative z-10">
+                                    <div class="flex flex-wrap items-center justify-between gap-3 mb-3 pb-2.5 border-b border-slate-100">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-md shadow-indigo-200 flex items-center justify-center">
+                                                <i data-lucide="download-cloud" class="w-4 h-4 text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                                    Custom Report Engine
+                                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 uppercase tracking-wider">Enterprise Export</span>
+                                                </h2>
+                                                <p class="text-[10px] text-slate-500 font-medium mt-0.5">Generate tailored territory, target, actual & SPLY data reports</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Filter Toggles Inline -->
+                                        <div class="flex items-center gap-3 bg-slate-50/80 px-3 py-1.5 rounded-xl border border-slate-200/60 text-[10px]">
+                                            <label class="flex items-center gap-1.5 cursor-pointer group">
+                                                <input type="checkbox" id="export-inc-budget" checked class="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20">
+                                                <span class="font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">Target/Budget</span>
+                                            </label>
+                                            <div class="w-px h-3.5 bg-slate-200"></div>
+                                            <label class="flex items-center gap-1.5 cursor-pointer group">
+                                                <input type="checkbox" id="export-inc-actual" checked class="w-3.5 h-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500/20">
+                                                <span class="font-bold text-slate-600 group-hover:text-emerald-600 transition-colors">Actual Sales</span>
+                                            </label>
+                                            <div class="w-px h-3.5 bg-slate-200"></div>
+                                            <label class="flex items-center gap-1.5 cursor-pointer group">
+                                                <input type="checkbox" id="export-inc-sply" checked class="w-3.5 h-3.5 rounded border-slate-300 text-amber-500 focus:ring-amber-500/20">
+                                                <span class="font-bold text-slate-600 group-hover:text-amber-600 transition-colors">SPLY Data</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                                        <!-- Month Select -->
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Month</label>
+                                            <select id="export-month" class="w-full bg-slate-50/80 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none">
+                                                <option value="January">January</option>
+                                                <option value="February">February</option>
+                                                <option value="March">March</option>
+                                                <option value="April">April</option>
+                                                <option value="May">May</option>
+                                                <option value="June">June</option>
+                                                <option value="July">July</option>
+                                                <option value="August" selected>August</option>
+                                                <option value="September">September</option>
+                                                <option value="October">October</option>
+                                                <option value="November">November</option>
+                                                <option value="December">December</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- FY Select -->
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Financial Year</label>
+                                            <select id="export-fy" class="w-full bg-slate-50/80 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none">
+                                                <option value="2026-27">FY 2026-27</option>
+                                                <option value="2025-26">FY 2025-26</option>
+                                                <option value="2024-25">FY 2024-25</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Territory Select -->
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Territory</label>
+                                            <select id="export-territory" class="w-full bg-slate-50/80 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none">
+                                                <option value="ALL">All Territories</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Brand Select -->
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Brand</label>
+                                            <select id="export-brand" class="w-full bg-slate-50/80 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none">
+                                                <option value="ALL">All Brands</option>
+                                                <option value="Foton">Foton</option>
+                                                <option value="Mahindra">Mahindra</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Sale Type Select -->
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Sale Type</label>
+                                            <select id="export-sale-type" class="w-full bg-slate-50/80 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none">
+                                                <option value="ALL">All Types</option>
+                                                <option value="New Sale">New Sale</option>
+                                                <option value="Resale">Resale</option>
+                                                <option value="Credit Note">Credit Note</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Action Button -->
+                                        <div class="flex items-end">
+                                            <button onclick="app.generateCustomReport()" class="w-full h-[32px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-lg shadow-md shadow-indigo-200/50 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-1.5">
+                                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                 </div>
                 `;
                 document.getElementById('view-port').innerHTML = html;
                 if (typeof lucide !== 'undefined') lucide.createIcons();
+                
+                setTimeout(() => {
+                    const terrSelect = document.getElementById('export-territory');
+                    if(terrSelect && DB.territories && terrSelect.options.length <= 1) {
+                        DB.territories.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t.id;
+                            opt.textContent = t.name;
+                            terrSelect.appendChild(opt);
+                        });
+                    }
+                    const fySelect = document.getElementById('export-fy');
+                    if(fySelect && app.currentFY) {
+                        fySelect.value = app.currentFY;
+                    }
+                }, 100);
 
                 // Highlight active mobile nav tab
                 ['nav-dashboard', 'nav-map', 'nav-ai', 'nav-emi', 'nav-notices'].forEach(id => {
@@ -2148,12 +2263,90 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
                     pointHoverRadius: 0
                 });
 
+                // Custom Creative DataLabels Plugin
+                const creativeYoyDataLabels = {
+                    id: 'creativeYoyDataLabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx } = chart;
+                        ctx.save();
+
+                        const drawPill = (x, y, text, bgStyle, borderStyle, textStyle, isAbove = true, offset = 26) => {
+                            ctx.font = 'bold 10px Inter, sans-serif';
+                            const textWidth = ctx.measureText(text).width;
+                            const paddingX = 6;
+                            const paddingY = 3;
+                            const boxWidth = textWidth + paddingX * 2;
+                            const boxHeight = 15;
+                            const boxX = x - boxWidth / 2;
+                            const boxY = isAbove ? y - offset : y + (offset - boxHeight);
+
+                            // Connecting stem line
+                            ctx.beginPath();
+                            ctx.moveTo(x, isAbove ? y - 5 : y + 5);
+                            ctx.lineTo(x, isAbove ? boxY + boxHeight : boxY);
+                            ctx.strokeStyle = borderStyle || 'rgba(15, 41, 66, 0.2)';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+
+                            // Pill Background
+                            ctx.fillStyle = bgStyle;
+                            ctx.beginPath();
+                            if (ctx.roundRect) {
+                                ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 7);
+                            } else {
+                                ctx.rect(boxX, boxY, boxWidth, boxHeight);
+                            }
+                            ctx.fill();
+
+                            if (borderStyle) {
+                                ctx.strokeStyle = borderStyle;
+                                ctx.lineWidth = 1;
+                                ctx.stroke();
+                            }
+
+                            // Number text
+                            ctx.fillStyle = textStyle;
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(text, x, boxY + boxHeight / 2 + 0.5);
+                        };
+
+                        chart.data.datasets.forEach((dataset, datasetIndex) => {
+                            const meta = chart.getDatasetMeta(datasetIndex);
+                            if (meta.hidden) return;
+
+                            const isCurrentFY = dataset.label && dataset.label.includes('Current FY');
+                            const isLastFY = dataset.label && dataset.label.includes('Last FY');
+                            const isBudget = dataset.label && dataset.label.includes('Budget');
+
+                            meta.data.forEach((element, index) => {
+                                const val = dataset.data[index];
+                                if (val === null || val === undefined) return;
+
+                                const x = element.x;
+                                const y = element.y;
+
+                                if (isCurrentFY) {
+                                    drawPill(x, y, String(val), '#0F2942', '#06b6d4', '#ffffff', true, 26);
+                                } else if (isLastFY) {
+                                    drawPill(x, y, String(val), '#fff7ed', '#f59e0b', '#b45309', false, 24);
+                                } else if (isBudget) {
+                                    drawPill(x, y, `B:${val}`, '#f8fafc', '#cbd5e1', '#475569', false, 18);
+                                }
+                            });
+                        });
+
+                        ctx.restore();
+                    }
+                };
+
                 app.charts.yoyTrend = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: shortMonths,
                         datasets: datasets
                     },
+                    plugins: [creativeYoyDataLabels],
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -2168,6 +2361,43 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
                         }
                     }
                 });
+
+                // Populate Creative Month-by-Month Performance Ribbon
+                const ribbonEl = document.getElementById('yoy-monthly-ribbon');
+                if (ribbonEl) {
+                    ribbonEl.innerHTML = shortMonths.map((m, idx) => {
+                        const isPastOrCurr = idx <= currentMonthIdx;
+                        const actual = currAgg[idx];
+                        const budget = budgetAgg[idx] || 0;
+                        const ly = lastAgg[idx] || 0;
+                        const ach = budget > 0 ? Math.round((actual / budget) * 100) : 0;
+                        const isCurrMonth = idx === currentMonthIdx;
+
+                        if (!isPastOrCurr) {
+                            return `
+                                <div class="flex-1 min-w-[70px] bg-slate-50/50 rounded-xl p-2 border border-slate-100 text-center opacity-60">
+                                    <span class="text-[9px] font-black uppercase text-slate-400 block">${m}</span>
+                                    <span class="text-xs font-bold text-slate-300 block mt-1">-</span>
+                                    <span class="text-[9px] text-slate-400 font-mono block mt-1">B:${budget}</span>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <div class="flex-1 min-w-[75px] ${isCurrMonth ? 'bg-indigo-50/90 border-indigo-200 ring-2 ring-indigo-500/20 shadow-xs' : 'bg-white border-slate-200/80'} rounded-xl p-2 border text-center transition-all hover:scale-105">
+                                <div class="flex items-center justify-center gap-1">
+                                    <span class="text-[9px] font-black uppercase ${isCurrMonth ? 'text-indigo-700' : 'text-slate-500'}">${m}</span>
+                                    ${isCurrMonth ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>' : ''}
+                                </div>
+                                <div class="text-sm font-black ${ach >= 100 ? 'text-emerald-600' : ach >= 80 ? 'text-indigo-600' : 'text-slate-800'} mt-0.5">${actual}</div>
+                                <div class="flex items-center justify-between text-[8px] font-bold text-slate-400 mt-1 pt-1 border-t border-slate-100">
+                                    <span>B:${budget}</span>
+                                    ${app.yoyShowLY ? `<span class="text-amber-600 font-extrabold">LY:${ly}</span>` : `<span class="${ach >= 100 ? 'text-emerald-600' : 'text-slate-500'} font-extrabold">${ach}%</span>`}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
 
                 // --- CREATIVE LIVE ANIMATION ENGINE ---
                 let startTime = Date.now();
