@@ -116,6 +116,9 @@ try {
         $pdo->exec("ALTER TABLE sales ADD COLUMN is_carried_forward BOOLEAN DEFAULT FALSE");
     }
 
+    // Auto-heal: Ensure any manual delivery (s_man_*) has is_manual = 1
+    $pdo->exec("UPDATE sales SET is_manual = 1 WHERE id LIKE 's_man_%' AND (is_manual IS NULL OR is_manual = 0)");
+
     // Migrate any existing manual deliveries from settings to sales table
     $stmtSettings = $pdo->query("SELECT settings_json FROM app_settings WHERE id = '1'");
     $settingsRow = $stmtSettings->fetch();
@@ -123,6 +126,8 @@ try {
         $settings = json_decode($settingsRow['settings_json'], true);
         if (isset($settings['manualDeliveries']) && is_array($settings['manualDeliveries'])) {
             $stmtInsert = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp, is_carried_forward) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmtUpdateManual = $pdo->prepare("UPDATE sales SET is_manual = 1 WHERE id = ?");
+
             foreach ($settings['manualDeliveries'] as $del) {
                 // Check if already exists in sales
                 $stmtCheck = $pdo->prepare("SELECT id FROM sales WHERE id = ?");
@@ -155,6 +160,8 @@ try {
                         isset($del['timestamp']) ? $del['timestamp'] : null,
                         $isCF
                     ]);
+                } else {
+                    $stmtUpdateManual->execute([$del['id']]);
                 }
             }
         }
