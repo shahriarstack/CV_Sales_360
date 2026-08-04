@@ -21,13 +21,6 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                         if (actualEnd && new Date(actualEnd) < d) return false;
                         return true;
                     });
-                } else {
-                    // Default filter: current month's data + carried forward
-                    summarySales = summarySales.filter(s => {
-                        const isCurrentMonth = s.sales_month === app.currentMonth && s.fy === app.currentFY;
-                        const isCarriedForward = s.is_carried_forward === true || s.is_carried_forward == 1 || s.is_carried_forward === '1';
-                        return isCurrentMonth || isCarriedForward;
-                    });
                 }
                 
                 let manualSales = [...summarySales];
