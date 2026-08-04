@@ -117,45 +117,44 @@ try {
     }
 
     // Migrate any existing manual deliveries from settings to sales table
-    $checkMigrated = $pdo->query("SELECT 1 FROM sales WHERE is_manual = 1 LIMIT 1")->rowCount();
-    if ($checkMigrated === 0) {
-        $stmtSettings = $pdo->query("SELECT settings_json FROM app_settings WHERE id = '1'");
-        $settingsRow = $stmtSettings->fetch();
-        if ($settingsRow) {
-            $settings = json_decode($settingsRow['settings_json'], true);
-            if (isset($settings['manualDeliveries']) && is_array($settings['manualDeliveries'])) {
-                $stmtInsert = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                foreach ($settings['manualDeliveries'] as $del) {
-                    // Check if already exists in sales
-                    $stmtCheck = $pdo->prepare("SELECT id FROM sales WHERE id = ?");
-                    $stmtCheck->execute([$del['id']]);
-                    $exists = $stmtCheck->fetch();
-                    if (!$exists) {
-                        $stmtInsert->execute([
-                            $del['id'],
-                            isset($del['customer_id']) ? $del['customer_id'] : null,
-                            isset($del['district']) ? $del['district'] : null,
-                            isset($del['territory_id']) ? $del['territory_id'] : null,
-                            isset($del['upazila']) ? $del['upazila'] : null,
-                            isset($del['brand']) ? $del['brand'] : null,
-                            isset($del['model']) ? $del['model'] : null,
-                            isset($del['unit_qty']) ? $del['unit_qty'] : 1,
-                            isset($del['fy']) ? $del['fy'] : null,
-                            isset($del['sales_year']) ? $del['sales_year'] : null,
-                            isset($del['sales_month']) ? $del['sales_month'] : null,
-                            isset($del['sale_type']) ? $del['sale_type'] : null,
-                            isset($del['customer_name']) ? $del['customer_name'] : null,
-                            isset($del['chassis_no']) ? $del['chassis_no'] : null,
-                            isset($del['purpose_of_use']) ? $del['purpose_of_use'] : null,
-                            isset($del['financials']) ? (is_array($del['financials']) ? json_encode($del['financials']) : $del['financials']) : null,
-                            isset($del['discounts']) ? (is_array($del['discounts']) ? json_encode($del['discounts']) : $del['discounts']) : null,
-                            isset($del['old_customer_id']) ? $del['old_customer_id'] : null,
-                            1, // is_manual
-                            isset($del['approval_status']) ? $del['approval_status'] : 'Pending Approval',
-                            isset($del['admin_comments']) ? $del['admin_comments'] : '',
-                            isset($del['timestamp']) ? $del['timestamp'] : null
-                        ]);
-                    }
+    $stmtSettings = $pdo->query("SELECT settings_json FROM app_settings WHERE id = '1'");
+    $settingsRow = $stmtSettings->fetch();
+    if ($settingsRow && !empty($settingsRow['settings_json'])) {
+        $settings = json_decode($settingsRow['settings_json'], true);
+        if (isset($settings['manualDeliveries']) && is_array($settings['manualDeliveries'])) {
+            $stmtInsert = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp, is_carried_forward) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            foreach ($settings['manualDeliveries'] as $del) {
+                // Check if already exists in sales
+                $stmtCheck = $pdo->prepare("SELECT id FROM sales WHERE id = ?");
+                $stmtCheck->execute([$del['id']]);
+                $exists = $stmtCheck->fetch();
+                if (!$exists) {
+                    $isCF = (isset($del['is_carried_forward']) && ($del['is_carried_forward'] == 1 || $del['is_carried_forward'] === true || $del['is_carried_forward'] === '1')) ? 1 : 0;
+                    $stmtInsert->execute([
+                        $del['id'],
+                        isset($del['customer_id']) ? $del['customer_id'] : null,
+                        isset($del['district']) ? $del['district'] : null,
+                        isset($del['territory_id']) ? $del['territory_id'] : null,
+                        isset($del['upazila']) ? $del['upazila'] : null,
+                        isset($del['brand']) ? $del['brand'] : null,
+                        isset($del['model']) ? $del['model'] : null,
+                        isset($del['unit_qty']) ? $del['unit_qty'] : 1,
+                        isset($del['fy']) ? $del['fy'] : null,
+                        isset($del['sales_year']) ? $del['sales_year'] : null,
+                        isset($del['sales_month']) ? $del['sales_month'] : null,
+                        isset($del['sale_type']) ? $del['sale_type'] : null,
+                        isset($del['customer_name']) ? $del['customer_name'] : null,
+                        isset($del['chassis_no']) ? $del['chassis_no'] : null,
+                        isset($del['purpose_of_use']) ? $del['purpose_of_use'] : null,
+                        isset($del['financials']) ? (is_array($del['financials']) ? json_encode($del['financials']) : $del['financials']) : null,
+                        isset($del['discounts']) ? (is_array($del['discounts']) ? json_encode($del['discounts']) : $del['discounts']) : null,
+                        isset($del['old_customer_id']) ? $del['old_customer_id'] : null,
+                        1, // is_manual
+                        isset($del['approval_status']) ? $del['approval_status'] : 'Pending Approval',
+                        isset($del['admin_comments']) ? $del['admin_comments'] : '',
+                        isset($del['timestamp']) ? $del['timestamp'] : null,
+                        $isCF
+                    ]);
                 }
             }
         }
