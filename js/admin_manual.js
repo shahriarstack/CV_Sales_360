@@ -13,12 +13,34 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                 
                 let summarySales = DB.sales.filter(s => s.is_manual);
                 if ((actualStart && actualStart !== "") || (actualEnd && actualEnd !== "")) {
+                    const startMs = actualStart ? new Date(actualStart + 'T00:00:00').getTime() : 0;
+                    const endMs = actualEnd ? new Date(actualEnd + 'T23:59:59.999').getTime() : Infinity;
+                    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
                     summarySales = summarySales.filter(s => {
-                        if (!s.timestamp || s.timestamp === 'Recent') return true;
-                        const d = new Date(s.timestamp);
-                        if (isNaN(d.getTime())) return true;
-                        if (actualStart && new Date(actualStart) > d) return false;
-                        if (actualEnd && new Date(actualEnd) < d) return false;
+                        // Carried forward entries should always be preserved
+                        if (s.is_carried_forward) return true;
+
+                        // 1. Try parsing s.timestamp
+                        if (s.timestamp && s.timestamp !== 'Recent') {
+                            const d = new Date(s.timestamp);
+                            const t = d.getTime();
+                            if (!isNaN(t)) {
+                                return t >= startMs && t <= endMs;
+                            }
+                        }
+
+                        // 2. Fallback: match by sales_month & sales_year
+                        if (s.sales_month) {
+                            const mIdx = monthNames.indexOf(s.sales_month);
+                            if (mIdx !== -1) {
+                                const yr = Number(s.sales_year) || 2026;
+                                const mStartMs = new Date(yr, mIdx, 1, 0, 0, 0).getTime();
+                                const mEndMs = new Date(yr, mIdx + 1, 0, 23, 59, 59, 999).getTime();
+                                return mStartMs <= endMs && mEndMs >= startMs;
+                            }
+                        }
+
                         return true;
                     });
                 }
