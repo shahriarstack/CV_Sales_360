@@ -315,7 +315,7 @@ window.app.renderUserManagement = () => {
                                             <tr class="hover:bg-slate-50 transition-colors">
                                                 <td class="px-6 py-4">
                                                     <div class="font-bold text-slate-800">${u.name}</div>
-                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id || u.password || "N/A"}</div>
+                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id || "N/A"} &bull; Pass: ${u.password || "N/A"}</div>
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     ${u.role === 'subadmin' 
@@ -365,7 +365,7 @@ window.app.renderUserManagement = () => {
                                             <tr class="hover:bg-slate-50 transition-colors">
                                                 <td class="px-6 py-4">
                                                     <div class="font-bold text-slate-800">${u.name}</div>
-                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id || u.password || "N/A"}</div>
+                                                    <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5">ID: ${u.employee_id || "N/A"} &bull; Pass: ${u.password || "N/A"}</div>
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-[10px] font-bold uppercase border border-slate-200">${u.role}</span>
@@ -426,7 +426,7 @@ window.app.renderUserManagement = () => {
                                                         ${so ? `<div class="font-bold text-slate-700">${so.name}</div>` : `<span class="px-2 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-md text-[10px] font-bold uppercase tracking-wider">Unassigned</span>`}
                                                     </td>
                                                     <td class="px-6 py-4">
-                                                        ${so ? `<div class="font-mono text-xs font-semibold text-slate-600">${so.employee_id || so.password || "N/A"}</div>` : `<span class="text-slate-300">-</span>`}
+                                                        ${so ? `<div class="font-mono text-xs font-semibold text-slate-600">${so.employee_id || "N/A"} <span class="text-[10px] text-slate-400 font-normal ml-1 border-l border-slate-200 pl-1">(Pass: ${so.password || "N/A"})</span></div>` : `<span class="text-slate-300">-</span>`}
                                                     </td>
                                                     <td class="px-6 py-4">
                                                         <div class="flex items-center justify-end gap-1">
