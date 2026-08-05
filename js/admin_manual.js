@@ -11,7 +11,7 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                 const actualStart = startDate !== null ? startDate : (domStart || null);
                 const actualEnd = endDate !== null ? endDate : (domEnd || null);
                 
-                let summarySales = DB.sales.filter(s => s.is_manual || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_')));
+                let summarySales = DB.sales.filter(s => s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_')) || (s.sales_month === 'August' && (s.sales_year == 2026 || s.fy === app.currentFY)));
                 if ((actualStart && actualStart !== "") || (actualEnd && actualEnd !== "")) {
                     const startMs = actualStart ? new Date(actualStart + 'T00:00:00').getTime() : 0;
                     const endMs = actualEnd ? new Date(actualEnd + 'T23:59:59.999').getTime() : Infinity;

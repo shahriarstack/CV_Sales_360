@@ -558,8 +558,8 @@ window.app.deleteAllRows = async (type) => {
                 else if (type === 'projections') { DB.projections = []; if (app.neonSQL) await app.neonSQL`DELETE FROM projections`; }
                 else if (type === 'sales') { 
                     const fyVal = app.currentFY;
-                    DB.sales = DB.sales.filter(s => s.fy !== fyVal); 
-                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${fyVal}`; 
+                    DB.sales = DB.sales.filter(s => s.fy !== fyVal || s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_'))); 
+                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${fyVal} AND (is_manual IS NULL OR is_manual = 0) AND (is_carried_forward IS NULL OR is_carried_forward = 0) AND id NOT LIKE 's_man_%'`; 
                 }
                 else if (type === 'last_year_sales') { 
                     const lastFY = (() => {
@@ -571,8 +571,8 @@ window.app.deleteAllRows = async (type) => {
                         }
                         return '2024-25';
                     })();
-                    DB.sales = DB.sales.filter(s => s.fy !== lastFY); 
-                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`; 
+                    DB.sales = DB.sales.filter(s => s.fy !== lastFY || s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_'))); 
+                    if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY} AND (is_manual IS NULL OR is_manual = 0) AND (is_carried_forward IS NULL OR is_carried_forward = 0) AND id NOT LIKE 's_man_%'`; 
                 }
                 else if (type === 'emi') { DB.emi = []; if (app.neonSQL) await app.neonSQL`DELETE FROM emi`; }
                 else if (type === 'recovery_od') { DB.recovery_od = []; if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`; }
@@ -1004,11 +1004,11 @@ window.app.simulateUpload = (input, typeName, dataKey) => {
                                             DB.emi = [];
                                             if (app.neonSQL) await app.neonSQL`DELETE FROM emi`;
                                         } else if (dataKey === 'sales') {
-                                             DB.sales = DB.sales.filter(s => s.fy !== currentFY);
-                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${currentFY}`;
+                                             DB.sales = DB.sales.filter(s => s.fy !== currentFY || s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_')));
+                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${currentFY} AND (is_manual IS NULL OR is_manual = 0) AND (is_carried_forward IS NULL OR is_carried_forward = 0) AND id NOT LIKE 's_man_%'`;
                                          } else if (dataKey === 'last_year_sales') {
-                                             DB.sales = DB.sales.filter(s => s.fy !== lastFY);
-                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY}`;
+                                             DB.sales = DB.sales.filter(s => s.fy !== lastFY || s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_')));
+                                             if (app.neonSQL) await app.neonSQL`DELETE FROM sales WHERE fy = ${lastFY} AND (is_manual IS NULL OR is_manual = 0) AND (is_carried_forward IS NULL OR is_carried_forward = 0) AND id NOT LIKE 's_man_%'`;
                                          } else if (dataKey === 'recovery_od') {
                                             DB.recovery_od = [];
                                             if (app.neonSQL) await app.neonSQL`DELETE FROM recovery_od`;
