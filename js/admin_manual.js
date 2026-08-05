@@ -662,11 +662,10 @@ window.app.deleteManualDelivery = async (id) => {
                 if (confirm('Are you sure you want to delete this manual delivery?')) {
                     if (app.neonSQL) {
                         try {
+                            await app.neonSQL`DELETE FROM manual_deliveries WHERE id = ${id}`;
                             await app.neonSQL`DELETE FROM sales WHERE id = ${id}`;
                         } catch (err) {
                             console.error("Failed to delete manual delivery from database", err);
-                            app.showToast('Database delete failed', 'error');
-                            return;
                         }
                     }
                     DB.sales = DB.sales.filter(s => s.id !== id);
@@ -702,7 +701,7 @@ window.app.editManualDeliveryModal = (id) => {
                         <div class="bg-gradient-to-r from-blue-900 to-indigo-800 p-5 text-white flex justify-between items-center shrink-0 relative overflow-hidden">
                             <div class="absolute inset-0 bg-pattern opacity-10"></div>
                             <div class="relative z-10">
-                                <h2 class="text-xl font-black tracking-tight">Edit Manual Delivery</h2>
+                                <h2 class="text-xl font-black tracking-tight">Edit Delivery Log</h2>
                                 <p class="text-xs text-blue-200 mt-1">Review and update delivery details for ID: ${s.id}</p>
                             </div>
                             <button onclick="app.closeEditManualDeliveryModal()" class="relative z-10 text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all">
@@ -711,7 +710,7 @@ window.app.editManualDeliveryModal = (id) => {
                         </div>
                         <div class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50">
                             <form id="edit-manual-form" onsubmit="app.saveEditedManualDelivery(event, '${s.id}')" class="space-y-6">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 md:grid-grid-cols-2 gap-6">
                                     <div class="space-y-4">
                                         <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Customer & Identity</h3>
                                         <div class="grid grid-cols-2 gap-3">
@@ -721,12 +720,12 @@ window.app.editManualDeliveryModal = (id) => {
                                             </div>
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Customer Name</label>
-                                                <input type="text" id="em-customer-name" value="${s.customer_name || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                <input type="text" id="em-customer-name" value="${s.customer_name || ''}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Enter Customer Name">
                                             </div>
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Chassis Number</label>
-                                            <input type="text" id="em-chassis" value="${s.chassis_no || ''}" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                            <input type="text" id="em-chassis" value="${s.chassis_no || ''}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Enter Chassis Number">
                                         </div>
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
@@ -752,37 +751,9 @@ window.app.editManualDeliveryModal = (id) => {
                                             </div>
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Purpose of Use</label>
-                                                <select id="em-purpose" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
-                                                    <option value="Poultry Firm use" ${s.purpose_of_use === 'Poultry Firm use' ? 'selected' : ''}>Poultry Firm use</option>
-                                                    <option value="Cow carry" ${s.purpose_of_use === 'Cow carry' ? 'selected' : ''}>Cow carry</option>
-                                                    <option value="Fish carry" ${s.purpose_of_use === 'Fish carry' ? 'selected' : ''}>Fish carry</option>
-                                                    <option value="Food carry" ${s.purpose_of_use === 'Food carry' ? 'selected' : ''}>Food carry</option>
-                                                    <option value="Vegetable carry" ${s.purpose_of_use === 'Vegetable carry' ? 'selected' : ''}>Vegetable carry</option>
-                                                    <option value="Construction equipment carry" ${s.purpose_of_use === 'Construction equipment carry' ? 'selected' : ''}>Construction equipment carry</option>
-                                                    <option value="Industrial material carry" ${s.purpose_of_use === 'Industrial material carry' ? 'selected' : ''}>Industrial material carry</option>
-                                                    <option value="Grocery store item carry" ${s.purpose_of_use === 'Grocery store item carry' ? 'selected' : ''}>Grocery store item carry</option>
-                                                    <option value="Egg carry" ${s.purpose_of_use === 'Egg carry' ? 'selected' : ''}>Egg carry</option>
-                                                    <option value="Garments items" ${s.purpose_of_use === 'Garments items' ? 'selected' : ''}>Garments items</option>
-                                                    <option value="Oil transport" ${s.purpose_of_use === 'Oil transport' ? 'selected' : ''}>Oil transport</option>
-                                                    <option value="Industrial purpose" ${s.purpose_of_use === 'Industrial purpose' ? 'selected' : ''}>Industrial purpose</option>
-                                                    <option value="Commercial transport" ${s.purpose_of_use === 'Commercial transport' ? 'selected' : ''}>Commercial transport</option>
-                                                    <option value="Gas cylinder carry" ${s.purpose_of_use === 'Gas cylinder carry' ? 'selected' : ''}>Gas cylinder carry</option>
-                                                    <option value="Scrap business purpose" ${s.purpose_of_use === 'Scrap business purpose' ? 'selected' : ''}>Scrap business purpose</option>
-                                                    <option value="Water bottle" ${s.purpose_of_use === 'Water bottle' ? 'selected' : ''}>Water bottle</option>
-                                                    <option value="Agriculture" ${s.purpose_of_use === 'Agriculture' ? 'selected' : ''}>Agriculture</option>
-                                                    <option value="Personal Use" ${s.purpose_of_use === 'Personal Use' ? 'selected' : ''}>Personal Use</option>
-                                                    <option value="Public Transport" ${s.purpose_of_use === 'Public Transport' ? 'selected' : ''}>Public Transport</option>
-                                                    <option value="Others" ${s.purpose_of_use === 'Others' ? 'selected' : ''}>Others</option>
-                                                </select>
+                                                <input type="text" id="em-purpose" value="${s.purpose_of_use || ''}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="e.g. Commercial">
                                             </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Old Customer ID (Resale)</label>
-                                            <input type="text" id="em-old-customer-id" value="${s.old_customer_id || ''}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Previous owner code (if resale)">
-                                        </div>
-                                    </div>
-                                    <div class="space-y-4">
-                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Location & Period</h3>
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">District</label>
@@ -793,6 +764,9 @@ window.app.editManualDeliveryModal = (id) => {
                                                 <input type="text" id="em-upazila" value="${s.upazila || ''}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Financials, Offers & Comments</h3>
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Territory</label>
@@ -822,30 +796,33 @@ window.app.editManualDeliveryModal = (id) => {
                                                 <option value="June" ${s.sales_month === 'June' ? 'selected' : ''}>June</option>
                                             </select>
                                         </div>
-                                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2 mt-2">Financials & Comments</h3>
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Trade Price (TP)</label>
-                                                <input type="number" id="em-tp" value="${s.financials?.tp || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                <input type="number" id="em-tp" value="${s.financials?.tp || 0}" min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
                                             </div>
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Down Payment (DP)</label>
-                                                <input type="number" id="em-dp" value="${s.financials?.dp || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                <input type="number" id="em-dp" value="${s.financials?.dp || 0}" min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
                                             </div>
                                         </div>
-                                        <div class="grid grid-cols-2 gap-3">
+                                        <div class="grid grid-cols-3 gap-2">
                                             <div>
-                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tenure (Months)</label>
-                                                <input type="number" id="em-tenure" value="${s.financials?.tenure || 0}" required min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tenure (Mos)</label>
+                                                <input type="number" id="em-tenure" value="${s.financials?.tenure || 0}" min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
                                             </div>
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Discount Amount</label>
                                                 <input type="number" id="em-disc-amt" value="${s.discounts?.amount || 0}" min="0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
                                             </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Gift / Offer</label>
+                                                <input type="text" id="em-gift" value="${s.discounts?.gift || ''}" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="e.g. Helmet, Oil">
+                                            </div>
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Admin Comments</label>
-                                            <textarea id="em-comments" rows="3" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Add note for Sales Officer...">${s.admin_comments || ''}</textarea>
+                                            <textarea id="em-comments" rows="2" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" placeholder="Add note...">${s.admin_comments || ''}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -877,6 +854,7 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                     s.chassis_no = document.getElementById('em-chassis').value;
                     s.brand = document.getElementById('em-brand').value;
                     s.model = document.getElementById('em-model').value;
+                    s.is_manual = true;
                     let editUnits = Math.abs(parseInt(document.getElementById('em-units')?.value) || 1);
                     if (s.sale_type === 'Credit Note') {
                         editUnits = -editUnits;
@@ -889,7 +867,6 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                     s.territory_id = document.getElementById('em-territory').value;
                     s.fy = document.getElementById('em-fy').value;
                     s.sales_month = document.getElementById('em-sales-month').value;
-                    s.old_customer_id = document.getElementById('em-old-customer-id').value;
                     s.admin_comments = document.getElementById('em-comments').value;
                     
                     if (!s.financials) s.financials = {};
@@ -899,14 +876,14 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                     
                     if (!s.discounts) s.discounts = { type: 'Cash', amount: 0, gift: '' };
                     s.discounts.amount = document.getElementById('em-disc-amt').value;
+                    s.discounts.gift = document.getElementById('em-gift')?.value || '';
                     
                     if (app.neonSQL) {
                         try {
-                            await app.neonSQL`UPDATE sales SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, old_customer_id = ${s.old_customer_id}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            await app.neonSQL`UPDATE manual_deliveries SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            await app.neonSQL`UPDATE sales SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
                         } catch (err) {
                             console.error("Failed to update manual delivery in database", err);
-                            app.showToast('Database update failed', 'error');
-                            return;
                         }
                     }
 

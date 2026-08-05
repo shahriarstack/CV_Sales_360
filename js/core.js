@@ -230,6 +230,13 @@ window.app.initNeonDB = async () => {
                         territories = results[1];
                     }
                     
+                    let manual_deliveries = [];
+                    if (app.currentUser) {
+                        try {
+                            manual_deliveries = await app.neonSQL`SELECT * FROM manual_deliveries`;
+                        } catch (e) {}
+                    }
+
                     DB.targets = targets;
                     DB.projections = projections;
                     DB.emi = emi;
@@ -242,6 +249,25 @@ window.app.initNeonDB = async () => {
                             discounts: typeof s.discounts === 'string' ? JSON.parse(s.discounts) : s.discounts
                         };
                     });
+
+                    // Merge dedicated manual_deliveries table records with rich fields
+                    if (Array.isArray(manual_deliveries)) {
+                        manual_deliveries.forEach(m => {
+                            const formatted = {
+                                ...m,
+                                is_manual: true,
+                                is_carried_forward: m.is_carried_forward === 1 || m.is_carried_forward === true || m.is_carried_forward === '1',
+                                financials: typeof m.financials === 'string' ? JSON.parse(m.financials) : m.financials,
+                                discounts: typeof m.discounts === 'string' ? JSON.parse(m.discounts) : m.discounts
+                            };
+                            const existingIdx = DB.sales.findIndex(s => s.id === m.id);
+                            if (existingIdx > -1) {
+                                DB.sales[existingIdx] = { ...DB.sales[existingIdx], ...formatted };
+                            } else {
+                                DB.sales.push(formatted);
+                            }
+                        });
+                    }
                     DB.recovery_od = recovery_od;
                     
                     // Parse JSON fields where necessary

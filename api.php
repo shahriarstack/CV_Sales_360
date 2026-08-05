@@ -83,7 +83,37 @@ try {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
     }
 
-    $requiredTables = ['users', 'territories', 'models', 'targets', 'notices', 'links', 'projections', 'sales', 'emi', 'recovery_od', 'tiv_brands', 'tiv_submissions', 'app_settings'];
+    // Table check for manual_deliveries
+    $checkMD = $pdo->query("SHOW TABLES LIKE 'manual_deliveries'")->rowCount();
+    if ($checkMD === 0) {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS manual_deliveries (
+            id VARCHAR(100) PRIMARY KEY,
+            customer_id VARCHAR(50),
+            customer_name VARCHAR(255),
+            chassis_no VARCHAR(100),
+            district VARCHAR(100),
+            territory_id VARCHAR(50),
+            upazila VARCHAR(100),
+            brand VARCHAR(50),
+            model VARCHAR(100),
+            unit_qty INT DEFAULT 1,
+            fy VARCHAR(20),
+            sales_year INT,
+            sales_month VARCHAR(20),
+            sale_type VARCHAR(50),
+            purpose_of_use VARCHAR(255),
+            financials JSON,
+            discounts JSON,
+            old_customer_id VARCHAR(50),
+            approval_status VARCHAR(50) DEFAULT 'Pending Approval',
+            admin_comments TEXT,
+            timestamp VARCHAR(50),
+            is_carried_forward BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+    }
+
+    $requiredTables = ['users', 'territories', 'models', 'targets', 'notices', 'links', 'projections', 'sales', 'manual_deliveries', 'emi', 'recovery_od', 'tiv_brands', 'tiv_submissions', 'app_settings'];
     $missingTable = false;
     foreach ($requiredTables as $t) {
         if ($pdo->query("SHOW TABLES LIKE '$t'")->rowCount() === 0) {
@@ -116,53 +146,53 @@ try {
         $pdo->exec("ALTER TABLE sales ADD COLUMN is_carried_forward BOOLEAN DEFAULT FALSE");
     }
 
-    // Auto-heal: Ensure any manual delivery (s_man_*) has is_manual = 1
+    // Auto-heal: Ensure any manual delivery (s_man_*) has is_manual = 1 in sales
     $pdo->exec("UPDATE sales SET is_manual = 1 WHERE id LIKE 's_man_%' AND (is_manual IS NULL OR is_manual = 0)");
 
-    // Migrate any existing manual deliveries from settings to sales table
+    // Auto-Migrate: Sync all manual sales from sales table into manual_deliveries table
+    $pdo->exec("INSERT INTO manual_deliveries (id, customer_id, customer_name, chassis_no, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, purpose_of_use, financials, discounts, old_customer_id, approval_status, admin_comments, timestamp, is_carried_forward)
+    SELECT id, customer_id, customer_name, chassis_no, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, purpose_of_use, financials, discounts, old_customer_id, approval_status, admin_comments, timestamp, is_carried_forward
+    FROM sales WHERE is_manual = 1 OR id LIKE 's_man_%'
+    ON DUPLICATE KEY UPDATE 
+    customer_name = IF(VALUES(customer_name) IS NOT NULL AND VALUES(customer_name) != '', VALUES(customer_name), manual_deliveries.customer_name),
+    chassis_no = IF(VALUES(chassis_no) IS NOT NULL AND VALUES(chassis_no) != '', VALUES(chassis_no), manual_deliveries.chassis_no),
+    financials = IF(VALUES(financials) IS NOT NULL, VALUES(financials), manual_deliveries.financials),
+    discounts = IF(VALUES(discounts) IS NOT NULL, VALUES(discounts), manual_deliveries.discounts)");
+
+    // Auto-Migrate: Sync any legacy manual deliveries from app_settings to manual_deliveries table
     $stmtSettings = $pdo->query("SELECT settings_json FROM app_settings WHERE id = '1'");
     $settingsRow = $stmtSettings->fetch();
     if ($settingsRow && !empty($settingsRow['settings_json'])) {
         $settings = json_decode($settingsRow['settings_json'], true);
         if (isset($settings['manualDeliveries']) && is_array($settings['manualDeliveries'])) {
-            $stmtInsert = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp, is_carried_forward) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmtUpdateManual = $pdo->prepare("UPDATE sales SET is_manual = 1 WHERE id = ?");
+            $stmtInsertMD = $pdo->prepare("INSERT INTO manual_deliveries (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, approval_status, admin_comments, timestamp, is_carried_forward) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE customer_name=IF(VALUES(customer_name) IS NOT NULL AND VALUES(customer_name) != '', VALUES(customer_name), manual_deliveries.customer_name), chassis_no=IF(VALUES(chassis_no) IS NOT NULL AND VALUES(chassis_no) != '', VALUES(chassis_no), manual_deliveries.chassis_no), financials=IF(VALUES(financials) IS NOT NULL, VALUES(financials), manual_deliveries.financials), discounts=IF(VALUES(discounts) IS NOT NULL, VALUES(discounts), manual_deliveries.discounts)");
 
             foreach ($settings['manualDeliveries'] as $del) {
-                // Check if already exists in sales
-                $stmtCheck = $pdo->prepare("SELECT id FROM sales WHERE id = ?");
-                $stmtCheck->execute([$del['id']]);
-                $exists = $stmtCheck->fetch();
-                if (!$exists) {
-                    $isCF = (isset($del['is_carried_forward']) && ($del['is_carried_forward'] == 1 || $del['is_carried_forward'] === true || $del['is_carried_forward'] === '1')) ? 1 : 0;
-                    $stmtInsert->execute([
-                        $del['id'],
-                        isset($del['customer_id']) ? $del['customer_id'] : null,
-                        isset($del['district']) ? $del['district'] : null,
-                        isset($del['territory_id']) ? $del['territory_id'] : null,
-                        isset($del['upazila']) ? $del['upazila'] : null,
-                        isset($del['brand']) ? $del['brand'] : null,
-                        isset($del['model']) ? $del['model'] : null,
-                        isset($del['unit_qty']) ? $del['unit_qty'] : 1,
-                        isset($del['fy']) ? $del['fy'] : null,
-                        isset($del['sales_year']) ? $del['sales_year'] : null,
-                        isset($del['sales_month']) ? $del['sales_month'] : null,
-                        isset($del['sale_type']) ? $del['sale_type'] : null,
-                        isset($del['customer_name']) ? $del['customer_name'] : null,
-                        isset($del['chassis_no']) ? $del['chassis_no'] : null,
-                        isset($del['purpose_of_use']) ? $del['purpose_of_use'] : null,
-                        isset($del['financials']) ? (is_array($del['financials']) ? json_encode($del['financials']) : $del['financials']) : null,
-                        isset($del['discounts']) ? (is_array($del['discounts']) ? json_encode($del['discounts']) : $del['discounts']) : null,
-                        isset($del['old_customer_id']) ? $del['old_customer_id'] : null,
-                        1, // is_manual
-                        isset($del['approval_status']) ? $del['approval_status'] : 'Pending Approval',
-                        isset($del['admin_comments']) ? $del['admin_comments'] : '',
-                        isset($del['timestamp']) ? $del['timestamp'] : null,
-                        $isCF
-                    ]);
-                } else {
-                    $stmtUpdateManual->execute([$del['id']]);
-                }
+                $isCF = (isset($del['is_carried_forward']) && ($del['is_carried_forward'] == 1 || $del['is_carried_forward'] === true || $del['is_carried_forward'] === '1')) ? 1 : 0;
+                $stmtInsertMD->execute([
+                    $del['id'],
+                    isset($del['customer_id']) ? $del['customer_id'] : null,
+                    isset($del['district']) ? $del['district'] : null,
+                    isset($del['territory_id']) ? $del['territory_id'] : null,
+                    isset($del['upazila']) ? $del['upazila'] : null,
+                    isset($del['brand']) ? $del['brand'] : null,
+                    isset($del['model']) ? $del['model'] : null,
+                    isset($del['unit_qty']) ? $del['unit_qty'] : 1,
+                    isset($del['fy']) ? $del['fy'] : null,
+                    isset($del['sales_year']) ? $del['sales_year'] : null,
+                    isset($del['sales_month']) ? $del['sales_month'] : null,
+                    isset($del['sale_type']) ? $del['sale_type'] : null,
+                    isset($del['customer_name']) ? $del['customer_name'] : null,
+                    isset($del['chassis_no']) ? $del['chassis_no'] : null,
+                    isset($del['purpose_of_use']) ? $del['purpose_of_use'] : null,
+                    isset($del['financials']) ? (is_array($del['financials']) ? json_encode($del['financials']) : $del['financials']) : null,
+                    isset($del['discounts']) ? (is_array($del['discounts']) ? json_encode($del['discounts']) : $del['discounts']) : null,
+                    isset($del['old_customer_id']) ? $del['old_customer_id'] : null,
+                    isset($del['approval_status']) ? $del['approval_status'] : 'Pending Approval',
+                    isset($del['admin_comments']) ? $del['admin_comments'] : '',
+                    isset($del['timestamp']) ? $del['timestamp'] : null,
+                    $isCF
+                ]);
             }
         }
     }
@@ -280,7 +310,33 @@ try {
             exit;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id=id");
+        $stmtMD = $pdo->prepare("INSERT INTO manual_deliveries (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, approval_status, admin_comments, timestamp, is_carried_forward) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE customer_name=VALUES(customer_name), chassis_no=VALUES(chassis_no), financials=VALUES(financials), discounts=VALUES(discounts)");
+        $stmtMD->execute([
+            $delivery['id'],
+            $delivery['customer_id'],
+            $delivery['district'],
+            $delivery['territory_id'],
+            $delivery['upazila'],
+            $delivery['brand'],
+            $delivery['model'],
+            (int)$delivery['unit_qty'],
+            $delivery['fy'],
+            (int)$delivery['sales_year'],
+            $delivery['sales_month'],
+            $delivery['sale_type'],
+            $delivery['customer_name'],
+            $delivery['chassis_no'],
+            $delivery['purpose_of_use'],
+            is_array($delivery['financials']) ? json_encode($delivery['financials']) : $delivery['financials'],
+            is_array($delivery['discounts']) ? json_encode($delivery['discounts']) : $delivery['discounts'],
+            $delivery['old_customer_id'],
+            $delivery['approval_status'],
+            $delivery['admin_comments'],
+            $delivery['timestamp'],
+            isset($delivery['is_carried_forward']) ? ($delivery['is_carried_forward'] ? 1 : 0) : 0
+        ]);
+
+        $stmt = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?) ON DUPLICATE KEY UPDATE id=id");
         $stmt->execute([
             $delivery['id'],
             $delivery['customer_id'],
@@ -300,7 +356,6 @@ try {
             is_array($delivery['financials']) ? json_encode($delivery['financials']) : $delivery['financials'],
             is_array($delivery['discounts']) ? json_encode($delivery['discounts']) : $delivery['discounts'],
             $delivery['old_customer_id'],
-            1, // is_manual
             $delivery['approval_status'],
             $delivery['admin_comments'],
             $delivery['timestamp']
@@ -361,17 +416,19 @@ try {
             '/^UPDATE\s+users\s+SET\s+territories\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+territories\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+notices\s*\(id,\s*title,\s*message,\s*timestamp,\s*filetype,\s*filename\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|sales|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|emi|recovery_od|notices|links)$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|sales|manual_deliveries|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|sales|manual_deliveries|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|manual_deliveries|emi|recovery_od|notices|links)$/i',
             '/^DELETE\s+FROM\s+sales(\s+WHERE\s+.*?)?$/i',
+            '/^DELETE\s+FROM\s+manual_deliveries(\s+WHERE\s+.*?)?$/i',
             
             '/^INSERT\s+INTO\s+targets\s*\(id,\s*fy,\s*month,\s*territory_id,\s*upazila,\s*district,\s*brand,\s*sale_type,\s*target_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^INSERT\s+INTO\s+projections\s*\(id,\s*fy,\s*month,\s*territory_id,\s*brand,\s*sale_type,\s*projection_qty\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^INSERT\s+INTO\s+emi\s*\(id,\s*customer_code,\s*customer,\s*phone,\s*location,\s*delivery_date,\s*first_inst_date,\s*overdue_count,\s*overdue_total,\s*installment,\s*collected,\s*territory_id,\s*brand,\s*model,\s*installment_no\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)(\s+ON\s+DUPLICATE\s+KEY\s+UPDATE\s+.*?)?$/i',
-            '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\s*district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type,\s*customer_name,\s*chassis_no,\s*purpose_of_use,\s*financials,\s*discounts,\s*old_customer_id,\s*is_manual,\s*approval_status,\s*admin_comments,\s*timestamp\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
+            '/^INSERT\s+INTO\s+sales\s*\(id,\s*customer_id,\_district,\s*territory_id,\s*upazila,\s*brand,\s*model,\s*unit_qty,\s*fy,\s*sales_year,\s*sales_month,\s*sale_type,\s*customer_name,\s*chassis_no,\s*purpose_of_use,\s*financials,\s*discounts,\s*old_customer_id,\s*is_manual,\s*approval_status,\s*admin_comments,\s*timestamp\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+sales\s+SET\s+customer_name\s*=\s*\?,\s*chassis_no\s*=\s*\?,\s*brand\s*=\s*\?,\s*model\s*=\s*\?,\s*sale_type\s*=\s*\?,\s*purpose_of_use\s*=\s*\?,\s*admin_comments\s*=\s*\?,\s*financials\s*=\s*\?,\s*discounts\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^UPDATE\s+manual_deliveries\s+SET\s+.*?\s+WHERE\s+.*?$/i',
             '/^UPDATE\s+sales\s+SET\s+approval_status\s*=\s*\'Done\'\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+sales\s+WHERE\s+is_manual\s*=\s*1$/i',
             '/^INSERT\s+INTO\s+recovery_od\s*\(id,\s*fy,\s*month,\s*territory_id,\s*perfile_od,\s*total_overdue\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
@@ -380,7 +437,7 @@ try {
             '/^INSERT\s+INTO\s+tiv_submissions\s*\(id,\s*territory,\s*month,\s*brand,\s*submission_data\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+links\s*\(id,\s*title,\s*url,\s*type,\s*icon\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+links\s+SET\s+title\s*=\s*\?,\s*url\s*=\s*\?,\s*type\s*=\s*\?,\s*icon\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^UPDATE\s+(targets|projections|sales|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+.*?$/i'
+            '/^UPDATE\s+(targets|projections|sales|manual_deliveries|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+.*?$/i'
         ];
 
         foreach ($whitelist as $pattern) {

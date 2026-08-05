@@ -187,6 +187,34 @@ CREATE TABLE IF NOT EXISTS sales (
     FOREIGN KEY (territory_id) REFERENCES territories(id) ON DELETE SET NULL
 );
 
+-- 8b. Dedicated Manual Deliveries Table
+CREATE TABLE IF NOT EXISTS manual_deliveries (
+    id VARCHAR(100) PRIMARY KEY,
+    customer_id VARCHAR(50),
+    customer_name VARCHAR(255),
+    chassis_no VARCHAR(100),
+    district VARCHAR(100),
+    territory_id VARCHAR(50),
+    upazila VARCHAR(100),
+    brand VARCHAR(50),
+    model VARCHAR(100),
+    unit_qty INT DEFAULT 1,
+    fy VARCHAR(20),
+    sales_year INT,
+    sales_month VARCHAR(20),
+    sale_type VARCHAR(50),
+    purpose_of_use VARCHAR(255),
+    financials JSON,
+    discounts JSON,
+    old_customer_id VARCHAR(50),
+    approval_status VARCHAR(50) DEFAULT 'Pending Approval',
+    admin_comments TEXT,
+    timestamp VARCHAR(50),
+    is_carried_forward BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type) VALUES
 ('s1', 'C-1001', 'Dhaka', 't1', 'Mirpur', 'Foton', 'TM3', 1, '2025-26', 2026, 'April', 'New Sale'),
 ('s2', 'C-1002', 'Dhaka', 't1', 'Mirpur', 'Foton', 'Auman', 2, '2025-26', 2026, 'April', 'New Sale'),
