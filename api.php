@@ -374,7 +374,7 @@ try {
         if (!$isAuthenticated) {
             // Allow SELECT from users but return ONLY public fields, and SELECT from territories
             if (preg_match('/^SELECT\s+\*\s+FROM\s+users$/i', $trimmedQuery)) {
-                $stmt = $pdo->query("SELECT id, name, role, territories, area_name FROM users");
+                $stmt = $pdo->query("SELECT id, name, role, employee_id, email, password, territories, area_name FROM users");
                 $data = $stmt->fetchAll();
                 echo json_encode(['data' => $data]);
                 exit;
