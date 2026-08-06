@@ -1705,39 +1705,39 @@ window.app.renderAdminDashboard = () => {
                         <div class="hidden md:block overflow-x-auto border-t border-indigo-200">
                             <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-indigo-200">
                                 <thead>
-                                    <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9.5px] border-b-2 border-blue-400 font-black shadow-sm">
-                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 text-white border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">Area Name</th>
-                                        <th class="px-6 py-2.5 font-black border-r-2 border-blue-400/50">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/20 border-r-2 border-blue-400/50 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="bg-indigo-100/90 text-indigo-950 uppercase tracking-wider text-[9.5px] border-b-2 border-indigo-300 font-black">
+                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-indigo-100 border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)]">Area Name</th>
+                                        <th class="px-6 py-2.5 font-black bg-indigo-100 border-r-2 border-indigo-300">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-indigo-200/60 text-indigo-950 border-r-2 border-indigo-300 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-emerald-100 text-emerald-950 border-r-2 border-indigo-300 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2.5 text-center bg-cyan-100 text-cyan-950 border-r-2 border-indigo-300 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
-                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
+                                    <tr class="bg-indigo-50 text-indigo-900 uppercase tracking-wider text-[9px] border-b-2 border-indigo-300 text-center font-bold">
+                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)]">
                                             <div class="flex items-center justify-between gap-2">
                                                 <span class="font-black">Area</span>
-                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Area Names">
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-200 text-indigo-800 shadow-inner scale-110' : 'hover:bg-indigo-100 text-indigo-500'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-6 py-1.5 bg-blue-800 text-white border-r-2 border-blue-500 text-left">
-                                            <span class="font-black">AM Name</span>
+                                        <th class="px-6 py-1.5 bg-white border-r-2 border-indigo-300 text-left">
+                                            <span class="font-black text-indigo-900">AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
-                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
-                                            <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Actual</th>
-                                            <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-slate-800 border-r border-slate-200">Actual</th>
+                                            <th class="px-2 py-1.5 font-black border-r-2 border-indigo-300 text-indigo-900">Ach%</th>
                                         ` : ''}
                                         ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
-                                            <th class="px-2 py-1.5 font-black text-white border-r-2 border-blue-500">Actual</th>
+                                            <th class="px-2 py-1.5 border-r border-slate-200 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-slate-800 border-r-2 border-indigo-300">Actual</th>
                                         ` : ''}
-                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
-                                        <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Actual</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-blue-700/50 text-white font-bold border-r border-blue-500/50">${m}</th>`).join('')}
-                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-black">Total</th>
-                                        <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
+                                        <th class="px-2 py-1.5 bg-indigo-50/80 border-r border-slate-200 font-bold">Budget</th>
+                                        <th class="px-2 py-1.5 bg-indigo-50/80 font-black text-slate-800 border-r border-slate-200">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-indigo-50/80 text-slate-700 font-bold border-r border-slate-200">${m}</th>`).join('')}
+                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-950 font-black border-r border-indigo-200">Total</th>
+                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-950 font-black border-r-2 border-indigo-300">Ach%</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-200 bg-white">
