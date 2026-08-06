@@ -1704,15 +1704,15 @@
                     ${!isAM ? `
                     <!-- Area (AM) Performance Analytics & Mobile Cards -->
                     <div class="bg-white border border-slate-200/60 rounded-xl border border-white shadow-sm overflow-hidden mb-3">
-                        <div class="p-3 border-b border-blue-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 shadow-inner">
+                        <div class="p-3 border-b border-indigo-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-indigo-50/30">
                             <div>
-                                <h3 class="font-bold text-white flex items-center gap-2 drop-shadow-md">
-                                    <div class="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg shadow-sm border border-white/30">
-                                        <i data-lucide="users" class="w-5 h-5 text-white"></i>
+                                <h3 class="font-bold text-indigo-900 flex items-center gap-2">
+                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-100">
+                                        <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
                                     </div>
                                     Area Summary
                                 </h3>
-                                <p class="text-[10px] text-blue-100 font-bold uppercase tracking-widest mt-1 opacity-90">Aggregated Area Insights</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Insights</p>
                             </div>
                         </div>
                         
@@ -1720,39 +1720,39 @@
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
-                                    <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[10px] border-b border-indigo-100">
-                                        <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
-                                        <th class="px-4 py-1 font-bold bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-1 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9.5px] border-b-2 border-blue-400 font-black shadow-sm">
+                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 text-white border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">Area Name</th>
+                                        <th class="px-6 py-2.5 font-black border-r-2 border-blue-400/50">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/20 border-r-2 border-blue-400/50 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[10px] border-b border-indigo-100 text-center font-bold">
-                                        <th class="px-4 py-1 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                    <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
+                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
                                             <div class="flex items-center justify-between gap-2">
-                                                <span>Area</span>
-                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
+                                                <span class="font-black">Area</span>
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-4 py-1 bg-white border-r border-indigo-100 text-left">
-                                            <span>AM Name</span>
+                                        <th class="px-6 py-1.5 bg-blue-800 text-white border-r-2 border-blue-500 text-left">
+                                            <span class="font-black">AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
-                                            <th class="px-2 py-1">Budget</th>
-                                            <th class="px-2 py-1 font-bold text-slate-600">Actual</th>
-                                            <th class="px-2 py-1">Ach%</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Actual</th>
+                                            <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
                                         ` : ''}
                                         ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-1">Budget</th>
-                                            <th class="px-2 py-1 font-bold text-slate-600">Actual</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-white border-r-2 border-blue-500">Actual</th>
                                         ` : ''}
-                                        <th class="px-2 py-1 bg-indigo-50/30">Budget</th>
-                                        <th class="px-2 py-1 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-1 bg-indigo-50/30">${m}</th>`).join('')}
-                                        <th class="px-2 py-1 bg-indigo-100 text-indigo-900 font-extrabold border-l border-indigo-200">Total</th>
-                                        <th class="px-2 py-1 bg-indigo-100 text-indigo-900 font-extrabold">Ach%</th>
+                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                        <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-blue-700/50 text-white font-bold border-r border-blue-500/50">${m}</th>`).join('')}
+                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-black">Total</th>
+                                        <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-50 bg-white">
