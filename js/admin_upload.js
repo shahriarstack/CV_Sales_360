@@ -395,7 +395,7 @@ window.app.viewUploadedData = (type) => {
                     title = 'Early EMI Customers';
                     icon = 'file-clock';
                     themeColor = 'purple';
-                    headers = ['Customer_Code', 'Customer_Name', 'Sales_Territory', 'Brand', 'DeliveryDate', 'First_Inst_Date', 'OverDue_Hash', 'OverDue_Taka', 'Installment_Size'];
+                    headers = ['Customer_Code', 'Customer_Name', 'Sales_Territory', 'Brand', 'DeliveryDate', 'First_Inst_Date', 'OverDue_Hash', 'OverDue_Taka', 'Installment_Size', 'Collection'];
                     data = DB.emi;
                     keyField = 'overdue_total';
                 } else if (type === 'last_year_sales') {
@@ -468,7 +468,7 @@ window.app.viewUploadedData = (type) => {
                     if (type === 'targets') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.district || '', item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.target_qty}</span>`];
                     else if (type === 'projections') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.brand, item.sale_type, `<span class="font-bold text-slate-800">${item.projection_qty}</span>`];
                     else if (type === 'sales' || type === 'last_year_sales') rowCells = [item.customer_id, item.district, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, item.upazila, item.brand, item.model, `<span class="font-bold text-slate-800">${item.unit_qty}</span>`, item.fy, item.sales_year, item.sales_month, item.sale_type];
-                    else if (type === 'emi') rowCells = [item.customer_code, item.customer, DB.territories.find(t => t.id === item.territory_id)?.name || item.location, item.brand, item.delivery_date, item.first_inst_date, item.overdue_count, `<span class="text-rose-600 font-bold">${app.formatCurrency(item.overdue_total)}</span>`, app.formatCurrency(item.installment)];
+                    else if (type === 'emi') rowCells = [item.customer_code, item.customer, DB.territories.find(t => t.id === item.territory_id)?.name || item.location, item.brand, item.delivery_date, item.first_inst_date, item.overdue_count, `<span class="text-rose-600 font-bold">${app.formatCurrency(item.overdue_total)}</span>`, app.formatCurrency(item.installment), app.formatCurrency(item.collected || 0)];
                     else if (type === 'recovery_od') rowCells = [item.fy, item.month, DB.territories.find(t => t.id === item.territory_id)?.name || item.territory_id, app.formatCurrency(item.perfile_od), app.formatCurrency(item.total_overdue)];
 
                     return `
@@ -601,7 +601,7 @@ window.app.editRowData = (type, id) => {
                 if (type === 'targets') editFields = ['fy', 'month', 'territory_id', 'upazila', 'district', 'brand', 'sale_type', 'target_qty'];
                 else if (type === 'projections') editFields = ['fy', 'month', 'territory_id', 'brand', 'sale_type', 'projection_qty'];
                 else if (type === 'sales' || type === 'last_year_sales') editFields = ['customer_id', 'district', 'territory_id', 'upazila', 'brand', 'model', 'unit_qty', 'fy', 'sales_year', 'sales_month', 'sale_type'];
-                else if (type === 'emi') editFields = ['customer_code', 'customer', 'territory_id', 'brand', 'delivery_date', 'first_inst_date', 'overdue_count', 'overdue_total', 'installment'];
+                else if (type === 'emi') editFields = ['customer_code', 'customer', 'territory_id', 'brand', 'delivery_date', 'first_inst_date', 'overdue_count', 'overdue_total', 'installment', 'collected'];
                 else if (type === 'recovery_od') editFields = ['fy', 'month', 'territory_id', 'perfile_od', 'total_overdue'];
 
                 editFields.forEach((field, idx) => {
@@ -730,10 +730,10 @@ window.app.downloadTemplate = (type) => {
                         csvContent = headers + rows;
                         filename = "ACI_Last_Year_Sales_Export.csv";
                     } else if (type === 'emi_early') {
-                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
+                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size,Collection\n";
                         const rows = DB.emi.map(e => {
                             const tName = DB.territories.find(ter => ter.id === e.territory_id)?.name || '';
-                            return [e.customer_code, e.customer, tName, e.brand, e.delivery_date, e.first_inst_date, e.overdue_count, e.overdue_total, e.installment].map(csvCell).join(',');
+                            return [e.customer_code, e.customer, tName, e.brand, e.delivery_date, e.first_inst_date, e.overdue_count, e.overdue_total, e.installment, e.collected || 0].map(csvCell).join(',');
                         }).join('\n');
                         csvContent = headers + rows;
                         filename = "ACI_Early_EMI_Export.csv";
@@ -768,8 +768,8 @@ window.app.downloadTemplate = (type) => {
                         headers += `C-LY1002,Dhaka,Dhaka North,Uttara,Foton,TM3,1,${lastFY},2025,April,Resale\n`;
                         filename = "ACI_Last_Year_Sales_Template.csv";
                     } else if (type === 'emi_early') {
-                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size\n";
-                        headers += "C-2001,Rahim Transport,Dhaka North,Foton,2026-03-10,2026-04-10,1,25000,25000\n";
+                        headers = "Customer_Code,Customer_Name,Sales_Territory,Brand,DeliveryDate,First_Inst_Date,OverDue_Hash,OverDue_Taka,Installment_Size,Collection\n";
+                        headers += "C-2001,Rahim Transport,Dhaka North,Foton,2026-03-10,2026-04-10,1,25000,25000,0\n";
                         filename = "ACI_Early_EMI_Template.csv";
                     } else if (type === 'recovery_od') {
                         headers = "FY,Month,Territory_Name,Perfile_OD,Total_Overdue\n";
@@ -1065,7 +1065,7 @@ window.app.simulateUpload = (input, typeName, dataKey) => {
                                                     overdue_total: parseInt(app.getCSVValue(row, ['OverDue_Taka', 'OverdueTaka', 'OverdueTotal', 'Overdue_Total'])) || 0,
                                                     installment: parseInt(app.getCSVValue(row, ['Installment_Size', 'InstallmentSize', 'Installment'])) || 0,
                                                     territory_id: terrId,
-                                                    collected: 0,
+                                                    collected: parseInt(app.getCSVValue(row, ['Collection', 'Collected', 'Collection_Amount', 'Collected_Amount'])) || 0,
                                                     brand: app.normalizeBrand(app.getCSVValue(row, ['Brand', 'Make'])),
                                                     model: app.getCSVValue(row, ['Model']) || 'TM3',
                                                     installment_no: parseInt(app.getCSVValue(row, ['Installment_No', 'InstallmentNo', 'Inst_No', 'InstNo'])) || 1
