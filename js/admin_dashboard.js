@@ -1083,22 +1083,22 @@ window.app.renderAdminDashboard = () => {
                                 <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-slate-200">
                                     <thead>
                                         <!-- Row 1: Quarters -->
-                                        <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9px] border-b-2 border-blue-400 font-black shadow-sm">
-                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white" rowspan="3">
+                                        <tr class="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 text-white uppercase tracking-wider text-[9px] border-b-2 border-purple-400 font-black shadow-sm">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-purple-700 border-r-2 border-purple-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
-                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-blue-300 transition-colors" onclick="app.setPulseSort('name')">
+                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-purple-300 transition-colors" onclick="app.setPulseSort('name')">
                                                         Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-purple-600 text-white shadow-inner scale-110' : 'hover:bg-purple-700 text-purple-300'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" rowspan="3">Total FY Budget</th>
-                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q1 (July - September)</th>
-                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q2 (October - December)</th>
-                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q3 (January - March)</th>
-                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-purple-400/50 shadow-sm" rowspan="3">Total FY Budget</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-purple-400/50 shadow-sm" colspan="20">Q1 (July - September)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-purple-400/50 shadow-sm" colspan="20">Q2 (October - December)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-purple-400/50 shadow-sm" colspan="20">Q3 (January - March)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-purple-400/50 shadow-sm" colspan="20">Q4 (April - June)</th>
                                             <th class="px-3 py-2.5 text-center bg-blue-800 text-white font-black border-r-2 border-blue-900 shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
@@ -1365,12 +1365,12 @@ window.app.renderAdminDashboard = () => {
                             <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-slate-200">
                                     <thead>
-                                        <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-widest text-[9px] border-b-2 border-blue-400 font-black shadow-sm">
-                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white">Territory</th>
-                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="1">Total FY Budget</th>
-                                            ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/20 text-white border-r-2 border-blue-400/50 font-black shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/10 text-white border-r-2 border-blue-400/50 font-black shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white border-r-2 border-blue-400/50 font-black shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                        <tr class="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 text-white uppercase tracking-widest text-[9px] border-b-2 border-purple-400 font-black shadow-sm">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-purple-700 border-r-2 border-purple-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white">Territory</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-purple-400/50 shadow-sm" colspan="1">Total FY Budget</th>
+                                            ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/20 text-white border-r-2 border-purple-400/50 font-black shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/10 text-white border-r-2 border-purple-400/50 font-black shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white border-r-2 border-purple-400/50 font-black shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                         </tr>
                                         <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
                                             <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
@@ -1705,12 +1705,12 @@ window.app.renderAdminDashboard = () => {
                         <div class="hidden md:block overflow-x-auto border-t border-indigo-200">
                             <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-indigo-200">
                                 <thead>
-                                    <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9.5px] border-b-2 border-blue-400 font-black shadow-sm">
-                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 text-white border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">Area Name</th>
-                                        <th class="px-6 py-2.5 font-black border-r-2 border-blue-400/50">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/20 border-r-2 border-blue-400/50 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 text-white uppercase tracking-wider text-[9.5px] border-b-2 border-purple-400 font-black shadow-sm">
+                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-purple-700 text-white border-r-2 border-purple-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">Area Name</th>
+                                        <th class="px-6 py-2.5 font-black border-r-2 border-purple-400/50">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-purple-400/50 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/20 border-r-2 border-purple-400/50 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-purple-400/50 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
                                     <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
                                         <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
