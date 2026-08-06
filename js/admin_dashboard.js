@@ -1296,11 +1296,11 @@ window.app.renderAdminDashboard = () => {
                                                     const gAch = ach(g.sales, g.budget);
                                                     const gGrw = calcGrw(g.sales, g.sply);
                                                     grandCellsHTML += `
-                                                        <td class="px-2 py-2 text-slate-800 font-extrabold border-r border-slate-700 bg-slate-800/90">${g.budget}</td>
-                                                        <td class="px-2 py-2 font-black text-white border-r border-slate-700 bg-slate-900">${g.sales}</td>
-                                                        <td class="px-2 py-2 border-r border-slate-700 bg-slate-800/90 font-black text-amber-300">${gAch}%</td>
-                                                        <td class="px-2 py-2 text-slate-300 font-bold border-r border-slate-700 bg-slate-900">${g.sply}</td>
-                                                        <td class="px-2 py-2 font-black text-[10px] border-r border-slate-700 bg-slate-800/90">${formatDetailedGrw(gGrw)}</td>
+                                                        <td class="px-2 py-2 text-indigo-100 font-extrabold border-r border-indigo-800/40 bg-indigo-900/80">${g.budget}</td>
+                                                        <td class="px-2 py-2 font-black text-white border-r border-indigo-800/40 bg-indigo-950/90">${g.sales}</td>
+                                                        <td class="px-2 py-2 border-r border-indigo-800/40 bg-indigo-900/80 font-black text-amber-300">${gAch}%</td>
+                                                        <td class="px-2 py-2 text-indigo-200 font-bold border-r border-indigo-800/40 bg-indigo-950/90">${g.sply}</td>
+                                                        <td class="px-2 py-2 font-black text-[10px] border-r border-indigo-800/40 bg-indigo-900/80">${formatDetailedGrw(gGrw)}</td>
                                                     `;
                                                 });
                                                 const gq = grandQuarter[qName];
@@ -1314,11 +1314,11 @@ window.app.renderAdminDashboard = () => {
                                                 else if (qName === 'Q4') { pillBg = 'bg-cyan-600 text-white'; }
 
                                                 grandCellsHTML += `
-                                                    <td class="px-2 py-2 font-extrabold text-white border-r border-slate-700 bg-slate-800/95">${gq.budget}</td>
-                                                    <td class="px-2 py-2 font-black text-white border-r border-slate-700 bg-slate-900">${gq.sales}</td>
-                                                    <td class="px-2 py-2 border-r border-slate-700 bg-slate-800/95"><span class="px-1.5 py-0.5 rounded-lg ${pillBg} font-black">${gqAch}%</span></td>
-                                                    <td class="px-2 py-2 font-extrabold text-white border-r border-slate-700 bg-slate-900">${gq.sply}</td>
-                                                    <td class="px-2 py-2 font-black text-[10px] border-r-2 border-slate-600 bg-slate-800/95">${formatDetailedGrw(gqGrw)}</td>
+                                                    <td class="px-2 py-2 font-extrabold text-white border-r border-indigo-800/50 bg-indigo-900/90">${gq.budget}</td>
+                                                    <td class="px-2 py-2 font-black text-white border-r border-indigo-800/50 bg-indigo-950">${gq.sales}</td>
+                                                    <td class="px-2 py-2 border-r border-indigo-800/50 bg-indigo-900/90"><span class="px-1.5 py-0.5 rounded-lg ${pillBg} font-black">${gqAch}%</span></td>
+                                                    <td class="px-2 py-2 font-extrabold text-white border-r border-indigo-800/50 bg-indigo-950">${gq.sply}</td>
+                                                    <td class="px-2 py-2 font-black text-[10px] border-r-2 border-indigo-800 bg-indigo-900/90">${formatDetailedGrw(gqGrw)}</td>
                                                 `;
                                             });
 
@@ -1335,23 +1335,23 @@ window.app.renderAdminDashboard = () => {
                                             const grandFYGrowth = calcGrw(grandFYTotalSales, grandFYTotalSply);
 
                                             grandCellsHTML += `
-                                                <td class="px-2 py-2 font-black bg-slate-950 text-white border-r border-slate-700">${grandFYTotalBudget}</td>
-                                                <td class="px-2 py-2 font-black bg-slate-950 text-emerald-400 border-r border-slate-700">${grandFYTotalSales}</td>
-                                                <td class="px-2 py-2 bg-slate-950 border-r border-slate-700"><span class="px-2 py-0.5 rounded-lg bg-emerald-500 text-slate-950 font-black">${grandFYAch}%</span></td>
-                                                <td class="px-2 py-2 font-black bg-slate-950 text-slate-300 border-r border-slate-700">${grandFYTotalSply}</td>
-                                                <td class="px-2 py-2 font-black bg-slate-950 text-[10px] border-r-2 border-slate-600">${formatDetailedGrw(grandFYGrowth)}</td>
+                                                <td class="px-2 py-2 font-black bg-indigo-950 text-white border-r border-indigo-850">${grandFYTotalBudget}</td>
+                                                <td class="px-2 py-2 font-black bg-indigo-950 text-emerald-400 border-r border-indigo-850">${grandFYTotalSales}</td>
+                                                <td class="px-2 py-2 bg-indigo-950 border-r border-indigo-850"><span class="px-2 py-0.5 rounded-lg bg-emerald-500 text-slate-950 font-black">${grandFYAch}%</span></td>
+                                                <td class="px-2 py-2 font-black bg-indigo-950 text-indigo-200 border-r border-indigo-850">${grandFYTotalSply}</td>
+                                                <td class="px-2 py-2 font-black bg-indigo-950 text-[10px] border-r-2 border-indigo-800">${formatDetailedGrw(grandFYGrowth)}</td>
                                             `;
 
                                             const grandTotalRowHTML = `
-                                                <tr class="bg-slate-900 text-white font-black text-center border-t-2 border-slate-900 shadow-lg">
-                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-slate-900 border-r-2 border-slate-700 shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
+                                                <tr class="bg-indigo-950 text-white font-black text-center border-t-2 border-indigo-900 shadow-lg">
+                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-indigo-900 border-r-2 border-indigo-800 shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
                                                             <div class="w-1.5 h-4.5 bg-indigo-500 rounded-full shadow shadow-indigo-400/50"></div>
                                                             <span class="font-black text-white text-[10px] uppercase tracking-wider">GRAND TOTAL</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-2 font-black text-amber-300 bg-slate-900 border-r-2 border-slate-700 text-center text-xs"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">${grandFYBudget}</span></td>
+                                                    <td class="px-3 py-2 font-black text-amber-300 bg-indigo-900 border-r-2 border-indigo-800 text-center text-xs"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">${grandFYBudget}</span></td>
                                                     ${grandCellsHTML}
                                                 </tr>
                                             `;
@@ -1469,31 +1469,31 @@ window.app.renderAdminDashboard = () => {
                                             const totalH = totalYtdAchVal >= 90 ? 'emerald' : (totalYtdAchVal >= 70 ? 'blue' : 'rose');
 
                                             const totalRowHTML = `
-                                                <tr class="bg-slate-900 text-white font-black text-center border-t-2 border-slate-900 shadow-lg">
-                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-slate-900 border-r-2 border-slate-700 shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
+                                                <tr class="bg-indigo-950 text-white font-black text-center border-t-2 border-indigo-900 shadow-lg">
+                                                    <td class="px-6 py-2 text-left sticky left-0 z-10 bg-indigo-900 border-r-2 border-indigo-800 shadow-[3px_0_8px_rgba(0,0,0,0.3)]">
                                                         <div class="flex items-center gap-2">
                                                             <span class="w-4"></span>
                                                             <div class="w-1.5 h-4.5 bg-indigo-500 rounded-full shadow shadow-indigo-400/50"></div>
                                                             <span class="font-black text-white text-[10px] uppercase tracking-wider">GRAND TOTAL</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-2 font-black text-amber-300 bg-slate-900 border-r-2 border-slate-700 text-center text-xs"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">${totalFYBudget}</span></td>
+                                                    <td class="px-3 py-2 font-black text-amber-300 bg-indigo-900 border-r-2 border-indigo-800 text-center text-xs"><span class="px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20">${totalFYBudget}</span></td>
                                                     ${app.adminShowYTD ? `
-                                                        <td class="px-2 py-2 text-slate-200 font-extrabold bg-slate-900 text-center border-r border-slate-700">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
-                                                        <td class="px-2 py-2 font-black text-white bg-slate-950 text-center border-r border-slate-700">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
-                                                        <td class="px-2 py-2 bg-slate-900 text-center border-r border-slate-700">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-500 text-slate-950 font-black">${totalYtdAchVal}%</span>`}</td>
-                                                        <td class="px-2 py-2 font-bold text-rose-400 bg-slate-900 text-center border-r-2 border-slate-700">${app.currentMonth === 'July' ? '-' : totalYtdShort}</td>
+                                                        <td class="px-2 py-2 text-indigo-200 font-extrabold bg-indigo-900 text-center border-r border-indigo-800/60">${app.currentMonth === 'July' ? '-' : totalYtdBudget}</td>
+                                                        <td class="px-2 py-2 font-black text-white bg-indigo-950 text-center border-r border-indigo-800/60">${app.currentMonth === 'July' ? '-' : totalYtdSales}</td>
+                                                        <td class="px-2 py-2 bg-indigo-900 text-center border-r border-indigo-800/60">${app.currentMonth === 'July' ? '-' : `<span class="px-1.5 py-0.5 rounded-lg bg-${totalH}-500 text-slate-950 font-black">${totalYtdAchVal}%</span>`}</td>
+                                                        <td class="px-2 py-2 font-bold text-rose-300 bg-indigo-900 text-center border-r-2 border-indigo-800">${app.currentMonth === 'July' ? '-' : totalYtdShort}</td>
                                                     ` : ''}
                                                     ${app.adminShowLastMonth ? `
-                                                        <td class="px-2 py-2 text-slate-200 font-extrabold text-center border-r border-slate-700 bg-slate-900">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
-                                                        <td class="px-2 py-2 font-black text-white text-center border-r border-slate-700 bg-slate-950">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
-                                                        <td class="px-2 py-2 font-black text-amber-300 text-center border-r-2 border-slate-700 bg-slate-900">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
+                                                        <td class="px-2 py-2 text-indigo-200 font-extrabold text-center border-r border-indigo-800/60 bg-indigo-900">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
+                                                        <td class="px-2 py-2 font-black text-white text-center border-r border-indigo-800/60 bg-indigo-950">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
+                                                        <td class="px-2 py-2 font-black text-amber-300 text-center border-r-2 border-indigo-800 bg-indigo-900">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
                                                     ` : ''}
-                                                    <td class="px-2 py-2 bg-slate-900 text-slate-200 font-extrabold text-center border-r border-slate-700">${totalCurrBudget}</td>
-                                                    <td class="px-2 py-2 bg-slate-950 font-black text-white text-center border-r border-slate-700">${totalCurrProj}</td>
-                                                    ${dynamicActiveModels.map(m => `<td class="px-2 py-2 bg-slate-900 font-bold text-indigo-300 text-center border-r border-slate-700">${totalModelMap[m] || 0}</td>`).join('')}
-                                                    <td class="px-2 py-2 bg-indigo-950 font-black text-emerald-400 text-sm text-center border-r border-slate-700">${totalCurrSalesUnits}</td>
-                                                    <td class="px-2 py-2 bg-indigo-950 text-center border-r-2 border-slate-700">${app.getAchBadge(ach(totalCurrSalesUnits, totalCurrBudget))}</td>
+                                                    <td class="px-2 py-2 bg-indigo-900 text-indigo-200 font-extrabold text-center border-r border-indigo-800/60">${totalCurrBudget}</td>
+                                                    <td class="px-2 py-2 bg-indigo-950 font-black text-white text-center border-r border-indigo-800/60">${totalCurrProj}</td>
+                                                    ${dynamicActiveModels.map(m => `<td class="px-2 py-2 bg-indigo-900 font-bold text-indigo-300 text-center border-r border-indigo-800/60">${totalModelMap[m] || 0}</td>`).join('')}
+                                                    <td class="px-2 py-2 bg-indigo-950 font-black text-emerald-400 text-sm text-center border-r border-indigo-800/60">${totalCurrSalesUnits}</td>
+                                                    <td class="px-2 py-2 bg-indigo-950 text-center border-r-2 border-indigo-800">${app.getAchBadge(ach(totalCurrSalesUnits, totalCurrBudget))}</td>
                                                 </tr>
                                             `;
 
