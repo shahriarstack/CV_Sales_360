@@ -716,27 +716,27 @@ window.app.renderAdminDashboard = () => {
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
-                                            <tr class="bg-slate-100/80 text-slate-600 uppercase tracking-widest text-[9px] border-b border-slate-200">
-                                                <th class="px-4 py-3 font-black border-r border-slate-200 sticky left-0 z-10 bg-slate-100" rowspan="2">Brand</th>
-                                                <th class="px-3 py-3 font-extrabold text-center border-r border-slate-200" rowspan="2">Total FY Budget</th>
-                                                <th class="px-3 py-2 text-center bg-violet-500/10 text-violet-800 border-r border-slate-200 font-black" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
-                                                <th class="px-3 py-2 text-center bg-amber-500/10 text-amber-800 border-r border-slate-200 font-black" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
-                                                <th class="px-3 py-2 text-center bg-emerald-500/10 text-emerald-800 font-black" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
+                                            <tr class="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 text-white uppercase tracking-widest text-[9px] border-b-2 border-purple-400 font-black shadow-sm">
+                                                <th class="px-4 py-3 font-black border-r-2 border-purple-500/50 sticky left-0 z-10 bg-purple-700 text-white shadow-[3px_0_8px_rgba(0,0,0,0.1)]" rowspan="2">Brand</th>
+                                                <th class="px-3 py-3 font-extrabold text-center border-r-2 border-purple-500/50 bg-white/10 text-white shadow-sm" rowspan="2">Total FY Budget</th>
+                                                <th class="px-3 py-2 text-center bg-white/20 text-white border-r-2 border-purple-500/50 font-black shadow-sm" colspan="4">YTD (${isFirstMonth ? 'N/A' : `Jul-${lastMonth.substring(0,3)}`})</th>
+                                                <th class="px-3 py-2 text-center bg-white/10 text-white border-r-2 border-purple-500/50 font-black shadow-sm" colspan="3">Last Month (${isFirstMonth ? 'N/A' : lastMonth.substring(0,3)})</th>
+                                                <th class="px-3 py-2 text-center bg-white/20 text-white font-black shadow-sm" colspan="3">Current Month (${currMonth.substring(0,3)})</th>
                                             </tr>
-                                            <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-200 text-center">
+                                            <tr class="bg-purple-850 text-purple-100 uppercase tracking-widest text-[9px] border-b-2 border-purple-500 text-center font-bold">
                                                 <!-- YTD -->
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Budget</th>
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Actual</th>
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Ach%</th>
-                                                <th class="px-3 py-1.5 border-t border-slate-200 border-r border-slate-200">Short</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Budget</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Actual</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Ach%</th>
+                                                <th class="px-3 py-1.5 border-r-2 border-purple-500 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Short</th>
                                                 <!-- Last Month -->
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Budget</th>
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Actual</th>
-                                                <th class="px-3 py-1.5 border-t border-slate-200 border-r border-slate-200">Ach%</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Budget</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Actual</th>
+                                                <th class="px-3 py-1.5 border-r-2 border-purple-500 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Ach%</th>
                                                 <!-- Current Month -->
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Budget</th>
-                                                <th class="px-3 py-1.5 border-t border-indigo-200 bg-indigo-100 text-indigo-900 font-extrabold">Total Delivered</th>
-                                                <th class="px-3 py-1.5 border-t border-slate-200">Ach%</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Budget</th>
+                                                <th class="px-3 py-1.5 border-r border-purple-650 bg-purple-700 text-white font-black border-t border-purple-600/30">Total Delivered</th>
+                                                <th class="px-3 py-1.5 bg-purple-800/80 text-white font-bold border-t border-purple-600/30">Ach%</th>
                                             </tr>
                                         </thead>
                                         <tbody>
