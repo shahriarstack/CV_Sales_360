@@ -1688,16 +1688,16 @@ window.app.renderAdminDashboard = () => {
                     ${!isAM ? `
                     <!-- Area (AM) Performance Analytics & Mobile Cards -->
                     <div class="bg-white rounded-2xl border border-indigo-200/90 shadow-xl overflow-hidden mb-8">
-                        <div class="p-5 border-b border-indigo-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-indigo-50/90 via-slate-50 to-purple-50/90">
+                        <div class="p-5 border-b border-blue-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 shadow-inner">
                             <div>
-                                <h3 class="font-black text-indigo-950 flex items-center gap-2 text-base">
-                                    <div class="p-1.5 bg-white rounded-lg shadow-sm border border-indigo-200">
-                                        <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i>
+                                <h3 class="font-black text-white flex items-center gap-2 text-base drop-shadow-md">
+                                    <div class="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg shadow-sm border border-white/30">
+                                        <i data-lucide="users" class="w-5 h-5 text-white"></i>
                                     </div>
-                                    AM Sync
-                                    <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 uppercase tracking-wider">Area Matrix</span>
+                                    Area Summary
+                                    <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-100 uppercase tracking-wider border border-white/20">Area Matrix</span>
                                 </h3>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Aggregated Area Manager Insights & Performance</p>
+                                <p class="text-[10px] text-blue-100 font-bold uppercase tracking-widest mt-1 opacity-90">Aggregated Area Manager Insights & Performance</p>
                             </div>
                         </div>
                         
