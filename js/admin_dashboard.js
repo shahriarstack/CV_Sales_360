@@ -1,6 +1,44 @@
 // --- Sales360 Module: admin_dashboard.js ---
 window.app = window.app || {};
 
+window.app.getBrandTheme = (brand) => {
+    if (brand === 'Mahindra') {
+        return {
+            primaryHex: '#E5223E',
+            lightHex: '#fde9ec',
+            textClass: 'text-mahindra',
+            bgClass: 'bg-mahindra',
+            bgLightClass: 'bg-mahindra-light',
+            borderClass: 'border-mahindra/20',
+            borderSolidClass: 'border-mahindra',
+            gradientClass: 'from-mahindra to-[#b81b31]',
+            textTitleClass: 'from-[#E5223E] to-slate-800',
+            shadowClass: 'shadow-mahindra/10',
+            badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
+            btnGradient: 'from-mahindra to-rose-600 hover:from-rose-600 hover:to-red-700',
+            chartGradFrom: 'rgba(229, 34, 62, 0.35)',
+            chartGradTo: 'rgba(229, 34, 62, 0)'
+        };
+    } else {
+        return {
+            primaryHex: '#041A54',
+            lightHex: '#eaf0f8',
+            textClass: 'text-foton',
+            bgClass: 'bg-foton',
+            bgLightClass: 'bg-foton-light',
+            borderClass: 'border-foton/20',
+            borderSolidClass: 'border-foton',
+            gradientClass: 'from-foton to-[#03133d]',
+            textTitleClass: 'from-[#0F2942] to-slate-800',
+            shadowClass: 'shadow-foton/10',
+            badgeClass: 'bg-blue-50 text-indigo-700 border-blue-200',
+            btnGradient: 'from-foton to-indigo-800 hover:from-indigo-800 hover:to-slate-900',
+            chartGradFrom: 'rgba(4, 26, 84, 0.35)',
+            chartGradTo: 'rgba(4, 26, 84, 0)'
+        };
+    }
+};
+
 window.app.renderAdminDashboard = () => {
                 localStorage.setItem('aci_last_page', 'dashboard');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
@@ -52,7 +90,15 @@ window.app.renderAdminDashboard = () => {
                 const mahindraUnits = currFYSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 const brandFilter = app.adminBrandTab || 'Foton';
+                const theme = app.getBrandTheme(brandFilter);
                 const activeModels = DB.models.filter(m => m.brand === brandFilter).map(m => m.name);
+
+                // Dynamically assign theme to app-container
+                const appContainer = document.getElementById('app-container');
+                if (appContainer) {
+                    appContainer.classList.remove('theme-foton', 'theme-mahindra');
+                    appContainer.classList.add(`theme-${brandFilter.toLowerCase()}`);
+                }
 
                 // Calculate Monthly Budget for the current view
                 let activeTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.brand === brandFilter && tg.sale_type === currentSaleType);
@@ -301,7 +347,7 @@ window.app.renderAdminDashboard = () => {
 
                              return `
                                  <!-- YTD Overall -->
-                                 <div class="glass p-4 rounded-xl shadow-sm border border-slate-200/80 mb-4 relative overflow-hidden">
+                                 <div class="glass p-4 rounded-xl shadow-sm border border-white/60 mb-4 relative overflow-hidden">
                                      <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
                                      <div class="flex justify-between items-center mb-3">
                                          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -439,7 +485,7 @@ window.app.renderAdminDashboard = () => {
                             const predictedAch = ach(predictedFinish, currMonthBudget);
 
                             return `
-                                <div class="glass p-4 rounded-[1.5rem] border border-slate-200/80 shadow-xl mb-6 relative overflow-hidden">
+                                <div class="glass p-4 rounded-[1.5rem] border border-white shadow-xl mb-6 relative overflow-hidden">
                                     <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-4">
                                         <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
@@ -519,7 +565,7 @@ window.app.renderAdminDashboard = () => {
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                                 <div>
-                                    <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1></div>
+                                    <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 ${theme.bgClass} rounded-full ${theme.shadowClass}"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.textTitleClass} tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1></div>
                                     <p class="text-sm font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -534,14 +580,14 @@ window.app.renderAdminDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
+                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r ${theme.btnGradient} text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="banknote" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
                                         <span>EMI Analytics</span>
                                     </button>
 
                                     ${!isAM ? `
-                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
+                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r ${theme.btnGradient} text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="clipboard-list" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
                                         <span>Manual Deliveries</span>
@@ -563,7 +609,7 @@ window.app.renderAdminDashboard = () => {
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="glass p-5 rounded-[2rem] border border-slate-200/80 shadow-xl mb-8 relative overflow-hidden">
+                    <div class="glass p-5 rounded-[2rem] border border-white shadow-xl mb-8 relative overflow-hidden">
                         <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
@@ -705,7 +751,7 @@ window.app.renderAdminDashboard = () => {
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="glass rounded-[2rem] border border-slate-200/80 shadow-xl overflow-hidden mb-8">
+                            <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
@@ -2047,7 +2093,8 @@ window.app.renderAdminDashboard = () => {
                 }
 
                 // Render Charts
-                app.renderChartYoyTrend(yoyCurrSales, yoyLastSales, yoyMonthlyBudgets);
+                const chartTheme = app.getBrandTheme(app.yoyBrandTab || 'Foton');
+                app.renderChartYoyTrend(yoyCurrSales, yoyLastSales, yoyMonthlyBudgets, chartTheme);
                 app.renderDashboardMiniMap(yoyCurrSales);
                 app.renderChartTerritory(currFYSales);
                 app.renderChartBrand(fotonUnits, mahindraUnits);
@@ -2179,7 +2226,7 @@ window.app.renderDashboardMiniMap = async (yoyCurrSales) => {
                 }, 100);
             };
 
-window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
+window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget, theme = null) => {
                 // Clear any existing animation frame to prevent duplicate loops
                 if (app.charts.yoyTrendAnimFrame) {
                     cancelAnimationFrame(app.charts.yoyTrendAnimFrame);
@@ -2210,9 +2257,13 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
                 const currentMonthIdx = fullMonths.indexOf(app.currentMonth);
                 const displayCurrAgg = currAgg.map((val, idx) => idx <= currentMonthIdx ? val : null);
 
+                const defaultGradFrom = theme ? theme.chartGradFrom : 'rgba(15, 41, 66, 0.4)';
+                const defaultGradTo = theme ? theme.chartGradTo : 'rgba(15, 41, 66, 0.0)';
+                const defaultLineColor = theme ? theme.primaryHex : '#0F2942';
+
                 const currGrad = ctx.createLinearGradient(0, 0, 0, 300);
-                currGrad.addColorStop(0, 'rgba(15, 41, 66, 0.4)'); // ACI Blue transparent
-                currGrad.addColorStop(1, 'rgba(15, 41, 66, 0.0)');
+                currGrad.addColorStop(0, defaultGradFrom);
+                currGrad.addColorStop(1, defaultGradTo);
 
                 const datasets = [];
 
@@ -2220,7 +2271,7 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
                 datasets.push({
                     label: 'Current FY (25-26)',
                     data: displayCurrAgg,
-                    borderColor: '#0F2942', // Base color, overridden by animation loop
+                    borderColor: defaultLineColor, // Base color, overridden by animation loop
                     backgroundColor: currGrad,
                     borderWidth: 4,
                     tension: 0.4,
@@ -2327,7 +2378,7 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
                                 const y = element.y;
 
                                 if (isCurrentFY) {
-                                    drawPill(x, y, String(val), '#0F2942', '#06b6d4', '#ffffff', true, 26);
+                                    drawPill(x, y, String(val), defaultLineColor, '#06b6d4', '#ffffff', true, 26);
                                 } else if (isLastFY) {
                                     drawPill(x, y, String(val), '#fff7ed', '#f59e0b', '#b45309', false, 24);
                                 } else if (isBudget) {
