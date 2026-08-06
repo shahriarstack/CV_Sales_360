@@ -1083,63 +1083,63 @@ window.app.renderAdminDashboard = () => {
                                 <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-slate-200">
                                     <thead>
                                         <!-- Row 1: Quarters -->
-                                        <tr class="bg-slate-100 text-slate-700 uppercase tracking-wider text-[9px] border-b-2 border-slate-300">
-                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-slate-100 border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)]" rowspan="3">
+                                        <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9px] border-b-2 border-blue-400 font-black shadow-sm">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
-                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
+                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-blue-300 transition-colors" onclick="app.setPulseSort('name')">
                                                         Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-200 text-slate-500'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-2.5 text-center bg-amber-100/80 text-amber-900 font-black border-r-2 border-slate-300 shadow-sm" rowspan="3">Total FY Budget</th>
-                                            <th class="px-3 py-2.5 text-center bg-violet-100/70 text-violet-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q1 (July - September)</th>
-                                            <th class="px-3 py-2.5 text-center bg-amber-100/70 text-amber-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q2 (October - December)</th>
-                                            <th class="px-3 py-2.5 text-center bg-emerald-100/70 text-emerald-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q3 (January - March)</th>
-                                            <th class="px-3 py-2.5 text-center bg-cyan-100/70 text-cyan-950 font-black border-r-2 border-slate-300 shadow-sm" colspan="20">Q4 (April - June)</th>
-                                            <th class="px-3 py-2.5 text-center bg-slate-800 text-white font-black border-r-2 border-slate-900 shadow-sm" colspan="5">FY Total (July - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" rowspan="3">Total FY Budget</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q1 (July - September)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q2 (October - December)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q3 (January - March)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-blue-800 text-white font-black border-r-2 border-blue-900 shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
-                                        <tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[9px] border-b-2 border-slate-300 text-center font-bold">
+                                        <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
                                             <!-- Q1 Months -->
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">July</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">August</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">September</th>
-                                            <th class="px-2 py-1.5 bg-violet-100 text-violet-900 font-black border-r-2 border-slate-300" colspan="5">Q1 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">July</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">August</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">September</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q1 Total</th>
                                             <!-- Q2 Months -->
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">October</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">November</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">December</th>
-                                            <th class="px-2 py-1.5 bg-amber-100 text-amber-900 font-black border-r-2 border-slate-300" colspan="5">Q2 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">October</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">November</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">December</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q2 Total</th>
                                             <!-- Q3 Months -->
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">January</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">February</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">March</th>
-                                            <th class="px-2 py-1.5 bg-emerald-100 text-emerald-900 font-black border-r-2 border-slate-300" colspan="5">Q3 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">January</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">February</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">March</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q3 Total</th>
                                             <!-- Q4 Months -->
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">April</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">May</th>
-                                            <th class="px-2 py-1.5 border-r border-slate-200" colspan="5">June</th>
-                                            <th class="px-2 py-1.5 bg-cyan-100 text-cyan-900 font-black border-r-2 border-slate-300" colspan="5">Q4 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">April</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">May</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">June</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q4 Total</th>
                                             <!-- FY Total -->
-                                            <th class="px-2 py-1.5 bg-slate-800 text-white font-black border-r-2 border-slate-900" colspan="5">FY Total</th>
+                                            <th class="px-2 py-1.5 bg-blue-800 text-white font-black border-r-2 border-blue-900" colspan="5">FY Total</th>
                                         </tr>
                                         <!-- Row 3: Metrics -->
-                                        <tr class="text-slate-500 uppercase tracking-tighter text-[8.5px] border-b-2 border-slate-300 text-center font-black">
+                                        <tr class="bg-blue-800/80 text-white uppercase tracking-tighter text-[8.5px] border-b-2 border-blue-500 text-center font-black">
                                             ${(() => {
                                                 let result = '';
                                                 for (let i = 0; i < 17; i++) {
                                                     const isQuarterTotal = i < 16 ? (i + 1) % 4 === 0 : false;
                                                     const isFYTotal = i === 16;
-                                                    let qBorder = 'border-r border-slate-200';
+                                                    let qBorder = 'border-r border-blue-500/50';
                                                     if (isQuarterTotal || isFYTotal) {
-                                                        qBorder = 'border-r-2 border-slate-300';
+                                                        qBorder = 'border-r-2 border-blue-500';
                                                     }
                                                     const metrics = ['Bgt', 'Sal', 'Ach%', 'SPLY', 'Gr%'];
                                                     result += metrics.map((m, mIdx) => `
-                                                         <th class="px-1.5 py-1 ${mIdx === 4 ? qBorder : 'border-r border-slate-200'} ${(isQuarterTotal || isFYTotal) ? 'bg-slate-200/60 font-black text-slate-800' : 'bg-slate-50'} text-center">${m}</th>
+                                                         <th class="px-1.5 py-1 ${mIdx === 4 ? qBorder : 'border-r border-blue-500/50'} ${(isQuarterTotal || isFYTotal) ? 'bg-blue-700/50 font-black text-white' : 'bg-transparent text-blue-100'} text-center">${m}</th>
                                                     `).join('');
                                                 }
                                                 return result;
@@ -1365,45 +1365,45 @@ window.app.renderAdminDashboard = () => {
                             <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-slate-200">
                                     <thead>
-                                        <tr class="bg-slate-100 text-slate-700 uppercase tracking-widest text-[9px] border-b-2 border-slate-300">
-                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-slate-100 border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)]">Territory</th>
-                                            <th class="px-3 py-2.5 text-center bg-amber-100/80 text-amber-900 font-black border-r-2 border-slate-300 shadow-sm" colspan="1">Total FY Budget</th>
-                                            ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-indigo-100/80 text-indigo-950 border-r-2 border-slate-300 font-black shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-emerald-100/80 text-emerald-950 border-r-2 border-slate-300 font-black shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                            <th class="px-3 py-2.5 text-center bg-cyan-100/80 text-cyan-950 border-r-2 border-slate-300 font-black shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                        <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-widest text-[9px] border-b-2 border-blue-400 font-black shadow-sm">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white">Territory</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="1">Total FY Budget</th>
+                                            ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/20 text-white border-r-2 border-blue-400/50 font-black shadow-sm" colspan="4">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/10 text-white border-r-2 border-blue-400/50 font-black shadow-sm" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white border-r-2 border-blue-400/50 font-black shadow-sm" colspan="${4 + dynamicActiveModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                         </tr>
-                                        <tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[9px] border-b-2 border-slate-300 text-center font-bold">
-                                            <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r-2 border-slate-300 shadow-[3px_0_8px_rgba(0,0,0,0.05)]">
+                                        <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
+                                            <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
                                                 <div class="flex items-center justify-between gap-2">
-                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
-                                                        <span class="w-4 text-right text-slate-400">#</span> Territory ${app.getSortIcon('name')}
+                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-blue-300 transition-colors" onclick="app.setPulseSort('name')">
+                                                        <span class="w-4 text-right text-blue-300/50">#</span> Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-200 text-slate-500'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-1.5 bg-amber-50 border-r-2 border-slate-300 cursor-pointer hover:bg-amber-100 transition-colors text-center font-black text-amber-900" onclick="app.setPulseSort('sortVal_fy_budget')">
+                                            <th class="px-3 py-1.5 bg-blue-800 border-r-2 border-blue-500 cursor-pointer hover:bg-blue-700 transition-colors text-center font-black text-white" onclick="app.setPulseSort('sortVal_fy_budget')">
                                                 <div class="flex items-center justify-center gap-1 font-black">
                                                     Total ${app.getSortIcon('sortVal_fy_budget')}
                                                 </div>
                                             </th>
                                             ${app.adminShowYTD ? `
-                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-slate-200 font-bold" onclick="app.setPulseSort('sortVal_ytd_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_ytd_budget')}</div></th>
-                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-slate-200 font-black text-slate-700" onclick="app.setPulseSort('sortVal_ytd_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_ytd_actual')}</div></th>
-                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r border-slate-200 font-black" onclick="app.setPulseSort('sortVal_ytd_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_ytd_ach')}</div></th>
-                                                <th class="px-2 py-1.5 bg-indigo-50/80 cursor-pointer hover:bg-indigo-100 transition-colors border-r-2 border-slate-300 font-bold text-rose-600" onclick="app.setPulseSort('sortVal_ytd_short')"><div class="flex items-center justify-center gap-1">Short ${app.getSortIcon('sortVal_ytd_short')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50 font-bold text-white" onclick="app.setPulseSort('sortVal_ytd_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_ytd_budget')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 font-black text-white cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50" onclick="app.setPulseSort('sortVal_ytd_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_ytd_actual')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50 font-black text-white" onclick="app.setPulseSort('sortVal_ytd_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_ytd_ach')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 cursor-pointer hover:bg-blue-700 transition-colors border-r-2 border-blue-500 font-bold text-rose-300" onclick="app.setPulseSort('sortVal_ytd_short')"><div class="flex items-center justify-center gap-1">Short ${app.getSortIcon('sortVal_ytd_short')}</div></th>
                                             ` : ''}
                                             ${app.adminShowLastMonth ? `
-                                                <th class="px-2 py-1.5 bg-emerald-50/80 cursor-pointer hover:bg-emerald-100 transition-colors border-r border-slate-200 font-bold" onclick="app.setPulseSort('sortVal_lm_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_lm_budget')}</div></th>
-                                                <th class="px-2 py-1.5 bg-emerald-50/80 font-black text-slate-700 cursor-pointer hover:bg-emerald-100 transition-colors border-r border-slate-200" onclick="app.setPulseSort('sortVal_lm_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_lm_actual')}</div></th>
-                                                <th class="px-2 py-1.5 bg-emerald-50/80 cursor-pointer hover:bg-emerald-100 transition-colors border-r-2 border-slate-300 font-black" onclick="app.setPulseSort('sortVal_lm_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_lm_ach')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50 font-bold text-white" onclick="app.setPulseSort('sortVal_lm_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_lm_budget')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 font-black text-white cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50" onclick="app.setPulseSort('sortVal_lm_actual')"><div class="flex items-center justify-center gap-1">Actual ${app.getSortIcon('sortVal_lm_actual')}</div></th>
+                                                <th class="px-2 py-1.5 bg-blue-800/80 cursor-pointer hover:bg-blue-700 transition-colors border-r-2 border-blue-500 font-black text-white" onclick="app.setPulseSort('sortVal_lm_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_lm_ach')}</div></th>
                                             ` : ''}
-                                            <th class="px-2 py-1.5 bg-cyan-50/80 cursor-pointer hover:bg-cyan-100 transition-colors border-r border-slate-200 font-bold" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
-                                            <th class="px-2 py-1.5 bg-cyan-50/80 font-black text-slate-700 cursor-pointer hover:bg-cyan-100 transition-colors border-r border-slate-200" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
-                                            ${dynamicActiveModels.map(m => `<th class="px-2 py-1.5 bg-cyan-50/80 text-slate-700 font-bold border-r border-slate-200">${m}</th>`).join('')}
-                                            <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-black cursor-pointer hover:bg-indigo-200 transition-colors border-r border-indigo-200" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
-                                            <th class="px-2 py-1.5 bg-indigo-100 text-indigo-900 font-black cursor-pointer hover:bg-indigo-200 transition-colors border-r-2 border-slate-300" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
+                                            <th class="px-2 py-1.5 bg-blue-800/80 cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50 font-bold text-white" onclick="app.setPulseSort('sortVal_curr_budget')"><div class="flex items-center justify-center gap-1">Budget ${app.getSortIcon('sortVal_curr_budget')}</div></th>
+                                            <th class="px-2 py-1.5 bg-blue-800/80 font-black text-white cursor-pointer hover:bg-blue-700 transition-colors border-r border-blue-500/50" onclick="app.setPulseSort('sortVal_curr_proj')"><div class="flex items-center justify-center gap-1">Proj ${app.getSortIcon('sortVal_curr_proj')}</div></th>
+                                            ${dynamicActiveModels.map(m => `<th class="px-2 py-1.5 bg-blue-800/80 text-white font-bold border-r border-blue-500/50">${m}</th>`).join('')}
+                                            <th class="px-2 py-1.5 bg-blue-700 text-white font-black cursor-pointer hover:bg-blue-600 transition-colors border-r border-blue-400/50" onclick="app.setPulseSort('sortVal_curr_actual')"><div class="flex items-center justify-center gap-1">Total ${app.getSortIcon('sortVal_curr_actual')}</div></th>
+                                            <th class="px-2 py-1.5 bg-blue-700 text-white font-black cursor-pointer hover:bg-blue-600 transition-colors border-r-2 border-blue-500" onclick="app.setPulseSort('sortVal_curr_ach')"><div class="flex items-center justify-center gap-1">Ach% ${app.getSortIcon('sortVal_curr_ach')}</div></th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-200 bg-white">
@@ -1705,39 +1705,39 @@ window.app.renderAdminDashboard = () => {
                         <div class="hidden md:block overflow-x-auto border-t border-indigo-200">
                             <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse border border-indigo-200">
                                 <thead>
-                                    <tr class="bg-indigo-100/90 text-indigo-950 uppercase tracking-wider text-[9.5px] border-b-2 border-indigo-300 font-black">
-                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-indigo-100 border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)]">Area Name</th>
-                                        <th class="px-6 py-2.5 font-black bg-indigo-100 border-r-2 border-indigo-300">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-indigo-200/60 text-indigo-950 border-r-2 border-indigo-300 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-emerald-100 text-emerald-950 border-r-2 border-indigo-300 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-2.5 text-center bg-cyan-100 text-cyan-950 border-r-2 border-indigo-300 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9.5px] border-b-2 border-blue-400 font-black shadow-sm">
+                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 text-white border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">Area Name</th>
+                                        <th class="px-6 py-2.5 font-black border-r-2 border-blue-400/50">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/20 border-r-2 border-blue-400/50 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="bg-indigo-50 text-indigo-900 uppercase tracking-wider text-[9px] border-b-2 border-indigo-300 text-center font-bold">
-                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-white border-r-2 border-indigo-300 shadow-[3px_0_8px_rgba(0,0,0,0.06)]">
+                                    <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
+                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
                                             <div class="flex items-center justify-between gap-2">
                                                 <span class="font-black">Area</span>
-                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-200 text-indigo-800 shadow-inner scale-110' : 'hover:bg-indigo-100 text-indigo-500'}" title="Filter Area Names">
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-6 py-1.5 bg-white border-r-2 border-indigo-300 text-left">
-                                            <span class="font-black text-indigo-900">AM Name</span>
+                                        <th class="px-6 py-1.5 bg-blue-800 text-white border-r-2 border-blue-500 text-left">
+                                            <span class="font-black">AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
-                                            <th class="px-2 py-1.5 border-r border-slate-200 font-bold">Budget</th>
-                                            <th class="px-2 py-1.5 font-black text-slate-800 border-r border-slate-200">Actual</th>
-                                            <th class="px-2 py-1.5 font-black border-r-2 border-indigo-300 text-indigo-900">Ach%</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Actual</th>
+                                            <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
                                         ` : ''}
                                         ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-1.5 border-r border-slate-200 font-bold">Budget</th>
-                                            <th class="px-2 py-1.5 font-black text-slate-800 border-r-2 border-indigo-300">Actual</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-white border-r-2 border-blue-500">Actual</th>
                                         ` : ''}
-                                        <th class="px-2 py-1.5 bg-indigo-50/80 border-r border-slate-200 font-bold">Budget</th>
-                                        <th class="px-2 py-1.5 bg-indigo-50/80 font-black text-slate-800 border-r border-slate-200">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-indigo-50/80 text-slate-700 font-bold border-r border-slate-200">${m}</th>`).join('')}
-                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-950 font-black border-r border-indigo-200">Total</th>
-                                        <th class="px-2 py-1.5 bg-indigo-100 text-indigo-950 font-black border-r-2 border-indigo-300">Ach%</th>
+                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                        <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Actual</th>
+                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-blue-700/50 text-white font-bold border-r border-blue-500/50">${m}</th>`).join('')}
+                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-black">Total</th>
+                                        <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-200 bg-white">

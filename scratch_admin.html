@@ -1066,51 +1066,51 @@
                                 <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                     <thead>
                                         <!-- Row 1: Quarters -->
-                                        <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60">
-                                            <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-slate-50 border-r border-slate-200/60 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" rowspan="3">
+                                        <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9px] border-b-2 border-blue-400 font-black shadow-sm">
+                                            <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)] text-white" rowspan="3">
                                                 <div class="flex items-center justify-between gap-2">
-                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors" onclick="app.setPulseSort('name')">
+                                                    <div class="flex items-center gap-1 cursor-pointer hover:text-blue-300 transition-colors" onclick="app.setPulseSort('name')">
                                                         Territory ${app.getSortIcon('name')}
                                                     </div>
-                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Territories">
+                                                    <button onclick="app.showPulseFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Territories">
                                                         <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                     </button>
                                                 </div>
                                             </th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-b from-amber-500/10 to-amber-500/5 text-amber-700 font-extrabold border-l-2 border-r-2 border-t border-amber-500/20 shadow-sm" rowspan="3">Total FY Budget</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-violet-600/10 via-violet-500/5 to-transparent text-violet-700 border-l-2 border-r-2 border-t border-violet-500/20 font-extrabold shadow-sm" colspan="20">Q1 (July - September)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-transparent text-amber-700 border-l-2 border-r-2 border-t border-amber-500/20 font-extrabold shadow-sm" colspan="20">Q2 (October - December)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-emerald-600/10 via-emerald-500/5 to-transparent text-emerald-700 border-l-2 border-r-2 border-t border-emerald-500/20 font-extrabold shadow-sm" colspan="20">Q3 (January - March)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-cyan-600/10 via-cyan-500/5 to-transparent text-cyan-700 border-l-2 border-r border-t border-cyan-500/20 font-extrabold shadow-sm" colspan="20">Q4 (April - June)</th>
-                                            <th class="px-3 py-1 text-center bg-gradient-to-r from-slate-600/20 via-slate-500/10 to-transparent text-slate-800 border-l-2 border-r-2 border-t border-slate-500/30 font-extrabold shadow-sm" colspan="5">FY Total (July - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" rowspan="3">Total FY Budget</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q1 (July - September)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q2 (October - December)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/20 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q3 (January - March)</th>
+                                            <th class="px-3 py-2.5 text-center bg-white/10 text-white font-black border-r-2 border-blue-400/50 shadow-sm" colspan="20">Q4 (April - June)</th>
+                                            <th class="px-3 py-2.5 text-center bg-blue-800 text-white font-black border-r-2 border-blue-900 shadow-sm" colspan="5">FY Total (July - June)</th>
                                         </tr>
                                         <!-- Row 2: Months & Quarter Totals -->
-                                        <tr class="bg-slate-50/40 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200/60 text-center">
+                                        <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
                                             <!-- Q1 Months -->
-                                            <th class="px-2 py-1 border-l-2 border-violet-200/60" colspan="5">July</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">August</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">September</th>
-                                            <th class="px-2 py-1 bg-violet-500/10 text-violet-800 font-extrabold border-l-2 border-violet-300" colspan="5">Q1 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">July</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">August</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">September</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q1 Total</th>
                                             <!-- Q2 Months -->
-                                            <th class="px-2 py-1 border-l-2 border-amber-200/60" colspan="5">October</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">November</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">December</th>
-                                            <th class="px-2 py-1 bg-amber-500/10 text-amber-800 font-extrabold border-l-2 border-amber-300" colspan="5">Q2 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">October</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">November</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">December</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q2 Total</th>
                                             <!-- Q3 Months -->
-                                            <th class="px-2 py-1 border-l-2 border-emerald-200/60" colspan="5">January</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">February</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">March</th>
-                                            <th class="px-2 py-1 bg-emerald-500/10 text-emerald-800 font-extrabold border-l-2 border-emerald-300" colspan="5">Q3 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">January</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">February</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">March</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q3 Total</th>
                                             <!-- Q4 Months -->
-                                            <th class="px-2 py-1 border-l-2 border-cyan-200/60" colspan="5">April</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">May</th>
-                                            <th class="px-2 py-1 border-l border-slate-200/60" colspan="5">June</th>
-                                            <th class="px-2 py-1 bg-cyan-500/10 text-cyan-800 font-extrabold border-l-2 border-cyan-300" colspan="5">Q4 Total</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">April</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">May</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50" colspan="5">June</th>
+                                            <th class="px-2 py-1.5 bg-blue-700/50 text-white font-black border-r-2 border-blue-500" colspan="5">Q4 Total</th>
                                             <!-- FY Total -->
-                                            <th class="px-2 py-1 bg-slate-800/20 text-slate-900 font-bold border-l-2 border-slate-400" colspan="5">FY Total</th>
+                                            <th class="px-2 py-1.5 bg-blue-800 text-white font-black border-r-2 border-blue-900" colspan="5">FY Total</th>
                                         </tr>
                                         <!-- Row 3: Metrics -->
-                                        <tr class="text-slate-400 uppercase tracking-tighter text-[8px] border-b border-slate-200/60 text-center font-bold">
+                                        <tr class="bg-blue-800/80 text-white uppercase tracking-tighter text-[8.5px] border-b-2 border-blue-500 text-center font-black">
                                             ${(() => {
                                                 let result = '';
                                                 for (let i = 0; i < 17; i++) {
@@ -1720,39 +1720,39 @@
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-left text-[11px] whitespace-nowrap">
                                 <thead>
-                                    <tr class="bg-indigo-50/50 text-slate-500 uppercase tracking-widest text-[10px] border-b border-indigo-100">
-                                        <th class="px-4 py-1 font-bold sticky left-0 z-10 bg-indigo-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Area Name</th>
-                                        <th class="px-4 py-1 font-bold bg-indigo-50/50 border-r border-indigo-100">AM Name</th>
-                                        ${app.adminShowYTD ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        ${app.adminShowLastMonth ? `<th class="px-3 py-1 text-center border-l border-indigo-100" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
-                                        <th class="px-3 py-1 text-center border-l border-indigo-100" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
+                                    <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white uppercase tracking-wider text-[9.5px] border-b-2 border-blue-400 font-black shadow-sm">
+                                        <th class="px-6 py-2.5 font-black sticky left-0 z-10 bg-blue-700 text-white border-r-2 border-blue-400/50 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">Area Name</th>
+                                        <th class="px-6 py-2.5 font-black border-r-2 border-blue-400/50">AM Name</th>
+                                        ${app.adminShowYTD ? `<th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="3">YTD (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        ${app.adminShowLastMonth ? `<th class="px-3 py-2.5 text-center bg-white/20 border-r-2 border-blue-400/50 font-black" colspan="2">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
+                                        <th class="px-3 py-2.5 text-center bg-white/10 border-r-2 border-blue-400/50 font-black" colspan="${4 + activeModels.length}">Current Month (${app.currentMonth.substring(0, 3)})</th>
                                     </tr>
-                                    <tr class="text-slate-400 uppercase tracking-tighter text-[10px] border-b border-indigo-100 text-center font-bold">
-                                        <th class="px-4 py-1 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                    <tr class="bg-blue-800 text-blue-100 uppercase tracking-wider text-[9px] border-b-2 border-blue-500 text-center font-bold">
+                                        <th class="px-6 py-1.5 sticky left-0 z-10 bg-blue-800 text-white border-r-2 border-blue-500 shadow-[3px_0_8px_rgba(0,0,0,0.1)]">
                                             <div class="flex items-center justify-between gap-2">
-                                                <span>Area</span>
-                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-indigo-100 text-indigo-700 shadow-inner scale-110' : 'hover:bg-slate-100 text-slate-400'}" title="Filter Area Names">
+                                                <span class="font-black">Area</span>
+                                                <button onclick="app.showAreaFilterModal()" class="p-1 rounded-md transition-colors tooltip ${app.areaFilterList && app.areaFilterList.length > 0 ? 'bg-blue-600 text-white shadow-inner scale-110' : 'hover:bg-blue-700 text-blue-300'}" title="Filter Area Names">
                                                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </div>
                                         </th>
-                                        <th class="px-4 py-1 bg-white border-r border-indigo-100 text-left">
-                                            <span>AM Name</span>
+                                        <th class="px-6 py-1.5 bg-blue-800 text-white border-r-2 border-blue-500 text-left">
+                                            <span class="font-black">AM Name</span>
                                         </th>
                                         ${app.adminShowYTD ? `
-                                            <th class="px-2 py-1">Budget</th>
-                                            <th class="px-2 py-1 font-bold text-slate-600">Actual</th>
-                                            <th class="px-2 py-1">Ach%</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Actual</th>
+                                            <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
                                         ` : ''}
                                         ${app.adminShowLastMonth ? `
-                                            <th class="px-2 py-1">Budget</th>
-                                            <th class="px-2 py-1 font-bold text-slate-600">Actual</th>
+                                            <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                            <th class="px-2 py-1.5 font-black text-white border-r-2 border-blue-500">Actual</th>
                                         ` : ''}
-                                        <th class="px-2 py-1 bg-indigo-50/30">Budget</th>
-                                        <th class="px-2 py-1 bg-indigo-50/30 font-bold text-slate-600">Proj</th>
-                                        ${activeModels.map(m => `<th class="px-2 py-1 bg-indigo-50/30">${m}</th>`).join('')}
-                                        <th class="px-2 py-1 bg-indigo-100 text-indigo-900 font-extrabold border-l border-indigo-200">Total</th>
-                                        <th class="px-2 py-1 bg-indigo-100 text-indigo-900 font-extrabold">Ach%</th>
+                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-bold">Budget</th>
+                                        <th class="px-2 py-1.5 font-black text-white border-r border-blue-500/50">Proj</th>
+                                        ${activeModels.map(m => `<th class="px-2 py-1.5 bg-blue-700/50 text-white font-bold border-r border-blue-500/50">${m}</th>`).join('')}
+                                        <th class="px-2 py-1.5 border-r border-blue-500/50 font-black">Total</th>
+                                        <th class="px-2 py-1.5 font-black border-r-2 border-blue-500 text-white">Ach%</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-50 bg-white">
