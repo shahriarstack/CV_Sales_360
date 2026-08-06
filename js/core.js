@@ -191,43 +191,24 @@ window.app.initNeonDB = async () => {
                     let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [];
 
                     if (app.currentUser) {
-                        // Load all data tables concurrently for authenticated users
-                        const results = await Promise.all([
-                            app.neonSQL`SELECT * FROM targets`,
-                            app.neonSQL`SELECT * FROM projections`,
-                            app.neonSQL`SELECT * FROM emi`,
-                            app.neonSQL`SELECT * FROM sales`,
-                            app.neonSQL`SELECT * FROM recovery_od`,
-                            app.neonSQL`SELECT * FROM users`,
-                            app.neonSQL`SELECT * FROM territories`,
-                            app.neonSQL`SELECT * FROM models`,
-                            app.neonSQL`SELECT * FROM notices`,
-                            app.neonSQL`SELECT * FROM links`,
-                            app.neonSQL`SELECT * FROM tiv_brands`,
-                            app.neonSQL`SELECT * FROM app_settings`,
-                            app.neonSQL`SELECT * FROM tiv_submissions`
-                        ]);
-                        targets = results[0];
-                        projections = results[1];
-                        emi = results[2];
-                        sales = results[3];
-                        recovery_od = results[4];
-                        users = results[5];
-                        territories = results[6];
-                        models = results[7];
-                        notices = results[8];
-                        links = results[9];
-                        tiv_brands = results[10];
-                        app_settings = results[11];
-                        tiv_submissions = results[12];
+                        // Load all data tables sequentially for authenticated users to prevent "Too many connections" database error
+                        targets = await app.neonSQL`SELECT * FROM targets`;
+                        projections = await app.neonSQL`SELECT * FROM projections`;
+                        emi = await app.neonSQL`SELECT * FROM emi`;
+                        sales = await app.neonSQL`SELECT * FROM sales`;
+                        recovery_od = await app.neonSQL`SELECT * FROM recovery_od`;
+                        users = await app.neonSQL`SELECT * FROM users`;
+                        territories = await app.neonSQL`SELECT * FROM territories`;
+                        models = await app.neonSQL`SELECT * FROM models`;
+                        notices = await app.neonSQL`SELECT * FROM notices`;
+                        links = await app.neonSQL`SELECT * FROM links`;
+                        tiv_brands = await app.neonSQL`SELECT * FROM tiv_brands`;
+                        app_settings = await app.neonSQL`SELECT * FROM app_settings`;
+                        tiv_submissions = await app.neonSQL`SELECT * FROM tiv_submissions`;
                     } else {
                         // Pre-authentication: Only load sanitized users and territories for login dropdown
-                        const results = await Promise.all([
-                            app.neonSQL`SELECT * FROM users`,
-                            app.neonSQL`SELECT * FROM territories`
-                        ]);
-                        users = results[0];
-                        territories = results[1];
+                        users = await app.neonSQL`SELECT * FROM users`;
+                        territories = await app.neonSQL`SELECT * FROM territories`;
                     }
                     
                     let manual_deliveries = [];
