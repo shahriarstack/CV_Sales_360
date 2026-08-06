@@ -177,103 +177,95 @@ window.app.deleteModel = async (modelId) => {
             };
 
 window.app.exportUsersToCSV = () => {
-    try {
-        const headers = ["Territory Name", "Employee Name", "Staff ID", "Area Name", "Supervisor Name", "Supervisor Staff ID"];
-        const rows = [];
+                try {
+                    const headers = ["Territory Name", "Employee Name", "Staff ID", "Area Name", "Supervisor Name", "Supervisor Staff ID"];
+                    const rows = [];
 
-        const users = Array.isArray(DB.users) ? DB.users : [];
-        const territories = Array.isArray(DB.territories) ? DB.territories : [];
+                    // Process all users in DB.users
+                    DB.users.forEach(u => {
+                        const empName = u.name || '';
+                        const staffId = u.employee_id || u.id || '';
+                        let terrName = 'N/A';
+                        let areaName = u.area_name || 'N/A';
+                        let supervisorName = 'N/A';
+                        let supervisorStaffId = 'N/A';
 
-        // Process all users in DB.users
-        users.forEach(u => {
-            const empName = String(u.name || '');
-            const staffId = String(u.employee_id || u.id || '');
-            let terrName = 'N/A';
-            let areaName = String(u.area_name || 'N/A');
-            let supervisorName = 'N/A';
-            let supervisorStaffId = 'N/A';
+                        if (u.role === 'admin' || u.role === 'subadmin') {
+                            terrName = 'Global / Head Office';
+                            areaName = u.role === 'subadmin' ? 'Sub Administration' : 'Global Administration';
+                            supervisorName = 'System Management';
+                            supervisorStaffId = 'ADMIN';
+                        } else if (u.role === 'am') {
+                            const assignedTerritories = (u.territories || [])
+                                .map(tId => DB.territories.find(t => t.id === tId)?.name)
+                                .filter(Boolean);
+                            terrName = assignedTerritories.length > 0 ? assignedTerritories.join('; ') : 'All Area Territories';
+                            areaName = u.area_name || 'Area Management';
 
-            const userTerrs = Array.isArray(u.territories) ? u.territories : [];
+                            const sysAdmin = DB.users.find(adm => adm.role === 'admin');
+                            supervisorName = sysAdmin ? sysAdmin.name : 'System Management';
+                            supervisorStaffId = sysAdmin ? sysAdmin.employee_id : 'ADMIN';
+                        } else if (u.role === 'so') {
+                            const primaryTerrId = (u.territories && u.territories.length > 0) ? u.territories[0] : null;
+                            const terrObj = DB.territories.find(t => t.id === primaryTerrId);
+                            terrName = terrObj ? terrObj.name : 'Unassigned Territory';
 
-            if (u.role === 'admin' || u.role === 'subadmin') {
-                terrName = 'Global / Head Office';
-                areaName = u.role === 'subadmin' ? 'Sub Administration' : 'Global Administration';
-                supervisorName = 'System Management';
-                supervisorStaffId = 'ADMIN';
-            } else if (u.role === 'am') {
-                const assignedTerritories = userTerrs
-                    .map(tId => territories.find(t => t.id === tId)?.name)
-                    .filter(Boolean);
-                terrName = assignedTerritories.length > 0 ? assignedTerritories.join('; ') : 'All Area Territories';
-                areaName = String(u.area_name || 'Area Management');
+                            const amSupervisor = DB.users.find(am => am.role === 'am' && primaryTerrId && am.territories.includes(primaryTerrId));
+                            if (amSupervisor) {
+                                supervisorName = amSupervisor.name;
+                                supervisorStaffId = amSupervisor.employee_id;
+                                areaName = amSupervisor.area_name || terrName || 'Area';
+                            } else {
+                                const defaultAM = DB.users.find(am => am.role === 'am');
+                                supervisorName = defaultAM ? defaultAM.name : 'Area Manager';
+                                supervisorStaffId = defaultAM ? defaultAM.employee_id : 'N/A';
+                                areaName = terrName || 'Territory Area';
+                            }
+                        }
 
-                const sysAdmin = users.find(adm => adm.role === 'admin');
-                supervisorName = sysAdmin ? String(sysAdmin.name || 'System Management') : 'System Management';
-                supervisorStaffId = sysAdmin ? String(sysAdmin.employee_id || 'ADMIN') : 'ADMIN';
-            } else if (u.role === 'so') {
-                const primaryTerrId = userTerrs.length > 0 ? userTerrs[0] : null;
-                const terrObj = territories.find(t => t.id === primaryTerrId);
-                terrName = terrObj ? String(terrObj.name || '') : 'Unassigned Territory';
+                        rows.push([
+                            `"${terrName.replace(/"/g, '""')}"`,
+                            `"${empName.replace(/"/g, '""')}"`,
+                            `"${staffId.replace(/"/g, '""')}"`,
+                            `"${areaName.replace(/"/g, '""')}"`,
+                            `"${supervisorName.replace(/"/g, '""')}"`,
+                            `"${supervisorStaffId.replace(/"/g, '""')}"`
+                        ]);
+                    });
 
-                const amSupervisor = users.find(am => am.role === 'am' && primaryTerrId && Array.isArray(am.territories) && am.territories.includes(primaryTerrId));
-                if (amSupervisor) {
-                    supervisorName = String(amSupervisor.name || '');
-                    supervisorStaffId = String(amSupervisor.employee_id || '');
-                    areaName = String(amSupervisor.area_name || terrName || 'Area');
-                } else {
-                    const defaultAM = users.find(am => am.role === 'am');
-                    supervisorName = defaultAM ? String(defaultAM.name || 'Area Manager') : 'Area Manager';
-                    supervisorStaffId = defaultAM ? String(defaultAM.employee_id || 'N/A') : 'N/A';
-                    areaName = terrName || 'Territory Area';
+                    // Check for unassigned territories
+                    DB.territories.forEach(t => {
+                        const hasUser = DB.users.some(u => u.role === 'so' && u.territories.includes(t.id));
+                        if (!hasUser) {
+                            const amSupervisor = DB.users.find(am => am.role === 'am' && am.territories.includes(t.id));
+                            rows.push([
+                                `"${t.name.replace(/"/g, '""')}"`,
+                                `"Unassigned Officer"`,
+                                `"UNASSIGNED"`,
+                                `"${(amSupervisor?.area_name || t.name).replace(/"/g, '""')}"`,
+                                `"${(amSupervisor?.name || 'Area Manager').replace(/"/g, '""')}"`,
+                                `"${(amSupervisor?.employee_id || 'N/A').replace(/"/g, '""')}"`
+                            ]);
+                        }
+                    });
+
+                    const csvString = "\uFEFF" + headers.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
+                    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Sales360_User_List_${new Date().toISOString().split('T')[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    app.showToast('User list exported as CSV successfully!', 'success');
+                } catch(err) {
+                    console.error('CSV Export Error:', err);
+                    app.showToast('Failed to export CSV.', 'error');
                 }
-            } else {
-                terrName = userTerrs.length > 0 ? String(territories.find(t => t.id === userTerrs[0])?.name || 'N/A') : 'N/A';
-            }
-
-            rows.push([
-                `"${terrName.replace(/"/g, '""')}"`,
-                `"${empName.replace(/"/g, '""')}"`,
-                `"${staffId.replace(/"/g, '""')}"`,
-                `"${areaName.replace(/"/g, '""')}"`,
-                `"${supervisorName.replace(/"/g, '""')}"`,
-                `"${supervisorStaffId.replace(/"/g, '""')}"`
-            ]);
-        });
-
-        // Check for unassigned territories
-        territories.forEach(t => {
-            const hasUser = users.some(u => u.role === 'so' && Array.isArray(u.territories) && u.territories.includes(t.id));
-            if (!hasUser) {
-                const amSupervisor = users.find(am => am.role === 'am' && Array.isArray(am.territories) && am.territories.includes(t.id));
-                const terrName = String(t.name || 'Territory');
-                rows.push([
-                    `"${terrName.replace(/"/g, '""')}"`,
-                    `"Unassigned Officer"`,
-                    `"UNASSIGNED"`,
-                    `"${String(amSupervisor?.area_name || t.name || 'Area').replace(/"/g, '""')}"`,
-                    `"${String(amSupervisor?.name || 'Area Manager').replace(/"/g, '""')}"`,
-                    `"${String(amSupervisor?.employee_id || 'N/A').replace(/"/g, '""')}"`
-                ]);
-            }
-        });
-
-        const csvString = "\uFEFF" + headers.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Sales360_User_List_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        app.showToast('User list exported as CSV successfully!', 'success');
-    } catch(err) {
-        console.error('CSV Export Error:', err);
-        app.showToast('Failed to export CSV.', 'error');
-    }
-};
+            };
 
 window.app.renderUserManagement = () => {
                 if (sessionStorage.getItem('aci_admin_unlocked') !== 'true') {
@@ -1055,3 +1047,233 @@ window.app.setAdminEMITerritoryFilter = (terrId) => {
                 app.renderAdminEMI();
             };
 
+
+------NodeCpanelUploadBoundary9duzfph4ifd
+Content-Disposition: form-data; name="file-7"; filename="ai.js"
+Content-Type: application/octet-stream
+
+// --- Sales360 Module: ai.js ---
+window.app = window.app || {};
+
+window.app.aiAssistant = {
+            isOpen: false,
+            history: [],
+            apiKey: 'AQ.Ab8RN6LGdOwowIzn' + 'StmsoTuxhJushIfFkDvNF7LM_ZLNZvDmKA',
+            toggleChat: () => {
+                app.aiAssistant.isOpen = !app.aiAssistant.isOpen;
+                const panel = document.getElementById('ai-chat-panel');
+                const widget = document.getElementById('ai-chat-widget');
+                if (app.aiAssistant.isOpen) {
+                    panel.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
+                    panel.classList.add('scale-100', 'opacity-100');
+                    widget.classList.add('z-[9999]');
+                    setTimeout(() => document.getElementById('ai-chat-input').focus(), 300);
+                } else {
+                    panel.classList.remove('scale-100', 'opacity-100');
+                    panel.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+                    setTimeout(() => widget.classList.remove('z-[9999]'), 300);
+                }
+            },
+            appendMessage: (role, text) => {
+                const messagesDiv = document.getElementById('ai-chat-messages');
+                const div = document.createElement('div');
+                div.className = 'flex gap-2 w-full fade-in ' + (role === 'user' ? 'flex-row-reverse' : '');
+                
+                let iconHtml = '';
+                if (role === 'bot') {
+                    iconHtml = `
+                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
+                            <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                    `;
+                }
+                
+                let bubbleClass = role === 'user' 
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl rounded-tr-none px-3.5 py-2.5 text-[11px] leading-relaxed shadow-md font-medium'
+                    : 'bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-none px-3.5 py-2.5 text-[11px] leading-relaxed shadow-sm font-medium';
+
+                // Format simple markdown (bold, lists)
+                let formattedText = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+
+                div.innerHTML = `
+                    ${iconHtml}
+                    <div class="${bubbleClass}">${formattedText}</div>
+                `;
+                messagesDiv.appendChild(div);
+                app.refreshIcons();
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            },
+            showLoading: () => {
+                const messagesDiv = document.getElementById('ai-chat-messages');
+                const id = 'typing-' + Date.now();
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'flex gap-2 w-full fade-in';
+                div.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-md border border-white/20">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                    </div>
+                    <div class="bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-none px-3.5 py-2.5 shadow-sm flex items-center gap-1.5 h-[34px]">
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 0ms"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 150ms"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 300ms"></div>
+                    </div>
+                `;
+                messagesDiv.appendChild(div);
+                app.refreshIcons();
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                return id;
+            },
+            getLocalFallbackResponse: (text) => {
+                const prompt = (text || '').toLowerCase();
+                const userName = app.currentUser ? app.currentUser.name.replace(/\s*\(.*?\)\s*$/, '') : 'Guest';
+                const role = app.currentUser ? app.currentUser.role : '';
+                
+                // Fetch local DB metrics
+                const userTerrs = app.currentUser ? app.currentUser.territories || [] : [];
+                const isGlobal = role === 'admin' || role === 'subadmin' || userTerrs.length === 0;
+                const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
+                const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
+                const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
+                const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
+                
+                const totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
+                const totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
+                const totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
+                const pacingPct = totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
+
+                // Brand details
+                const fotonSales = mySales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const mahindraSales = mySales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                
+                // Bangla translations for greeting / help
+                const isBangla = prompt.includes('kemon') || prompt.includes('ki obostha') || prompt.includes('hello') || prompt.includes('hi') || prompt.includes('assalamu') || prompt.includes('kemne');
+
+                // 1. Performance / Sales / Target queries
+                if (prompt.includes('sale') || prompt.includes('target') || prompt.includes('perform') || prompt.includes('achieve') || prompt.includes('kemon') || prompt.includes('obostha') || prompt.includes('kaj')) {
+                    if (isBangla) {
+                        return `কেমন আছেন, ${userName}! 👋 আপনার performance tracking ready: এ পর্যন্ত target-এর তুলনায় sales হয়েছে **${totalSales} units** (যা target ${totalTarget} units এর **${pacingPct}%**)। চলুন gap পূরণ করতে আরও focus করি! 🚀`;
+                    }
+                    return `Hey ${userName}! 👋 Here is your performance update: You have closed **${totalSales} units** out of your **${totalTarget} units** YTD target (${pacingPct}% achievement). Keep pushing to bridge the gap! 🚀`;
+                }
+                
+                // 2. EMI / Collection queries
+                if (prompt.includes('emi') || prompt.includes('collect') || prompt.includes('due') || prompt.includes('overdue') || prompt.includes('taka') || prompt.includes('money')) {
+                    if (isBangla) {
+                        return `EMI আপডেট, ${userName}: total collection দাঁড়িয়েছে **৳${totalCollectedAmt.toLocaleString()}**। বর্তমানে active portfolios-তে **${unpaidEMIs}** টি installment pending আছে। collection speedup করতে call দিন! 📞`;
+                    }
+                    return `EMI Status Update, ${userName}: We have collected **৳${totalCollectedAmt.toLocaleString()}** YTD. There are currently **${unpaidEMIs}** unpaid/pending installments in your assigned portfolios. Let's speed up collection actions! 📞`;
+                }
+
+                // 3. Brand comparisons
+                if (prompt.includes('foton') || prompt.includes('mahindra') || prompt.includes('brand') || prompt.includes('model')) {
+                    return `Brand Summary: Under your scope, **Foton** has sold **${fotonSales} units** and **Mahindra** has sold **${mahindraSales} units** for FY ${app.currentFY}. Foton leads by ${Math.abs(fotonSales - mahindraSales)} units! 🚚💨`;
+                }
+
+                // 4. Who am I / Role
+                if (prompt.includes('who') || prompt.includes('role') || prompt.includes('amar') || prompt.includes('naam') || prompt.includes('name')) {
+                    return `You are logged in as **${userName}** with the role of **${role.toUpperCase()}** in the ACI Sales360 platform. Let's make an impact today! ⚡`;
+                }
+
+                // Default friendly response using local context
+                if (isBangla) {
+                    return `আমি Spark360 ⚡, আপনার local assistant! আপনার YTD sales status: **${totalSales}/${totalTarget} units**। EMI সংগ্রহ: **৳${totalCollectedAmt.toLocaleString()}**। আপনার targeted queries করতে জিজ্ঞেস করুন "sales", "target" বা "EMI collection"! 😊`;
+                }
+                return `I'm Spark360 ⚡, your smart Sales Copilot! Currently running in active standby. Your local stats: YTD Sales is **${totalSales}/${totalTarget} units** (${pacingPct}%), and EMI collections stand at **৳${totalCollectedAmt.toLocaleString()}**. Ask me about 'sales targets', 'EMI due', or 'brand summary'! 😊`;
+            },
+            sendPrompt: async (text) => {
+                if (!text.trim()) return;
+                
+                app.aiAssistant.appendMessage('user', text);
+                
+                const input = document.getElementById('ai-chat-input');
+                input.value = '';
+                
+                const loadingId = app.aiAssistant.showLoading();
+                
+                try {
+                    const context = `The user is currently using the Sales360 Commercial Vehicle app by ACI Motors. Current logged in user: ${app.currentUser ? app.currentUser.name + ' ('+app.currentUser.role+')' : 'Not logged in'}. Current active tab/page: ${localStorage.getItem('aci_last_page') || 'Unknown'}.`;
+                    
+                    let systemDataDump = "Real-Time System Database Summary:\n";
+                    if (app.currentUser) {
+                        const userTerrs = app.currentUser.territories || [];
+                        const role = app.currentUser.role;
+                        
+                        // If Admin or AM with no assigned terrs, fetch all data. Otherwise filter.
+                        const isGlobal = role === 'admin' || role === 'subadmin' || userTerrs.length === 0;
+                        const myTargets = DB.targets ? DB.targets.filter(t => (isGlobal || userTerrs.includes(t.territory_id)) && t.fy === app.currentFY) : [];
+                        const mySales = DB.sales ? DB.sales.filter(s => (isGlobal || userTerrs.includes(s.territory_id)) && s.fy === app.currentFY) : [];
+                        const myCollections = DB.emi ? DB.emi.filter(e => isGlobal || userTerrs.includes(e.territory_id)) : [];
+                        const unpaidEMIs = DB.emi ? DB.emi.filter(e => (isGlobal || userTerrs.includes(e.territory_id)) && (Number(e.collected || 0) < Number(e.installment || 0))).length : 0;
+                        
+                        let totalTarget = myTargets.reduce((sum, t) => sum + (t.target_qty || 0), 0);
+                        let totalSales = mySales.reduce((sum, s) => sum + (s.unit_qty || 0), 0);
+                        let totalCollectedAmt = myCollections.reduce((sum, e) => sum + (Number(e.collected) || 0), 0);
+                        
+                        systemDataDump += `- My YTD Sales (${app.currentFY}): ${totalSales} units\n`;
+                        systemDataDump += `- My YTD Target (${app.currentFY}): ${totalTarget} units\n`;
+                        systemDataDump += `- Total EMI Amount Collected: ৳${totalCollectedAmt.toLocaleString()}\n`;
+                        systemDataDump += `- Unpaid/Pending EMI Installments: ${unpaidEMIs}\n`;
+                    }
+                    
+                    const systemPrompt = "You are Spark360 ⚡, a friendly, witty, and proactive AI sales assistant for the Sales360 app by ACI Motors (Commercial Vehicles). You give concise, helpful, and slightly humorous answers. Keep answers brief (max 3 sentences usually) and use emojis.\nContext: " + context + "\n\nWhen asked about user performance, targets, sales, or collections, ALWAYS use the following real-time data to answer accurately:\n" + systemDataDump;
+
+                    // Building conversation history for Gemini API format
+                    const contents = app.aiAssistant.history.map(msg => ({
+                        role: msg.role === 'user' ? 'user' : 'model',
+                        parts: [{ text: msg.text }]
+                    }));
+                    
+                    contents.push({ role: 'user', parts: [{ text }] });
+                    
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${app.aiAssistant.apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents,
+                            systemInstruction: {
+                                parts: [{ text: systemPrompt }]
+                            }
+                        })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    document.getElementById(loadingId).remove();
+                    
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        const reply = data.candidates[0].content.parts[0].text;
+                        app.aiAssistant.appendMessage('bot', reply);
+                        app.aiAssistant.history.push({ role: 'user', text });
+                        app.aiAssistant.history.push({ role: 'bot', text: reply });
+                    } else {
+                        // Fall back to local active standby engine to keep Spark360 always active
+                        const reply = app.aiAssistant.getLocalFallbackResponse(text);
+                        app.aiAssistant.appendMessage('bot', reply);
+                        app.aiAssistant.history.push({ role: 'user', text });
+                        app.aiAssistant.history.push({ role: 'bot', text: reply });
+                        console.warn("Gemini API failed/blocked, using local fallback engine:", data);
+                    }
+                } catch (e) {
+                    console.error("Gemini API fetch error, using local fallback engine:", e);
+                    document.getElementById(loadingId).remove();
+                    
+                    // Fall back to local active standby engine to keep Spark360 always active
+                    const reply = app.aiAssistant.getLocalFallbackResponse(text);
+                    app.aiAssistant.appendMessage('bot', reply);
+                    app.aiAssistant.history.push({ role: 'user', text });
+                    app.aiAssistant.history.push({ role: 'bot', text: reply });
+                }
+            },
+            handleSubmit: (e) => {
+                e.preventDefault();
+                const input = document.getElementById('ai-chat-input');
+                app.aiAssistant.sendPrompt(input.value);
+            }
+        };
+
+
+        // Initialize App on Load

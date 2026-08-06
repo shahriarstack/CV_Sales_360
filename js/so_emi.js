@@ -72,7 +72,17 @@ window.app.renderSOFirstTwoEMI = () => {
                                     </div>
                                 </div>
                             `}).join('')}
-                            ${targetEMI.length === 0 ? '<div class="text-center text-slate-500 py-10">No 1st or 2nd installments pending! Excellent job.</div>' : ''}
+                            ${targetEMI.length === 0 
+                                ? (DB.emi.length === 0 
+                                    ? `<div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+                                           <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border-2 border-slate-100 border-dashed">
+                                               <i data-lucide="database" class="w-8 h-8 text-slate-300"></i>
+                                           </div>
+                                           <h3 class="text-lg font-bold text-slate-700 mb-1">SDMS Data Pending</h3>
+                                           <p class="text-sm text-slate-500 max-w-xs mx-auto">SDMS data not update yet, please wait ultill SDMS update.</p>
+                                       </div>`
+                                    : '<div class="text-center text-slate-500 py-10">No 1st or 2nd installments pending! Excellent job.</div>')
+                                : ''}
                         </div>
                     </div>
                 `;
@@ -216,7 +226,17 @@ window.app.renderSOEMI = () => {
                         <!-- Customer Cards -->
                         <div class="space-y-3" id="emi-list">
                             ${soEmi.map((e, index) => app.generateEMICardHTML(e, index + 1)).join('')}
-                            ${soEmi.length === 0 ? '<div class="text-center text-slate-500 text-sm py-10">No overdue accounts found.</div>' : ''}
+                            ${soEmi.length === 0 
+                                ? (DB.emi.length === 0 
+                                    ? `<div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+                                           <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border-2 border-slate-100 border-dashed">
+                                               <i data-lucide="database" class="w-8 h-8 text-slate-300"></i>
+                                           </div>
+                                           <h3 class="text-lg font-bold text-slate-700 mb-1">SDMS Data Pending</h3>
+                                           <p class="text-sm text-slate-500 max-w-xs mx-auto">SDMS data not update yet, please wait ultill SDMS update.</p>
+                                       </div>`
+                                    : '<div class="text-center text-slate-500 text-sm py-10">No overdue accounts found.</div>')
+                                : ''}
                         </div>
                     </div>
                 `;

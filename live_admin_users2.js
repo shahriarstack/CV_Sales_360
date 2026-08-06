@@ -177,103 +177,95 @@ window.app.deleteModel = async (modelId) => {
             };
 
 window.app.exportUsersToCSV = () => {
-    try {
-        const headers = ["Territory Name", "Employee Name", "Staff ID", "Area Name", "Supervisor Name", "Supervisor Staff ID"];
-        const rows = [];
+                try {
+                    const headers = ["Territory Name", "Employee Name", "Staff ID", "Area Name", "Supervisor Name", "Supervisor Staff ID"];
+                    const rows = [];
 
-        const users = Array.isArray(DB.users) ? DB.users : [];
-        const territories = Array.isArray(DB.territories) ? DB.territories : [];
+                    // Process all users in DB.users
+                    DB.users.forEach(u => {
+                        const empName = u.name || '';
+                        const staffId = u.employee_id || u.id || '';
+                        let terrName = 'N/A';
+                        let areaName = u.area_name || 'N/A';
+                        let supervisorName = 'N/A';
+                        let supervisorStaffId = 'N/A';
 
-        // Process all users in DB.users
-        users.forEach(u => {
-            const empName = String(u.name || '');
-            const staffId = String(u.employee_id || u.id || '');
-            let terrName = 'N/A';
-            let areaName = String(u.area_name || 'N/A');
-            let supervisorName = 'N/A';
-            let supervisorStaffId = 'N/A';
+                        if (u.role === 'admin' || u.role === 'subadmin') {
+                            terrName = 'Global / Head Office';
+                            areaName = u.role === 'subadmin' ? 'Sub Administration' : 'Global Administration';
+                            supervisorName = 'System Management';
+                            supervisorStaffId = 'ADMIN';
+                        } else if (u.role === 'am') {
+                            const assignedTerritories = (u.territories || [])
+                                .map(tId => DB.territories.find(t => t.id === tId)?.name)
+                                .filter(Boolean);
+                            terrName = assignedTerritories.length > 0 ? assignedTerritories.join('; ') : 'All Area Territories';
+                            areaName = u.area_name || 'Area Management';
 
-            const userTerrs = Array.isArray(u.territories) ? u.territories : [];
+                            const sysAdmin = DB.users.find(adm => adm.role === 'admin');
+                            supervisorName = sysAdmin ? sysAdmin.name : 'System Management';
+                            supervisorStaffId = sysAdmin ? sysAdmin.employee_id : 'ADMIN';
+                        } else if (u.role === 'so') {
+                            const primaryTerrId = (u.territories && u.territories.length > 0) ? u.territories[0] : null;
+                            const terrObj = DB.territories.find(t => t.id === primaryTerrId);
+                            terrName = terrObj ? terrObj.name : 'Unassigned Territory';
 
-            if (u.role === 'admin' || u.role === 'subadmin') {
-                terrName = 'Global / Head Office';
-                areaName = u.role === 'subadmin' ? 'Sub Administration' : 'Global Administration';
-                supervisorName = 'System Management';
-                supervisorStaffId = 'ADMIN';
-            } else if (u.role === 'am') {
-                const assignedTerritories = userTerrs
-                    .map(tId => territories.find(t => t.id === tId)?.name)
-                    .filter(Boolean);
-                terrName = assignedTerritories.length > 0 ? assignedTerritories.join('; ') : 'All Area Territories';
-                areaName = String(u.area_name || 'Area Management');
+                            const amSupervisor = DB.users.find(am => am.role === 'am' && primaryTerrId && am.territories.includes(primaryTerrId));
+                            if (amSupervisor) {
+                                supervisorName = amSupervisor.name;
+                                supervisorStaffId = amSupervisor.employee_id;
+                                areaName = amSupervisor.area_name || terrName || 'Area';
+                            } else {
+                                const defaultAM = DB.users.find(am => am.role === 'am');
+                                supervisorName = defaultAM ? defaultAM.name : 'Area Manager';
+                                supervisorStaffId = defaultAM ? defaultAM.employee_id : 'N/A';
+                                areaName = terrName || 'Territory Area';
+                            }
+                        }
 
-                const sysAdmin = users.find(adm => adm.role === 'admin');
-                supervisorName = sysAdmin ? String(sysAdmin.name || 'System Management') : 'System Management';
-                supervisorStaffId = sysAdmin ? String(sysAdmin.employee_id || 'ADMIN') : 'ADMIN';
-            } else if (u.role === 'so') {
-                const primaryTerrId = userTerrs.length > 0 ? userTerrs[0] : null;
-                const terrObj = territories.find(t => t.id === primaryTerrId);
-                terrName = terrObj ? String(terrObj.name || '') : 'Unassigned Territory';
+                        rows.push([
+                            `"${terrName.replace(/"/g, '""')}"`,
+                            `"${empName.replace(/"/g, '""')}"`,
+                            `"${staffId.replace(/"/g, '""')}"`,
+                            `"${areaName.replace(/"/g, '""')}"`,
+                            `"${supervisorName.replace(/"/g, '""')}"`,
+                            `"${supervisorStaffId.replace(/"/g, '""')}"`
+                        ]);
+                    });
 
-                const amSupervisor = users.find(am => am.role === 'am' && primaryTerrId && Array.isArray(am.territories) && am.territories.includes(primaryTerrId));
-                if (amSupervisor) {
-                    supervisorName = String(amSupervisor.name || '');
-                    supervisorStaffId = String(amSupervisor.employee_id || '');
-                    areaName = String(amSupervisor.area_name || terrName || 'Area');
-                } else {
-                    const defaultAM = users.find(am => am.role === 'am');
-                    supervisorName = defaultAM ? String(defaultAM.name || 'Area Manager') : 'Area Manager';
-                    supervisorStaffId = defaultAM ? String(defaultAM.employee_id || 'N/A') : 'N/A';
-                    areaName = terrName || 'Territory Area';
+                    // Check for unassigned territories
+                    DB.territories.forEach(t => {
+                        const hasUser = DB.users.some(u => u.role === 'so' && u.territories.includes(t.id));
+                        if (!hasUser) {
+                            const amSupervisor = DB.users.find(am => am.role === 'am' && am.territories.includes(t.id));
+                            rows.push([
+                                `"${t.name.replace(/"/g, '""')}"`,
+                                `"Unassigned Officer"`,
+                                `"UNASSIGNED"`,
+                                `"${(amSupervisor?.area_name || t.name).replace(/"/g, '""')}"`,
+                                `"${(amSupervisor?.name || 'Area Manager').replace(/"/g, '""')}"`,
+                                `"${(amSupervisor?.employee_id || 'N/A').replace(/"/g, '""')}"`
+                            ]);
+                        }
+                    });
+
+                    const csvString = "\uFEFF" + headers.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
+                    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Sales360_User_List_${new Date().toISOString().split('T')[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    app.showToast('User list exported as CSV successfully!', 'success');
+                } catch(err) {
+                    console.error('CSV Export Error:', err);
+                    app.showToast('Failed to export CSV.', 'error');
                 }
-            } else {
-                terrName = userTerrs.length > 0 ? String(territories.find(t => t.id === userTerrs[0])?.name || 'N/A') : 'N/A';
-            }
-
-            rows.push([
-                `"${terrName.replace(/"/g, '""')}"`,
-                `"${empName.replace(/"/g, '""')}"`,
-                `"${staffId.replace(/"/g, '""')}"`,
-                `"${areaName.replace(/"/g, '""')}"`,
-                `"${supervisorName.replace(/"/g, '""')}"`,
-                `"${supervisorStaffId.replace(/"/g, '""')}"`
-            ]);
-        });
-
-        // Check for unassigned territories
-        territories.forEach(t => {
-            const hasUser = users.some(u => u.role === 'so' && Array.isArray(u.territories) && u.territories.includes(t.id));
-            if (!hasUser) {
-                const amSupervisor = users.find(am => am.role === 'am' && Array.isArray(am.territories) && am.territories.includes(t.id));
-                const terrName = String(t.name || 'Territory');
-                rows.push([
-                    `"${terrName.replace(/"/g, '""')}"`,
-                    `"Unassigned Officer"`,
-                    `"UNASSIGNED"`,
-                    `"${String(amSupervisor?.area_name || t.name || 'Area').replace(/"/g, '""')}"`,
-                    `"${String(amSupervisor?.name || 'Area Manager').replace(/"/g, '""')}"`,
-                    `"${String(amSupervisor?.employee_id || 'N/A').replace(/"/g, '""')}"`
-                ]);
-            }
-        });
-
-        const csvString = "\uFEFF" + headers.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Sales360_User_List_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        app.showToast('User list exported as CSV successfully!', 'success');
-    } catch(err) {
-        console.error('CSV Export Error:', err);
-        app.showToast('Failed to export CSV.', 'error');
-    }
-};
+            };
 
 window.app.renderUserManagement = () => {
                 if (sessionStorage.getItem('aci_admin_unlocked') !== 'true') {

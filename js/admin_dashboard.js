@@ -301,7 +301,7 @@ window.app.renderAdminDashboard = () => {
 
                              return `
                                  <!-- YTD Overall -->
-                                 <div class="glass p-4 rounded-xl shadow-sm border border-white/60 mb-4 relative overflow-hidden">
+                                 <div class="glass p-4 rounded-xl shadow-sm border border-slate-200/80 mb-4 relative overflow-hidden">
                                      <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
                                      <div class="flex justify-between items-center mb-3">
                                          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -439,7 +439,7 @@ window.app.renderAdminDashboard = () => {
                             const predictedAch = ach(predictedFinish, currMonthBudget);
 
                             return `
-                                <div class="glass p-4 rounded-[1.5rem] border border-white shadow-xl mb-6 relative overflow-hidden">
+                                <div class="glass p-4 rounded-[1.5rem] border border-slate-200/80 shadow-xl mb-6 relative overflow-hidden">
                                     <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-4">
                                         <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
@@ -563,7 +563,7 @@ window.app.renderAdminDashboard = () => {
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="glass p-5 rounded-[2rem] border border-white shadow-xl mb-8 relative overflow-hidden">
+                    <div class="glass p-5 rounded-[2rem] border border-slate-200/80 shadow-xl mb-8 relative overflow-hidden">
                         <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
@@ -705,7 +705,7 @@ window.app.renderAdminDashboard = () => {
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
+                            <div class="glass rounded-[2rem] border border-slate-200/80 shadow-xl overflow-hidden mb-8">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>

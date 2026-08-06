@@ -109,6 +109,8 @@ window.app.renderDataUpload = () => {
                                         <button onclick="app.viewUploadedData('emi')" title="View Data" class="text-purple-600 hover:bg-purple-100 p-1.5 rounded transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                         <div class="w-px h-4 bg-slate-200"></div>
                                         <button onclick="app.downloadTemplate('emi_early')" title="Download Template" class="text-purple-600 hover:bg-purple-100 p-1.5 rounded transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                        <div class="w-px h-4 bg-slate-200"></div>
+                                        <button onclick="app.deleteAllRows('emi')" title="Clear All Data" class="text-red-500 hover:bg-red-100 p-1.5 rounded transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                     </div>
                                 </div>
                                 <div class="border-2 border-dashed border-slate-300 rounded-lg p-5 text-center hover:bg-slate-50 transition-colors cursor-pointer flex-1 flex flex-col justify-center" onclick="document.getElementById('file-emi-early').click()">

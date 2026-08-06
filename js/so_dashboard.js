@@ -1036,7 +1036,7 @@ window.app.showAddDeliveryModal = () => {
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
                                     <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-aci-blue/70">Customer ID</label>
-                                    <input type="text" id="del-customer-code" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" placeholder="ID: C34222 or 'N/A'">
+                                    <input type="text" id="del-customer-code" maxlength="6" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" placeholder="ID: C34222 (6 chars)">
                                 </div>
                                 <div class="space-y-1.5 relative">
                                     <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-indigo-600/70">Purpose of Use</label>
@@ -1099,14 +1099,17 @@ window.app.showAddDeliveryModal = () => {
                                     <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trade Price</label>
                                     <div class="relative">
                                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">৳</span>
-                                        <input type="number" id="del-tp" class="w-full border-2 border-slate-100 rounded-xl pl-7 pr-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="0">
+                                        <input type="number" id="del-tp" oninput="app.calculateDPPercentage()" class="w-full border-2 border-slate-100 rounded-xl pl-7 pr-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="0">
                                     </div>
                                 </div>
-                                <div class="space-y-1.5">
+                                <div class="space-y-1.5 relative">
                                     <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Downpayment</label>
+                                    <div class="absolute right-1 top-0">
+                                        <span id="del-dp-perc" class="text-[9px] font-black text-white bg-slate-300 px-1.5 py-0.5 rounded transition-all duration-300">0%</span>
+                                    </div>
                                     <div class="relative">
                                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">৳</span>
-                                        <input type="number" id="del-dp" class="w-full border-2 border-slate-100 rounded-xl pl-7 pr-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="0">
+                                        <input type="number" id="del-dp" oninput="app.calculateDPPercentage()" class="w-full border-2 border-slate-100 rounded-xl pl-7 pr-3 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="0">
                                     </div>
                                 </div>
                                 <div class="space-y-1.5">
@@ -1376,11 +1379,19 @@ window.app.saveManualDelivery = (e) => {
                 const discAmt = document.getElementById('del-discount-amount')?.value || 0;
                 const giftItem = document.getElementById('del-gift-item')?.value || '';
 
-                // Duplicate Customer ID Check
+                // Customer ID Validation & Duplicate Check
                 const customerCodeTrimmed = (customerCode || '').trim();
-                const isPlaceholderId = ['na', 'n/a', 'n.a.', 'none', 'null', 'temp', 'new'].includes(customerCodeTrimmed.toLowerCase());
                 
-                if (customerCodeTrimmed && !isPlaceholderId) {
+                if (customerCodeTrimmed) {
+                    if (customerCodeTrimmed.length !== 6) {
+                        app.showToast('Customer ID must be exactly 6 characters.', 'error');
+                        return;
+                    }
+                    if (customerCodeTrimmed.includes(' ') || customerCodeTrimmed.includes('-')) {
+                        app.showToast('Customer ID cannot contain spaces or dashes.', 'error');
+                        return;
+                    }
+                    
                     const duplicate = DB.sales.find(s => s.customer_id && s.customer_id.trim().toLowerCase() === customerCodeTrimmed.toLowerCase());
                     if (duplicate) {
                         app.showDuplicateWarning(customerCodeTrimmed, duplicate);
@@ -1451,7 +1462,36 @@ window.app.saveManualDelivery = (e) => {
                             DB.sales.push(localDelivery);
                             app.hideLoader();
                             app.closeDeliveryModal();
-                            app.showToast('✅ Delivery logged successfully! Field intelligence updated.');
+                            
+                            // Achievement Calculation for Celebration
+                            const b_sales = DB.sales.filter(s => s.territory_id === terrId && s.sales_month === app.currentMonth && s.fy === app.currentFY && s.brand === brand && s.sale_type === type);
+                            const currentUnits = b_sales.reduce((sum, s) => sum + Number(s.unit_qty || 1), 0);
+                            
+                            const yrTgts = DB.targets.filter(t => t.territory_id === terrId && t.brand === brand && t.fy === app.currentFY && t.sale_type === type);
+                            const tTgt = yrTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0);
+                            const mTgts = yrTgts.filter(t => t.month === app.currentMonth);
+                            const monthlyBudget = mTgts.length > 0 ? mTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTgt / 12) || 0;
+                            
+                            const mProjs = DB.projections.filter(p => p.territory_id === terrId && p.brand === brand && p.fy === app.currentFY && p.month === app.currentMonth && p.sale_type === type);
+                            const monthlyProj = mProjs.reduce((sum, p) => sum + Number(p.proj_qty || 0), 0);
+                            
+                            const achBudget = monthlyBudget > 0 ? (currentUnits / monthlyBudget) * 100 : 0;
+                            const achProj = monthlyProj > 0 ? (currentUnits / monthlyProj) * 100 : 0;
+                            
+                            // Only trigger milestone if this exact delivery pushed them over 100%
+                            const unitsAdded = Number(localDelivery.unit_qty || 1);
+                            const previousUnits = currentUnits - unitsAdded;
+                            const prevAchBudget = monthlyBudget > 0 ? (previousUnits / monthlyBudget) * 100 : 0;
+                            const prevAchProj = monthlyProj > 0 ? (previousUnits / monthlyProj) * 100 : 0;
+                            
+                            let milestoneType = null;
+                            if (achBudget >= 100 && prevAchBudget < 100) milestoneType = 'budget';
+                            else if (achProj >= 100 && prevAchProj < 100) milestoneType = 'projection';
+                            else if (achBudget >= 100) milestoneType = 'budget_maintained';
+                            else if (achProj >= 100) milestoneType = 'projection_maintained';
+                            
+                            app.showDeliveryCelebration(brand, unitsAdded, milestoneType);
+                            
                             app.renderSODashboard();
                         } else {
                             throw new Error(result.error || 'Server returned an error');
@@ -1676,4 +1716,125 @@ window.app.renderSOCreditNotes = (selectedMonth = null) => {
 
     document.getElementById('view-port').innerHTML = html;
     app.refreshIcons();
+};
+
+window.app.showDeliveryCelebration = (brand, units, milestoneType) => {
+    // milestoneType: null, 'budget', 'projection', 'budget_maintained', 'projection_maintained'
+    
+    const existing = document.getElementById('celebration-modal');
+    if (existing) existing.remove();
+    
+    let isMilestone = milestoneType !== null;
+    let title = "Thank You! 🙌";
+    let subtitle = `You have successfully logged ${units} unit(s) of ${brand}.`;
+    
+    let milestoneHtml = '';
+    let bgGradient = "from-emerald-500/10 to-teal-500/10";
+    
+    if (milestoneType === 'budget') {
+        milestoneHtml = `
+            <div class="mt-5 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl border border-amber-200">
+                <div class="flex items-center gap-3 mb-1">
+                    <i data-lucide="award" class="w-6 h-6 text-amber-500"></i>
+                    <h3 class="font-black text-amber-600 text-sm">Target Achieved!</h3>
+                </div>
+                <p class="text-xs text-amber-700/80 text-left font-medium">Congratulations! You have reached 100% of your Budget. Outstanding performance!</p>
+            </div>
+        `;
+        bgGradient = "from-amber-500/10 to-yellow-500/10";
+    } else if (milestoneType === 'projection') {
+        milestoneHtml = `
+            <div class="mt-5 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200">
+                <div class="flex items-center gap-3 mb-1">
+                    <i data-lucide="trending-up" class="w-6 h-6 text-indigo-500"></i>
+                    <h3 class="font-black text-indigo-600 text-sm">Projection Achieved!</h3>
+                </div>
+                <p class="text-xs text-indigo-700/80 text-left font-medium">Congratulations! You have reached 100% of your Projection. Keep up the momentum!</p>
+            </div>
+        `;
+        bgGradient = "from-indigo-500/10 to-purple-500/10";
+    } else if (milestoneType === 'budget_maintained' || milestoneType === 'projection_maintained') {
+        milestoneHtml = `
+            <div class="mt-5 p-4 bg-gradient-to-r from-rose-50 to-orange-50 rounded-2xl border border-rose-200">
+                <div class="flex items-center gap-3 mb-1">
+                    <i data-lucide="flame" class="w-6 h-6 text-rose-500"></i>
+                    <h3 class="font-black text-rose-600 text-sm">Crushing It! 🔥</h3>
+                </div>
+                <p class="text-xs text-rose-700/80 text-left font-medium">You are going above and beyond your goals! Incredible work.</p>
+            </div>
+        `;
+        bgGradient = "from-rose-500/10 to-orange-500/10";
+    }
+
+    const modalHtml = `
+        <div id="celebration-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="document.getElementById('celebration-modal').remove()"></div>
+            
+            <div class="bg-white rounded-3xl p-7 max-w-sm w-full relative z-10 shadow-2xl overflow-hidden text-center border border-slate-100 flex flex-col" style="animation: modalPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br ${bgGradient} rounded-full blur-3xl opacity-50"></div>
+                
+                <div class="relative flex-1">
+                    <div class="w-16 h-16 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center mb-5 shadow-sm border border-emerald-100 rotate-3 transition-transform hover:rotate-6">
+                        <i data-lucide="check-circle" class="w-8 h-8 text-emerald-500"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-black text-slate-800 mb-2">${title}</h2>
+                    <p class="text-slate-500 text-sm font-medium leading-relaxed px-1">${subtitle}</p>
+                    
+                    ${milestoneHtml}
+                </div>
+                
+                <div class="relative mt-6 pt-2">
+                    <button onclick="document.getElementById('celebration-modal').remove()" class="w-full py-3.5 px-6 bg-slate-900 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-4 focus:ring-slate-900/10">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes modalPopIn {
+                0% { transform: scale(0.6); opacity: 0; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+        </style>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    if (window.lucide) window.lucide.createIcons();
+    
+    // Auto-remove after 5 seconds if just a thank you
+    if (!isMilestone) {
+        setTimeout(() => {
+            const el = document.getElementById('celebration-modal');
+            if (el) el.remove();
+        }, 5000);
+    }
+};
+
+window.app.calculateDPPercentage = () => {
+    const tpInput = document.getElementById('del-tp');
+    const dpInput = document.getElementById('del-dp');
+    const badge = document.getElementById('del-dp-perc');
+    
+    if (!tpInput || !dpInput || !badge) return;
+    
+    const tp = parseFloat(tpInput.value);
+    const dp = parseFloat(dpInput.value);
+    
+    if (isNaN(tp) || isNaN(dp) || tp <= 0) {
+        badge.textContent = '0%';
+        badge.className = 'text-[9px] font-black text-white bg-slate-300 px-1.5 py-0.5 rounded transition-all duration-300';
+        return;
+    }
+    
+    const perc = Math.round((dp / tp) * 100);
+    badge.textContent = `${perc}%`;
+    
+    if (perc >= 25) {
+        badge.className = 'text-[9px] font-black text-white bg-emerald-500 px-1.5 py-0.5 rounded transition-all duration-300';
+    } else if (perc >= 10) {
+        badge.className = 'text-[9px] font-black text-white bg-amber-500 px-1.5 py-0.5 rounded transition-all duration-300';
+    } else {
+        badge.className = 'text-[9px] font-black text-white bg-rose-500 px-1.5 py-0.5 rounded transition-all duration-300';
+    }
 };

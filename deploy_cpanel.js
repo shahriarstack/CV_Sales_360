@@ -233,8 +233,10 @@ async function run() {
             content: fs.readFileSync(f.path)
         }));
 
-        console.log(`Uploading ${preparedFiles.length} main files to "${config.docRoot}"...`);
-        await uploadFiles(config.docRoot, preparedFiles);
+        console.log(`Uploading ${preparedFiles.length} main files to "${config.docRoot}" sequentially...`);
+        for (const f of preparedFiles) {
+            await uploadFiles(config.docRoot, [f]);
+        }
 
         // Upload local assets (Leaflet & GeoJSON)
         const leafletFiles = [
@@ -243,8 +245,10 @@ async function run() {
         ].filter(f => fs.existsSync(f.path)).map(f => ({ name: f.name, content: fs.readFileSync(f.path) }));
 
         if (leafletFiles.length > 0) {
-            console.log(`Uploading Leaflet assets to "${config.docRoot}/assets/vendor/leaflet"...`);
-            await uploadFiles(`${config.docRoot}/assets/vendor/leaflet`, leafletFiles);
+            console.log(`Uploading Leaflet assets to "${config.docRoot}/assets/vendor/leaflet" sequentially...`);
+            for (const f of leafletFiles) {
+                await uploadFiles(`${config.docRoot}/assets/vendor/leaflet`, [f]);
+            }
         }
 
         const geoFiles = [
@@ -253,20 +257,24 @@ async function run() {
         ].filter(f => fs.existsSync(f.path)).map(f => ({ name: f.name, content: fs.readFileSync(f.path) }));
 
         if (geoFiles.length > 0) {
-            console.log(`Uploading GeoJSON assets to "${config.docRoot}/assets/geo"...`);
-            await uploadFiles(`${config.docRoot}/assets/geo`, geoFiles);
+            console.log(`Uploading GeoJSON assets to "${config.docRoot}/assets/geo" sequentially...`);
+            for (const f of geoFiles) {
+                await uploadFiles(`${config.docRoot}/assets/geo`, [f]);
+            }
         }
 
         // Upload JS modules
         const jsDir = path.join(__dirname, 'js');
         if (fs.existsSync(jsDir)) {
-            const jsFiles = fs.readdirSync(jsDir)
+            const jsModules = fs.readdirSync(jsDir)
                 .filter(f => f.endsWith('.js'))
                 .map(f => ({ name: f, content: fs.readFileSync(path.join(jsDir, f)) }));
             
-            if (jsFiles.length > 0) {
-                console.log(`Uploading ${jsFiles.length} JS module files to "${config.docRoot}/js"...`);
-                await uploadFiles(`${config.docRoot}/js`, jsFiles);
+            if (jsModules.length > 0) {
+                console.log(`Uploading ${jsModules.length} JS module files to "${config.docRoot}/js" sequentially...`);
+                for (const f of jsModules) {
+                    await uploadFiles(`${config.docRoot}/js`, [f]);
+                }
             }
         }
 
