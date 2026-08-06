@@ -1,44 +1,6 @@
 // --- Sales360 Module: admin_dashboard.js ---
 window.app = window.app || {};
 
-window.app.getBrandTheme = (brand) => {
-    if (brand === 'Mahindra') {
-        return {
-            primaryHex: '#E5223E',
-            lightHex: '#fde9ec',
-            textClass: 'text-mahindra',
-            bgClass: 'bg-mahindra',
-            bgLightClass: 'bg-mahindra-light',
-            borderClass: 'border-mahindra/20',
-            borderSolidClass: 'border-mahindra',
-            gradientClass: 'from-mahindra to-[#b81b31]',
-            textTitleClass: 'from-[#E5223E] to-slate-800',
-            shadowClass: 'shadow-mahindra/10',
-            badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
-            btnGradient: 'from-mahindra to-rose-600 hover:from-rose-600 hover:to-red-700',
-            chartGradFrom: 'rgba(229, 34, 62, 0.35)',
-            chartGradTo: 'rgba(229, 34, 62, 0)'
-        };
-    } else {
-        return {
-            primaryHex: '#041A54',
-            lightHex: '#eaf0f8',
-            textClass: 'text-foton',
-            bgClass: 'bg-foton',
-            bgLightClass: 'bg-foton-light',
-            borderClass: 'border-foton/20',
-            borderSolidClass: 'border-foton',
-            gradientClass: 'from-foton to-[#03133d]',
-            textTitleClass: 'from-[#0F2942] to-slate-800',
-            shadowClass: 'shadow-foton/10',
-            badgeClass: 'bg-blue-50 text-indigo-700 border-blue-200',
-            btnGradient: 'from-foton to-indigo-800 hover:from-indigo-800 hover:to-slate-900',
-            chartGradFrom: 'rgba(4, 26, 84, 0.35)',
-            chartGradTo: 'rgba(4, 26, 84, 0)'
-        };
-    }
-};
-
 window.app.renderAdminDashboard = () => {
                 localStorage.setItem('aci_last_page', 'dashboard');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
@@ -90,15 +52,18 @@ window.app.renderAdminDashboard = () => {
                 const mahindraUnits = currFYSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 const brandFilter = app.adminBrandTab || 'Foton';
-                const theme = app.getBrandTheme(brandFilter);
+                const theme = brandFilter === 'Foton' 
+                    ? {
+                        bg: 'bg-[#041A54]', text: 'text-[#041A54]', border: 'border-[#041A54]',
+                        ring: 'focus:ring-[#041A54]', gradient: 'from-[#041A54] to-[#0a2770]',
+                        lightBg: 'bg-indigo-50', badgeBg: 'bg-indigo-100', badgeText: 'text-indigo-800'
+                      }
+                    : {
+                        bg: 'bg-[#E5223E]', text: 'text-[#E5223E]', border: 'border-[#E5223E]',
+                        ring: 'focus:ring-[#E5223E]', gradient: 'from-[#E5223E] to-[#bd1730]',
+                        lightBg: 'bg-rose-50', badgeBg: 'bg-rose-100', badgeText: 'text-rose-800'
+                      };
                 const activeModels = DB.models.filter(m => m.brand === brandFilter).map(m => m.name);
-
-                // Dynamically assign theme to app-container
-                const appContainer = document.getElementById('app-container');
-                if (appContainer) {
-                    appContainer.classList.remove('theme-foton', 'theme-mahindra');
-                    appContainer.classList.add(`theme-${brandFilter.toLowerCase()}`);
-                }
 
                 // Calculate Monthly Budget for the current view
                 let activeTgts = DB.targets.filter(tg => tg.fy === currentFY && tg.brand === brandFilter && tg.sale_type === currentSaleType);
@@ -262,20 +227,19 @@ window.app.renderAdminDashboard = () => {
                         <!-- AM / Executive Header -->
                         <div class="mb-4">
                             ${isAM ? `
-                            <div class="bg-gradient-to-br from-aci-blue to-indigo-900 p-3 rounded-[1.25rem] shadow-lg border border-white/10 relative overflow-hidden mb-4">
-                                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-                                <div class="relative z-10 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center">
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 ${theme.border} relative overflow-hidden mb-4 transition-colors">
+                                <div class="relative z-10 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
                                     
                                     <!-- Left Section: Welcome Info & Mobile-only Sync Badge -->
                                     <div class="flex justify-between items-start w-full md:w-auto">
                                         <div>
-                                            <p class="text-[8px] font-black text-indigo-300 uppercase tracking-[0.2em]">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
-                                            <h2 class="text-base font-black text-white leading-tight">Welcome, ${app.currentUser.name.split(' ')[0]}</h2>
+                                            <p class="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest mb-0.5">${app.currentUser.area_name ? `${app.currentUser.area_name} | ` : ''}AM Pulse: ${activeTerritories.map(t => t.name).join(' & ')}</p>
+                                            <h2 class="text-lg font-black text-slate-900 leading-tight">Welcome, ${app.currentUser.name.split(' ')[0]}</h2>
                                         </div>
                                         
                                         <!-- Mobile-only Live Sync Badge -->
-                                        <div class="flex md:hidden items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30 text-[8px] font-black text-green-400">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                        <div class="flex md:hidden items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-100 text-[9px] font-black text-emerald-600 shadow-sm">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                             <span>Sync</span>
                                         </div>
                                     </div>
@@ -287,41 +251,38 @@ window.app.renderAdminDashboard = () => {
                                             <!-- Territory Switcher -->
                                             <div class="relative flex-grow sm:flex-grow-0">
                                                 <select onchange="app.adminTerritoryFilter=this.value; app.renderAdminDashboard()" 
-                                                        class="w-full sm:w-auto appearance-none bg-black/20 border border-white/10 rounded-xl pl-3 pr-8 py-1.5 text-[9px] font-black uppercase tracking-wider text-white focus:outline-none focus:border-white/40 shadow-sm backdrop-blur-md min-w-[110px]">
+                                                        class="w-full sm:w-auto appearance-none bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-700 hover:border-slate-300 focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 shadow-sm min-w-[120px] transition-all">
                                                     <option value="All">All Territories</option>
                                                     ${baseTerritories.map(t => `<option value="${t.id}" ${app.adminTerritoryFilter === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
                                                 </select>
-                                                <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-white/40">
-                                                    <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                                <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                                 </div>
                                             </div>
 
                                             <!-- Brand Switcher -->
-                                            <div class="flex bg-black/20 p-1 rounded-xl border border-white/10 backdrop-blur-md">
-                                                <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Foton' ? 'bg-white shadow-lg text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}" style="animation: ${brandFilter === 'Foton' ? 'brandActiveGlow 2.5s ease-in-out' : 'brandInactivePulse 2.5s ease-in-out'} infinite;">
-                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain"></div>
-                                                    <span class="text-[9px] font-black uppercase tracking-wider">Foton</span>
+                                            <div class="flex bg-slate-100/50 p-1 rounded-lg border border-slate-200 shadow-inner">
+                                                <button onclick="app.adminBrandTab='Foton'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${brandFilter === 'Foton' ? 'bg-[#041A54] shadow-sm text-white' : 'bg-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-200'}">
+                                                    <div class="w-3.5 h-3.5 rounded-sm bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png" class="h-full object-contain grayscale ${brandFilter === 'Foton' ? 'grayscale-0' : ''}"></div>
+                                                    <span class="text-[10px] font-black uppercase tracking-wider">Foton</span>
                                                 </button>
-                                                <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${brandFilter === 'Mahindra' ? 'bg-white shadow-lg text-aci-blue scale-105' : 'text-white/40 hover:text-white/70'}" style="animation: ${brandFilter === 'Mahindra' ? 'brandActiveGlow 2.5s ease-in-out' : 'brandInactivePulse 2.5s ease-in-out'} infinite;">
-                                                    <div class="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain"></div>
-                                                    <span class="text-[9px] font-black uppercase tracking-wider">Mahindra</span>
+                                                <button onclick="app.adminBrandTab='Mahindra'; app.renderAdminDashboard()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${brandFilter === 'Mahindra' ? 'bg-[#E5223E] shadow-sm text-white' : 'bg-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-200'}">
+                                                    <div class="w-3.5 h-3.5 rounded-sm bg-white flex items-center justify-center p-0.5 shadow-sm"><img src="https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png" class="h-full object-contain grayscale ${brandFilter === 'Mahindra' ? 'grayscale-0' : ''}"></div>
+                                                    <span class="text-[10px] font-black uppercase tracking-wider">Mahindra</span>
                                                 </button>
                                             </div>
                                         </div>
 
                                         <!-- Target & Desktop-only Sync Stats -->
-                                        <div class="flex items-center gap-3 justify-end ml-auto md:ml-0">
+                                        <div class="flex items-center gap-4 justify-end ml-auto md:ml-0 pl-2 md:border-l md:border-slate-200">
                                             <div class="flex flex-col items-end">
-                                                <span class="text-[7px] font-bold text-indigo-200 uppercase">Target</span>
-                                                <span class="text-xs font-black text-white">${totalYearlyTarget} Units</span>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Yearly Target</span>
+                                                <span class="text-sm font-black text-slate-800">${totalYearlyTarget} <span class="text-[10px] font-bold text-slate-500">Units</span></span>
                                             </div>
                                             <!-- Desktop-only Sync Indicator -->
-                                            <div class="hidden md:flex items-center gap-3">
-                                                <div class="w-px h-4 bg-white/20"></div>
-                                                <div class="flex flex-col items-end">
-                                                    <span class="text-[7px] font-bold text-indigo-200 uppercase">Live</span>
-                                                    <span class="text-[10px] font-black text-green-400 flex items-center gap-1"><i data-lucide="activity" class="w-2.5 h-2.5"></i> Sync</span>
-                                                </div>
+                                            <div class="hidden md:flex flex-col items-end ml-2">
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Status</span>
+                                                <span class="text-[10px] font-black text-emerald-600 flex items-center gap-1"><i data-lucide="activity" class="w-3 h-3"></i> Live Sync</span>
                                             </div>
                                         </div>
                                     </div>
@@ -347,11 +308,11 @@ window.app.renderAdminDashboard = () => {
 
                              return `
                                  <!-- YTD Overall -->
-                                 <div class="glass p-4 rounded-xl shadow-sm border border-white/60 mb-4 relative overflow-hidden">
-                                     <div class="absolute -right-10 -top-10 bg-aci-blue/5 w-32 h-32 rounded-full blur-2xl"></div>
+                                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 ${theme.border} mb-4 relative overflow-hidden transition-colors">
+                                     <div class="absolute -right-10 -top-10 bg-slate-50 w-32 h-32 rounded-full"></div>
                                      <div class="flex justify-between items-center mb-3">
                                          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                                             <i data-lucide="bar-chart-2" class="w-4 h-4 text-aci-blue/80 animate-[bounce_6s_ease-in-out_infinite]"></i>
+                                             <i data-lucide="bar-chart-2" class="w-4 h-4 ${theme.text}"></i>
                                              ${isTransitionMode ? `Last Fiscal Year Overall Area (${concludingFY})` : `YTD Overall Area (${currentFY})`}
                                          </h3>
                                          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${isTransitionMode ? 'Full Year Concluding' : `Till ${app.lastMonth}`}</span>
@@ -419,9 +380,9 @@ window.app.renderAdminDashboard = () => {
                                     </div>
                                 </div>
 
-                                <div class="bg-gradient-to-br ${brandFilter === 'Foton' ? 'from-foton to-[#03133d]' : 'from-mahindra to-[#b81b31]'} rounded-2xl p-4 mb-4 relative overflow-hidden shadow-lg text-white">
+                                <div class="bg-gradient-to-br ${theme.gradient} rounded-2xl p-4 mb-4 relative overflow-hidden shadow-md text-white transition-colors">
                                     <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
-                                    <div class="flex justify-between items-center mb-3 border-b border-white/20 pb-2 relative z-10">
+                                    <div class="flex justify-between items-center mb-3 border-b border-slate-200/20 pb-2 relative z-10">
                                         <h3 class="font-bold text-sm">Current Month (${app.currentMonth}) - Area Total</h3>
                                         <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold text-white">${currentSaleType}</span>
                                     </div>
@@ -429,13 +390,13 @@ window.app.renderAdminDashboard = () => {
                                     <div class="grid grid-cols-4 gap-y-4 gap-x-2 text-center mb-4 relative z-10">
                                         <div><p class="text-[9px] text-white/70 uppercase font-semibold">Budget</p><p class="font-bold text-lg text-white">${monthlyBudget}</p></div>
                                         <div><p class="text-[9px] text-white/70 uppercase font-semibold">Projection</p><p class="font-bold text-lg text-white">${totalMonthlyProjection}</p></div>
-                                        <div class="col-span-2 border-l border-white/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-2xl text-yellow-300">${currMonthSalesTotal}</p></div>
+                                        <div class="col-span-2 border-l border-slate-200/20"><p class="text-[9px] text-white/70 uppercase font-semibold">Sales Till Now</p><p class="font-bold text-2xl text-yellow-300">${currMonthSalesTotal}</p></div>
                                         
                                         <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Budget)</p><p class="font-bold text-sm text-green-300">${ach(currMonthSalesTotal, monthlyBudget)}%</p></div>
                                         <div class="col-span-2 bg-black/20 rounded-lg py-1"><p class="text-[9px] text-white/70 uppercase font-semibold">Ach% (Proj)</p><p class="font-bold text-sm text-amber-300">${ach(currMonthSalesTotal, totalMonthlyProjection)}%</p></div>
                                     </div>
 
-                                    <div class="mt-4 border-t border-white/20 pt-3 relative z-10">
+                                    <div class="mt-4 border-t border-slate-200/20 pt-3 relative z-10">
                                         <div class="grid grid-cols-6 gap-1 px-2 mb-2">
                                             <div class="text-[8px] font-bold text-white/50 uppercase">Territory</div>
                                             <div class="text-[8px] font-bold text-white/50 uppercase text-center">Budget</div>
@@ -455,7 +416,7 @@ window.app.renderAdminDashboard = () => {
                                 const tAchP = ach(tSalesM, tProjM);
 
                                 return `
-                                                    <div class="grid grid-cols-6 gap-1 px-2 py-1 bg-black/10 rounded border border-white/5 items-center">
+                                                    <div class="grid grid-cols-6 gap-1 px-2 py-1 bg-black/10 rounded border border-slate-200/5 items-center">
                                                         <div class="text-[9px] font-bold text-white/90 truncate">${t.name}</div>
                                                         <div class="text-[10px] font-medium text-white/80 text-center">${tBudgetM}</div>
                                                         <div class="text-[10px] font-medium text-white/80 text-center">${tProjM}</div>
@@ -485,8 +446,8 @@ window.app.renderAdminDashboard = () => {
                             const predictedAch = ach(predictedFinish, currMonthBudget);
 
                             return `
-                                <div class="glass p-4 rounded-[1.5rem] border border-white shadow-xl mb-6 relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                                <div class="bg-white p-5 rounded-2xl border border-slate-200 border-t-4 ${theme.border} shadow-sm mb-6 relative overflow-hidden transition-colors">
+                                    <div class="absolute right-0 top-0 w-32 h-32 bg-slate-50 rounded-full -mr-10 -mt-10"></div>
                                     <div class="flex items-center gap-2 mb-4">
                                         <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
                                         <h3 class="font-black text-slate-800 text-sm tracking-tight">${app.currentMonth} Pacing Monitor</h3>
@@ -519,7 +480,7 @@ window.app.renderAdminDashboard = () => {
                                             </div>
                                         </div>
 
-                                        <div class="bg-indigo-900 rounded-2xl p-3 shadow-lg flex items-center justify-between text-white border border-white/10">
+                                        <div class="bg-indigo-900 rounded-2xl p-3 shadow-lg flex items-center justify-between text-white border border-slate-200/10">
                                             <div>
                                                 <p class="text-[9px] font-black text-indigo-300 uppercase mb-0.5">Req. Daily Rate</p>
                                                 <h4 class="text-lg font-black">${Math.max(0, Math.ceil((currMonthBudget - currMonthSalesPacing) / (daysInMonth - currentDay)))}</h4>
@@ -565,7 +526,7 @@ window.app.renderAdminDashboard = () => {
 
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                                 <div>
-                                    <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 ${theme.bgClass} rounded-full ${theme.shadowClass}"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.textTitleClass} tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1></div>
+                                    <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">${isAM ? 'Area Analytics' : 'Executive Core'}</h1></div>
                                     <p class="text-sm font-medium text-slate-500">Live performance tracking for ${app.currentMonth} 2026</p>
                                 </div>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -580,18 +541,18 @@ window.app.renderAdminDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r ${theme.btnGradient} text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
+                                    <button onclick="app.renderAdminEMI()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="banknote" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
                                         <span>EMI Analytics</span>
                                     </button>
 
                                     ${!isAM ? `
-                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r ${theme.btnGradient} text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
+                                    <button onclick="app.renderAdminManualDeliveries()" class="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition-all duration-300 font-black text-[10px] uppercase tracking-wider group relative overflow-hidden">
                                         <span class="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
                                         <i data-lucide="clipboard-list" class="w-3.5 h-3.5 transition-transform group-hover:rotate-12 group-hover:scale-110"></i>
                                         <span>Manual Deliveries</span>
-                                        ${pendingManualCount > 0 ? `<span class="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-rose-500 text-[8px] font-black text-white border-2 border-white animate-pulse shadow-sm">${pendingManualCount}</span>` : ''}
+                                        ${pendingManualCount > 0 ? `<span class="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-rose-500 text-[8px] font-black text-white border-2 border-slate-200 animate-pulse shadow-sm">${pendingManualCount}</span>` : ''}
                                     </button>
                                     ` : ''}
 
@@ -609,8 +570,8 @@ window.app.renderAdminDashboard = () => {
                         </div>
 
                     <!-- YOY Trajectory Chart -->
-                    <div class="glass p-5 rounded-[2rem] border border-white shadow-xl mb-8 relative overflow-hidden">
-                        <div class="absolute -right-20 -top-20 bg-indigo-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-8 relative overflow-hidden">
+                        <div class="absolute -right-20 -top-20 bg-slate-50 w-64 h-64 rounded-full pointer-events-none"></div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
                             <!-- Left: Chart & Controls (Col span 2) -->
                             <div class="lg:col-span-2 flex flex-col justify-between">
@@ -751,7 +712,7 @@ window.app.renderAdminDashboard = () => {
                         const achColor = (a) => a >= 100 ? 'text-emerald-600' : (a >= 80 ? 'text-amber-500' : 'text-rose-500');
 
                         return `
-                            <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
                                 <div class="overflow-x-auto custom-scrollbar">
                                     <table class="w-full text-left text-[11px] whitespace-nowrap border-collapse">
                                         <thead>
@@ -806,7 +767,7 @@ window.app.renderAdminDashboard = () => {
 
                     <!-- Charts -->
                     <div class="grid grid-cols-1 ${isAM ? 'md:grid-cols-2' : 'lg:grid-cols-3'} gap-4 mb-6">
-                        <div class="${isAM ? '' : 'lg:col-span-2'} glass p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="${isAM ? '' : 'lg:col-span-2'} bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-colors">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="bar-chart-2" class="w-3 h-3 text-aci-blue"></i> Territory Performance
                             </h3>
@@ -814,7 +775,7 @@ window.app.renderAdminDashboard = () => {
                                 <canvas id="chartTerritory"></canvas>
                             </div>
                         </div>
-                        <div class="glass p-3 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-colors">
                             <h3 class="font-bold text-slate-800 mb-2 text-[10px] flex items-center gap-1.5 uppercase tracking-wider">
                                 <i data-lucide="pie-chart" class="w-3 h-3 text-aci-blue"></i> Brand Split
                             </h3>
@@ -826,8 +787,8 @@ window.app.renderAdminDashboard = () => {
 
                     <!-- AM: Territory Performance Analytics Table (Admin Parity) -->
                     ${isAM ? `
-                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8 relative">
-                        <div class="absolute -right-20 -top-20 bg-emerald-500/5 w-64 h-64 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8 relative">
+                        <div class="absolute -right-20 -top-20 bg-slate-50 w-64 h-64 rounded-full pointer-events-none"></div>
                         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/30">
                             <div>
                                 <h3 class="font-black text-slate-800 flex items-center gap-2">
@@ -1876,7 +1837,7 @@ window.app.renderAdminDashboard = () => {
 
                     <!-- Detailed Sales Data Table (Like Admin Panel) -->
                     ${isAM ? `
-                    <div class="glass rounded-[2rem] border border-white shadow-xl overflow-hidden mb-8">
+                    <div class="bg-white rounded-[2rem] border border-slate-200 shadow-xl overflow-hidden mb-8">
                         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                             <div>
                                 <h3 class="font-black text-slate-800 flex items-center gap-2">
@@ -1935,7 +1896,7 @@ window.app.renderAdminDashboard = () => {
 
                         <!-- Custom Report Engine -->
                         <div class="mt-5 mb-2">
-                            <div class="glass p-5 rounded-2xl border border-slate-200/80 shadow-md relative overflow-hidden bg-white/90 backdrop-blur-md">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-md relative overflow-hidden bg-white/90 ">
                                 <div class="relative z-10">
                                     <div class="flex flex-wrap items-center justify-between gap-3 mb-3 pb-2.5 border-b border-slate-100">
                                         <div class="flex items-center gap-2.5">
@@ -2093,8 +2054,7 @@ window.app.renderAdminDashboard = () => {
                 }
 
                 // Render Charts
-                const chartTheme = app.getBrandTheme(app.yoyBrandTab || 'Foton');
-                app.renderChartYoyTrend(yoyCurrSales, yoyLastSales, yoyMonthlyBudgets, chartTheme);
+                app.renderChartYoyTrend(yoyCurrSales, yoyLastSales, yoyMonthlyBudgets);
                 app.renderDashboardMiniMap(yoyCurrSales);
                 app.renderChartTerritory(currFYSales);
                 app.renderChartBrand(fotonUnits, mahindraUnits);
@@ -2226,7 +2186,7 @@ window.app.renderDashboardMiniMap = async (yoyCurrSales) => {
                 }, 100);
             };
 
-window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget, theme = null) => {
+window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget) => {
                 // Clear any existing animation frame to prevent duplicate loops
                 if (app.charts.yoyTrendAnimFrame) {
                     cancelAnimationFrame(app.charts.yoyTrendAnimFrame);
@@ -2257,13 +2217,14 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget, theme = nul
                 const currentMonthIdx = fullMonths.indexOf(app.currentMonth);
                 const displayCurrAgg = currAgg.map((val, idx) => idx <= currentMonthIdx ? val : null);
 
-                const defaultGradFrom = theme ? theme.chartGradFrom : 'rgba(15, 41, 66, 0.4)';
-                const defaultGradTo = theme ? theme.chartGradTo : 'rgba(15, 41, 66, 0.0)';
-                const defaultLineColor = theme ? theme.primaryHex : '#0F2942';
+                const isMahindra = app.yoyBrandTab === 'Mahindra';
+                const baseColorStr = isMahindra ? '#b81b31' : '#0F2942';
+                const rgbaColorStr = isMahindra ? 'rgba(184, 27, 49, 0.4)' : 'rgba(15, 41, 66, 0.4)';
+                const rgbaColorStr0 = isMahindra ? 'rgba(184, 27, 49, 0.0)' : 'rgba(15, 41, 66, 0.0)';
 
                 const currGrad = ctx.createLinearGradient(0, 0, 0, 300);
-                currGrad.addColorStop(0, defaultGradFrom);
-                currGrad.addColorStop(1, defaultGradTo);
+                currGrad.addColorStop(0, rgbaColorStr);
+                currGrad.addColorStop(1, rgbaColorStr0);
 
                 const datasets = [];
 
@@ -2271,13 +2232,13 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget, theme = nul
                 datasets.push({
                     label: 'Current FY (25-26)',
                     data: displayCurrAgg,
-                    borderColor: defaultLineColor, // Base color, overridden by animation loop
+                    borderColor: baseColorStr, // Base color, overridden by animation loop
                     backgroundColor: currGrad,
                     borderWidth: 4,
                     tension: 0.4,
                     fill: true,
                     pointBackgroundColor: '#fff',
-                    pointBorderColor: '#06b6d4',
+                    pointBorderColor: isMahindra ? '#fb7185' : '#06b6d4',
                     pointBorderWidth: 2,
                     pointRadius: 5,
                     pointHoverRadius: 7
@@ -2378,7 +2339,7 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget, theme = nul
                                 const y = element.y;
 
                                 if (isCurrentFY) {
-                                    drawPill(x, y, String(val), defaultLineColor, '#06b6d4', '#ffffff', true, 26);
+                                    drawPill(x, y, String(val), baseColorStr, isMahindra ? '#fb7185' : '#06b6d4', '#ffffff', true, 26);
                                 } else if (isLastFY) {
                                     drawPill(x, y, String(val), '#fff7ed', '#f59e0b', '#b45309', false, 24);
                                 } else if (isBudget) {
@@ -2469,9 +2430,9 @@ window.app.renderChartYoyTrend = (currData, lastData, monthlyBudget, theme = nul
                             // Calculate a smooth shifting phase
                             const pos = (elapsed % 3000) / 3000;
 
-                            const colorBase = '#0F2942'; // ACI Blue
-                            const colorHighlight1 = '#06b6d4'; // Cyan
-                            const colorHighlight2 = '#6366f1'; // Indigo
+                            const colorBase = app.yoyBrandTab === 'Mahindra' ? '#b81b31' : '#0F2942'; // Brand Base Color
+                            const colorHighlight1 = app.yoyBrandTab === 'Mahindra' ? '#fb7185' : '#06b6d4'; // Rose vs Cyan
+                            const colorHighlight2 = app.yoyBrandTab === 'Mahindra' ? '#e11d48' : '#6366f1'; // Rose-600 vs Indigo
 
                             gradient.addColorStop(0, colorBase);
 
@@ -2874,7 +2835,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
                             </div>
 
                             <!-- Filter Bar -->
-                            <div class="glass p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end sticky top-16 z-20">
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end sticky top-16 z-20">
                                 <div class="flex-1 min-w-[120px]">
                                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
                                     <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
@@ -2919,7 +2880,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
 
                             <!-- KPI Overview -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-                                <div class="glass p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
                                         <h4 class="text-2xl font-black text-slate-800 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
@@ -2927,7 +2888,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
                                 </div>
                                 
-                                <div class="glass p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
                                         <h4 class="text-2xl font-black text-slate-800 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
@@ -2935,7 +2896,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
                                     <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
                                 </div>
 
-                                <div class="glass p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
                                         <div class="flex items-center gap-1.5 mt-0.5">
@@ -2950,7 +2911,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
                             <!-- Charts Section -->
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <!-- Line Chart -->
-                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col">
+                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col">
                                     <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                                         <i data-lucide="activity" class="w-4 h-4 text-sky-500"></i> Monthly Trend Analysis
                                     </h3>
@@ -2960,7 +2921,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
                                 </div>
                                 
                                 <!-- Brand Share -->
-                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
                                     <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                                         <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> Brand Share (${app.analyticsFY2})
                                     </h3>
@@ -2970,7 +2931,7 @@ window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
                                 </div>
                                 
                                 <!-- Territory Bar Chart -->
-                                <div class="glass p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-3 flex flex-col">
+                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-3 flex flex-col">
                                     <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                                         <i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-amber-500"></i> Regional Comparison (${app.analyticsFY1} vs ${app.analyticsFY2})
                                     </h3>
@@ -3411,7 +3372,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                                     <span>DYNAMIC DIAGNOSTICS ACTIVE</span>
                                 </p>
                             </div>
-                            <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl shadow-md border border-slate-100 w-full md:w-auto">
+                            <div class="flex items-center gap-3 bg-white/90  p-1.5 rounded-2xl shadow-md border border-slate-100 w-full md:w-auto">
                                 <div class="px-3 py-1 flex-1 md:flex-none text-center">
                                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Confidence Level</p>
                                     <p class="text-xs font-black text-purple-600 flex items-center justify-center gap-1">
@@ -3456,7 +3417,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                         <!-- Top Level AI Summary Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <!-- Prediction Card -->
-                            <div class="glass p-5 rounded-[1.75rem] border border-white shadow-lg relative overflow-hidden group">
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-lg relative overflow-hidden group">
                                 <div class="absolute -right-8 -top-8 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
                                 <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                                     <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-500"></i>
@@ -3499,7 +3460,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                             </div>
 
                             <!-- Brand Momentum Card -->
-                            <div class="glass p-5 rounded-[1.75rem] border border-white shadow-lg relative overflow-hidden group">
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-lg relative overflow-hidden group">
                                 <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
                                 <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-4 flex items-center gap-1.5">
                                     <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
@@ -3671,7 +3632,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                         <!-- NEW: Advanced Model & Market Affinity Section -->
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                             <!-- Column 1: Product-Market Fit (Upazila Wise) -->
-                            <div class="glass p-5 rounded-[1.75rem] border border-white shadow-md flex flex-col justify-between">
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between">
                                 <div>
                                     <div class="flex items-center justify-between mb-4">
                                         <h3 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
@@ -3698,7 +3659,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                             </div>
 
                             <!-- Column 2: Brand Dominance Battleground -->
-                            <div class="glass p-5 rounded-[1.75rem] border border-white shadow-md flex flex-col justify-between">
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between">
                                 <div>
                                     <div class="flex items-center justify-between mb-4">
                                         <h3 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
@@ -3729,7 +3690,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                             </div>
 
                             <!-- Column 3: Risk & Underperforming Assets -->
-                            <div class="glass p-5 rounded-[1.75rem] border border-white shadow-md flex flex-col justify-between bg-slate-50/30">
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between bg-slate-50/30">
                                 <div>
                                     <div class="flex items-center justify-between mb-4">
                                         <h3 class="text-sm font-bold text-rose-700 tracking-tight flex items-center gap-1.5">
@@ -3780,18 +3741,18 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                                             <span class="font-medium text-slate-300">Projected Demand</span>
                                             <span class="font-black text-indigo-400">+12.4%</span>
                                         </div>
-                                        <div class="p-2 bg-white/5 rounded-lg border border-white/10">
+                                        <div class="p-2 bg-white/5 rounded-lg border border-slate-200/10">
                                             <p class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Trending Model</p>
                                             <p class="text-xs font-black text-white">Mahindra Bolero Pick-up</p>
                                         </div>
                                     </div>
-                                    <div class="mt-4 pt-3 border-t border-white/10 text-[9px] text-slate-400 leading-relaxed italic">
+                                    <div class="mt-4 pt-3 border-t border-slate-200/10 text-[9px] text-slate-400 leading-relaxed italic">
                                         "Seasonal uptick in rural agricultural harvest transportation expected."
                                     </div>
                                 </div>
 
                                 <!-- Territory Growth Clustering -->
-                                <div class="glass p-5 rounded-[1.75rem] border border-white shadow-md relative overflow-hidden flex flex-col justify-between">
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
                                     <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                                         <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-500"></i>
                                         Growth Clusters
@@ -3813,7 +3774,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                                 </div>
 
                                 <!-- AI Sales Probability Index -->
-                                <div class="glass p-5 rounded-[1.75rem] border border-white shadow-md relative overflow-hidden flex flex-col justify-between">
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
                                     <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                                         <i data-lucide="target" class="w-3.5 h-3.5 text-purple-500"></i>
                                         FY Target Probability
@@ -3831,7 +3792,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                                 </div>
 
                                 <!-- Inventory Run-Rate Predictor -->
-                                <div class="glass p-5 rounded-[1.75rem] border border-white shadow-md relative overflow-hidden flex flex-col justify-between">
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
                                     <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                                         <i data-lucide="box" class="w-3.5 h-3.5 text-amber-500"></i>
                                         Stock Depletion Alert
@@ -3855,7 +3816,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                             <!-- Left: Recommendations & Heatmap Matrix -->
                             <div class="lg:col-span-2 space-y-6">
                                 <!-- Dynamic Market Heatmap Visualization -->
-                                <div class="glass p-6 rounded-[1.75rem] border border-white shadow-md">
+                                <div class="bg-white p-6 rounded-[1.75rem] border border-slate-200 shadow-md">
                                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                                         <h2 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
                                             <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-500"></i>
@@ -4068,10 +4029,10 @@ window.app.renderAdminSalesMap = (keepDropdownOpen = false) => {
                         return `
                             <div onclick="app.selectMapArea('${name}')" style="position:absolute; left:${xPct}%; top:${yPct}%; transform:translate(-50%,-50%); cursor:pointer; z-index:40;" class="group" title="${name}: ${sales} Units">
                                 <div style="position:absolute; inset:-8px; background:${glowColor}; border-radius:9999px; animation:ping 2.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
-                                <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 15px ${glowColor};" class="relative rounded-full border-2 border-white flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125 z-10">
+                                <div style="width:${size}px; height:${size}px; background:${color}; box-shadow:0 0 15px ${glowColor};" class="relative rounded-full border-2 border-slate-200 flex items-center justify-center font-black text-white text-[11px] transform transition-transform group-hover:scale-125 z-10">
                                     ${sales}
                                 </div>
-                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
+                                <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95  text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none">
                                     <p class="font-extrabold text-slate-100">${name}</p>
                                     <p class="text-[10px] text-amber-400 font-bold">${sales} Units Plotted</p>
                                 </div>
@@ -4155,7 +4116,7 @@ window.app.renderAdminSalesMap = (keepDropdownOpen = false) => {
                             <!-- Guaranteed Vector Map Container -->
                             <div style="height:480px !important; min-height:450px;" class="flex-1 rounded-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col min-h-[450px] h-[480px]">
                                 
-                                <div class="absolute top-4 right-4 bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-50">
+                                <div class="absolute top-4 right-4 bg-slate-900/90  px-3 py-2 rounded-xl border border-slate-700 shadow-lg z-50">
                                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sales Density (${viewMode})</p>
                                     <div class="flex items-center gap-2">
                                         <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span><span class="text-xs font-bold text-slate-300 mr-2">Low</span>
