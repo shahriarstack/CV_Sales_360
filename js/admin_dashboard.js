@@ -941,9 +941,9 @@ window.app.renderAdminDashboard = () => {
                                                         <td class="px-2 py-1 font-bold text-rose-500 text-center">${Math.max(0, perf.ytd.budget - perf.ytd.sales)}</td>
                                                     ` : ''}
                                                     ${app.adminShowLastMonth ? `
-                                                        <td class="px-2 py-1 text-slate-400 font-medium text-center">${perf.lastMonth.budget}</td>
-                                                        <td class="px-2 py-1 font-black text-slate-700 text-center">${perf.lastMonth.sales}</td>
-                                                        <td class="px-2 py-1 font-black text-slate-600 text-center">${ach(perf.lastMonth.sales, perf.lastMonth.budget)}%</td>
+                                                        <td class="px-2 py-1 text-slate-400 font-medium text-center">${app.currentMonth === 'July' ? '-' : perf.lastMonth.budget}</td>
+                                                        <td class="px-2 py-1 font-black text-slate-700 text-center">${app.currentMonth === 'July' ? '-' : perf.lastMonth.sales}</td>
+                                                        <td class="px-2 py-1 font-black text-slate-600 text-center">${app.currentMonth === 'July' ? '-' : `${ach(perf.lastMonth.sales, perf.lastMonth.budget)}%`}</td>
                                                     ` : ''}
                                                     <td class="px-2 py-1 bg-slate-50/50 text-slate-400 font-medium text-center">${currBudget}</td>
                                                     <td class="px-2 py-1 bg-slate-50/50 font-black text-slate-700 text-center">${currProj}</td>
@@ -979,9 +979,9 @@ window.app.renderAdminDashboard = () => {
                                                     <td class="px-2 py-1.5 font-bold text-rose-600 bg-indigo-50/10 text-center">${totalYtdShort}</td>
                                                 ` : ''}
                                                 ${app.adminShowLastMonth ? `
-                                                    <td class="px-2 py-1.5 text-slate-700 font-extrabold text-center">${totalLastMonthBudget}</td>
-                                                    <td class="px-2 py-1.5 font-black text-slate-900 text-center">${totalLastMonthSales}</td>
-                                                    <td class="px-2 py-1.5 font-black text-slate-800 text-center">${ach(totalLastMonthSales, totalLastMonthBudget)}%</td>
+                                                    <td class="px-2 py-1.5 text-slate-700 font-extrabold text-center">${app.currentMonth === 'July' ? '-' : totalLastMonthBudget}</td>
+                                                    <td class="px-2 py-1.5 font-black text-slate-900 text-center">${app.currentMonth === 'July' ? '-' : totalLastMonthSales}</td>
+                                                    <td class="px-2 py-1.5 font-black text-slate-800 text-center">${app.currentMonth === 'July' ? '-' : `${ach(totalLastMonthSales, totalLastMonthBudget)}%`}</td>
                                                 ` : ''}
                                                 <td class="px-2 py-1.5 bg-slate-100/50 text-slate-700 font-extrabold text-center">${totalCurrBudget}</td>
                                                 <td class="px-2 py-1.5 bg-slate-100/50 font-black text-slate-900 text-center">${totalCurrProj}</td>
@@ -998,7 +998,7 @@ window.app.renderAdminDashboard = () => {
                                             <tr class="bg-slate-50/80 text-slate-500 uppercase tracking-widest text-[9px] border-b border-slate-100">
                                                 <th class="px-5 py-2.5 font-black sticky left-0 z-10 bg-slate-50">Territory</th>
                                                 ${app.adminShowYTD ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="4">YTD (${app.lastMonth.substring(0, 3)})</th>` : ''}
-                                                ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.lastMonth.substring(0, 3)})</th>` : ''}
+                                                ${app.adminShowLastMonth ? `<th class="px-3 py-4 text-center border-l border-slate-100" colspan="3">Last Month (${app.currentMonth === 'July' ? 'N/A' : app.lastMonth.substring(0, 3)})</th>` : ''}
                                                 <th class="px-3 py-4 text-center border-l border-slate-100 font-extrabold" colspan="${4 + dynamicModels.length}">
                                                     ${(app.performanceFilterMonth || app.currentMonth) === app.currentMonth ? 'Current' : 'Selected'} Month (${(app.performanceFilterMonth || app.currentMonth).substring(0, 3)})
                                                 </th>
