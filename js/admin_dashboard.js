@@ -630,7 +630,7 @@ window.app.renderAdminDashboard = () => {
                                     </div>
                                     <span id="minimap-sales-total" class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-black rounded-full border border-indigo-100">0 Units</span>
                                 </div>
-                                <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-slate-200/60 shadow-inner h-[250px]" style="height: 250px; min-height: 250px;"></div>
+                                <div id="dashboard-mini-map" class="w-full rounded-xl overflow-hidden border border-slate-200/60 shadow-inner flex-1" style="min-height: 250px;"></div>
                             </div>
                         </div>
                     </div>
