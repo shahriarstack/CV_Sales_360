@@ -967,9 +967,10 @@ window.app.showAddDeliveryModal = () => {
                                     <div class="relative group">
                                         <select id="del-type" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50 appearance-none pr-10" required onchange="
                                             const isResale = this.value === 'Resale';
+                                            const isNewSale = this.value === 'New Sale';
                                             document.getElementById('old-cust-container').style.display = isResale ? 'block' : 'none';
                                             document.getElementById('del-old-customer-id').required = isResale;
-                                            document.getElementById('del-customer-code').required = isResale;
+                                            document.getElementById('del-customer-code').required = !isNewSale;
                                         ">
                                             <option value="New Sale">New Sale</option>
                                             <option value="Resale">Resale</option>
