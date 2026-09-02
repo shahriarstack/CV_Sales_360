@@ -939,7 +939,7 @@ window.app.getPerformance = (territoryId, brand, saleType) => {
                 const lmSply = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === lastFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 // YTD Metrics (Until Last Month)
-                const ytdSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const ytdSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && ytdMonths.includes(s.sales_month) && s.fy === currentFY && !(s.sales_month !== currentMonth && s.is_manual)).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
 
                 let ytdBudget = 0;
                 const monthlyTargets = lmTgtObj.filter(t => ytdMonths.includes(t.month));
@@ -1246,13 +1246,13 @@ window.app.generateCustomReport = () => {
                 }
 
                 if (incActual) {
-                    const sales = DB.sales.filter(s => s.fy === fy && s.sales_month === month && s.territory_id === t.id && s.brand === b && s.sale_type === st);
+                    const sales = DB.sales.filter(s => s.fy === fy && s.sales_month === month && s.territory_id === t.id && s.brand === b && s.sale_type === st && !(month !== app.currentMonth && s.is_manual));
                     actualTotal = sales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
                     grandActual += actualTotal;
                 }
 
                 if (incSply) {
-                    const splySales = DB.sales.filter(s => s.fy === lastFY && s.sales_month === month && s.territory_id === t.id && s.brand === b && s.sale_type === st);
+                    const splySales = DB.sales.filter(s => s.fy === lastFY && s.sales_month === month && s.territory_id === t.id && s.brand === b && s.sale_type === st && !(month !== app.currentMonth && s.is_manual));
                     splyTotal = splySales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
                     grandSply += splyTotal;
                 }

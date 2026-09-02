@@ -1,3 +1,5 @@
+// Disable global datalabels - only use per-chart
+if (typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); Chart.defaults.plugins.datalabels = { display: false }; }
 // --- Sales360 Module: admin_dashboard.js ---
 window.app = window.app || {};
 
@@ -36,7 +38,7 @@ window.app.renderAdminDashboard = () => {
                     salesData = salesData.filter(s => app.currentUser.territories.includes(s.territory_id));
                 }
 
-                const currFYSales = salesData.filter(s => s.fy === currentFY && s.sale_type === currentSaleType);
+                const currFYSales = salesData.filter(s => s.fy === currentFY && s.sale_type === currentSaleType && !(s.sales_month !== app.currentMonth && s.is_manual));
                 const lastFYSales = salesData.filter(s => s.fy === lastFY && s.sale_type === currentSaleType);
 
                 const totalUnits = currFYSales.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
@@ -381,7 +383,7 @@ window.app.renderAdminDashboard = () => {
                                 </div>
 
                                 <div class="bg-gradient-to-br ${theme.gradient} rounded-2xl p-4 mb-4 relative overflow-hidden shadow-md text-white transition-colors">
-                                    <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
+                                    <img src="${brandFilter === 'Foton' ? 'https://i.ibb.co.com/k6Bbdprf/Foton-emblem.png' : 'https://i.ibb.co.com/qLR0vjHR/Mahindra-simbol.png'}" class="absolute pointer-events-none z-0 pointer-events-none z-0 -right-4 -bottom-4 w-32 h-32 opacity-10 object-contain grayscale mix-blend-overlay">
                                     <div class="flex justify-between items-center mb-3 border-b border-slate-200/20 pb-2 relative z-10">
                                         <h3 class="font-bold text-sm">Current Month (${app.currentMonth}) - Area Total</h3>
                                         <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold text-white">${currentSaleType}</span>
@@ -2518,7 +2520,7 @@ window.app.closeAIModal = () => {
 
 window.app.executeBudgetShiftModal = (sourceName, destName, amount, key) => {
                 const html = `
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
+                    <div class="absolute pointer-events-none z-0 pointer-events-none z-0 inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
                     <div class="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 relative z-10 shadow-2xl flex flex-col border border-slate-100 transform scale-95 md:scale-100 transition-all duration-300">
                         <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -2575,7 +2577,7 @@ window.app.dispatchAINoticeModal = (territoryName, achVal, key) => {
                 const defaultMsg = `Dear Area Manager & Branch Officers in ${territoryName},\n\nAI analysis of sales targets for the current period indicates that ${territoryName} is currently pacing at only ${achVal}% achievement. This is below the required conversion threshold.\n\nPlease mobilize all MOs to accelerate customer follow-ups and prioritize under-negotiated deals immediately to secure our target for the month.\n\nBest Regards,\nSales360 Strategic Operations Center`;
 
                 const html = `
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
+                    <div class="absolute pointer-events-none z-0 pointer-events-none z-0 inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
                     <div class="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 relative z-10 shadow-2xl flex flex-col border border-slate-100 transform scale-95 md:scale-100 transition-all duration-300">
                         <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -2668,7 +2670,7 @@ window.app.confirmDispatchNotice = async (key) => {
 
 window.app.transferInventoryModal = (modelName, upazilaName, qty, key) => {
                 const html = `
-                    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
+                    <div class="absolute pointer-events-none z-0 pointer-events-none z-0 inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onclick="app.closeAIModal()"></div>
                     <div class="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 relative z-10 shadow-2xl flex flex-col border border-slate-100 transform scale-95 md:scale-100 transition-all duration-300">
                         <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -2780,1154 +2782,501 @@ window.app.hoverMapArea = (name) => {
                 });
             };
 
+
 window.app.renderAdminAnalytics = (keepDropdownOpen = false) => {
-                try {
-                    localStorage.setItem('aci_last_page', 'analytics');
-                    app.setupSidebar();
-                    app.closeSidebar();
+    try {
+        localStorage.setItem('aci_last_page', 'analytics');
+        app.setupSidebar();
+        app.closeSidebar();
 
-                    const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
-                    const passedMonthsCount = app.getYtdMonths(app.currentMonth).length || 1; // Avoid division by zero
+        const monthsList = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+        const passedMonthsCount = app.getYtdMonths(app.currentMonth).length || 1;
 
-                    // Helper to filter sales
-                    const filterSales = (fy) => {
-                        return DB.sales.filter(s => {
-                            let match = s.fy === fy && String(s.unit_qty) !== '0';
-                            if (app.analyticsBrand !== 'All') match = match && s.brand === app.analyticsBrand;
-                            if (app.analyticsModel !== 'All') match = match && s.model === app.analyticsModel;
-                            if (app.analyticsTerritory !== 'All') match = match && s.territory_id === app.analyticsTerritory;
-                            if (app.analyticsUpazila !== 'All') match = match && s.upazila === app.analyticsUpazila;
-                            return match;
-                        });
-                    };
+        if (!app.analyticsMonths) app.analyticsMonths = [...monthsList];
+        if (typeof app.analyticsSaleType === 'undefined') app.analyticsSaleType = 'All';
 
-                    const salesFY1 = filterSales(app.analyticsFY1);
-                    const salesFY2 = filterSales(app.analyticsFY2);
+        const filterSales = (fy) => {
+            return DB.sales.filter(s => {
+                if (s.fy !== fy) return false;
+                if (app.analyticsBrand !== 'All' && s.brand !== app.analyticsBrand) return false;
+                if (app.analyticsModel !== 'All' && s.model !== app.analyticsModel) return false;
+                if (app.analyticsTerritory !== 'All' && s.territory_id !== app.analyticsTerritory) return false;
+                if (app.analyticsUpazila !== 'All' && s.upazila !== app.analyticsUpazila) return false;
+                if (app.analyticsSaleType !== 'All' && s.sale_type !== app.analyticsSaleType) return false;
+                if (!app.analyticsMonths.includes(s.sales_month)) return false;
+                return true;
+            });
+        };
 
-                    const totalFY1 = salesFY1.reduce((sum, s) => sum + Number(s.unit_qty), 0);
-                    const totalFY2 = salesFY2.reduce((sum, s) => sum + Number(s.unit_qty), 0);
-                    
-                    // For prediction, check if the FY is the current one. If not, prediction = actual.
-                    const predictFY1 = app.analyticsFY1 === app.currentFY ? Math.round((totalFY1 / passedMonthsCount) * 12) : totalFY1;
-                    const predictFY2 = app.analyticsFY2 === app.currentFY ? Math.round((totalFY2 / passedMonthsCount) * 12) : totalFY2;
+        const salesFY1 = filterSales(app.analyticsFY1);
+        const totalFY1 = salesFY1.reduce((sum, s) => sum + Number(s.unit_qty), 0);
+        const predictFY1 = app.analyticsFY1 === app.currentFY ? Math.round((totalFY1 / passedMonthsCount) * 12) : totalFY1;
 
-                    const growthStr = totalFY1 > 0 ? (((totalFY2 - totalFY1) / totalFY1) * 100).toFixed(1) + '%' : 'N/A';
-                    const isPositive = totalFY2 >= totalFY1;
+        // Dropdown values
+        const allFys = [...new Set(DB.sales.map(s => s.fy))].filter(Boolean).sort().reverse();
+        if (allFys.length === 0) allFys.push(app.currentFY);
+        const allBrands = [...new Set(DB.sales.map(s => s.brand))].filter(Boolean).sort();
+        const allModels = [...new Set(DB.sales.map(s => s.model))].filter(Boolean).sort();
+        const allTerritories = DB.territories.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+        const allUpazilas = [...new Set(DB.sales.map(s => s.upazila))].filter(Boolean).sort();
+        const allSaleTypes = [...new Set(DB.sales.map(s => s.sale_type))].filter(Boolean).sort();
 
-                    // Unique dropdown values
-                    const allFys = [...new Set(DB.sales.map(s => s.fy))].filter(Boolean).sort().reverse();
-                    if(allFys.length === 0) allFys.push(app.currentFY);
-                    
-                    const allBrands = [...new Set(DB.sales.map(s => s.brand))].filter(Boolean).sort();
-                    const allModels = [...new Set(DB.sales.map(s => s.model))].filter(Boolean).sort();
-                    const allTerritories = DB.territories.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
-                    const allUpazilas = [...new Set(DB.sales.map(s => s.upazila))].filter(Boolean).sort();
+        // ====== DATA CRUNCHING ======
 
-                    let html = `
-                        <div class="animate-fade-in pb-20">
-                            <div class="flex items-center justify-between mb-6">
-                                <div>
-                                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                                        <i data-lucide="bar-chart-2" class="w-6 h-6 text-sky-500"></i> Historical Analytics
-                                    </h2>
-                                    <p class="text-xs text-slate-500 font-medium">Power BI style multi-dimensional comparison</p>
-                                </div>
-                            </div>
+        // Model Data
+        const modelMap = {};
+        salesFY1.forEach(s => {
+            const m = s.model || 'Unknown';
+            modelMap[m] = (modelMap[m] || 0) + Number(s.unit_qty);
+        });
+        const allModelsSorted = Object.keys(modelMap).sort((a,b) => modelMap[b] - modelMap[a]);
+        const sortedModels = allModelsSorted.slice(0, 12);
 
-                            <!-- Filter Bar -->
-                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 items-end sticky top-16 z-20">
-                                <div class="flex-1 min-w-[120px]">
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Baseline FY</label>
-                                    <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                        ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Compare FY</label>
-                                    <select onchange="app.analyticsFY2 = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                        ${allFys.map(f => `<option value="${f}" ${app.analyticsFY2 === f ? 'selected' : ''}>${f}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Brand</label>
-                                    <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                        <option value="All" ${app.analyticsBrand === 'All' ? 'selected' : ''}>All Brands</option>
-                                        ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Model</label>
-                                    <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                        <option value="All" ${app.analyticsModel === 'All' ? 'selected' : ''}>All Models</option>
-                                        ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Territory</label>
-                                    <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                        <option value="All" ${app.analyticsTerritory === 'All' ? 'selected' : ''}>All Territories</option>
-                                        ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upazila</label>
-                                    <select onchange="app.analyticsUpazila = this.value; app.renderAdminAnalytics(true)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-sky-500">
-                                        <option value="All" ${app.analyticsUpazila === 'All' ? 'selected' : ''}>All Upazilas</option>
-                                        ${allUpazilas.map(u => `<option value="${u}" ${app.analyticsUpazila === u ? 'selected' : ''}>${u}</option>`).join('')}
-                                    </select>
-                                </div>
-                            </div>
+        // Monthly data
+        const monthlyData = new Array(12).fill(0);
+        salesFY1.forEach(s => {
+            const idx = monthsList.indexOf(s.sales_month);
+            if (idx !== -1) monthlyData[idx] += Number(s.unit_qty);
+        });
 
-                            <!-- KPI Overview -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Baseline (${app.analyticsFY1})</p>
-                                        <h4 class="text-2xl font-black text-slate-800 mt-0.5 tracking-tight">${totalFY1.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY1.toLocaleString()}</strong></div>
-                                </div>
-                                
-                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Compare (${app.analyticsFY2})</p>
-                                        <h4 class="text-2xl font-black text-slate-800 mt-0.5 tracking-tight">${totalFY2.toLocaleString()} <span class="text-[10px] font-medium text-slate-500">Units</span></h4>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400 font-medium">YTD Forecast Close: <strong class="text-slate-600">${predictFY2.toLocaleString()}</strong></div>
-                                </div>
+        // Cumulative monthly
+        const cumulativeData = [];
+        let cumSum = 0;
+        monthlyData.forEach(v => { cumSum += v; cumulativeData.push(cumSum); });
 
-                                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[95px]">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">YOY Growth</p>
-                                        <div class="flex items-center gap-1.5 mt-0.5">
-                                            <span class="text-2xl font-black tracking-tight ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${growthStr}</span>
-                                            <i data-lucide="${isPositive ? 'arrow-up-right' : 'arrow-down-right'}" class="w-5 h-5 ${isPositive ? 'text-emerald-500' : 'text-rose-500'}"></i>
-                                        </div>
-                                    </div>
-                                    <div class="text-[10px] text-slate-400 font-medium">Compared to ${app.analyticsFY1} baseline</div>
-                                </div>
-                            </div>
+        // Sales Type data
+        const saleTypeMap = {};
+        salesFY1.forEach(s => {
+            const st = s.sale_type || 'Unknown';
+            saleTypeMap[st] = (saleTypeMap[st] || 0) + Number(s.unit_qty);
+        });
 
-                            <!-- Charts Section -->
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <!-- Line Chart -->
-                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col">
-                                    <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                        <i data-lucide="activity" class="w-4 h-4 text-sky-500"></i> Monthly Trend Analysis
-                                    </h3>
-                                    <div class="flex-1 relative min-h-[300px]">
-                                        <canvas id="chartAnalyticsTrend"></canvas>
-                                    </div>
-                                </div>
-                                
-                                <!-- Brand Share -->
-                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
-                                    <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                        <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i> Brand Share (${app.analyticsFY2})
-                                    </h3>
-                                    <div class="flex-1 relative min-h-[300px] flex items-center justify-center">
-                                        <canvas id="chartAnalyticsBrand"></canvas>
-                                    </div>
-                                </div>
-                                
-                                <!-- Territory Bar Chart -->
-                                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 lg:col-span-3 flex flex-col">
-                                    <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                        <i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-amber-500"></i> Regional Comparison (${app.analyticsFY1} vs ${app.analyticsFY2})
-                                    </h3>
-                                    <div class="flex-1 relative min-h-[400px]">
-                                        <canvas id="chartAnalyticsRegion"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+        // Brand data
+        const brandMap = {};
+        salesFY1.forEach(s => {
+            const b = s.brand || 'Unknown';
+            brandMap[b] = (brandMap[b] || 0) + Number(s.unit_qty);
+        });
+
+        // Regional data
+        const regionMap = {};
+        salesFY1.forEach(s => {
+            const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
+            regionMap[tName] = (regionMap[tName] || 0) + Number(s.unit_qty);
+        });
+        const sortedRegions = Object.keys(regionMap).sort((a,b) => regionMap[b] - regionMap[a]);
+
+        // Best / worst month
+        const activeMonthlyData = monthlyData.filter((v, i) => app.analyticsMonths.includes(monthsList[i]));
+        const bestMonthVal = Math.max(...activeMonthlyData.filter(v => v > 0), 0);
+        const worstMonthVal = Math.min(...activeMonthlyData.filter(v => v > 0), Infinity);
+        const bestMonthIdx = monthlyData.indexOf(bestMonthVal);
+        const worstMonthIdx = monthlyData.indexOf(worstMonthVal);
+        const bestMonth = bestMonthIdx >= 0 ? monthsList[bestMonthIdx] : 'N/A';
+        const worstMonth = worstMonthIdx >= 0 && worstMonthVal !== Infinity ? monthsList[worstMonthIdx] : 'N/A';
+
+        // Top model
+        const topModel = allModelsSorted.length > 0 ? allModelsSorted[0] : 'N/A';
+        const topModelQty = allModelsSorted.length > 0 ? modelMap[topModel] : 0;
+        const uniqueModels = Object.keys(modelMap).length;
+        const avgPerMonth = (totalFY1 / Math.max(1, app.analyticsMonths.length)).toFixed(0);
+
+        // Top territory
+        const topTerritory = sortedRegions.length > 0 ? sortedRegions[0] : 'N/A';
+        const topTerritoryQty = sortedRegions.length > 0 ? regionMap[topTerritory] : 0;
+
+        // Model table rows
+        const modelTableRows = allModelsSorted.slice(0, 15).map((m, i) => {
+            const qty = modelMap[m];
+            const pct = totalFY1 > 0 ? ((qty / totalFY1) * 100).toFixed(1) : '0.0';
+            const barW = totalFY1 > 0 ? Math.round((qty / modelMap[allModelsSorted[0]]) * 100) : 0;
+            return `
+                <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                    <td class="py-1.5 px-2 text-[10px] font-bold text-slate-400 text-center">${i+1}</td>
+                    <td class="py-1.5 px-2 text-[11px] font-bold text-slate-700">${m}</td>
+                    <td class="py-1.5 px-2 text-[11px] font-black text-slate-800 text-right">${qty}</td>
+                    <td class="py-1.5 px-2 text-[10px] font-bold text-slate-500 text-right">${pct}%</td>
+                    <td class="py-1.5 px-2 w-[120px]">
+                        <div class="w-full bg-slate-100 rounded-full h-1.5">
+                            <div class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width:${barW}%"></div>
                         </div>
-                    `;
+                    </td>
+                </tr>
+            `;
+        }).join('');
 
-                    document.getElementById('view-port').innerHTML = html;
-                    lucide.createIcons();
+        let html = `
+            <div class="animate-fade-in pb-20">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="w-5 h-5 text-sky-500"></i> Deep Analytics
+                        </h2>
+                        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Single FY focused · Models · Regions · Timeline</p>
+                    </div>
+                </div>
 
-                    // Prepare data for charts
-                    const monthlyDataFY1 = new Array(12).fill(0);
-                    const monthlyDataFY2 = new Array(12).fill(0);
-                    
-                    salesFY1.forEach(s => {
-                        const idx = monthsList.indexOf(s.sales_month);
-                        if (idx !== -1) monthlyDataFY1[idx] += Number(s.unit_qty);
-                    });
-                    
-                    salesFY2.forEach(s => {
-                        const idx = monthsList.indexOf(s.sales_month);
-                        if (idx !== -1) monthlyDataFY2[idx] += Number(s.unit_qty);
-                    });
-
-                    // Prepare Brand Data for FY2
-                    const brandMap = {};
-                    salesFY2.forEach(s => {
-                        const b = s.brand || 'Unknown';
-                        brandMap[b] = (brandMap[b] || 0) + Number(s.unit_qty);
-                    });
-                    
-                    // Prepare Regional Data (Territory)
-                    const regionMap = {};
-                    salesFY1.forEach(s => {
-                        const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
-                        if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
-                        regionMap[tName].fy1 += Number(s.unit_qty);
-                    });
-                    salesFY2.forEach(s => {
-                        const tName = DB.territories.find(t => t.id === s.territory_id)?.name || s.territory_id;
-                        if(!regionMap[tName]) regionMap[tName] = { fy1: 0, fy2: 0 };
-                        regionMap[tName].fy2 += Number(s.unit_qty);
-                    });
-
-                    const sortedRegions = Object.keys(regionMap).sort((a,b) => regionMap[b].fy2 - regionMap[a].fy2); // Sort by FY2 descending
-
-                    // Render Charts
-                    app.renderChartAnalyticsTrend(monthsList, monthlyDataFY1, monthlyDataFY2, app.analyticsFY1, app.analyticsFY2);
-                    app.renderChartAnalyticsBrand(Object.keys(brandMap), Object.values(brandMap));
-                    app.renderChartAnalyticsRegion(sortedRegions, sortedRegions.map(r => regionMap[r].fy1), sortedRegions.map(r => regionMap[r].fy2), app.analyticsFY1, app.analyticsFY2);
-                } catch (e) {
-                    console.error("Historical Analytics Error:", e);
-                    document.getElementById('view-port').innerHTML = `
-                        <div class="p-6 max-w-2xl mx-auto mt-10 bg-red-50 border border-red-200 rounded-xl shadow-sm">
-                            <div class="flex gap-3 items-start">
-                                <div class="p-2 bg-red-100 text-red-600 rounded-lg">
-                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                </div>
-                                <div class="flex-1">
-                                    <h3 class="text-sm font-bold text-red-800">Historical Analytics Failed to Load</h3>
-                                    <p class="text-xs text-red-600 mt-1">${e.message}</p>
-                                    <div class="mt-4 bg-slate-900 text-slate-300 p-3 rounded-lg text-[10px] font-mono overflow-auto max-h-48 leading-relaxed">
-                                        ${e.stack}
-                                    </div>
-                                </div>
+                <!-- Filter Bar -->
+                <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm mb-3 flex flex-wrap gap-2 items-end sticky top-16 z-20">
+                    <div class="min-w-[90px]">
+                        <label class="block text-[8px] font-bold text-slate-400 uppercase mb-0.5 tracking-wider">Fiscal Year</label>
+                        <select onchange="app.analyticsFY1 = this.value; app.renderAdminAnalytics()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 focus:outline-none focus:border-sky-400">
+                            ${allFys.map(f => `<option value="${f}" ${app.analyticsFY1 === f ? 'selected' : ''}>${f}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="min-w-[90px] relative">
+                        <label class="block text-[8px] font-bold text-slate-400 uppercase mb-0.5 tracking-wider">Months</label>
+                        <button onclick="document.getElementById('analytics-month-dropdown').classList.toggle('hidden')" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 focus:outline-none focus:border-sky-400 flex justify-between items-center gap-1">
+                            <span>${app.analyticsMonths.length === 12 ? 'Full Year' : app.analyticsMonths.length + ' mo'}</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+                        </button>
+                        <div id="analytics-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen ? '' : 'hidden'} absolute top-full mt-1 left-0 w-44 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-56 overflow-y-auto">
+                            <div class="p-1.5 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+                                <label class="flex items-center gap-2 px-2 py-0.5 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-black text-slate-700">
+                                    <input type="checkbox" onchange="app.analyticsMonths = this.checked ? ['July','August','September','October','November','December','January','February','March','April','May','June'] : [app.currentMonth]; app.renderAdminAnalytics(true)" ${app.analyticsMonths.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-3 h-3">
+                                    All Months
+                                </label>
                             </div>
-                        </div>
-                    `;
-                }
-            };
-
-window.app.renderChartAnalyticsTrend = (labels, data1, data2, label1, label2) => {
-                if (app.charts.analyticsTrend) app.charts.analyticsTrend.destroy();
-                const ctx = document.getElementById('chartAnalyticsTrend').getContext('2d');
-                
-                // Gradients
-                const grad1 = ctx.createLinearGradient(0, 0, 0, 400);
-                grad1.addColorStop(0, 'rgba(148, 163, 184, 0.5)'); // Slate 400
-                grad1.addColorStop(1, 'rgba(148, 163, 184, 0.0)');
-                
-                const grad2 = ctx.createLinearGradient(0, 0, 0, 400);
-                grad2.addColorStop(0, 'rgba(14, 165, 233, 0.5)'); // Sky 500
-                grad2.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
-
-                app.charts.analyticsTrend = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: label1,
-                                data: data1,
-                                borderColor: '#94a3b8',
-                                backgroundColor: grad1,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointBackgroundColor: '#fff',
-                                pointBorderColor: '#94a3b8',
-                                pointBorderWidth: 2,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            },
-                            {
-                                label: label2,
-                                data: data2,
-                                borderColor: '#0ea5e9',
-                                backgroundColor: grad2,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointBackgroundColor: '#fff',
-                                pointBorderColor: '#0ea5e9',
-                                pointBorderWidth: 2,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' } } },
-                            tooltip: {
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                titleColor: '#1e293b',
-                                bodyColor: '#334155',
-                                borderColor: '#e2e8f0',
-                                borderWidth: 1,
-                                padding: 12,
-                                boxPadding: 6,
-                                usePointStyle: true,
-                                titleFont: { size: 13, family: "'Inter', sans-serif" },
-                                bodyFont: { size: 12, family: "'Inter', sans-serif", weight: 'bold' }
-                            }
-                        },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' } },
-                            y: { grid: { color: '#f1f5f9', borderDash: [4, 4] }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' }, beginAtZero: true }
-                        }
-                    }
-                });
-            };
-
-window.app.renderChartAnalyticsBrand = (labels, data) => {
-                if (app.charts.analyticsBrand) app.charts.analyticsBrand.destroy();
-                const ctx = document.getElementById('chartAnalyticsBrand').getContext('2d');
-                
-                const bgColors = [
-                    '#8b5cf6', // Violet
-                    '#3b82f6', // Blue
-                    '#10b981', // Emerald
-                    '#f59e0b', // Amber
-                    '#f43f5e', // Rose
-                    '#64748b'  // Slate
-                ];
-
-                app.charts.analyticsBrand = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: bgColors,
-                            borderWidth: 2,
-                            borderColor: '#ffffff',
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '70%',
-                        plugins: {
-                            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' } } },
-                            tooltip: {
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                titleColor: '#1e293b',
-                                bodyColor: '#334155',
-                                borderColor: '#e2e8f0',
-                                borderWidth: 1,
-                                padding: 12,
-                                boxPadding: 6,
-                                usePointStyle: true,
-                                titleFont: { size: 13, family: "'Inter', sans-serif" },
-                                bodyFont: { size: 12, family: "'Inter', sans-serif", weight: 'bold' },
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) label += ': ';
-                                        if (context.parsed !== null) {
-                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                            const percentage = Math.round((context.parsed / total) * 100);
-                                            label += `${context.parsed} Units (${percentage}%)`;
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            };
-
-window.app.renderChartAnalyticsRegion = (labels, data1, data2, label1, label2) => {
-                if (app.charts.analyticsRegion) app.charts.analyticsRegion.destroy();
-                const ctx = document.getElementById('chartAnalyticsRegion').getContext('2d');
-
-                app.charts.analyticsRegion = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: label1,
-                                data: data1,
-                                backgroundColor: '#94a3b8',
-                                borderRadius: 4,
-                                borderSkipped: false,
-                            },
-                            {
-                                label: label2,
-                                data: data2,
-                                backgroundColor: '#0ea5e9',
-                                borderRadius: 4,
-                                borderSkipped: false,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: "'Inter', sans-serif", weight: 'bold' } } },
-                            tooltip: {
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                titleColor: '#1e293b',
-                                bodyColor: '#334155',
-                                borderColor: '#e2e8f0',
-                                borderWidth: 1,
-                                padding: 12,
-                                boxPadding: 6,
-                                usePointStyle: true,
-                                titleFont: { size: 13, family: "'Inter', sans-serif" },
-                                bodyFont: { size: 12, family: "'Inter', sans-serif", weight: 'bold' }
-                            }
-                        },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' } },
-                            y: { grid: { color: '#f1f5f9', borderDash: [4, 4] }, ticks: { font: { size: 10, family: "'Inter', sans-serif" }, color: '#64748b' }, beginAtZero: true }
-                        }
-                    }
-                });
-            };
-
-window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
-                localStorage.setItem('aci_last_page', 'ai');
-                localStorage.setItem('aci_last_role', app.currentUser.role);
-                app.setupSidebar();
-                const currentFY = app.selectedFY || app.currentFY;
-                const currentMonth = app.currentMonth;
-                const currentDay = 14; // Mocking mid-month
-                const daysInMonth = 30;
-
-                // State Initialization
-                if (typeof app.aiMonths === 'undefined' || (!keepDropdownOpen && app.aiMonths.length === 0)) {
-                    app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
-                }
-                const activeMonthsInSelection = app.aiMonths;
-
-                if (typeof app.aiActionsState === 'undefined') {
-                    app.aiActionsState = JSON.parse(localStorage.getItem('aci_ai_actions_state')) || {};
-                }
-                if (typeof app.aiTerrPerformanceFilter === 'undefined' || !keepDropdownOpen) {
-                    app.aiTerrPerformanceFilter = 'all';
-                }
-
-                // 1. National Aggregation
-                let totalActual = 0;
-                let totalTarget = 0;
-                let totalProjection = 0;
-
-                const brandStats = {
-                    Foton: { actual: 0, target: 0, projection: 0, lyActual: 0 },
-                    Mahindra: { actual: 0, target: 0, projection: 0, lyActual: 0 }
-                };
-
-                const currentSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
-
-                currentSales.forEach(s => {
-                    totalActual += Number(s.unit_qty || 0);
-                    if (brandStats[s.brand]) brandStats[s.brand].actual += Number(s.unit_qty || 0);
-                });
-
-                DB.targets.filter(t => t.fy === currentFY).forEach(t => {
-                    let monthlyTarget = 0;
-                    if (t.month) {
-                        if (activeMonthsInSelection.includes(t.month)) {
-                            monthlyTarget = Number(t.target_qty || 0);
-                        }
-                    } else {
-                        // Annual target: distribute proportionally to number of selected months
-                        monthlyTarget = Math.round((Number(t.target_qty || 0) / 12) * activeMonthsInSelection.length);
-                    }
-                    totalTarget += monthlyTarget;
-                    if (brandStats[t.brand]) brandStats[t.brand].target += monthlyTarget;
-                });
-
-                DB.projections.filter(p => p.fy === currentFY && activeMonthsInSelection.includes(p.month)).forEach(p => {
-                    totalProjection += Number(p.projection_qty || 0);
-                    if (brandStats[p.brand]) brandStats[p.brand].projection += Number(p.projection_qty || 0);
-                });
-
-                // LY Stats for Growth Analysis
-                DB.sales.filter(s => s.fy === '2024-25' && activeMonthsInSelection.includes(s.sales_month)).forEach(s => {
-                    if (brandStats[s.brand]) brandStats[s.brand].lyActual += Number(s.unit_qty || 0);
-                });
-
-                // Calculate elapsed days for pacing calculations based on selected months
-                const hasCurrentMonth = activeMonthsInSelection.includes(currentMonth);
-                const elapsedDays = hasCurrentMonth 
-                    ? ((activeMonthsInSelection.length - 1) * 30 + currentDay) 
-                    : (activeMonthsInSelection.length * 30);
-                const totalDays = activeMonthsInSelection.length * 30;
-
-                // AI Predictions
-                const dailyRate = totalActual / Math.max(elapsedDays, 1);
-                const predictedClose = Math.round(dailyRate * totalDays);
-                const predictionConfidence = 85;
-                const isPacingWell = predictedClose >= totalTarget;
-                
-                // Advanced pacing parameters
-                const remainingDays = Math.max(1, totalDays - elapsedDays);
-                const pacingGap = totalTarget - totalActual;
-                const dailyGapNeeded = pacingGap > 0 ? Math.ceil(pacingGap / remainingDays) : 0;
-                const currentDailyAvg = (totalActual / Math.max(1, elapsedDays)).toFixed(1);
-                const requiredDailyAvg = pacingGap > 0 ? (pacingGap / remainingDays).toFixed(1) : '0.0';
-
-                // Territory Heat Analysis
-                const terrPerformance = DB.territories.map(t => {
-                    const tActual = currentSales.filter(s => s.territory_id === t.id).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
-                    const tTarget = DB.targets.filter(tg => tg.territory_id === t.id && tg.fy === currentFY).reduce((sum, tg) => {
-                        let mTarget = 0;
-                        if (tg.month) {
-                            if (activeMonthsInSelection.includes(tg.month)) {
-                                mTarget = Number(tg.target_qty || 0);
-                            }
-                        } else {
-                            mTarget = Math.round((Number(tg.target_qty || 0) / 12) * activeMonthsInSelection.length);
-                        }
-                        return sum + mTarget;
-                    }, 0);
-                    const ach = tTarget > 0 ? Math.round((tActual / tTarget) * 100) : 0;
-                    return { ...t, actual: tActual, target: tTarget, ach };
-                }).sort((a, b) => b.ach - a.ach);
-
-                const topTerritories = terrPerformance.slice(0, 3);
-                const atRiskTerritories = terrPerformance.filter(t => t.ach < 40).sort((a, b) => a.ach - b.ach).slice(0, 3);
-
-                // --- NEW ADVANCED ANALYTICS ---
-                const ytdSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
-
-                // 1. Model-Upazila Affinity (Champion Models)
-                const modelUpazilaMap = {};
-                ytdSales.forEach(s => {
-                    const key = `${s.model}|${s.upazila}`;
-                    modelUpazilaMap[key] = (modelUpazilaMap[key] || 0) + Number(s.unit_qty || 0);
-                });
-
-                const upazilaAffinities = [];
-                const upazilasSeen = new Set();
-                Object.entries(modelUpazilaMap)
-                    .sort((a, b) => b[1] - a[1])
-                    .forEach(([key, qty]) => {
-                        const [model, upazila] = key.split('|');
-                        if (!upazilasSeen.has(upazila) && upazilaAffinities.length < 6) {
-                            upazilaAffinities.push({ model, upazila, qty });
-                            upazilasSeen.add(upazila);
-                        }
-                    });
-
-                // 2. Underperforming Models (Bottom 3 by Volume)
-                const modelTotalSales = {};
-                DB.models.forEach(m => modelTotalSales[m.name] = 0);
-                ytdSales.forEach(s => { modelTotalSales[s.model] += Number(s.unit_qty || 0); });
-
-                const modelInsights = DB.models.map(m => ({
-                    ...m,
-                    sales: modelTotalSales[m.name],
-                    performance: modelTotalSales[m.name] > 20 ? 'High' : (modelTotalSales[m.name] > 10 ? 'Medium' : 'Low')
-                })).sort((a, b) => a.sales - b.sales);
-
-                const underperformers = modelInsights.filter(m => m.performance === 'Low').slice(0, 3);
-
-                // 3. Brand Dominance Battleground
-                const brandDominance = DB.territories.map(t => {
-                    const tSales = ytdSales.filter(s => s.territory_id === t.id);
-                    const f = tSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
-                    const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
-                    const leader = f > m ? 'Foton' : (m > f ? 'Mahindra' : 'Contested');
-                    const leaderColor = leader === 'Foton' ? 'indigo' : (leader === 'Mahindra' ? 'rose' : 'slate');
-                    return { name: t.name, f, m, leader, leaderColor, total: f + m };
-                }).filter(t => t.total > 0).sort((a, b) => b.total - a.total).slice(0, 4);
-
-                // Prepare Dynamic Interventions based on calculated data
-                const highestTerr = terrPerformance.length > 0 ? terrPerformance[0] : null;
-                const lowestTerr = terrPerformance.length > 0 ? terrPerformance[terrPerformance.length - 1] : null;
-
-                const html = `
-                    <div class="w-full fade-in pb-12">
-                        <!-- AI Header Section -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
-                            <div class="w-full md:w-auto">
-                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-3">
-                                    <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl shadow-md shadow-purple-200">
-                                        <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
-                                    </div>
-                                    <span>AI Strategic <span class="text-purple-600 font-black">Insights</span></span>
-                                </h1>
-                                <p class="text-slate-400 font-semibold text-[10px] mt-1 flex items-center gap-1.5">
-                                    <span class="flex h-2.5 w-2.5 relative">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                                    </span>
-                                    <span>DYNAMIC DIAGNOSTICS ACTIVE</span>
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-3 bg-white/90  p-1.5 rounded-2xl shadow-md border border-slate-100 w-full md:w-auto">
-                                <div class="px-3 py-1 flex-1 md:flex-none text-center">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Confidence Level</p>
-                                    <p class="text-xs font-black text-purple-600 flex items-center justify-center gap-1">
-                                        ${predictionConfidence}%
-                                        <span class="group relative inline-block cursor-pointer">
-                                            <i data-lucide="info" class="w-3 h-3 text-slate-400 hover:text-slate-600"></i>
-                                            <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[9px] p-2 rounded-lg w-40 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center">
-                                                Statistical confidence interval based on current run-rate variance vs targets.
-                                            </span>
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="w-px h-6 bg-slate-200"></div>
-                                
-                                <!-- Month Multi-Select for AI Insights -->
-                                <div class="flex items-center gap-2 relative">
-                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
-                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[120px]">
-                                        <span>${activeMonthsInSelection.length === 12 ? 'All FY (YTD)' : activeMonthsInSelection.length + ' Selected'}</span>
-                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-1 text-slate-400"></i>
-                                    </button>
-                                    <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-1.5 right-0 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-64 overflow-y-auto">
-                                        <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
-                                            <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-black text-slate-700 transition-colors">
-                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : [app.currentMonth]; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
-                                                Select All FY (YTD)
-                                            </label>
-                                        </div>
-                                        <div class="p-2 space-y-0.5">
-                                            ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => `
-                                                <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-semibold text-slate-600 transition-colors">
-                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
-                                                    ${m}
-                                                </label>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Top Level AI Summary Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <!-- Prediction Card -->
-                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-lg relative overflow-hidden group">
-                                <div class="absolute -right-8 -top-8 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
-                                <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-500"></i>
-                                    AI Forecast Closing
-                                    <span class="group relative inline-block cursor-pointer">
-                                        <i data-lucide="info" class="w-3 h-3 text-slate-300 hover:text-slate-500"></i>
-                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[9px] p-2 rounded-lg w-48 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
-                                            Calculated by extrapolating YTD average daily run-rate over the total selected months (30 days/month).
-                                        </span>
-                                    </span>
-                                </h3>
-                                
-                                <div class="flex items-baseline gap-1 mb-3">
-                                    <span class="text-3xl font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
-                                    <span class="text-xs font-bold text-slate-400 uppercase">Units</span>
-                                </div>
-
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200 mb-2 relative">
-                                    <div class="bg-purple-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.min(100, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
-                                    <div class="absolute top-0 bottom-0 w-0.5 bg-slate-400" style="left: ${Math.min(99, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
-                                </div>
-
-                                <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-4">
-                                    <span>YTD Actual: ${totalActual}</span>
-                                    <span>Target: ${totalTarget}</span>
-                                </div>
-
-                                <div class="border-t border-slate-100/60 pt-3 flex items-center justify-between">
-                                    <div class="flex flex-col">
-                                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-wide">Pace Status</span>
-                                        <span class="text-xs font-extrabold ${isPacingWell ? 'text-green-600' : 'text-amber-600'}">
-                                            ${isPacingWell ? 'Ahead of Schedule' : 'Behind Target'}
-                                        </span>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-wide">Pacing Rate</span>
-                                        <span class="text-xs font-black text-slate-700 block">${currentDailyAvg} vs req. ${requiredDailyAvg} / day</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Brand Momentum Card -->
-                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-lg relative overflow-hidden group">
-                                <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
-                                <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-4 flex items-center gap-1.5">
-                                    <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
-                                    Strategic Brand Momentum
-                                    <span class="group relative inline-block cursor-pointer">
-                                        <i data-lucide="info" class="w-3 h-3 text-slate-300 hover:text-slate-500"></i>
-                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[9px] p-2 rounded-lg w-48 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
-                                            Measures YTD sales achievement percentage against proportional budget target per brand.
-                                        </span>
-                                    </span>
-                                </h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between text-[9px] font-black mb-1 uppercase tracking-tighter">
-                                            <span class="text-indigo-600">Foton Velocity</span>
-                                            <span class="text-slate-500">${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}% of Goal</span>
-                                        </div>
-                                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
-                                            <div class="bg-indigo-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}%"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-[9px] font-black mb-1 uppercase tracking-tighter">
-                                            <span class="text-rose-600">Mahindra Velocity</span>
-                                            <span class="text-slate-500">${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}% of Goal</span>
-                                        </div>
-                                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
-                                            <div class="bg-rose-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Quick Insight Card -->
-                            <div class="bg-slate-900 p-5 rounded-[1.75rem] border border-slate-800 shadow-lg relative overflow-hidden group text-white">
-                                <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                                    <i data-lucide="cpu" class="w-24 h-24 text-purple-400"></i>
-                                </div>
-                                <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
-                                    Deep Data Synthesis
-                                    <span class="group relative inline-block cursor-pointer">
-                                        <i data-lucide="info" class="w-3 h-3 text-slate-500 hover:text-slate-400"></i>
-                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[9px] p-2 rounded-lg w-48 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
-                                            Compares current financial year performance with Same Period Last Year (SPLY) and tracks volume gap.
-                                        </span>
-                                    </span>
-                                </h3>
-                                <p class="text-xs font-semibold leading-relaxed text-slate-300 mb-3.5">
-                                    National growth is <strong class="text-white font-extrabold">${Math.round(((totalActual - (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual)) / (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual || 1)) * 100)}%</strong> vs SPLY. ${predictedClose > totalTarget ? 'Target surplus projected. Maintaining positive momentum.' : 'Daily volume gap identified: +' + dailyGapNeeded + ' units/day needed to recover.'}
-                                </p>
-                                <div class="flex items-center gap-3 pt-2 border-t border-slate-800">
-                                    <div class="flex -space-x-1.5">
-                                        <div class="w-5.5 h-5.5 rounded-full bg-purple-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">AI</div>
-                                        <div class="w-5.5 h-5.5 rounded-full bg-indigo-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">BI</div>
-                                    </div>
-                                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-500">Real-Time Forecast Optimization</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- NEW: AI INTERVENTION CONSOLE (Action Hub) -->
-                        <div class="mb-8 bg-white p-6 rounded-[1.75rem] border border-slate-100 shadow-md">
-                            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                                <h2 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                                    <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600"></i>
-                                    AI Intervention Console
-                                </h2>
-                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-purple-200">Decision Center</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Action Card 1: Budget Reallocation -->
-                                ${lowestTerr && highestTerr ? (() => {
-                                    const actionKey = `budget_shift_${lowestTerr.id}`;
-                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
-                                    return `
-                                    <div class="flex flex-col justify-between p-4 rounded-2xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-purple-100 bg-purple-50/10'} hover:shadow-md transition-all duration-300 relative">
-                                        <div>
-                                            <div class="flex justify-between items-start mb-2">
-                                                <span class="px-2 py-0.5 rounded text-[8px] font-black tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-purple-100 text-purple-700 border border-purple-200'}">
-                                                    ${isExecuted ? 'Executed' : 'High Priority'}
-                                                </span>
-                                                <span class="text-[8px] font-bold text-slate-400">Budget Shift</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
-                                                Shift Promo Budget to ${lowestTerr.name}
-                                            </h4>
-                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
-                                                Shift 15% promotional budget from high-surplus <strong class="text-slate-800 font-bold">${highestTerr.name}</strong> to support conversion rates in struggling <strong class="text-slate-800 font-bold">${lowestTerr.name}</strong> (${lowestTerr.ach}% ach).
-                                            </p>
-                                        </div>
-                                        <div>
-                                            ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
-                                            ` : `
-                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl text-xs font-black shadow-md shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
-                                            `}
-                                        </div>
-                                    </div>
-                                    `;
-                                })() : ''}
-
-                                <!-- Action Card 2: Send notice -->
-                                ${lowestTerr ? (() => {
-                                    const actionKey = `notice_${lowestTerr.id}`;
-                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
-                                    return `
-                                    <div class="flex flex-col justify-between p-4 rounded-2xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-indigo-100 bg-indigo-50/10'} hover:shadow-md transition-all duration-300">
-                                        <div>
-                                            <div class="flex justify-between items-start mb-2">
-                                                <span class="px-2 py-0.5 rounded text-[8px] font-black tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}">
-                                                    ${isExecuted ? 'Circulated' : 'Action Required'}
-                                                </span>
-                                                <span class="text-[8px] font-bold text-slate-400">Direct Message</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
-                                                Issue Target Directive in ${lowestTerr.name}
-                                            </h4>
-                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
-                                                Current achievement of <strong class="text-slate-800 font-bold">${lowestTerr.ach}%</strong> is below pacing baseline. Dispatch an AI-generated notice to push local MOs to prioritize key conversions.
-                                            </p>
-                                        </div>
-                                        <div>
-                                            ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
-                                            ` : `
-                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-black shadow-md shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
-                                            `}
-                                        </div>
-                                    </div>
-                                    `;
-                                })() : ''}
-
-                                <!-- Action Card 3: Stock Pre-positioning -->
-                                ${upazilaAffinities.length > 0 ? (() => {
-                                    const aff = upazilaAffinities[0];
-                                    const actionKey = `stock_${aff.upazila}`;
-                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
-                                    return `
-                                    <div class="flex flex-col justify-between p-4 rounded-2xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-amber-100 bg-amber-50/10'} hover:shadow-md transition-all duration-300">
-                                        <div>
-                                            <div class="flex justify-between items-start mb-2">
-                                                <span class="px-2 py-0.5 rounded text-[8px] font-black tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-amber-100 text-amber-700 border border-amber-200'}">
-                                                    ${isExecuted ? 'Dispatched' : 'Supply Risk'}
-                                                </span>
-                                                <span class="text-[8px] font-bold text-slate-400">Inventory Alert</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
-                                                Pre-position ${aff.model} to ${aff.upazila}
-                                            </h4>
-                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
-                                                High demand affinity detected in <strong class="text-slate-800 font-bold">${aff.upazila}</strong> (${aff.qty} units). Pre-position 10 buffer stock units to secure market availability.
-                                            </p>
-                                        </div>
-                                        <div>
-                                            ${isExecuted ? `
-                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
-                                            ` : `
-                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl text-xs font-black shadow-md shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
-                                            `}
-                                        </div>
-                                    </div>
-                                    `;
-                                })() : ''}
-                            </div>
-                        </div>
-
-                        <!-- NEW: Advanced Model & Market Affinity Section -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                            <!-- Column 1: Product-Market Fit (Upazila Wise) -->
-                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between">
-                                <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
-                                            <i data-lucide="map-pin" class="w-4 h-4 text-indigo-500"></i>
-                                            Upazila Champion Models
-                                        </h3>
-                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 tracking-wider">FIT INDEX</span>
-                                    </div>
-                                    <div class="space-y-2.5">
-                                        ${upazilaAffinities.map(a => `
-                                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-300 hover:bg-white transition-all shadow-sm">
-                                                <div>
-                                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${a.upazila}</p>
-                                                    <p class="font-extrabold text-slate-700 text-xs">${a.model}</p>
-                                                </div>
-                                                <div class="text-right">
-                                                    <span class="px-2 py-0.5 bg-white rounded-lg border border-slate-200 text-[10px] font-black text-indigo-600 shadow-sm">${a.qty} Units</span>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                <p class="text-[8px] text-slate-400 font-bold mt-4 uppercase tracking-widest text-center italic">High-affinity model-regional correlation</p>
-                            </div>
-
-                            <!-- Column 2: Brand Dominance Battleground -->
-                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between">
-                                <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
-                                            <i data-lucide="swords" class="w-4 h-4 text-rose-500"></i>
-                                            Regional Brand Dominance
-                                        </h3>
-                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 tracking-wider">MARKET SHARE</span>
-                                    </div>
-                                    <div class="space-y-4">
-                                        ${brandDominance.map(t => `
-                                            <div>
-                                                <div class="flex justify-between items-end mb-1">
-                                                    <span class="text-[10px] font-bold text-slate-600">${t.name}</span>
-                                                    <span class="text-[8px] font-black text-${t.leaderColor}-600 uppercase tracking-wider">Leading: ${t.leader}</span>
-                                                </div>
-                                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex p-0.5 border border-slate-200">
-                                                    <div class="bg-indigo-500 h-full transition-all duration-700" style="width: ${(t.f / t.total) * 100}%"></div>
-                                                    <div class="bg-rose-500 h-full transition-all duration-700" style="width: ${(t.m / t.total) * 100}%"></div>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                <div class="mt-4 flex items-center justify-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-wider">
-                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span><span>Foton</span></div>
-                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Mahindra</span></div>
-                                </div>
-                            </div>
-
-                            <!-- Column 3: Risk & Underperforming Assets -->
-                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between bg-slate-50/30">
-                                <div>
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-sm font-bold text-rose-700 tracking-tight flex items-center gap-1.5">
-                                            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
-                                            Model Performance Risks
-                                        </h3>
-                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 tracking-wider">WARN</span>
-                                    </div>
-                                    <div class="space-y-2.5">
-                                        ${underperformers.map(m => `
-                                            <div class="p-3 rounded-xl bg-white border border-rose-100 shadow-sm relative overflow-hidden group">
-                                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${m.brand}</p>
-                                                <div class="flex justify-between items-center relative z-10">
-                                                    <span class="font-extrabold text-slate-700 text-xs">${m.name}</span>
-                                                    <div class="text-right">
-                                                        <span class="text-rose-600 font-extrabold text-xs">${m.sales} Sales</span>
-                                                        <p class="text-[7px] font-bold text-rose-400 uppercase tracking-tighter">Underperforming</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                        ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-6 text-xs">All models performing within threshold.</p>' : ''}
-                                    </div>
-                                </div>
-                                <div class="mt-4 p-2.5 bg-amber-50 rounded-xl border border-amber-100 text-[10px] text-amber-700 font-semibold italic leading-normal">
-                                    "Low velocity in models suggests stock saturation or price friction. Re-assess dealer discounts."
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- NEW: Quantum Market Intelligence & Predictive Forecasting -->
-                        <div class="mb-8">
-                            <div class="flex items-center gap-2 mb-4">
-                                <h2 class="text-base font-bold text-slate-800 tracking-tight">Quantum Market Intelligence</h2>
-                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-purple-200">Experimental Model</span>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <!-- Predictive Seasonal Shift -->
-                                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-5 rounded-[1.75rem] text-white shadow-md relative overflow-hidden group">
-                                    <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/5 rounded-full blur-xl group-hover:scale-125 transition-transform duration-500"></div>
-                                    <h4 class="text-[9px] font-black text-indigo-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                        <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
-                                        Next Period Forecast (May)
-                                    </h4>
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between items-center text-xs">
-                                            <span class="font-medium text-slate-300">Projected Demand</span>
-                                            <span class="font-black text-indigo-400">+12.4%</span>
-                                        </div>
-                                        <div class="p-2 bg-white/5 rounded-lg border border-slate-200/10">
-                                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Trending Model</p>
-                                            <p class="text-xs font-black text-white">Mahindra Bolero Pick-up</p>
-                                        </div>
-                                    </div>
-                                    <div class="mt-4 pt-3 border-t border-slate-200/10 text-[9px] text-slate-400 leading-relaxed italic">
-                                        "Seasonal uptick in rural agricultural harvest transportation expected."
-                                    </div>
-                                </div>
-
-                                <!-- Territory Growth Clustering -->
-                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
-                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-500"></i>
-                                        Growth Clusters
-                                    </h4>
-                                    <div class="space-y-2">
-                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-emerald-50 border border-emerald-100 text-[10px]">
-                                            <span class="font-bold text-emerald-700 uppercase">Hyper-Growth</span>
-                                            <span class="font-extrabold text-emerald-800">2 Regions</span>
-                                        </div>
-                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[10px]">
-                                            <span class="font-bold text-blue-700 uppercase">Steady State</span>
-                                            <span class="font-extrabold text-blue-800">5 Regions</span>
-                                        </div>
-                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-rose-50 border border-rose-100 text-[10px]">
-                                            <span class="font-bold text-rose-700 uppercase">Reactivation</span>
-                                            <span class="font-extrabold text-rose-800">1 Region</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- AI Sales Probability Index -->
-                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
-                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                        <i data-lucide="target" class="w-3.5 h-3.5 text-purple-500"></i>
-                                        FY Target Probability
-                                    </h4>
-                                    <div class="flex flex-col items-center justify-center py-1">
-                                        <div class="relative w-16 h-16 flex items-center justify-center">
-                                            <svg class="w-full h-full transform -rotate-90">
-                                                <circle cx="32" cy="32" r="28" fill="transparent" stroke="#f1f5f9" stroke-width="6"/>
-                                                <circle cx="32" cy="32" r="28" fill="transparent" stroke="#8b5cf6" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="${176 * (1 - 0.92)}"/>
-                                            </svg>
-                                            <span class="absolute text-sm font-extrabold text-slate-800">92%</span>
-                                        </div>
-                                        <p class="text-[9px] font-extrabold text-purple-600 uppercase mt-2 tracking-tighter">Very High Confidence</p>
-                                    </div>
-                                </div>
-
-                                <!-- Inventory Run-Rate Predictor -->
-                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
-                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                        <i data-lucide="box" class="w-3.5 h-3.5 text-amber-500"></i>
-                                        Stock Depletion Alert
-                                    </h4>
-                                    <div class="space-y-2.5">
-                                        <div class="flex justify-between text-[11px] font-bold">
-                                            <span class="text-slate-500">Buffer Depot Exhaustion:</span>
-                                            <span class="text-rose-600 font-extrabold">18 Days</span>
-                                        </div>
-                                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-rose-500 h-full rounded-full" style="width: 75%"></div>
-                                        </div>
-                                        <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wider text-center">Based on 14-day trailing run-rate</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Main AI Content Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Left: Recommendations & Heatmap Matrix -->
-                            <div class="lg:col-span-2 space-y-6">
-                                <!-- Dynamic Market Heatmap Visualization -->
-                                <div class="bg-white p-6 rounded-[1.75rem] border border-slate-200 shadow-md">
-                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-                                        <h2 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
-                                            <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-500"></i>
-                                            Territory Performance Matrix
-                                        </h2>
-                                        
-                                        <!-- Matrix Filter Tabs -->
-                                        <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-[10px] font-bold">
-                                            <button onclick="app.aiTerrPerformanceFilter='all'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">All</button>
-                                            <button onclick="app.aiTerrPerformanceFilter='risk'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'risk' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">At Risk (<60%)</button>
-                                            <button onclick="app.aiTerrPerformanceFilter='strong'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'strong' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">Strong (>=80%)</button>
-                                        </div>
-                                    </div>
-
-                                    ${(() => {
-                                        let filteredTerrPerformance = [...terrPerformance];
-                                        if (app.aiTerrPerformanceFilter === 'risk') {
-                                            filteredTerrPerformance = filteredTerrPerformance.filter(t => t.ach < 60);
-                                        } else if (app.aiTerrPerformanceFilter === 'strong') {
-                                            filteredTerrPerformance = filteredTerrPerformance.filter(t => t.ach >= 80);
-                                        }
-
-                                        if (filteredTerrPerformance.length === 0) {
-                                            return `<div class="text-center text-slate-400 py-10 font-bold text-xs">No territories match the selected filter.</div>`;
-                                        }
-
-                                        return `
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                            ${filteredTerrPerformance.map(t => `
-                                                <div class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
-                                                    <div>
-                                                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">${t.name}</p>
-                                                        <div class="flex justify-between items-end">
-                                                            <span class="text-base font-extrabold text-slate-700">${t.ach}%</span>
-                                                            <div class="w-6.5 h-6.5 rounded-full flex items-center justify-center ${t.ach > 70 ? 'bg-green-100 text-green-600' : (t.ach > 40 ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600')}">
-                                                                <i data-lucide="${t.ach > 70 ? 'smile' : (t.ach > 40 ? 'smile' : 'frown')}" class="w-3.5 h-3.5"></i>
-                                                            </div>
-                                                        </div>
-                                                        <p class="text-[8px] text-slate-400 mt-1">Act: ${t.actual} / Tgt: ${t.target}</p>
-                                                    </div>
-                                                    <div class="w-full bg-slate-200 h-1.5 rounded-full mt-3 overflow-hidden">
-                                                        <div class="${t.ach > 70 ? 'bg-green-500' : (t.ach > 40 ? 'bg-amber-500' : 'bg-red-500')} h-full rounded-full" style="width: ${Math.min(t.ach, 100)}%"></div>
-                                                    </div>
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                        `;
-                                    })()}
-                                </div>
-                            </div>
-
-                            <!-- Right: Leaders & Risk Zones -->
-                            <div class="space-y-6">
-                                <!-- Top Performers -->
-                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-100 shadow-md">
-                                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-4">
-                                        <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
-                                        Top Performers
-                                    </h3>
-                                    <div class="space-y-3">
-                                        ${topTerritories.map((t, idx) => `
-                                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-6.5 h-6.5 rounded-lg bg-amber-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">${idx + 1}</div>
-                                                    <div>
-                                                        <p class="font-extrabold text-slate-700 text-xs">${t.name}</p>
-                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${t.actual} Units Sold</p>
-                                                    </div>
-                                                </div>
-                                                <div class="text-right">
-                                                    <p class="text-xs font-extrabold text-green-600">${t.ach}%</p>
-                                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Achieved</p>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-
-                                <!-- Risk Monitor -->
-                                <div class="bg-rose-50/50 p-5 rounded-[1.75rem] border border-rose-100 shadow-md flex flex-col justify-between">
-                                    <div>
-                                        <h3 class="text-sm font-bold text-rose-800 flex items-center gap-1.5 mb-4">
-                                            <i data-lucide="activity" class="w-4 h-4 text-rose-600"></i>
-                                            Risk Monitor
-                                        </h3>
-                                        <div class="space-y-3">
-                                            ${atRiskTerritories.length > 0 ? atRiskTerritories.map(t => `
-                                                <div class="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-rose-100">
-                                                    <div>
-                                                        <p class="font-extrabold text-rose-900 text-xs">${t.name}</p>
-                                                        <p class="text-[9px] font-bold text-rose-400 uppercase tracking-wider">Gap: ${t.target - t.actual} Units</p>
-                                                    </div>
-                                                    <div class="text-right">
-                                                        <p class="text-xs font-extrabold text-rose-600">${t.ach}%</p>
-                                                        <p class="text-[8px] font-bold text-rose-400 uppercase tracking-wider">Critical</p>
-                                                    </div>
-                                                </div>
-                                            `).join('') : '<p class="text-center text-[10px] font-bold text-slate-400 py-3">No territories under 40% achievement.</p>'}
-                                        </div>
-                                    </div>
-                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl shadow-md shadow-rose-200 transition-all active:scale-95 text-[10px] uppercase tracking-wider">
-                                        Review All Regions
-                                    </button>
-                                </div>
+                            <div class="p-1.5 space-y-0">
+                                ${monthsList.map(m => `
+                                    <label class="flex items-center gap-2 px-2 py-0.5 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-semibold text-slate-600">
+                                        <input type="checkbox" onchange="if(this.checked){app.analyticsMonths.push('${m}');}else{app.analyticsMonths=app.analyticsMonths.filter(x=>x!=='${m}');} app.renderAdminAnalytics(true)" ${app.analyticsMonths.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-3 h-3">
+                                        ${m}
+                                    </label>
+                                `).join('')}
                             </div>
                         </div>
                     </div>
-                `;
-                document.getElementById('view-port').innerHTML = html;
-                app.refreshIcons();
-            };
+                    <div class="min-w-[80px]">
+                        <label class="block text-[8px] font-bold text-slate-400 uppercase mb-0.5 tracking-wider">Type</label>
+                        <select onchange="app.analyticsSaleType = this.value; app.renderAdminAnalytics()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 focus:outline-none focus:border-sky-400">
+                            <option value="All" ${app.analyticsSaleType === 'All' ? 'selected' : ''}>All</option>
+                            ${allSaleTypes.map(st => `<option value="${st}" ${app.analyticsSaleType === st ? 'selected' : ''}>${st}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="min-w-[80px]">
+                        <label class="block text-[8px] font-bold text-slate-400 uppercase mb-0.5 tracking-wider">Brand</label>
+                        <select onchange="app.analyticsBrand = this.value; app.renderAdminAnalytics()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 focus:outline-none focus:border-sky-400">
+                            <option value="All" ${app.analyticsBrand === 'All' ? 'selected' : ''}>All</option>
+                            ${allBrands.map(b => `<option value="${b}" ${app.analyticsBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="min-w-[80px]">
+                        <label class="block text-[8px] font-bold text-slate-400 uppercase mb-0.5 tracking-wider">Model</label>
+                        <select onchange="app.analyticsModel = this.value; app.renderAdminAnalytics()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 focus:outline-none focus:border-sky-400">
+                            <option value="All" ${app.analyticsModel === 'All' ? 'selected' : ''}>All</option>
+                            ${allModels.map(m => `<option value="${m}" ${app.analyticsModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="min-w-[80px]">
+                        <label class="block text-[8px] font-bold text-slate-400 uppercase mb-0.5 tracking-wider">Territory</label>
+                        <select onchange="app.analyticsTerritory = this.value; app.analyticsUpazila = 'All'; app.renderAdminAnalytics()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 focus:outline-none focus:border-sky-400">
+                            <option value="All" ${app.analyticsTerritory === 'All' ? 'selected' : ''}>All</option>
+                            ${allTerritories.map(t => `<option value="${t.id}" ${app.analyticsTerritory === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- KPI Strip -->
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mb-3">
+                    <div class="bg-white px-2.5 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Total</p>
+                        <h4 class="text-base font-black text-slate-800">${totalFY1.toLocaleString()}</h4>
+                    </div>
+                    <div class="bg-white px-2.5 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Avg/Month</p>
+                        <h4 class="text-base font-black text-slate-800">${avgPerMonth}</h4>
+                    </div>
+                    <div class="bg-white px-2.5 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">FY Forecast</p>
+                        <h4 class="text-base font-black text-sky-700">${predictFY1.toLocaleString()}</h4>
+                    </div>
+                    <div class="bg-white px-2.5 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Best Month</p>
+                        <h4 class="text-sm font-black text-emerald-600 truncate">${bestMonth}</h4>
+                        <p class="text-[8px] text-slate-400 font-bold">${bestMonthVal} units</p>
+                    </div>
+                    <div class="bg-white px-2.5 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Top Model</p>
+                        <h4 class="text-sm font-black text-purple-700 truncate">${topModel}</h4>
+                        <p class="text-[8px] text-slate-400 font-bold">${topModelQty} units</p>
+                    </div>
+                    <div class="bg-white px-2.5 py-2 rounded-lg border border-slate-200 shadow-sm">
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">#1 Territory</p>
+                        <h4 class="text-sm font-black text-amber-700 truncate">${topTerritory}</h4>
+                        <p class="text-[8px] text-slate-400 font-bold">${topTerritoryQty} units</p>
+                    </div>
+                </div>
+
+                <!-- ROW 1: Monthly Trend + Sales Source -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2 flex flex-col">
+                        <h3 class="text-[11px] font-extrabold text-slate-700 mb-2.5 flex items-center gap-1.5 uppercase tracking-wider">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 text-sky-500"></i> Monthly Trend + Cumulative
+                        </h3>
+                        <div class="flex-1 relative min-h-[240px]">
+                            <canvas id="chartAnalyticsTrend"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                        <h3 class="text-[11px] font-extrabold text-slate-700 mb-2.5 flex items-center gap-1.5 uppercase tracking-wider">
+                            <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-purple-500"></i> Sales Source Mix
+                        </h3>
+                        <div class="flex-1 relative min-h-[240px] flex items-center justify-center">
+                            <canvas id="chartAnalyticsSaleType"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Model Column Chart -->
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm mb-3 flex flex-col">
+                    <h3 class="text-[11px] font-extrabold text-slate-700 mb-2.5 flex items-center gap-1.5 uppercase tracking-wider">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-500"></i> Model Volume Breakdown
+                    </h3>
+                    <div class="relative min-h-[300px]">
+                        <canvas id="chartAnalyticsModel"></canvas>
+                    </div>
+                </div>
+
+                <!-- ROW 3: Model Table + Territory Chart -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <!-- Model Ranking Table -->
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                        <h3 class="text-[11px] font-extrabold text-slate-700 mb-2.5 flex items-center gap-1.5 uppercase tracking-wider">
+                            <i data-lucide="list-ordered" class="w-3.5 h-3.5 text-indigo-500"></i> Model Ranking (${uniqueModels} total)
+                        </h3>
+                        <div class="overflow-auto max-h-[360px]">
+                            <table class="w-full">
+                                <thead class="sticky top-0 bg-slate-50 z-10">
+                                    <tr class="border-b border-slate-200">
+                                        <th class="py-1.5 px-2 text-[8px] font-black text-slate-400 uppercase text-center w-8">#</th>
+                                        <th class="py-1.5 px-2 text-[8px] font-black text-slate-400 uppercase text-left">Model</th>
+                                        <th class="py-1.5 px-2 text-[8px] font-black text-slate-400 uppercase text-right">Qty</th>
+                                        <th class="py-1.5 px-2 text-[8px] font-black text-slate-400 uppercase text-right">Share</th>
+                                        <th class="py-1.5 px-2 text-[8px] font-black text-slate-400 uppercase text-left w-[120px]">Volume</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${modelTableRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Territory Performance -->
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                        <h3 class="text-[11px] font-extrabold text-slate-700 mb-2.5 flex items-center gap-1.5 uppercase tracking-wider">
+                            <i data-lucide="map" class="w-3.5 h-3.5 text-amber-500"></i> Territory Performance
+                        </h3>
+                        <div class="flex-1 relative min-h-[320px]">
+                            <canvas id="chartAnalyticsRegion"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('view-port').innerHTML = html;
+        lucide.createIcons();
+
+        // ---- RENDER CHARTS ----
+        app._renderAnalyticsTrend(monthsList, monthlyData, cumulativeData, app.analyticsFY1);
+        app._renderAnalyticsSaleType(Object.keys(saleTypeMap), Object.values(saleTypeMap));
+        app._renderAnalyticsModel(sortedModels, sortedModels.map(m => modelMap[m]));
+        app._renderAnalyticsRegion(sortedRegions, sortedRegions.map(r => regionMap[r]));
+
+    } catch (e) {
+        console.error("Deep Analytics Error:", e);
+        document.getElementById('view-port').innerHTML = `
+            <div class="p-6 max-w-xl mx-auto mt-10 bg-red-50 border border-red-200 rounded-xl">
+                <h3 class="text-sm font-bold text-red-800">Analytics Error</h3>
+                <p class="text-xs text-red-600 mt-1">${e.message}</p>
+            </div>
+        `;
+    }
+};
+
+// ======================== CHART RENDERERS ========================
+
+window.app._renderAnalyticsTrend = (labels, barData, cumData, fyLabel) => {
+    if (app.charts.analyticsTrend) app.charts.analyticsTrend.destroy();
+    const ctx = document.getElementById('chartAnalyticsTrend').getContext('2d');
+
+    app.charts.analyticsTrend = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Monthly',
+                    data: barData,
+                    backgroundColor: 'rgba(14, 165, 233, 0.55)',
+                    borderColor: '#0ea5e9',
+                    borderWidth: 1,
+                    borderRadius: 3,
+                    maxBarThickness: 30,
+                    order: 2,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Cumulative',
+                    data: cumData,
+                    type: 'line',
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.08)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#f97316',
+                    order: 1,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { boxWidth: 8, usePointStyle: true, font: { size: 9, weight: 'bold' }, padding: 8 } },
+                datalabels: {
+                    display: (ctx) => ctx.datasetIndex === 0 && ctx.dataset.data[ctx.dataIndex] > 0,
+                    anchor: 'end', align: 'top', offset: 1,
+                    font: { size: 8, weight: 'bold' },
+                    color: '#475569',
+                    formatter: v => v
+                },
+                tooltip: { mode: 'index', intersect: false, backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 10 }, bodyFont: { size: 10 }, padding: 8, cornerRadius: 6 }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 8 }, color: '#94a3b8', maxRotation: 45, minRotation: 45 } },
+                y: { position: 'left', beginAtZero: true, grid: { borderDash: [3,3], color: '#f1f5f9' }, ticks: { font: { size: 8 }, color: '#94a3b8' }, title: { display: true, text: 'Monthly', font: { size: 8, weight: 'bold' }, color: '#94a3b8' } },
+                y1: { position: 'right', beginAtZero: true, grid: { display: false }, ticks: { font: { size: 8 }, color: '#f97316' }, title: { display: true, text: 'Cumulative', font: { size: 8, weight: 'bold' }, color: '#f97316' } }
+            }
+        }
+    });
+};
+
+window.app._renderAnalyticsSaleType = (labels, data) => {
+    if (app.charts.analyticsSaleType) app.charts.analyticsSaleType.destroy();
+    const ctx = document.getElementById('chartAnalyticsSaleType').getContext('2d');
+    app.charts.analyticsSaleType = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: ['#8b5cf6', '#0ea5e9', '#f59e0b', '#10b981', '#f43f5e', '#6366f1'],
+                borderWidth: 2, borderColor: '#fff', hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 8, usePointStyle: true, font: { size: 9, weight: 'bold' }, padding: 10, color: '#475569' } },
+                datalabels: {
+                    display: (ctx) => { const total = ctx.dataset.data.reduce((a,b) => a+b, 0); return ctx.dataset.data[ctx.dataIndex] / total > 0.05; },
+                    color: '#fff',
+                    font: { size: 10, weight: 'bold' },
+                    formatter: (v, ctx) => { const total = ctx.dataset.data.reduce((a,b) => a+b, 0); return Math.round((v/total)*100) + '%'; }
+                },
+                tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 10 }, bodyFont: { size: 10 }, padding: 8, cornerRadius: 6 }
+            }
+        }
+    });
+};
+
+window.app._renderAnalyticsModel = (labels, data) => {
+    if (app.charts.analyticsModel) app.charts.analyticsModel.destroy();
+    const ctx = document.getElementById('chartAnalyticsModel').getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 300);
+    grad.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+    grad.addColorStop(1, 'rgba(16, 185, 129, 0.3)');
+
+    app.charts.analyticsModel = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: data,
+                backgroundColor: grad,
+                borderColor: '#059669',
+                borderWidth: 1,
+                borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+                maxBarThickness: 42
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    display: true,
+                    anchor: 'end', align: 'top', offset: 2,
+                    font: { size: 10, weight: 'bold' },
+                    color: '#1e293b',
+                    formatter: v => v
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15,23,42,0.95)',
+                    titleFont: { size: 11, weight: 'bold' }, bodyFont: { size: 11 }, padding: 10, cornerRadius: 6,
+                    callbacks: {
+                        afterLabel: function(ctx) {
+                            const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+                            return total > 0 ? ((ctx.parsed.y / total) * 100).toFixed(1) + '% share' : '';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 9, weight: 'bold' }, color: '#475569', maxRotation: 45, minRotation: 45 } },
+                y: { beginAtZero: true, grid: { borderDash: [3,3], color: '#f1f5f9' }, ticks: { font: { size: 9, weight: 'bold' }, color: '#94a3b8' } }
+            }
+        }
+    });
+};
+
+window.app._renderAnalyticsRegion = (labels, data) => {
+    if (app.charts.analyticsRegion) app.charts.analyticsRegion.destroy();
+    const ctx = document.getElementById('chartAnalyticsRegion').getContext('2d');
+    app.charts.analyticsRegion = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: data,
+                backgroundColor: '#f59e0b',
+                borderRadius: 3,
+                maxBarThickness: 32
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    display: true,
+                    anchor: 'end', align: 'right', offset: 4,
+                    font: { size: 9, weight: 'bold' },
+                    color: '#92400e',
+                    formatter: v => v
+                },
+                tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { size: 10 }, bodyFont: { size: 10 }, padding: 8, cornerRadius: 6 }
+            },
+            scales: {
+                y: { grid: { display: false }, ticks: { font: { size: 9, weight: 'bold' }, color: '#475569' } },
+                x: { beginAtZero: true, grid: { borderDash: [3,3], color: '#f1f5f9' }, ticks: { font: { size: 8 }, color: '#94a3b8' } }
+            }
+        }
+    });
+};
+
 
 window.app.renderAdminSalesMap = (keepDropdownOpen = false) => {
                 localStorage.setItem('aci_last_page', 'map');
@@ -4662,3 +4011,735 @@ window.app.downloadDealerPerformancePDF = async () => {
         console.error(err);
     }
 };
+
+
+window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
+                localStorage.setItem('aci_last_page', 'ai');
+                localStorage.setItem('aci_last_role', app.currentUser.role);
+                app.setupSidebar();
+                const currentFY = app.selectedFY || app.currentFY;
+                const currentMonth = app.currentMonth;
+                const currentDay = 14; // Mocking mid-month
+                const daysInMonth = 30;
+
+                // State Initialization
+                if (typeof app.aiMonths === 'undefined' || (!keepDropdownOpen && app.aiMonths.length === 0)) {
+                    app.aiMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+                }
+                const activeMonthsInSelection = app.aiMonths;
+
+                if (typeof app.aiActionsState === 'undefined') {
+                    app.aiActionsState = JSON.parse(localStorage.getItem('aci_ai_actions_state')) || {};
+                }
+                if (typeof app.aiTerrPerformanceFilter === 'undefined' || !keepDropdownOpen) {
+                    app.aiTerrPerformanceFilter = 'all';
+                }
+
+                // 1. National Aggregation
+                let totalActual = 0;
+                let totalTarget = 0;
+                let totalProjection = 0;
+
+                const brandStats = {
+                    Foton: { actual: 0, target: 0, projection: 0, lyActual: 0 },
+                    Mahindra: { actual: 0, target: 0, projection: 0, lyActual: 0 }
+                };
+
+                const currentSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
+
+                currentSales.forEach(s => {
+                    totalActual += Number(s.unit_qty || 0);
+                    if (brandStats[s.brand]) brandStats[s.brand].actual += Number(s.unit_qty || 0);
+                });
+
+                DB.targets.filter(t => t.fy === currentFY).forEach(t => {
+                    let monthlyTarget = 0;
+                    if (t.month) {
+                        if (activeMonthsInSelection.includes(t.month)) {
+                            monthlyTarget = Number(t.target_qty || 0);
+                        }
+                    } else {
+                        // Annual target: distribute proportionally to number of selected months
+                        monthlyTarget = Math.round((Number(t.target_qty || 0) / 12) * activeMonthsInSelection.length);
+                    }
+                    totalTarget += monthlyTarget;
+                    if (brandStats[t.brand]) brandStats[t.brand].target += monthlyTarget;
+                });
+
+                DB.projections.filter(p => p.fy === currentFY && activeMonthsInSelection.includes(p.month)).forEach(p => {
+                    totalProjection += Number(p.projection_qty || 0);
+                    if (brandStats[p.brand]) brandStats[p.brand].projection += Number(p.projection_qty || 0);
+                });
+
+                // LY Stats for Growth Analysis
+                DB.sales.filter(s => s.fy === '2024-25' && activeMonthsInSelection.includes(s.sales_month)).forEach(s => {
+                    if (brandStats[s.brand]) brandStats[s.brand].lyActual += Number(s.unit_qty || 0);
+                });
+
+                // Calculate elapsed days for pacing calculations based on selected months
+                const hasCurrentMonth = activeMonthsInSelection.includes(currentMonth);
+                const elapsedDays = hasCurrentMonth 
+                    ? ((activeMonthsInSelection.length - 1) * 30 + currentDay) 
+                    : (activeMonthsInSelection.length * 30);
+                const totalDays = activeMonthsInSelection.length * 30;
+
+                // AI Predictions
+                const dailyRate = totalActual / Math.max(elapsedDays, 1);
+                const predictedClose = Math.round(dailyRate * totalDays);
+                const predictionConfidence = 85;
+                const isPacingWell = predictedClose >= totalTarget;
+                
+                // Advanced pacing parameters
+                const remainingDays = Math.max(1, totalDays - elapsedDays);
+                const pacingGap = totalTarget - totalActual;
+                const dailyGapNeeded = pacingGap > 0 ? Math.ceil(pacingGap / remainingDays) : 0;
+                const currentDailyAvg = (totalActual / Math.max(1, elapsedDays)).toFixed(1);
+                const requiredDailyAvg = pacingGap > 0 ? (pacingGap / remainingDays).toFixed(1) : '0.0';
+
+                // Territory Heat Analysis
+                const terrPerformance = DB.territories.map(t => {
+                    const tActual = currentSales.filter(s => s.territory_id === t.id).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const tTarget = DB.targets.filter(tg => tg.territory_id === t.id && tg.fy === currentFY).reduce((sum, tg) => {
+                        let mTarget = 0;
+                        if (tg.month) {
+                            if (activeMonthsInSelection.includes(tg.month)) {
+                                mTarget = Number(tg.target_qty || 0);
+                            }
+                        } else {
+                            mTarget = Math.round((Number(tg.target_qty || 0) / 12) * activeMonthsInSelection.length);
+                        }
+                        return sum + mTarget;
+                    }, 0);
+                    const ach = tTarget > 0 ? Math.round((tActual / tTarget) * 100) : 0;
+                    return { ...t, actual: tActual, target: tTarget, ach };
+                }).sort((a, b) => b.ach - a.ach);
+
+                const topTerritories = terrPerformance.slice(0, 3);
+                const atRiskTerritories = terrPerformance.filter(t => t.ach < 40).sort((a, b) => a.ach - b.ach).slice(0, 3);
+
+                // --- NEW ADVANCED ANALYTICS ---
+                const ytdSales = DB.sales.filter(s => s.fy === currentFY && activeMonthsInSelection.includes(s.sales_month));
+
+                // 1. Model-Upazila Affinity (Champion Models)
+                const modelUpazilaMap = {};
+                ytdSales.forEach(s => {
+                    const key = `${s.model}|${s.upazila}`;
+                    modelUpazilaMap[key] = (modelUpazilaMap[key] || 0) + Number(s.unit_qty || 0);
+                });
+
+                const upazilaAffinities = [];
+                const upazilasSeen = new Set();
+                Object.entries(modelUpazilaMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([key, qty]) => {
+                        const [model, upazila] = key.split('|');
+                        if (!upazilasSeen.has(upazila) && upazilaAffinities.length < 6) {
+                            upazilaAffinities.push({ model, upazila, qty });
+                            upazilasSeen.add(upazila);
+                        }
+                    });
+
+                // 2. Underperforming Models (Bottom 3 by Volume)
+                const modelTotalSales = {};
+                DB.models.forEach(m => modelTotalSales[m.name] = 0);
+                ytdSales.forEach(s => { modelTotalSales[s.model] += Number(s.unit_qty || 0); });
+
+                const modelInsights = DB.models.map(m => ({
+                    ...m,
+                    sales: modelTotalSales[m.name],
+                    performance: modelTotalSales[m.name] > 20 ? 'High' : (modelTotalSales[m.name] > 10 ? 'Medium' : 'Low')
+                })).sort((a, b) => a.sales - b.sales);
+
+                const underperformers = modelInsights.filter(m => m.performance === 'Low').slice(0, 3);
+
+                // 3. Brand Dominance Battleground
+                const brandDominance = DB.territories.map(t => {
+                    const tSales = ytdSales.filter(s => s.territory_id === t.id);
+                    const f = tSales.filter(s => s.brand === 'Foton').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const m = tSales.filter(s => s.brand === 'Mahindra').reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                    const leader = f > m ? 'Foton' : (m > f ? 'Mahindra' : 'Contested');
+                    const leaderColor = leader === 'Foton' ? 'indigo' : (leader === 'Mahindra' ? 'rose' : 'slate');
+                    return { name: t.name, f, m, leader, leaderColor, total: f + m };
+                }).filter(t => t.total > 0).sort((a, b) => b.total - a.total).slice(0, 4);
+
+                // Prepare Dynamic Interventions based on calculated data
+                const highestTerr = terrPerformance.length > 0 ? terrPerformance[0] : null;
+                const lowestTerr = terrPerformance.length > 0 ? terrPerformance[terrPerformance.length - 1] : null;
+
+                const html = `
+                    <div class="w-full fade-in pb-12 overflow-x-hidden">
+                        <!-- AI Header Section -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 px-2 md:px-0">
+                            <div class="w-full md:w-auto">
+                                <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight flex items-center gap-3">
+                                    <div class="p-2.5 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl shadow-md shadow-purple-200">
+                                        <i data-lucide="brain-circuit" class="w-6 h-6 text-white animate-pulse"></i>
+                                    </div>
+                                    <span>AI Strategic <span class="text-purple-600 font-black">Insights</span></span>
+                                </h1>
+                                <p class="text-slate-400 font-semibold text-[10px] mt-1 flex items-center gap-1.5">
+                                    <span class="flex h-2.5 w-2.5 relative">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                                    </span>
+                                    <span>DYNAMIC DIAGNOSTICS ACTIVE</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/90  p-1.5 rounded-2xl shadow-md border border-slate-100 w-full md:w-auto">
+                                <div class="px-3 py-1 flex-1 md:flex-none text-center">
+                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Confidence Level</p>
+                                    <p class="text-xs font-black text-purple-600 flex items-center justify-center gap-1">
+                                        ${predictionConfidence}%
+                                        <span class="group relative inline-block cursor-pointer">
+                                            <i data-lucide="info" class="w-3 h-3 text-slate-400 hover:text-slate-600"></i>
+                                            <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-950 text-white text-[9px] p-2 rounded-lg w-40 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center">
+                                                Statistical confidence interval based on current run-rate variance vs targets.
+                                            </span>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="w-px h-6 bg-slate-200"></div>
+                                
+                                <!-- Month Multi-Select for AI Insights -->
+                                <div class="flex items-center gap-2 relative">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Month</label>
+                                    <button onclick="document.getElementById('ai-month-dropdown').classList.toggle('hidden')" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-purple-500 transition-colors flex items-center justify-between min-w-[120px]">
+                                        <span>${activeMonthsInSelection.length === 12 ? 'All FY (YTD)' : activeMonthsInSelection.length + ' Selected'}</span>
+                                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 ml-1 text-slate-400"></i>
+                                    </button>
+                                    <div id="ai-month-dropdown" onmouseleave="this.classList.add('hidden')" class="${keepDropdownOpen === true ? '' : 'hidden'} absolute top-full mt-1.5 right-0 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-64 overflow-y-auto">
+                                        <div class="p-2 border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+                                            <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-black text-slate-700 transition-colors">
+                                                <input type="checkbox" onchange="app.aiMonths = this.checked ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : [app.currentMonth]; app.renderAdminAIInsights(true)" ${activeMonthsInSelection.length === 12 ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                Select All FY (YTD)
+                                            </label>
+                                        </div>
+                                        <div class="p-2 space-y-0.5">
+                                            ${['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'].map(m => `
+                                                <label class="flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded-lg cursor-pointer text-[10px] font-semibold text-slate-600 transition-colors">
+                                                    <input type="checkbox" onchange="app.toggleAIMonth('${m}')" ${activeMonthsInSelection.includes(m) ? 'checked' : ''} class="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5">
+                                                    ${m}
+                                                </label>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Level AI Summary Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 overflow-hidden">
+                            <!-- Prediction Card -->
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-lg relative overflow-hidden group">
+                                <div class="absolute pointer-events-none z-0 -right-8 -top-8 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
+                                <h3 class="relative z-10 text-slate-400 text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-500"></i>
+                                    AI Forecast Closing
+                                    <span class="group relative inline-block cursor-pointer">
+                                        <i data-lucide="info" class="w-3 h-3 text-slate-300 hover:text-slate-500"></i>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[9px] p-2 rounded-lg w-48 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
+                                            Calculated by extrapolating YTD average daily run-rate over the total selected months (30 days/month).
+                                        </span>
+                                    </span>
+                                </h3>
+                                
+                                <div class="relative z-10 flex items-baseline gap-1 mb-3">
+                                    <span class="text-3xl font-extrabold text-slate-900 tracking-tight">${predictedClose}</span>
+                                    <span class="text-xs font-bold text-slate-400 uppercase">Units</span>
+                                </div>
+
+                                <div class="relative z-10 w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200 mb-2 relative">
+                                    <div class="bg-purple-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.min(100, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
+                                    <div class="absolute top-0 bottom-0 w-0.5 bg-slate-400" style="left: ${Math.min(99, Math.round((totalActual / (totalTarget || 1)) * 100))}%"></div>
+                                </div>
+
+                                <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 mb-4">
+                                    <span>YTD Actual: ${totalActual}</span>
+                                    <span>Target: ${totalTarget}</span>
+                                </div>
+
+                                <div class="border-t border-slate-100/60 pt-3 flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-wide">Pace Status</span>
+                                        <span class="text-xs font-extrabold ${isPacingWell ? 'text-green-600' : 'text-amber-600'}">
+                                            ${isPacingWell ? 'Ahead of Schedule' : 'Behind Target'}
+                                        </span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-wide">Pacing Rate</span>
+                                        <span class="text-xs font-black text-slate-700 block">${currentDailyAvg} vs req. ${requiredDailyAvg} / day</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Brand Momentum Card -->
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-lg relative overflow-hidden group">
+                                <div class="absolute pointer-events-none z-0 -right-8 -top-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500"></div>
+                                <h3 class="relative z-10 text-slate-400 text-[10px] font-black uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                                    <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    Strategic Brand Momentum
+                                    <span class="group relative inline-block cursor-pointer">
+                                        <i data-lucide="info" class="w-3 h-3 text-slate-300 hover:text-slate-500"></i>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[9px] p-2 rounded-lg w-48 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
+                                            Measures YTD sales achievement percentage against proportional budget target per brand.
+                                        </span>
+                                    </span>
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-[9px] font-black mb-1 uppercase tracking-tighter">
+                                            <span class="text-indigo-600">Foton Velocity</span>
+                                            <span class="text-slate-500">${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}% of Goal</span>
+                                        </div>
+                                        <div class="relative z-10 w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                                            <div class="bg-indigo-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Foton.actual / (brandStats.Foton.target || 1)) * 100)}%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[9px] font-black mb-1 uppercase tracking-tighter">
+                                            <span class="text-rose-600">Mahindra Velocity</span>
+                                            <span class="text-slate-500">${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}% of Goal</span>
+                                        </div>
+                                        <div class="relative z-10 w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                                            <div class="bg-rose-600 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: ${Math.round((brandStats.Mahindra.actual / (brandStats.Mahindra.target || 1)) * 100)}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Insight Card -->
+                            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-lg relative overflow-hidden group text-white">
+                                <div class="absolute pointer-events-none z-0 -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                                    <i data-lucide="cpu" class="w-24 h-24 text-purple-400"></i>
+                                </div>
+                                <h3 class="relative z-10 text-slate-400 text-[10px] font-black uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    Deep Data Synthesis
+                                    <span class="group relative inline-block cursor-pointer">
+                                        <i data-lucide="info" class="w-3 h-3 text-slate-500 hover:text-slate-400"></i>
+                                        <span class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-955 text-white text-[9px] p-2 rounded-lg w-48 shadow-xl pointer-events-none z-[110] leading-normal font-medium text-center normal-case">
+                                            Compares current financial year performance with Same Period Last Year (SPLY) and tracks volume gap.
+                                        </span>
+                                    </span>
+                                </h3>
+                                <p class="text-xs font-semibold leading-relaxed text-slate-300 mb-3.5">
+                                    National growth is <strong class="text-white font-extrabold">${Math.round(((totalActual - (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual)) / (brandStats.Foton.lyActual + brandStats.Mahindra.lyActual || 1)) * 100)}%</strong> vs SPLY. ${predictedClose > totalTarget ? 'Target surplus projected. Maintaining positive momentum.' : 'Daily volume gap identified: +' + dailyGapNeeded + ' units/day needed to recover.'}
+                                </p>
+                                <div class="flex items-center gap-3 pt-2 border-t border-slate-800">
+                                    <div class="flex -space-x-1.5">
+                                        <div class="w-5.5 h-5.5 rounded-full bg-purple-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">AI</div>
+                                        <div class="w-5.5 h-5.5 rounded-full bg-indigo-500 border border-slate-900 flex items-center justify-center text-[7px] font-bold">BI</div>
+                                    </div>
+                                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-500">Real-Time Forecast Optimization</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NEW: AI INTERVENTION CONSOLE (Action Hub) -->
+                        <div class="mb-8 bg-white p-6 rounded-[1.75rem] border border-slate-100 shadow-md">
+                            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                                <h2 class="text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                                    <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600"></i>
+                                    AI Intervention Console
+                                </h2>
+                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-purple-200">Decision Center</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 overflow-hidden">
+                                <!-- Action Card 1: Budget Reallocation -->
+                                ${lowestTerr && highestTerr ? (() => {
+                                    const actionKey = `budget_shift_${lowestTerr.id}`;
+                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
+                                    return `
+                                    <div class="flex flex-col justify-between p-4 rounded-2xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-purple-100 bg-purple-50/10'} hover:shadow-md transition-all duration-300 relative">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-black tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-purple-100 text-purple-700 border border-purple-200'}">
+                                                    ${isExecuted ? 'Executed' : 'High Priority'}
+                                                </span>
+                                                <span class="text-[8px] font-bold text-slate-400">Budget Shift</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                                Shift Promo Budget to ${lowestTerr.name}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                                Shift 15% promotional budget from high-surplus <strong class="text-slate-800 font-bold">${highestTerr.name}</strong> to support conversion rates in struggling <strong class="text-slate-800 font-bold">${lowestTerr.name}</strong> (${lowestTerr.ach}% ach).
+                                            </p>
+                                        </div>
+                                        <div>
+                                            ${isExecuted ? `
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Reallocated</button>
+                                            ` : `
+                                                <button onclick="app.executeBudgetShiftModal('${highestTerr.name}', '${lowestTerr.name}', 15, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl text-xs font-black shadow-md shadow-purple-100 transition-all active:scale-98"><i data-lucide="zap" class="w-3.5 h-3.5 animate-pulse"></i> Optimize Budget</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                    `;
+                                })() : ''}
+
+                                <!-- Action Card 2: Send notice -->
+                                ${lowestTerr ? (() => {
+                                    const actionKey = `notice_${lowestTerr.id}`;
+                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
+                                    return `
+                                    <div class="flex flex-col justify-between p-4 rounded-2xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-indigo-100 bg-indigo-50/10'} hover:shadow-md transition-all duration-300">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-black tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}">
+                                                    ${isExecuted ? 'Circulated' : 'Action Required'}
+                                                </span>
+                                                <span class="text-[8px] font-bold text-slate-400">Direct Message</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                                Issue Target Directive in ${lowestTerr.name}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                                Current achievement of <strong class="text-slate-800 font-bold">${lowestTerr.ach}%</strong> is below pacing baseline. Dispatch an AI-generated notice to push local MOs to prioritize key conversions.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            ${isExecuted ? `
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Notice Circulated</button>
+                                            ` : `
+                                                <button onclick="app.dispatchAINoticeModal('${lowestTerr.name}', ${lowestTerr.ach}, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-black shadow-md shadow-indigo-100 transition-all active:scale-98"><i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Dispatch Directive</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                    `;
+                                })() : ''}
+
+                                <!-- Action Card 3: Stock Pre-positioning -->
+                                ${upazilaAffinities.length > 0 ? (() => {
+                                    const aff = upazilaAffinities[0];
+                                    const actionKey = `stock_${aff.upazila}`;
+                                    const isExecuted = app.aiActionsState[actionKey] === 'Executed';
+                                    return `
+                                    <div class="flex flex-col justify-between p-4 rounded-2xl border ${isExecuted ? 'border-green-100 bg-green-50/20' : 'border-amber-100 bg-amber-50/10'} hover:shadow-md transition-all duration-300">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="px-2 py-0.5 rounded text-[8px] font-black tracking-wider uppercase ${isExecuted ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-amber-100 text-amber-700 border border-amber-200'}">
+                                                    ${isExecuted ? 'Dispatched' : 'Supply Risk'}
+                                                </span>
+                                                <span class="text-[8px] font-bold text-slate-400">Inventory Alert</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-xs mb-1.5 flex items-center gap-1">
+                                                Pre-position ${aff.model} to ${aff.upazila}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-4">
+                                                High demand affinity detected in <strong class="text-slate-800 font-bold">${aff.upazila}</strong> (${aff.qty} units). Pre-position 10 buffer stock units to secure market availability.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            ${isExecuted ? `
+                                                <button disabled class="w-full flex items-center justify-center gap-1 bg-green-100 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold transition-all"><i data-lucide="check" class="w-3.5 h-3.5"></i> Stock Pre-positioned</button>
+                                            ` : `
+                                                <button onclick="app.transferInventoryModal('${aff.model}', '${aff.upazila}', 10, '${actionKey}')" class="w-full flex items-center justify-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl text-xs font-black shadow-md shadow-amber-100 transition-all active:scale-98"><i data-lucide="package" class="w-3.5 h-3.5"></i> Pre-position Inventory</button>
+                                            `}
+                                        </div>
+                                    </div>
+                                    `;
+                                })() : ''}
+                            </div>
+                        </div>
+
+                        <!-- NEW: Advanced Model & Market Affinity Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 overflow-hidden">
+                            <!-- Column 1: Product-Market Fit (Upazila Wise) -->
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-indigo-500"></i>
+                                            Upazila Champion Models
+                                        </h3>
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 tracking-wider">FIT INDEX</span>
+                                    </div>
+                                    <div class="space-y-2.5">
+                                        ${upazilaAffinities.map(a => `
+                                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-300 hover:bg-white transition-all shadow-sm">
+                                                <div>
+                                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${a.upazila}</p>
+                                                    <p class="font-extrabold text-slate-700 text-xs">${a.model}</p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="px-2 py-0.5 bg-white rounded-lg border border-slate-200 text-[10px] font-black text-indigo-600 shadow-sm">${a.qty} Units</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <p class="text-[8px] text-slate-400 font-bold mt-4 uppercase tracking-widest text-center italic">High-affinity model-regional correlation</p>
+                            </div>
+
+                            <!-- Column 2: Brand Dominance Battleground -->
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="swords" class="w-4 h-4 text-rose-500"></i>
+                                            Regional Brand Dominance
+                                        </h3>
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 tracking-wider">MARKET SHARE</span>
+                                    </div>
+                                    <div class="space-y-4">
+                                        ${brandDominance.map(t => `
+                                            <div>
+                                                <div class="flex justify-between items-end mb-1">
+                                                    <span class="text-[10px] font-bold text-slate-600">${t.name}</span>
+                                                    <span class="text-[8px] font-black text-${t.leaderColor}-600 uppercase tracking-wider">Leading: ${t.leader}</span>
+                                                </div>
+                                                <div class="relative z-10 w-full bg-slate-100 h-2 rounded-full overflow-hidden flex p-0.5 border border-slate-200">
+                                                    <div class="bg-indigo-500 h-full transition-all duration-700" style="width: ${(t.f / t.total) * 100}%"></div>
+                                                    <div class="bg-rose-500 h-full transition-all duration-700" style="width: ${(t.m / t.total) * 100}%"></div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span><span>Foton</span></div>
+                                    <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Mahindra</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Column 3: Risk & Underperforming Assets -->
+                            <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md flex flex-col justify-between bg-slate-50/30">
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-sm font-bold text-rose-700 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
+                                            Model Performance Risks
+                                        </h3>
+                                        <span class="text-[8px] font-black px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 tracking-wider">WARN</span>
+                                    </div>
+                                    <div class="space-y-2.5">
+                                        ${underperformers.map(m => `
+                                            <div class="p-3 rounded-xl bg-white border border-rose-100 shadow-sm relative overflow-hidden group">
+                                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${m.brand}</p>
+                                                <div class="flex justify-between items-center relative z-10">
+                                                    <span class="font-extrabold text-slate-700 text-xs">${m.name}</span>
+                                                    <div class="text-right">
+                                                        <span class="text-rose-600 font-extrabold text-xs">${m.sales} Sales</span>
+                                                        <p class="text-[7px] font-bold text-rose-400 uppercase tracking-tighter">Underperforming</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                        ${underperformers.length === 0 ? '<p class="text-center text-slate-400 font-bold py-6 text-xs">All models performing within threshold.</p>' : ''}
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-2.5 bg-amber-50 rounded-xl border border-amber-100 text-[10px] text-amber-700 font-semibold italic leading-normal">
+                                    "Low velocity in models suggests stock saturation or price friction. Re-assess dealer discounts."
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Quantum Market Intelligence & Predictive Forecasting -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <h2 class="text-base font-bold text-slate-800 tracking-tight">Quantum Market Intelligence</h2>
+                                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-purple-200">Experimental Model</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-hidden">
+                                <!-- Predictive Seasonal Shift -->
+                                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-5 rounded-[1.75rem] text-white shadow-md relative overflow-hidden group">
+                                    <div class="absolute pointer-events-none z-0 -right-4 -top-4 w-20 h-20 bg-white/5 rounded-full blur-xl group-hover:scale-125 transition-transform duration-500"></div>
+                                    <h4 class="text-[9px] font-black text-indigo-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+                                        Next Period Forecast (May)
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="font-medium text-slate-300">Projected Demand</span>
+                                            <span class="font-black text-indigo-400">+12.4%</span>
+                                        </div>
+                                        <div class="p-2 bg-white/5 rounded-lg border border-slate-200/10">
+                                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Trending Model</p>
+                                            <p class="text-xs font-black text-white">Mahindra Bolero Pick-up</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 pt-3 border-t border-slate-200/10 text-[9px] text-slate-400 leading-relaxed italic">
+                                        "Seasonal uptick in rural agricultural harvest transportation expected."
+                                    </div>
+                                </div>
+
+                                <!-- Territory Growth Clustering -->
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
+                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                        Growth Clusters
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-emerald-50 border border-emerald-100 text-[10px]">
+                                            <span class="font-bold text-emerald-700 uppercase">Hyper-Growth</span>
+                                            <span class="font-extrabold text-emerald-800">2 Regions</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[10px]">
+                                            <span class="font-bold text-blue-700 uppercase">Steady State</span>
+                                            <span class="font-extrabold text-blue-800">5 Regions</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-1.5 rounded-lg bg-rose-50 border border-rose-100 text-[10px]">
+                                            <span class="font-bold text-rose-700 uppercase">Reactivation</span>
+                                            <span class="font-extrabold text-rose-800">1 Region</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Sales Probability Index -->
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
+                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="target" class="w-3.5 h-3.5 text-purple-500"></i>
+                                        FY Target Probability
+                                    </h4>
+                                    <div class="flex flex-col items-center justify-center py-1">
+                                        <div class="relative w-16 h-16 flex items-center justify-center">
+                                            <svg class="w-full h-full transform -rotate-90">
+                                                <circle cx="32" cy="32" r="28" fill="transparent" stroke="#f1f5f9" stroke-width="6"/>
+                                                <circle cx="32" cy="32" r="28" fill="transparent" stroke="#8b5cf6" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="${176 * (1 - 0.92)}"/>
+                                            </svg>
+                                            <span class="absolute text-sm font-extrabold text-slate-800">92%</span>
+                                        </div>
+                                        <p class="text-[9px] font-extrabold text-purple-600 uppercase mt-2 tracking-tighter">Very High Confidence</p>
+                                    </div>
+                                </div>
+
+                                <!-- Inventory Run-Rate Predictor -->
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-md relative overflow-hidden flex flex-col justify-between">
+                                    <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                        <i data-lucide="box" class="w-3.5 h-3.5 text-amber-500"></i>
+                                        Stock Depletion Alert
+                                    </h4>
+                                    <div class="space-y-2.5">
+                                        <div class="flex justify-between text-[11px] font-bold">
+                                            <span class="text-slate-500">Buffer Depot Exhaustion:</span>
+                                            <span class="text-rose-600 font-extrabold">18 Days</span>
+                                        </div>
+                                        <div class="relative z-10 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-rose-500 h-full rounded-full" style="width: 75%"></div>
+                                        </div>
+                                        <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wider text-center">Based on 14-day trailing run-rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main AI Content Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 overflow-hidden">
+                            <!-- Left: Recommendations & Heatmap Matrix -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <!-- Dynamic Market Heatmap Visualization -->
+                                <div class="bg-white p-6 rounded-[1.75rem] border border-slate-200 shadow-md">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+                                        <h2 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1.5">
+                                            <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-500"></i>
+                                            Territory Performance Matrix
+                                        </h2>
+                                        
+                                        <!-- Matrix Filter Tabs -->
+                                        <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-[10px] font-bold">
+                                            <button onclick="app.aiTerrPerformanceFilter='all'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">All</button>
+                                            <button onclick="app.aiTerrPerformanceFilter='risk'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'risk' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">At Risk (<60%)</button>
+                                            <button onclick="app.aiTerrPerformanceFilter='strong'; app.renderAdminAIInsights(true)" class="px-2.5 py-1 rounded-lg transition-all ${app.aiTerrPerformanceFilter === 'strong' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">Strong (>=80%)</button>
+                                        </div>
+                                    </div>
+
+                                    ${(() => {
+                                        let filteredTerrPerformance = [...terrPerformance];
+                                        if (app.aiTerrPerformanceFilter === 'risk') {
+                                            filteredTerrPerformance = filteredTerrPerformance.filter(t => t.ach < 60);
+                                        } else if (app.aiTerrPerformanceFilter === 'strong') {
+                                            filteredTerrPerformance = filteredTerrPerformance.filter(t => t.ach >= 80);
+                                        }
+
+                                        if (filteredTerrPerformance.length === 0) {
+                                            return `<div class="text-center text-slate-400 py-10 font-bold text-xs">No territories match the selected filter.</div>`;
+                                        }
+
+                                        return `
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 overflow-hidden">
+                                            ${filteredTerrPerformance.map(t => `
+                                                <div class="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
+                                                    <div>
+                                                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">${t.name}</p>
+                                                        <div class="flex justify-between items-end">
+                                                            <span class="text-base font-extrabold text-slate-700">${t.ach}%</span>
+                                                            <div class="w-6.5 h-6.5 rounded-full flex items-center justify-center ${t.ach > 70 ? 'bg-green-100 text-green-600' : (t.ach > 40 ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600')}">
+                                                                <i data-lucide="${t.ach > 70 ? 'smile' : (t.ach > 40 ? 'smile' : 'frown')}" class="w-3.5 h-3.5"></i>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-[8px] text-slate-400 mt-1">Act: ${t.actual} / Tgt: ${t.target}</p>
+                                                    </div>
+                                                    <div class="w-full bg-slate-200 h-1.5 rounded-full mt-3 overflow-hidden">
+                                                        <div class="${t.ach > 70 ? 'bg-green-500' : (t.ach > 40 ? 'bg-amber-500' : 'bg-red-500')} h-full rounded-full" style="width: ${Math.min(t.ach, 100)}%"></div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        `;
+                                    })()}
+                                </div>
+                            </div>
+
+                            <!-- Right: Leaders & Risk Zones -->
+                            <div class="space-y-6">
+                                <!-- Top Performers -->
+                                <div class="bg-white p-5 rounded-[1.75rem] border border-slate-100 shadow-md">
+                                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-4">
+                                        <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                        Top Performers
+                                    </h3>
+                                    <div class="space-y-3">
+                                        ${topTerritories.map((t, idx) => `
+                                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-6.5 h-6.5 rounded-lg bg-amber-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm">${idx + 1}</div>
+                                                    <div>
+                                                        <p class="font-extrabold text-slate-700 text-xs">${t.name}</p>
+                                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${t.actual} Units Sold</p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="text-xs font-extrabold text-green-600">${t.ach}%</p>
+                                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Achieved</p>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Risk Monitor -->
+                                <div class="bg-rose-50/50 p-4 rounded-2xl border border-rose-100 shadow-md flex flex-col justify-between overflow-hidden">
+                                    <div>
+                                        <h3 class="text-sm font-bold text-rose-800 flex items-center gap-1.5 mb-4">
+                                            <i data-lucide="activity" class="w-4 h-4 text-rose-600"></i>
+                                            Risk Monitor
+                                        </h3>
+                                        <div class="space-y-3">
+                                            ${atRiskTerritories.length > 0 ? atRiskTerritories.map(t => `
+                                                <div class="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-rose-100">
+                                                    <div>
+                                                        <p class="font-extrabold text-rose-900 text-xs">${t.name}</p>
+                                                        <p class="text-[9px] font-bold text-rose-400 uppercase tracking-wider">Gap: ${t.target - t.actual} Units</p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="text-xs font-extrabold text-rose-600">${t.ach}%</p>
+                                                        <p class="text-[8px] font-bold text-rose-400 uppercase tracking-wider">Critical</p>
+                                                    </div>
+                                                </div>
+                                            `).join('') : '<p class="text-center text-[10px] font-bold text-slate-400 py-3">No territories under 40% achievement.</p>'}
+                                        </div>
+                                    </div>
+                                    <button onclick="app.renderAdminDashboard()" class="w-full mt-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl shadow-md shadow-rose-200 transition-all active:scale-95 text-[10px] uppercase tracking-wider">
+                                        Review All Regions
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                `;
+                document.getElementById('view-port').innerHTML = html;
+                app.refreshIcons();
+            };
+

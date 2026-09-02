@@ -594,7 +594,8 @@ window.app.previewBatchCF = () => {
     let validCount = 0;
     
     uniqueIds.forEach(cid => {
-        const matches = DB.sales.filter(s => s.is_manual && s.customer_id && s.customer_id.toUpperCase() === cid.toUpperCase());
+        const allSales = [...DB.sales, ...(DB.historical_manual_sales || [])];
+        const matches = allSales.filter(s => s.is_manual && s.customer_id && s.customer_id.toUpperCase() === cid.toUpperCase());
         
         if (matches.length === 0) {
             html += `
@@ -664,17 +665,11 @@ window.app.executeBatchCF = async () => {
         targetYear = h2Months.includes(targetMonth) ? (y1 + 1) : y1;
     }
     
-    const monthMap = { "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06", "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12" };
-    const monthNum = monthMap[targetMonth];
-    const newTimestamp = `${targetYear}-${monthNum}-01 10:00:00`;
-    
     if (app.neonSQL) {
         try {
             const idListStr = ids.map(id => `'${id.replace(/'/g, "''")}'`).join(',');
-            await app.neonSQL([
-                `UPDATE sales SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`,
-                `UPDATE manual_deliveries SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`
-            ]);
+            const newTimestamp = `1 ${targetMonth.substring(0,3)} ${targetYear}`;
+            await app.neonSQL([`UPDATE manual_deliveries SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`]);
         } catch (err) {
             console.error("Failed to execute batch carry forward", err);
             app.showToast('Database update failed', 'error');
@@ -686,20 +681,28 @@ window.app.executeBatchCF = async () => {
     }
     
     ids.forEach(id => {
-        let sObj = DB.sales.find(s => s.id === id);
-        if (!sObj && DB.historical_manual_sales) {
-            sObj = DB.historical_manual_sales.find(s => s.id === id);
-            if (sObj) {
-                DB.historical_manual_sales = DB.historical_manual_sales.filter(x => x.id !== id);
-                DB.sales.push(sObj);
+        let saleItem = null;
+        let idx = DB.sales.findIndex(s => s.id === id);
+        
+        if (idx > -1) {
+            saleItem = DB.sales[idx];
+        } else if (DB.historical_manual_sales) {
+            // If the item was from a past month, it is in historical_manual_sales.
+            // Move it to DB.sales so it immediately reflects in the dashboard.
+            idx = DB.historical_manual_sales.findIndex(s => s.id === id);
+            if (idx > -1) {
+                saleItem = DB.historical_manual_sales[idx];
+                DB.historical_manual_sales.splice(idx, 1);
+                DB.sales.push(saleItem);
             }
         }
-        if (sObj) {
-            sObj.is_carried_forward = true;
-            sObj.sales_month = targetMonth;
-            sObj.fy = activeFY;
-            sObj.sales_year = targetYear;
-            sObj.timestamp = newTimestamp;
+
+        if (saleItem) {
+            saleItem.is_carried_forward = true;
+            saleItem.sales_month = targetMonth;
+            saleItem.fy = activeFY;
+            saleItem.sales_year = targetYear;
+            saleItem.timestamp = `1 ${targetMonth.substring(0,3)} ${targetYear}`;
         }
     });
     
@@ -940,14 +943,14 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                     
                     if (app.neonSQL) {
                         try {
-                            try {
-                                await app.neonSQL`UPDATE manual_deliveries SET dealer_code = ${s.dealer_code}, customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
-                            } catch(e) {
-                                await app.neonSQL`UPDATE manual_deliveries SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
-                            }
                             await app.neonSQL`UPDATE manual_deliveries SET dealer_code = ${s.dealer_code}, customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            try {
+                                await app.neonSQL`UPDATE sales SET dealer_code = ${s.dealer_code}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            } catch(e) {}
                         } catch (err) {
                             console.error("Failed to update manual delivery in database", err);
+                            app.showToast('Database update failed', 'error');
+                            return;
                         }
                     }
 

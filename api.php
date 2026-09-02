@@ -211,6 +211,12 @@ try {
             }
         }
     }
+    
+    if ($action === 'fix_timestamps') {
+        $pdo->exec("UPDATE manual_deliveries SET timestamp = CONCAT('1 ', SUBSTRING(sales_month, 1, 3), ' ', sales_year) WHERE is_carried_forward = 1");
+        echo json_encode(['status' => 'ok', 'message' => 'Fixed timestamps']);
+        exit;
+    }
 
     if ($action === 'login') {
         $userId = isset($input['userId']) ? $input['userId'] : '';
@@ -395,7 +401,7 @@ try {
 
         // Compile regex whitelist of allowed SQL statement structures
         $whitelist = [
-            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|manual_deliveries|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|active_sessions|dealers)(\s+ORDER\s+BY\s+[a-z0-9_]+\s+(ASC|DESC))?$/i',
+            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|active_sessions|dealers)(\s+ORDER\s+BY\s+[a-z0-9_]+\s+(ASC|DESC))?$/i',
             '/^DELETE\s+FROM\s+active_sessions\s+WHERE\s+id\s*=\s*\?$/i',
             '/^UPDATE\s+models\s+SET\s+brand\s*=\s*\?,\s*name\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+models\s*\(id,\s*brand,\s*name\)\s*VALUES\s*\(\?,\s*\?,\s*\?\)$/i',

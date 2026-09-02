@@ -1,3 +1,4 @@
+// --- Sales360 Module: core.js ---
 window.app = window.app || {};
 
 window.app.downloadRawCSV = () => {
@@ -226,35 +227,6 @@ window.app.initNeonDB = async () => {
                         } catch (e) {}
                     }
 
-                    if (app_settings.length > 0) {
-                        DB.settings = typeof app_settings[0].settings_json === 'string' ? JSON.parse(app_settings[0].settings_json) : app_settings[0].settings_json;
-                        app.currentMonth = DB.settings.currentMonth || 'April';
-                        app.lastMonth = DB.settings.lastMonth || 'March';
-                        app.currentFY = DB.settings.currentFY || '2025-26';
-                        app.fyReviewActive = DB.settings.fyReviewActive !== undefined ? DB.settings.fyReviewActive : true;
-                        app.showLastFYData = DB.settings.showLastFYData !== undefined ? DB.settings.showLastFYData : false;
-                        
-                        // Set default selected FY in transition review mode
-                        const activeFY = app.currentFY;
-                        const concludingFY = (() => {
-                            const parts = activeFY.split('-');
-                            if (parts.length === 2) {
-                                const y1 = parseInt(parts[0]);
-                                const y2 = parseInt(parts[1]);
-                                if (!isNaN(y1) && !isNaN(y2)) return `${y1-1}-${y2-1}`;
-                            }
-                            return '2025-26';
-                        })();
-                        
-                        if (app.currentMonth === 'July' && app.fyReviewActive) {
-                            app.selectedFY = concludingFY;
-                            app.soSelectedFY = concludingFY;
-                        } else {
-                            app.selectedFY = activeFY;
-                            app.soSelectedFY = activeFY;
-                        }
-                    }
-
                     DB.targets = targets;
                     DB.projections = projections;
                     DB.emi = emi;
@@ -263,7 +235,7 @@ window.app.initNeonDB = async () => {
                         return {
                             ...s,
                             is_manual: s.is_manual === 1 || s.is_manual === true || s.is_manual === '1',
-                            is_carried_forward: s.is_carried_forward === 1 || s.is_carried_forward === true || s.is_carried_forward === '1',
+                            is_carried_forward: s.is_carried_forward === 1 || s.is_carried_forward === true || s.is_carried_forward === '1' || s.is_carried_forward === 't' || s.is_carried_forward === 'true',
                             financials: typeof s.financials === 'string' ? JSON.parse(s.financials) : s.financials,
                             discounts: typeof s.discounts === 'string' ? JSON.parse(s.discounts) : s.discounts
                         };
@@ -275,7 +247,7 @@ window.app.initNeonDB = async () => {
                             const formatted = {
                                 ...m,
                                 is_manual: true,
-                                is_carried_forward: m.is_carried_forward === 1 || m.is_carried_forward === true || m.is_carried_forward === '1',
+                                is_carried_forward: m.is_carried_forward === 1 || m.is_carried_forward === true || m.is_carried_forward === '1' || m.is_carried_forward === 't' || m.is_carried_forward === 'true',
                                 financials: typeof m.financials === 'string' ? JSON.parse(m.financials) : m.financials,
                                 discounts: typeof m.discounts === 'string' ? JSON.parse(m.discounts) : m.discounts
                             };
@@ -287,41 +259,10 @@ window.app.initNeonDB = async () => {
                             }
                         });
                     }
-                    
-                    // Force sales_month to currentMonth for carried-forward entries so they perfectly count in all metrics
-                    DB.sales.forEach(s => {
-                        if (s.is_manual && s.is_carried_forward) {
-                            s.sales_month = app.currentMonth;
-                            s.fy = app.currentFY;
-                            
-                            const targetYear = new Date().getFullYear();
-                            const monthMap = { "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06", "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12" };
-                            const monthNum = monthMap[app.currentMonth] || "01";
-                            s.timestamp = `${targetYear}-${monthNum}-01 10:00:00`;
-                        }
-                    });
 
                     // Extract past manual deliveries so they don't impact any performance reports
                     DB.historical_manual_sales = DB.sales.filter(s => s.is_manual && !s.is_carried_forward && s.sales_month !== app.currentMonth);
                     DB.sales = DB.sales.filter(s => !s.is_manual || s.is_carried_forward || s.sales_month === app.currentMonth);
-
-                    // ONE-TIME DB PATCH: Permanently fix timestamps for previously carried-forward entries in the database
-                    if (app.currentUser && app.currentUser.role === 'admin' && !localStorage.getItem('aci_cf_timestamp_db_fixed_v2')) {
-                        try {
-                            const targetYear = new Date().getFullYear();
-                            const monthMap = { "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06", "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12" };
-                            const monthNum = monthMap[app.currentMonth] || "01";
-                            const newTimestamp = `${targetYear}-${monthNum}-01 10:00:00`;
-                            
-                            app.neonSQL([
-                                `UPDATE sales SET timestamp = '${newTimestamp}' WHERE is_carried_forward = 1 AND timestamp NOT LIKE '%${targetYear}-${monthNum}-01%'`,
-                                `UPDATE manual_deliveries SET timestamp = '${newTimestamp}' WHERE is_carried_forward = 1 AND timestamp NOT LIKE '%${targetYear}-${monthNum}-01%'`
-                            ]).then(() => {
-                                localStorage.setItem('aci_cf_timestamp_db_fixed_v2', 'true');
-                                console.log('Database timestamps patched successfully.');
-                            }).catch(e => console.error(e));
-                        } catch(e) {}
-                    }
 
                     DB.recovery_od = recovery_od;
                     

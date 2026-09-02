@@ -140,6 +140,11 @@
             perspective: 1000px;
         }
 
+        #view-port {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
+
         /* Prevent layout thrashing on sticky columns/headers during scroll */
         .sticky,
         [class*="sticky"] {
