@@ -4177,6 +4177,7 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                                     </div>
                                     <span>AI Strategic <span class="text-purple-600 font-black">Insights</span></span>
                                 </h1>
+                                </div>
                                 <p class="text-slate-400 font-semibold text-[10px] mt-1 flex items-center gap-1.5">
                                     <span class="flex h-2.5 w-2.5 relative">
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -4736,7 +4737,6 @@ window.app.renderAdminAIInsights = (keepDropdownOpen = false) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 `;
                 document.getElementById('view-port').innerHTML = html;
