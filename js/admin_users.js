@@ -275,32 +275,60 @@ window.app.exportUsersToCSV = () => {
     }
 };
 
-window.app.renderUserManagement = () => {
+window.app.renderUserManagement = (tab = 'system') => {
                 if (sessionStorage.getItem('aci_admin_unlocked') !== 'true') {
-                    app.promptAdminPassword(() => app.renderUserManagement());
+                    app.promptAdminPassword(() => app.renderUserManagement(tab));
                     return;
                 }
                 localStorage.setItem('aci_last_page', 'users');
                 localStorage.setItem('aci_last_role', app.currentUser.role);
+                
                 const admins = DB.users.filter(u => u.role === 'admin' || u.role === 'subadmin');
                 const ams = DB.users.filter(u => u.role === 'am');
 
-                const html = `
+                let html = `
                     <div class="w-full fade-in pb-12">
                         <div class="mb-6 flex justify-between items-center">
                             <div>
                                 <div class="flex items-center gap-2.5"><div class="h-5 w-1.5 bg-gradient-to-b ${app.adminBrandTab === 'Mahindra' ? 'from-mahindra to-rose-500 shadow-mahindra/20' : 'from-foton to-sky-500 shadow-foton/20'} rounded-full shadow-sm"></div><h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r ${app.adminBrandTab === 'Mahindra' ? 'from-[#991b1b] to-slate-800' : 'from-[#0f2942] to-slate-800'} tracking-tight">User Management</h1></div>
-                                <p class="text-sm text-slate-500">Manage System Administrators, AMs, and MOs</p>
+                                <p class="text-sm text-slate-500">Manage System Administrators, AMs, MOs, and Dealers</p>
                             </div>
                             <div class="flex items-center gap-2">
+                                ${tab === 'system' ? `
                                 <button onclick="app.exportUsersToCSV()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-bold shadow-sm flex items-center gap-2 transition-all hover:border-emerald-500 hover:text-emerald-700 active:scale-95">
                                     <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i> Download CSV
                                 </button>
                                 <button onclick="app.showAddUserModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
                                     <i data-lucide="plus" class="w-4 h-4"></i> Add User
                                 </button>
+                                ` : `
+                                <button onclick="app.downloadDealerCSVTemplate()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-bold shadow-sm flex items-center gap-2 transition-all hover:border-blue-500 hover:text-blue-700 active:scale-95">
+                                    <i data-lucide="download" class="w-4 h-4 text-blue-600"></i> Template
+                                </button>
+                                <input type="file" id="dealer-csv-upload" accept=".csv" class="hidden" onchange="app.handleDealerCSVUpload(event)">
+                                <button onclick="document.getElementById('dealer-csv-upload').click()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-bold shadow-sm flex items-center gap-2 transition-all hover:border-emerald-500 hover:text-emerald-700 active:scale-95">
+                                    <i data-lucide="upload-cloud" class="w-4 h-4 text-emerald-600"></i> Upload CSV
+                                </button>
+                                <button onclick="app.showAddDealerModal()" class="btn-liquid text-white px-4 py-2 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> Add Dealer
+                                </button>
+                                `}
                             </div>
                         </div>
+
+                        <!-- Tab Navigation -->
+                        <div class="flex gap-4 border-b border-slate-200 mb-6">
+                            <button onclick="app.renderUserManagement('system')" class="px-4 py-3 text-sm font-bold border-b-2 transition-colors ${tab === 'system' ? 'border-aci-blue text-aci-blue' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}">
+                                <div class="flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> System Users</div>
+                            </button>
+                            <button onclick="app.renderUserManagement('dealers')" class="px-4 py-3 text-sm font-bold border-b-2 transition-colors ${tab === 'dealers' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}">
+                                <div class="flex items-center gap-2"><i data-lucide="store" class="w-4 h-4"></i> Manage Dealers</div>
+                            </button>
+                        </div>
+                `;
+                
+                if (tab === 'system') {
+                    html += `
 
                         <!-- System Admin Section -->
                         <div class="mb-8">
@@ -457,8 +485,59 @@ window.app.renderUserManagement = () => {
                                 </table>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    html += `
+                        <div class="mb-8">
+                            <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center"><i data-lucide="store" class="w-4 h-4"></i></div>
+                                Dealer Network
+                            </h2>
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4 font-semibold w-16">#</th>
+                                            <th class="px-6 py-4 font-semibold">Territory</th>
+                                            <th class="px-6 py-4 font-semibold">Dealers</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${DB.territories.map((t, index) => {
+                                            const territoryDealers = (DB.dealers || []).filter(d => d.territory_id === t.id);
+                                            return `
+                                                <tr class="hover:bg-slate-50 transition-colors">
+                                                    <td class="px-6 py-4 font-semibold text-slate-400">${index + 1}</td>
+                                                    <td class="px-6 py-4">
+                                                        <div class="font-bold text-slate-800">${t.name}</div>
+                                                        <div class="text-[10px] text-slate-500 font-mono font-bold tracking-widest mt-0.5 uppercase">ID: ${t.id}</div>
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        ${territoryDealers.length > 0 ? `
+                                                            <div class="flex flex-wrap gap-2">
+                                                                ${territoryDealers.map(d => `
+                                                                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5">
+                                                                        <div>
+                                                                            <div class="font-bold text-slate-700 text-xs">${d.name}</div>
+                                                                            <div class="text-[10px] text-slate-400 font-mono">${d.code}</div>
+                                                                        </div>
+                                                                        <button onclick="app.deleteDealer('${d.id}')" class="text-slate-400 hover:text-red-500 p-1 transition-colors tooltip" title="Delete Dealer"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                                                    </div>
+                                                                `).join('')}
+                                                            </div>
+                                                        ` : `<span class="text-slate-400 italic text-xs">No dealers assigned</span>`}
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
                 document.getElementById('view-port').innerHTML = html;
                 app.refreshIcons();
             };
@@ -1055,3 +1134,176 @@ window.app.setAdminEMITerritoryFilter = (terrId) => {
                 app.renderAdminEMI();
             };
 
+window.app.showAddDealerModal = () => {
+    let modal = document.getElementById('add-dealer-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'add-dealer-modal';
+        modal.className = 'fixed inset-0 z-[200] flex items-center justify-center hidden';
+        document.body.appendChild(modal);
+    }
+    
+    const territoryOptions = DB.territories.map(t => `<option value="${t.id}">${t.name} (${t.district})</option>`).join('');
+
+    modal.innerHTML = `
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="document.getElementById('add-dealer-modal').classList.add('hidden')"></div>
+        <div class="bg-white p-6 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-lg mx-4 border border-white">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-black text-slate-800 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600">
+                        <i data-lucide="store" class="w-5 h-5"></i>
+                    </div>
+                    Add Dealer
+                </h2>
+                <button onclick="document.getElementById('add-dealer-modal').classList.add('hidden')" class="text-slate-400 hover:text-red-500 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="add-dealer-form" onsubmit="app.handleAddDealer(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Dealer Name</label>
+                    <input type="text" id="new-dealer-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all" required placeholder="e.g. M/S Rauf Enterprise">
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Dealer Code</label>
+                    <input type="text" id="new-dealer-code" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all" required placeholder="e.g. DLR-001">
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Assigned Territory</label>
+                    <select id="new-dealer-territory" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all" required>
+                        <option value="">Select Territory...</option>
+                        ${territoryOptions}
+                    </select>
+                </div>
+                <div class="pt-4 mt-2 border-t border-slate-100 flex gap-3">
+                    <button type="button" onclick="document.getElementById('add-dealer-modal').classList.add('hidden')" class="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white px-4 py-3 rounded-xl font-black shadow-lg flex items-center justify-center gap-2 transition-colors"><i data-lucide="check" class="w-5 h-5"></i> Add Dealer</button>
+                </div>
+            </form>
+        </div>
+    `;
+    modal.classList.remove('hidden');
+    app.refreshIcons();
+};
+
+window.app.handleAddDealer = async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('new-dealer-name').value;
+    const code = document.getElementById('new-dealer-code').value;
+    const terrId = document.getElementById('new-dealer-territory').value;
+
+    const id = 'dlr_' + Date.now();
+    app.showLoader('Adding dealer...');
+    try {
+        await app.neonSQL`INSERT INTO dealers (id, name, code, territory_id) VALUES (${id}, ${name}, ${code}, ${terrId})`;
+        DB.dealers = DB.dealers || [];
+        DB.dealers.push({ id, name, code, territory_id: terrId });
+        app.hideLoader();
+        document.getElementById('add-dealer-modal').classList.add('hidden');
+        app.renderUserManagement('dealers');
+        app.showToast('Dealer added successfully!', 'success');
+    } catch (err) {
+        app.hideLoader();
+        app.showToast('Failed to add dealer', 'error');
+        console.error(err);
+    }
+};
+
+window.app.deleteDealer = async (id) => {
+    if (confirm('Are you sure you want to delete this dealer?')) {
+        app.showLoader('Deleting dealer...');
+        try {
+            await app.neonSQL`DELETE FROM dealers WHERE id = ${id}`;
+            DB.dealers = DB.dealers.filter(d => d.id !== id);
+            app.hideLoader();
+            app.renderUserManagement('dealers');
+            app.showToast('Dealer deleted.', 'success');
+        } catch (err) {
+            app.hideLoader();
+            app.showToast('Failed to delete', 'error');
+        }
+    }
+};
+
+window.app.handleDealerCSVUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    app.showLoader('Processing Dealer CSV...');
+    const reader = new FileReader();
+    
+    reader.onload = async function(event) {
+        try {
+            const csvText = event.target.result;
+            const rows = app.parseCSV(csvText);
+            
+            let successCount = 0;
+            let failedCount = 0;
+
+            for (const row of rows) {
+                const name = app.getCSVValue(row, ['Dealer_Name', 'DealerName', 'Name', 'Dealer']);
+                const rawTerr = app.getCSVValue(row, ['Territory_Name', 'TerritoryName', 'Territory']);
+
+                if (name && rawTerr) {
+                    try {
+                        const safeName = String(name);
+                        const safeTerr = String(rawTerr);
+                        
+                        // Lookup territory by name or ID
+                        const tObj = DB.territories.find(t => String(t.name).toLowerCase() === safeTerr.toLowerCase() || String(t.id).toLowerCase() === safeTerr.toLowerCase());
+                        const terrId = tObj ? tObj.id : safeTerr;
+                        
+                        // Auto-generate code from name
+                        let code = 'DLR-' + safeName.replace(/[^A-Za-z0-9]/g, '').toUpperCase().substring(0, 6) + '-' + Math.floor(Math.random() * 1000);
+                        
+                        const id = 'dlr_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                        
+                        await app.neonSQL`INSERT INTO dealers (id, name, code, territory_id) VALUES (${id}, ${safeName}, ${code}, ${terrId})`;
+                        DB.dealers = DB.dealers || [];
+                        DB.dealers.push({ id, name: safeName, code, territory_id: terrId });
+                        successCount++;
+                    } catch (err) {
+                        failedCount++;
+                        console.error('Error inserting dealer:', err);
+                    }
+                } else {
+                    failedCount++;
+                }
+            }
+
+            app.hideLoader();
+            app.renderUserManagement('dealers');
+            if (document.getElementById('dealer-csv-upload')) {
+                document.getElementById('dealer-csv-upload').value = ''; // Reset input
+            }
+            
+            if (failedCount === 0) {
+                app.showToast(`Successfully imported ${successCount} dealers.`, 'success');
+            } else {
+                app.showToast(`Imported ${successCount}, failed ${failedCount}`, 'warning');
+            }
+        } catch (globalErr) {
+            app.hideLoader();
+            app.showToast('Unexpected error during import', 'error');
+            console.error(globalErr);
+        }
+    };
+    
+    reader.onerror = function() {
+        app.hideLoader();
+        app.showToast('Failed to read CSV file.', 'error');
+    };
+    
+    reader.readAsText(file);
+};
+
+window.app.downloadDealerCSVTemplate = () => {
+    const csvContent = "Dealer_Name,Territory_Name\nExample Dealer,Dhaka North\n";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'dealer_upload_template.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};

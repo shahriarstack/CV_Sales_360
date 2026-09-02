@@ -932,7 +932,7 @@ window.app.getPerformance = (territoryId, brand, saleType) => {
                 const ytdMonths = isTransitionMode ? ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'] : app.getYtdMonths(currentMonth);
 
                 // Last Month Metrics
-                const lmSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === currentFY).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const lmSales = DB.sales.filter(s => s.territory_id === territoryId && s.brand === brand && s.sale_type === saleType && s.sales_month === lastMonth && s.fy === currentFY && !s.is_manual).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
                 const lmTgtObj = DB.targets.filter(t => t.territory_id === territoryId && t.brand === brand && t.sale_type === saleType && t.fy === currentFY);
                 const lmBudgetTgts = lmTgtObj.filter(t => t.month === lastMonth);
                 const lmBudget = lmBudgetTgts.length > 0 ? lmBudgetTgts.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) : Math.round(lmTgtObj.reduce((sum, t) => sum + Number(t.target_qty || 0), 0) / 12);
@@ -1182,28 +1182,28 @@ window.app.processRawData = () => {
 
 
 
+
 window.app.generateCustomReport = () => {
     if (app.currentUser.role !== 'admin') {
-        app.showToast("Permission Denied: Reports are for Admins only.", "error");
+        app.showToast('Permission Denied: Reports are for Admins only.', 'error');
         return;
     }
 
     const month = document.getElementById('export-month').value;
     const fy = document.getElementById('export-fy').value;
     const territoryId = document.getElementById('export-territory').value;
-    const brand = document.getElementById('export-brand').value;
-    const saleType = document.getElementById('export-sale-type').value;
+    const selectedBrand = document.getElementById('export-brand').value;
+    const selectedSaleType = document.getElementById('export-sale-type').value;
     
     const incBudget = document.getElementById('export-inc-budget').checked;
     const incActual = document.getElementById('export-inc-actual').checked;
     const incSply = document.getElementById('export-inc-sply').checked;
 
     if (!incBudget && !incActual && !incSply) {
-        app.showToast("Please select at least one data type to include.", "error");
+        app.showToast('Please select at least one data type to include.', 'error');
         return;
     }
 
-    // Determine SPLY FY
     const parts = fy.split('-');
     let lastFY = '2024-25';
     if (parts.length === 2) {
@@ -1212,76 +1212,106 @@ window.app.generateCustomReport = () => {
         if (!isNaN(y1) && !isNaN(y2)) lastFY = `${y1 - 1}-${y2 - 1}`;
     }
 
-    // Prepare data structures based on territories
     let territoriesToProcess = DB.territories;
     if (territoryId !== 'ALL') {
         territoriesToProcess = DB.territories.filter(t => t.id === territoryId);
     }
 
+    const brandsToProcess = selectedBrand === 'ALL' ? ['Foton', 'Mahindra'] : [selectedBrand];
+    const saleTypesToProcess = selectedSaleType === 'ALL' ? ['New Sale', 'Resale'] : [selectedSaleType];
+
     const reportData = [];
 
     territoriesToProcess.forEach(t => {
-        let budgetTotal = 0;
-        let actualTotal = 0;
-        let splyTotal = 0;
-
-        if (incBudget) {
-            const targets = DB.targets.filter(tg => tg.fy === fy && tg.month === month && tg.territory_id === t.id && (brand === 'ALL' || tg.brand === brand) && (saleType === 'ALL' || tg.sale_type === saleType));
-            budgetTotal = targets.reduce((sum, tg) => sum + (parseInt(tg.target_qty) || 0), 0);
-        }
-
-        if (incActual) {
-            const sales = DB.sales.filter(s => s.fy === fy && s.sales_month === month && s.territory_id === t.id && (brand === 'ALL' || s.brand === brand) && (saleType === 'ALL' || s.sale_type === saleType));
-            actualTotal = sales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
-        }
-
-        if (incSply) {
-            const splySales = DB.sales.filter(s => s.fy === lastFY && s.sales_month === month && s.territory_id === t.id && (brand === 'ALL' || s.brand === brand) && (saleType === 'ALL' || s.sale_type === saleType));
-            splyTotal = splySales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
-        }
-
-        const growthVsBudget = budgetTotal > 0 ? (((actualTotal - budgetTotal) / budgetTotal) * 100).toFixed(1) + '%' : (actualTotal > 0 ? '100%' : '0%');
-        const growthVsSply = splyTotal > 0 ? (((actualTotal - splyTotal) / splyTotal) * 100).toFixed(1) + '%' : (actualTotal > 0 ? '100%' : '0%');
-
         const row = {
             'Territory': t.name,
             'Month': month,
             'FY': fy
         };
 
-        if (incBudget) row['Budget_Qty'] = budgetTotal;
-        if (incActual) row['Actual_Sales_Qty'] = actualTotal;
-        if (incSply) {
-            row['SPLY_FY'] = lastFY;
-            row['SPLY_Sales_Qty'] = splyTotal;
-        }
+        let grandBudget = 0;
+        let grandActual = 0;
+        let grandSply = 0;
 
-        if (incBudget && incActual) row['Growth_vs_Budget'] = growthVsBudget;
-        if (incSply && incActual) row['Growth_vs_SPLY'] = growthVsSply;
+        brandsToProcess.forEach(b => {
+            saleTypesToProcess.forEach(st => {
+                let budgetTotal = 0;
+                let actualTotal = 0;
+                let splyTotal = 0;
+
+                if (incBudget) {
+                    const targets = DB.targets.filter(tg => tg.fy === fy && tg.month === month && tg.territory_id === t.id && tg.brand === b && tg.sale_type === st);
+                    budgetTotal = targets.reduce((sum, tg) => sum + (parseInt(tg.target_qty) || 0), 0);
+                    grandBudget += budgetTotal;
+                }
+
+                if (incActual) {
+                    const sales = DB.sales.filter(s => s.fy === fy && s.sales_month === month && s.territory_id === t.id && s.brand === b && s.sale_type === st);
+                    actualTotal = sales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
+                    grandActual += actualTotal;
+                }
+
+                if (incSply) {
+                    const splySales = DB.sales.filter(s => s.fy === lastFY && s.sales_month === month && s.territory_id === t.id && s.brand === b && s.sale_type === st);
+                    splyTotal = splySales.reduce((sum, s) => sum + (parseInt(s.unit_qty) || 0), 0);
+                    grandSply += splyTotal;
+                }
+
+                const prefix = (selectedBrand === 'ALL' && selectedSaleType === 'ALL') 
+                    ? `${b}_${st.replace(' ', '')}_`
+                    : (selectedBrand === 'ALL' ? `${b}_` : (selectedSaleType === 'ALL' ? `${st.replace(' ', '')}_` : ''));
+
+                const growthVsBudget = budgetTotal > 0 ? (((actualTotal - budgetTotal) / budgetTotal) * 100).toFixed(1) + '%' : (actualTotal > 0 ? '100%' : '0%');
+                const growthVsSply = splyTotal > 0 ? (((actualTotal - splyTotal) / splyTotal) * 100).toFixed(1) + '%' : (actualTotal > 0 ? '100%' : '0%');
+
+                if (prefix !== '') {
+                    if (incBudget) row[prefix + 'Budget'] = budgetTotal;
+                    if (incActual) row[prefix + 'Actual'] = actualTotal;
+                    if (incSply) row[prefix + 'SPLY'] = splyTotal;
+                    if (incBudget && incActual) row[prefix + 'Growth_vs_Budget'] = growthVsBudget;
+                    if (incSply && incActual) row[prefix + 'Growth_vs_SPLY'] = growthVsSply;
+                } else {
+                    if (incBudget) row['Budget_Qty'] = budgetTotal;
+                    if (incActual) row['Actual_Sales_Qty'] = actualTotal;
+                    if (incSply) row['SPLY_Sales_Qty'] = splyTotal;
+                    if (incBudget && incActual) row['Growth_vs_Budget'] = growthVsBudget;
+                    if (incSply && incActual) row['Growth_vs_SPLY'] = growthVsSply;
+                }
+            });
+        });
+
+        if (brandsToProcess.length > 1 || saleTypesToProcess.length > 1) {
+            if (incBudget) row['Grand_Total_Budget'] = grandBudget;
+            if (incActual) row['Grand_Total_Actual'] = grandActual;
+            if (incSply) row['Grand_Total_SPLY'] = grandSply;
+            const grandGrowthVsBudget = grandBudget > 0 ? (((grandActual - grandBudget) / grandBudget) * 100).toFixed(1) + '%' : (grandActual > 0 ? '100%' : '0%');
+            const grandGrowthVsSply = grandSply > 0 ? (((grandActual - grandSply) / grandSply) * 100).toFixed(1) + '%' : (grandActual > 0 ? '100%' : '0%');
+            if (incBudget && incActual) row['Grand_Total_Growth_vs_Budget'] = grandGrowthVsBudget;
+            if (incSply && incActual) row['Grand_Total_Growth_vs_SPLY'] = grandGrowthVsSply;
+        }
 
         reportData.push(row);
     });
 
     if (reportData.length === 0) {
-        app.showToast("No data found for the selected criteria.");
+        app.showToast('No data found for the selected criteria.');
         return;
     }
 
-    // Generate CSV
     const headers = Object.keys(reportData[0]);
     let csvContent = headers.join(',') + '\n';
 
     reportData.forEach(row => {
-        const values = headers.map(h => `"${row[h]}"`);
+        const values = headers.map(h => `"${row[h] !== undefined ? row[h] : 0}"`);
         csvContent += values.join(',') + '\n';
     });
 
     const filename = `Custom_Report_${month}_${fy}.csv`;
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

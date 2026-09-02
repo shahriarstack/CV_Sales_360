@@ -146,6 +146,21 @@ try {
         $pdo->exec("ALTER TABLE sales ADD COLUMN is_carried_forward BOOLEAN DEFAULT FALSE");
     }
 
+    $checkSalesDealer = $pdo->query("SHOW COLUMNS FROM sales LIKE 'dealer_code'")->rowCount();
+    if ($checkSalesDealer === 0) {
+        $pdo->exec("ALTER TABLE sales ADD COLUMN dealer_code VARCHAR(255) DEFAULT NULL");
+    }
+    
+    $checkMDDealer = $pdo->query("SHOW COLUMNS FROM manual_deliveries LIKE 'dealer_code'")->rowCount();
+    if ($checkMDDealer === 0) {
+        $pdo->exec("ALTER TABLE manual_deliveries ADD COLUMN dealer_code VARCHAR(255) DEFAULT NULL");
+    }
+
+    $checkDealers = $pdo->query("SHOW TABLES LIKE 'dealers'")->rowCount();
+    if ($checkDealers === 0) {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS dealers (id VARCHAR(255) PRIMARY KEY, name VARCHAR(255), code VARCHAR(255), territory_id VARCHAR(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+    }
+
     // Auto-heal: Ensure any manual delivery (s_man_*) has is_manual = 1 in sales
     $pdo->exec("UPDATE sales SET is_manual = 1 WHERE id LIKE 's_man_%' AND (is_manual IS NULL OR is_manual = 0)");
 
@@ -310,7 +325,7 @@ try {
             exit;
         }
 
-        $stmtMD = $pdo->prepare("INSERT INTO manual_deliveries (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, approval_status, admin_comments, timestamp, is_carried_forward) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE customer_name=VALUES(customer_name), chassis_no=VALUES(chassis_no), financials=VALUES(financials), discounts=VALUES(discounts)");
+        $stmtMD = $pdo->prepare("INSERT INTO manual_deliveries (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, approval_status, admin_comments, timestamp, is_carried_forward, dealer_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE customer_name=VALUES(customer_name), chassis_no=VALUES(chassis_no), financials=VALUES(financials), discounts=VALUES(discounts), dealer_code=VALUES(dealer_code)");
         $stmtMD->execute([
             $delivery['id'],
             $delivery['customer_id'],
@@ -333,35 +348,11 @@ try {
             $delivery['approval_status'],
             $delivery['admin_comments'],
             $delivery['timestamp'],
-            isset($delivery['is_carried_forward']) ? ($delivery['is_carried_forward'] ? 1 : 0) : 0
+            isset($delivery['is_carried_forward']) ? ($delivery['is_carried_forward'] ? 1 : 0) : 0,
+            isset($delivery['dealer_code']) ? $delivery['dealer_code'] : null
         ]);
 
-        $stmt = $pdo->prepare("INSERT INTO sales (id, customer_id, district, territory_id, upazila, brand, model, unit_qty, fy, sales_year, sales_month, sale_type, customer_name, chassis_no, purpose_of_use, financials, discounts, old_customer_id, is_manual, approval_status, admin_comments, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?) ON DUPLICATE KEY UPDATE id=id");
-        $stmt->execute([
-            $delivery['id'],
-            $delivery['customer_id'],
-            $delivery['district'],
-            $delivery['territory_id'],
-            $delivery['upazila'],
-            $delivery['brand'],
-            $delivery['model'],
-            (int)$delivery['unit_qty'],
-            $delivery['fy'],
-            (int)$delivery['sales_year'],
-            $delivery['sales_month'],
-            $delivery['sale_type'],
-            $delivery['customer_name'],
-            $delivery['chassis_no'],
-            $delivery['purpose_of_use'],
-            is_array($delivery['financials']) ? json_encode($delivery['financials']) : $delivery['financials'],
-            is_array($delivery['discounts']) ? json_encode($delivery['discounts']) : $delivery['discounts'],
-            $delivery['old_customer_id'],
-            $delivery['approval_status'],
-            $delivery['admin_comments'],
-            $delivery['timestamp']
-        ]);
-
-        echo json_encode(['success' => true, 'affected_rows' => $stmt->rowCount()]);
+        echo json_encode(['success' => true, 'affected_rows' => $stmtMD->rowCount()]);
         exit;
     }
 
@@ -404,7 +395,7 @@ try {
 
         // Compile regex whitelist of allowed SQL statement structures
         $whitelist = [
-            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|active_sessions)(\s+ORDER\s+BY\s+[a-z0-9_]+\s+(ASC|DESC))?$/i',
+            '/^SELECT\s+\*\s+FROM\s+(targets|projections|emi|sales|recovery_od|users|territories|models|notices|links|tiv_brands|app_settings|tiv_submissions|active_sessions|dealers)(\s+ORDER\s+BY\s+[a-z0-9_]+\s+(ASC|DESC))?$/i',
             '/^DELETE\s+FROM\s+active_sessions\s+WHERE\s+id\s*=\s*\?$/i',
             '/^UPDATE\s+models\s+SET\s+brand\s*=\s*\?,\s*name\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+models\s*\(id,\s*brand,\s*name\)\s*VALUES\s*\(\?,\s*\?,\s*\?\)$/i',
@@ -416,7 +407,7 @@ try {
             '/^UPDATE\s+users\s+SET\s+territories\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+territories\s+WHERE\s+id\s*=\s*\?$/i',
             '/^INSERT\s+INTO\s+notices\s*\(id,\s*title,\s*message,\s*timestamp,\s*filetype,\s*filename\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
-            '/^DELETE\s+FROM\s+(targets|projections|sales|manual_deliveries|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s*=\s*\?$/i',
+            '/^DELETE\s+FROM\s+(targets|projections|sales|manual_deliveries|emi|recovery_od|models|users|territories|notices|links|dealers)\s+WHERE\s+id\s*=\s*\?$/i',
             '/^DELETE\s+FROM\s+(targets|projections|sales|manual_deliveries|emi|recovery_od|models|users|territories|notices|links)\s+WHERE\s+id\s+IN\s*\(\s*(\?\s*,\s*)*\?\s*\)$/i',
             '/^DELETE\s+FROM\s+(targets|projections|manual_deliveries|emi|recovery_od|notices|links)$/i',
             '/^DELETE\s+FROM\s+sales(\s+WHERE\s+.*?)?$/i',
@@ -437,7 +428,8 @@ try {
             '/^INSERT\s+INTO\s+tiv_submissions\s*\(id,\s*territory,\s*month,\s*brand,\s*submission_data\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)\s*ON\s+DUPLICATE\s+KEY\s+UPDATE\s+id\s*=\s*id$/i',
             '/^INSERT\s+INTO\s+links\s*\(id,\s*title,\s*url,\s*type,\s*icon\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?,\s*\?\)$/i',
             '/^UPDATE\s+links\s+SET\s+title\s*=\s*\?,\s*url\s*=\s*\?,\s*type\s*=\s*\?,\s*icon\s*=\s*\?\s+WHERE\s+id\s*=\s*\?$/i',
-            '/^UPDATE\s+(targets|projections|sales|manual_deliveries|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+.*?$/i'
+            '/^UPDATE\s+(targets|projections|sales|manual_deliveries|emi|recovery_od)\s+SET\s+.*?\s+WHERE\s+.*?$/i',
+            '/^INSERT\s+INTO\s+dealers\s*\(id,\s*name,\s*code,\s*territory_id\)\s*VALUES\s*\(\?,\s*\?,\s*\?,\s*\?\)(\s+ON\s+DUPLICATE\s+KEY\s+UPDATE\s+.*?)?$/i'
         ];
 
         foreach ($whitelist as $pattern) {
@@ -468,7 +460,7 @@ try {
                 http_response_code(403); echo json_encode(['error' => 'Security Access Denied: Only admins can approve sales.']); exit;
             }
             // Block user, territory, model, settings manipulations
-            if (preg_match('/(INSERT INTO|UPDATE)\s+(users|territories|models|notices|links|app_settings)/i', $upperQuery)) {
+            if (preg_match('/(INSERT INTO|UPDATE)\s+(users|territories|models|notices|links|app_settings|dealers)/i', $upperQuery)) {
                 http_response_code(403); echo json_encode(['error' => 'Security Access Denied: Only admins can modify core system data.']); exit;
             }
         }

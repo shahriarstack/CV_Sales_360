@@ -6,12 +6,27 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                 localStorage.setItem('aci_last_role', app.currentUser.role);
                 
                 // Preserve existing date filters from DOM if not explicitly overridden
-                const domStart = document.getElementById('manual-start-date')?.value;
-                const domEnd = document.getElementById('manual-end-date')?.value;
+                let domStart = document.getElementById('manual-start-date')?.value;
+                let domEnd = document.getElementById('manual-end-date')?.value;
+                
+                // If no dates are set in DOM or passed, default to current month
+                if (!domStart && !domEnd && startDate === null && endDate === null) {
+                    const now = new Date();
+                    // Assuming current month is determined by current date
+                    const y = now.getFullYear();
+                    const m = String(now.getMonth() + 1).padStart(2, '0');
+                    const d = new Date(y, now.getMonth() + 1, 0).getDate(); // Last day of month
+                    domStart = `${y}-${m}-01`;
+                    domEnd = `${y}-${m}-${d}`;
+                }
+
                 const actualStart = startDate !== null ? startDate : (domStart || null);
                 const actualEnd = endDate !== null ? endDate : (domEnd || null);
                 
-                let summarySales = DB.sales.filter(s => s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_')) || (s.sales_month === 'August' && (s.sales_year == 2026 || s.fy === app.currentFY)));
+                // Combine current and historical manual sales for the tracker
+                const allManualSales = [...DB.sales, ...(DB.historical_manual_sales || [])];
+                let summarySales = allManualSales.filter(s => s.is_manual || s.is_carried_forward || (s.id && typeof s.id === 'string' && s.id.startsWith('s_man_')));
+                
                 if ((actualStart && actualStart !== "") || (actualEnd && actualEnd !== "")) {
                     const startMs = actualStart ? new Date(actualStart + 'T00:00:00').getTime() : 0;
                     const endMs = actualEnd ? new Date(actualEnd + 'T23:59:59.999').getTime() : Infinity;
@@ -34,7 +49,7 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                         if (s.sales_month) {
                             const mIdx = monthNames.indexOf(s.sales_month);
                             if (mIdx !== -1) {
-                                const yr = Number(s.sales_year) || 2026;
+                                const yr = Number(s.sales_year) || new Date().getFullYear();
                                 const mStartMs = new Date(yr, mIdx, 1, 0, 0, 0).getTime();
                                 const mEndMs = new Date(yr, mIdx + 1, 0, 23, 59, 59, 999).getTime();
                                 return mStartMs <= endMs && mEndMs >= startMs;
@@ -99,9 +114,9 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                 <div class="flex items-center gap-2 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200/80 shadow-xs hover:border-indigo-400 transition-all">
                                     <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
                                     <div class="flex items-center gap-1 text-[11px]">
-                                        <input type="date" id="manual-start-date" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="Start Date">
+                                        <input type="date" id="manual-start-date" value="${actualStart || ''}" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="Start Date">
                                         <span class="text-slate-300 font-bold">-</span>
-                                        <input type="date" id="manual-end-date" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="End Date">
+                                        <input type="date" id="manual-end-date" value="${actualEnd || ''}" onchange="app.filterManualDeliveriesByDate()" class="focus:outline-none text-slate-700 bg-transparent cursor-pointer font-semibold" title="End Date">
                                     </div>
                                 </div>
                                 
@@ -197,6 +212,7 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                     <tr>
                                         <th class="px-3 py-1.5 font-bold text-center w-12">S/N</th>
                                         <th class="px-4 py-1.5 font-bold">Territory & Area</th>
+                                        <th class="px-4 py-1.5 font-bold">Dealer Name</th>
                                         <th class="px-4 py-1.5 font-bold">Customer Details</th>
                                         <th class="px-4 py-1.5 font-bold">Product Info</th>
                                         <th class="px-4 py-1.5 font-bold text-right">Financials (BDT)</th>
@@ -208,6 +224,7 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                     <tr class="bg-slate-50/80">
                                         <th class="px-3 py-1 border-b border-slate-200 text-center"><span class="text-[8px] text-slate-400 font-normal">#</span></th>
                                         <th class="px-4 py-1 border-b border-slate-200"><input type="text" id="manual-filter-area" onkeyup="app.manualAreaFilter=this.value; app.filterTableGroup(this)" value="${app.manualAreaFilter || ''}" placeholder="Filter Area..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
+                                        <th class="px-4 py-1 border-b border-slate-200 text-center"><span class="text-[9px] text-slate-400 font-normal">Assign Dealer</span></th>
                                         <th class="px-4 py-1 border-b border-slate-200"><input type="text" id="manual-filter-customer" onkeyup="app.manualCustomerFilter=this.value; app.filterTableGroup(this)" value="${app.manualCustomerFilter || ''}" placeholder="Filter Customer..." class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner placeholder-slate-300 transition-all"></th>
                                         <th class="px-4 py-1 border-b border-slate-200">
                                             <select id="manual-filter-brand" onchange="app.manualBrandFilter=this.value; app.filterTableGroup(this)" class="w-full text-[10px] px-2 py-1 rounded border border-slate-200 focus:outline-none focus:border-aci-blue focus:ring-1 focus:ring-aci-blue bg-white font-normal shadow-inner text-slate-600 transition-all cursor-pointer">
@@ -232,6 +249,15 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                 <tbody class="divide-y divide-slate-100">
                                     ${manualSales.map((s, idx) => {
                     const terrName = DB.territories.find(t => t.id === s.territory_id)?.name || 'Unknown';
+                    const terrDealers = (DB.dealers || []).filter(d => d.territory_id === s.territory_id);
+                    let dCode = s.dealer_code || '';
+                    let isAutoSuggested = false;
+                    
+                    if (!dCode && terrDealers.length === 1) {
+                        dCode = terrDealers[0].code;
+                        isAutoSuggested = true;
+                    }
+
                     return `
                                         <tr class="hover:bg-slate-50 transition-colors group">
                                             <td class="px-3 py-1.5 border-b border-slate-100 text-center font-bold text-slate-400">
@@ -245,6 +271,14 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                                     <i data-lucide="map-pin" class="w-2.5 h-2.5 text-slate-400"></i>
                                                     ${s.upazila || 'N/A'} ${s.district ? `(${s.district})` : ''}
                                                 </div>
+                                            </td>
+                                            <td class="px-4 py-1.5 border-b border-slate-100">
+                                                <select onchange="app.updateManualDealerInline('${s.id}', this.value)" class="w-[140px] text-[10px] px-2 py-1 rounded-md border ${isAutoSuggested ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-slate-200 bg-white text-slate-700'} focus:outline-none focus:border-blue-500 font-semibold transition-colors cursor-pointer" title="Change Dealer">
+                                                    <option value="">-- Unassigned --</option>
+                                                    ${terrDealers.map(d => `<option value="${d.code}" ${d.code === dCode ? 'selected' : ''}>${d.name}</option>`).join('')}
+                                                </select>
+                                                ${isAutoSuggested ? '<div class="text-[8px] text-amber-600 font-bold mt-1"><i class="fas fa-magic mr-1"></i>Auto-Suggested</div>' : ''}
+                                                ${terrDealers.length === 0 ? '<div class="text-[8px] text-rose-500 font-bold mt-1"><i class="fas fa-exclamation-circle mr-1"></i>No dealers found</div>' : ''}
                                             </td>
                                             <td class="px-4 py-1.5 border-b border-slate-100">
                                                 <div class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]" title="${s.customer_name || 'N/A'}">${s.customer_name || 'N/A'}</div>
@@ -380,7 +414,7 @@ window.app.clearManualDeliveries = async () => {
                 if (confirm('Are you sure you want to clear all manual deliveries? This will delete all pending and approved manual entries from the database.')) {
                     if (app.neonSQL) {
                         try {
-                            await app.neonSQL`DELETE FROM sales WHERE is_manual = 1`;
+                            await app.neonSQL`DELETE FROM manual_deliveries`;
                         } catch (err) {
                             console.error("Failed to clear manual deliveries from database", err);
                             app.showToast('Database delete failed', 'error');
@@ -388,6 +422,7 @@ window.app.clearManualDeliveries = async () => {
                         }
                     }
                     DB.sales = DB.sales.filter(s => !s.is_manual);
+                    DB.historical_manual_sales = [];
                     app.showToast('All manual deliveries cleared successfully for month-end!', 'success');
                     app.renderAdminManualDeliveries();
                 }
@@ -405,7 +440,7 @@ window.app.approveSelectedManualDeliveries = async () => {
                     if (app.neonSQL) {
                         try {
                             for (const id of ids) {
-                                await app.neonSQL`UPDATE sales SET approval_status = 'Done' WHERE id = ${id}`;
+                                await app.neonSQL`UPDATE manual_deliveries SET approval_status = 'Done' WHERE id = ${id}`;
                             }
                         } catch (err) {
                             console.error("Failed to approve manual deliveries in database", err);
@@ -460,7 +495,7 @@ window.app.approveManualDelivery = async (id) => {
                 if (idx > -1) {
                     if (app.neonSQL) {
                         try {
-                            await app.neonSQL`UPDATE sales SET approval_status = 'Done' WHERE id = ${id}`;
+                            await app.neonSQL`UPDATE manual_deliveries SET approval_status = 'Done' WHERE id = ${id}`;
                         } catch (err) {
                             console.error("Failed to approve manual delivery in database", err);
                             app.showToast('Database update failed', 'error');
@@ -629,10 +664,14 @@ window.app.executeBatchCF = async () => {
         targetYear = h2Months.includes(targetMonth) ? (y1 + 1) : y1;
     }
     
+    const monthMap = { "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06", "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12" };
+    const monthNum = monthMap[targetMonth];
+    const newTimestamp = `${targetYear}-${monthNum}-01 10:00:00`;
+    
     if (app.neonSQL) {
         try {
             const idListStr = ids.map(id => `'${id.replace(/'/g, "''")}'`).join(',');
-            await app.neonSQL([`UPDATE sales SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear} WHERE id IN (${idListStr})`]);
+            await app.neonSQL([`UPDATE manual_deliveries SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`]);
         } catch (err) {
             console.error("Failed to execute batch carry forward", err);
             app.showToast('Database update failed', 'error');
@@ -644,12 +683,20 @@ window.app.executeBatchCF = async () => {
     }
     
     ids.forEach(id => {
-        const idx = DB.sales.findIndex(s => s.id === id);
-        if (idx > -1) {
-            DB.sales[idx].is_carried_forward = true;
-            DB.sales[idx].sales_month = targetMonth;
-            DB.sales[idx].fy = activeFY;
-            DB.sales[idx].sales_year = targetYear;
+        let sObj = DB.sales.find(s => s.id === id);
+        if (!sObj && DB.historical_manual_sales) {
+            sObj = DB.historical_manual_sales.find(s => s.id === id);
+            if (sObj) {
+                DB.historical_manual_sales = DB.historical_manual_sales.filter(x => x.id !== id);
+                DB.sales.push(sObj);
+            }
+        }
+        if (sObj) {
+            sObj.is_carried_forward = true;
+            sObj.sales_month = targetMonth;
+            sObj.fy = activeFY;
+            sObj.sales_year = targetYear;
+            sObj.timestamp = newTimestamp;
         }
     });
     
@@ -663,12 +710,14 @@ window.app.deleteManualDelivery = async (id) => {
                     if (app.neonSQL) {
                         try {
                             await app.neonSQL`DELETE FROM manual_deliveries WHERE id = ${id}`;
-                            await app.neonSQL`DELETE FROM sales WHERE id = ${id}`;
                         } catch (err) {
                             console.error("Failed to delete manual delivery from database", err);
                         }
                     }
                     DB.sales = DB.sales.filter(s => s.id !== id);
+                    if (DB.historical_manual_sales) {
+                        DB.historical_manual_sales = DB.historical_manual_sales.filter(s => s.id !== id);
+                    }
                     app.showToast('Manual delivery deleted.', 'success');
                     app.renderAdminManualDeliveries();
                 }
@@ -767,11 +816,18 @@ window.app.editManualDeliveryModal = (id) => {
                                     </div>
                                     <div class="space-y-4">
                                         <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Financials, Offers & Comments</h3>
-                                        <div class="grid grid-cols-2 gap-3">
+                                        <div class="grid grid-cols-3 gap-3">
                                             <div>
                                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Territory</label>
-                                                <select id="em-territory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                <select id="em-territory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white" onchange="app.updateEditModalDealers(this.value, '${s.dealer_code || ''}')">
                                                     ${DB.territories.map(t => '<option value="' + t.id + '"' + (s.territory_id === t.id ? ' selected' : '') + '>' + t.name + '</option>').join('')}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Dealer Name</label>
+                                                <select id="em-dealer" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-blue-500 bg-white">
+                                                    <option value="">-- Unassigned --</option>
+                                                    ${(DB.dealers || []).filter(d => d.territory_id === s.territory_id).map(d => `<option value="${d.code}" ${s.dealer_code === d.code ? 'selected' : ''}>${d.name}</option>`).join('')}
                                                 </select>
                                             </div>
                                             <div>
@@ -868,6 +924,7 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                     s.fy = document.getElementById('em-fy').value;
                     s.sales_month = document.getElementById('em-sales-month').value;
                     s.admin_comments = document.getElementById('em-comments').value;
+                    s.dealer_code = document.getElementById('em-dealer')?.value || '';
                     
                     if (!s.financials) s.financials = {};
                     s.financials.tp = document.getElementById('em-tp').value;
@@ -880,8 +937,12 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                     
                     if (app.neonSQL) {
                         try {
-                            await app.neonSQL`UPDATE manual_deliveries SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
-                            await app.neonSQL`UPDATE sales SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            try {
+                                await app.neonSQL`UPDATE manual_deliveries SET dealer_code = ${s.dealer_code}, customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            } catch(e) {
+                                await app.neonSQL`UPDATE manual_deliveries SET customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
+                            }
+                            await app.neonSQL`UPDATE manual_deliveries SET dealer_code = ${s.dealer_code}, customer_id = ${s.customer_id}, customer_name = ${s.customer_name}, chassis_no = ${s.chassis_no}, brand = ${s.brand}, model = ${s.model}, unit_qty = ${s.unit_qty}, sale_type = ${s.sale_type}, purpose_of_use = ${s.purpose_of_use}, district = ${s.district}, upazila = ${s.upazila}, territory_id = ${s.territory_id}, fy = ${s.fy}, sales_month = ${s.sales_month}, admin_comments = ${s.admin_comments}, financials = ${JSON.stringify(s.financials)}, discounts = ${JSON.stringify(s.discounts)} WHERE id = ${id}`;
                         } catch (err) {
                             console.error("Failed to update manual delivery in database", err);
                         }
@@ -893,3 +954,48 @@ window.app.saveEditedManualDelivery = async (e, id) => {
                 }
             };
 
+window.app.updateEditModalDealers = (territoryId, currentDealerCode) => {
+    const dealerSelect = document.getElementById('em-dealer');
+    if (!dealerSelect) return;
+    
+    const terrDealers = (DB.dealers || []).filter(d => d.territory_id === territoryId);
+    let html = '<option value="">-- Unassigned --</option>';
+    terrDealers.forEach(d => {
+        html += `<option value="${d.code}" ${currentDealerCode === d.code ? 'selected' : ''}>${d.name}</option>`;
+    });
+    dealerSelect.innerHTML = html;
+};
+
+window.app.updateManualDealerInline = async (id, dealerCode) => {
+    try {
+        app.showToast('Updating dealer...', 'info');
+        
+        // Update local memory
+        const sale = DB.sales.find(s => s.id === id);
+        if (sale) sale.dealer_code = dealerCode;
+        
+        const manualSale = DB.manual_deliveries ? DB.manual_deliveries.find(s => s.id === id) : null;
+        if (manualSale) manualSale.dealer_code = dealerCode;
+        
+        // Update database
+        if (app.neonSQL) {
+            await app.neonSQL`UPDATE manual_deliveries SET dealer_code = ${dealerCode} WHERE id = ${id}`;
+            try {
+                await app.neonSQL`UPDATE manual_deliveries SET dealer_code = ${dealerCode} WHERE id = ${id}`;
+            } catch (e) {
+                // Ignore if manual_deliveries doesn't have dealer_code column yet
+            }
+        }
+        
+        app.showToast('Dealer assigned successfully.', 'success');
+        
+        // Update edit modal if it's open for this row
+        const emDealer = document.getElementById('em-dealer');
+        if (emDealer && document.getElementById('edit-manual-form')?.getAttribute('onsubmit')?.includes(id)) {
+            emDealer.value = dealerCode;
+        }
+    } catch (err) {
+        alert("Failed to assign dealer: " + err.message);
+        console.error(err);
+    }
+};

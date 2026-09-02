@@ -4399,3 +4399,266 @@ window.app.renderChartBrand = (f, m) => {
                 });
             };
 
+window.app.renderAdminDealers = () => {
+    try {
+        localStorage.setItem('aci_last_page', 'dealers');
+        
+        const currentFY = app.currentFY || '2024-25';
+        const dealers = DB.dealers || [];
+
+        const dealerData = dealers.map(d => {
+            const territory = DB.territories.find(t => t.id === d.territory_id);
+            const terrName = territory ? territory.name : d.territory_id;
+            
+            const dealerSales = DB.sales.filter(s => {
+                let sCode = s.dealer_code;
+                if (!sCode && s.territory_id) {
+                    const terrDealers = dealers.filter(dl => dl.territory_id === s.territory_id);
+                    if (terrDealers.length === 1) sCode = terrDealers[0].code;
+                }
+                return sCode === d.code; // Include pending and unapproved sales to ensure visibility
+            });
+            const currentMonthSales = dealerSales.filter(s => 
+                (s.sales_month || '').trim().toLowerCase() === (app.currentMonth || '').trim().toLowerCase() && 
+                (s.fy || '').trim() === (currentFY || '').trim()
+            );
+            
+            let brandsData = {};
+            let totalSales = 0;
+            
+            currentMonthSales.forEach(s => {
+                const b = (s.brand || 'Unknown').trim();
+                const type = s.sale_type || 'New Sale';
+                const qty = Number(s.unit_qty || 0);
+                
+                let brandKey = 'Other';
+                if (b.toLowerCase() === 'foton') brandKey = 'Foton';
+                else if (b.toLowerCase() === 'mahindra') brandKey = 'Mahindra';
+                
+                if (!brandsData[brandKey]) brandsData[brandKey] = { newSale: 0, resale: 0, total: 0 };
+                
+                if (type.toLowerCase().includes('resale')) {
+                    brandsData[brandKey].resale += qty;
+                } else {
+                    brandsData[brandKey].newSale += qty;
+                }
+                brandsData[brandKey].total += qty;
+                totalSales += qty;
+            });
+            
+            return { ...d, terrName, brandsData, totalSales };
+        }).sort((a, b) => b.totalSales - a.totalSales); // Top to bottom
+        window.currentDealerData = dealerData;
+
+        const html = `
+            <div class="w-full fade-in pb-12">
+                <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="h-6 w-1.5 bg-gradient-to-b from-blue-600 via-indigo-500 to-purple-600 rounded-full shadow-sm"></div>
+                            <h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 tracking-tight">Dealer Performance</h1>
+                        </div>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mt-1">Current Month (${app.currentMonth} ${currentFY})</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 bg-slate-50/80 p-1.5 rounded-lg border border-slate-200/60 shadow-sm backdrop-blur-sm">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-[10px]"></i>
+                            <input type="text" id="dp-filter" onkeyup="app.filterDealerPerformance(this.value)" placeholder="Search dealer..." class="pl-8 pr-3 py-1.5 w-48 sm:w-64 text-[11px] bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-semibold text-slate-700 placeholder-slate-400 shadow-inner">
+                        </div>
+                        <button onclick="app.downloadDealerPerformancePDF()" class="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-[11px] font-bold rounded shadow hover:shadow-md transition-all">
+                            <i class="fas fa-file-pdf"></i> <span class="hidden sm:inline">Export PDF</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="dp-capture-area" class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden relative print:shadow-none print:border-slate-300">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 opacity-80 z-20 print:hidden"></div>
+                    <div class="overflow-x-auto overflow-y-auto max-h-[70vh] custom-scrollbar" id="dp-scroll-area">
+                        <table class="w-full text-center text-[10px] whitespace-nowrap leading-tight border-collapse" id="dp-table">
+                            <thead class="bg-slate-900 text-slate-300 uppercase text-[8px] tracking-widest font-black sticky top-0 z-10 shadow-md print:bg-slate-50 print:text-slate-600 print:shadow-none">
+                            <tr>
+                                <th rowspan="2" class="px-1 py-1.5 w-6 align-middle border-r border-slate-700/50">#</th>
+                                <th rowspan="2" class="px-3 py-1.5 align-middle text-left border-r border-slate-700/50">Dealer Name (Territory)</th>
+                                <th colspan="2" class="px-1 py-1 border-b border-r border-slate-700/50 bg-blue-900/40 text-blue-200">New Sales</th>
+                                <th colspan="2" class="px-1 py-1 border-b border-r border-slate-700/50 bg-purple-900/40 text-purple-200">Resale</th>
+                                <th rowspan="2" class="px-3 py-1.5 align-middle text-right text-emerald-300 bg-emerald-900/40">Total</th>
+                            </tr>
+                            <tr>
+                                <th class="px-1 py-1 border-r border-slate-700/50 bg-blue-900/20 text-slate-400 w-12">Foton</th>
+                                <th class="px-1 py-1 border-r border-slate-700/50 bg-blue-900/20 text-slate-400 w-12">Mahindra</th>
+                                <th class="px-1 py-1 border-r border-slate-700/50 bg-purple-900/20 text-slate-400 w-12">Foton</th>
+                                <th class="px-1 py-1 border-r border-slate-700/50 bg-purple-900/20 text-slate-400 w-12">Mahindra</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${dealerData.length > 0 ? dealerData.map((d, i) => {
+                                const fNew = d.brandsData['Foton']?.newSale || 0;
+                                const mNew = d.brandsData['Mahindra']?.newSale || 0;
+                                const fResale = d.brandsData['Foton']?.resale || 0;
+                                const mResale = d.brandsData['Mahindra']?.resale || 0;
+                                
+                                return `
+                                <tr class="hover:bg-slate-50/80 transition-colors ${d.totalSales > 0 ? '' : 'opacity-60'} print:opacity-100">
+                                    <td class="px-1 py-0.5 text-center border-r border-slate-50 text-[9px]">
+                                        ${i < 3 && d.totalSales > 0 ? 
+                                            `<div class="inline-flex items-center justify-center w-4 h-4 rounded-full ${i===0?'bg-amber-100 text-amber-700':i===1?'bg-slate-200 text-slate-600':'bg-orange-100 text-orange-700'} font-black text-[8px] shadow-sm">${i + 1}</div>` 
+                                            : `<span class="font-bold text-slate-400">${i + 1}</span>`
+                                        }
+                                    </td>
+                                    <td class="px-2 py-0.5 text-left border-r border-slate-50">
+                                        <div class="font-bold text-slate-800 text-[10px] truncate max-w-[280px]" title="${d.name} (${d.terrName})">
+                                            ${d.name} <span class="text-[8px] text-slate-400 font-normal ml-1">(${d.terrName})</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-1 py-0.5 border-r border-slate-50 font-bold ${fNew > 0 ? 'text-blue-700 bg-blue-50/10' : 'text-slate-300'}">${fNew > 0 ? fNew : '-'}</td>
+                                    <td class="px-1 py-0.5 border-r border-slate-50 font-bold ${mNew > 0 ? 'text-blue-700 bg-blue-50/10' : 'text-slate-300'}">${mNew > 0 ? mNew : '-'}</td>
+                                    <td class="px-1 py-0.5 border-r border-slate-50 font-bold ${fResale > 0 ? 'text-purple-700 bg-purple-50/10' : 'text-slate-300'}">${fResale > 0 ? fResale : '-'}</td>
+                                    <td class="px-1 py-0.5 border-r border-slate-50 font-bold ${mResale > 0 ? 'text-purple-700 bg-purple-50/10' : 'text-slate-300'}">${mResale > 0 ? mResale : '-'}</td>
+                                    <td class="px-2 py-0.5 text-right bg-emerald-50/10">
+                                        ${d.totalSales > 0 ? `
+                                            <div class="font-black text-[11px] text-emerald-700">
+                                                ${d.totalSales}
+                                            </div>
+                                        ` : `<span class="text-slate-300 font-bold">-</span>`}
+                                    </td>
+                                </tr>
+                                `;
+                            }).join('') : `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 font-semibold">No dealer performance data found.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('view-port').innerHTML = html;
+        app.refreshIcons();
+    } catch (err) {
+        alert("Error loading Dealer Performance: " + err.message + "\n\n" + err.stack);
+        console.error(err);
+    }
+};
+
+
+window.app.filterDealerPerformance = (val) => {
+    const q = val.toLowerCase();
+    const rows = document.querySelectorAll('#dp-table tbody tr');
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        if (text.includes(q)) {
+            r.style.display = '';
+        } else {
+            r.style.display = 'none';
+        }
+    });
+};
+
+
+
+window.app.downloadDealerPerformancePDF = async () => {
+    try {
+        app.showToast('Preparing PDF layout...', 'info');
+        
+        if (typeof html2pdf === 'undefined') {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        const dealerData = window.currentDealerData || [];
+        if (dealerData.length === 0) {
+            app.showToast('No dealer data available to export.', 'error');
+            return;
+        }
+
+        const mid = Math.ceil(dealerData.length / 2);
+        const leftHalf = dealerData.slice(0, mid);
+        const rightHalf = dealerData.slice(mid);
+
+        const buildTable = (data, startIdx) => {
+            return `
+            <table style="width:100%; text-align:center; font-size:7px; border-collapse:collapse; white-space:nowrap;">
+                <thead style="background-color:#f8fafc; font-weight:bold; font-size:6px; text-transform:uppercase; color:#475569;">
+                    <tr>
+                        <th rowspan="2" style="border:1px solid #e2e8f0; padding:2px; width:15px;">#</th>
+                        <th rowspan="2" style="border:1px solid #e2e8f0; padding:2px; text-align:left;">Dealer Name (Territory)</th>
+                        <th colspan="2" style="border:1px solid #e2e8f0; padding:2px; background-color:#eff6ff; color:#1e40af;">New Sales</th>
+                        <th colspan="2" style="border:1px solid #e2e8f0; padding:2px; background-color:#faf5ff; color:#6b21a8;">Resale</th>
+                        <th rowspan="2" style="border:1px solid #e2e8f0; padding:2px; background-color:#ecfdf5; color:#065f46;">Total</th>
+                    </tr>
+                    <tr>
+                        <th style="border:1px solid #e2e8f0; padding:2px; background-color:#eff6ff;">Foton</th>
+                        <th style="border:1px solid #e2e8f0; padding:2px; background-color:#eff6ff;">Mahindra</th>
+                        <th style="border:1px solid #e2e8f0; padding:2px; background-color:#faf5ff;">Foton</th>
+                        <th style="border:1px solid #e2e8f0; padding:2px; background-color:#faf5ff;">Mahindra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map((d, i) => {
+                        const idx = startIdx + i + 1;
+                        const fNew = d.brandsData['Foton']?.newSale || 0;
+                        const mNew = d.brandsData['Mahindra']?.newSale || 0;
+                        const fResale = d.brandsData['Foton']?.resale || 0;
+                        const mResale = d.brandsData['Mahindra']?.resale || 0;
+                        return `
+                        <tr style="${d.totalSales === 0 ? 'opacity:0.6;' : ''}">
+                            <td style="border:1px solid #f1f5f9; padding:2px;">${idx}</td>
+                            <td style="border:1px solid #f1f5f9; padding:2px; text-align:left; font-weight:bold; max-width:120px; overflow:hidden; text-overflow:ellipsis;">
+                                ${d.name} <span style="font-weight:normal; color:#64748b; font-size:5px;">(${d.terrName})</span>
+                            </td>
+                            <td style="border:1px solid #f1f5f9; padding:2px; font-weight:bold; color:${fNew>0?'#1d4ed8':'#cbd5e1'};">${fNew>0?fNew:'-'}</td>
+                            <td style="border:1px solid #f1f5f9; padding:2px; font-weight:bold; color:${mNew>0?'#1d4ed8':'#cbd5e1'};">${mNew>0?mNew:'-'}</td>
+                            <td style="border:1px solid #f1f5f9; padding:2px; font-weight:bold; color:${fResale>0?'#7e22ce':'#cbd5e1'};">${fResale>0?fResale:'-'}</td>
+                            <td style="border:1px solid #f1f5f9; padding:2px; font-weight:bold; color:${mResale>0?'#7e22ce':'#cbd5e1'};">${mResale>0?mResale:'-'}</td>
+                            <td style="border:1px solid #f1f5f9; padding:2px; font-weight:bold; color:${d.totalSales>0?'#047857':'#cbd5e1'}; background-color:#f0fdf4;">${d.totalSales>0?d.totalSales:'-'}</td>
+                        </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+            `;
+        };
+
+        const container = document.createElement('div');
+        container.style.width = '1122px';
+        container.style.padding = '20px';
+        container.style.backgroundColor = '#ffffff';
+        container.style.fontFamily = 'Arial, sans-serif';
+        
+        container.innerHTML = `
+            <div style="text-align:center; margin-bottom:15px;">
+                <h2 style="margin:0; color:#0f172a; font-size:18px; font-weight:900;">Dealer Performance Report</h2>
+                <p style="margin:4px 0 0; color:#64748b; font-size:10px; font-weight:bold; text-transform:uppercase;">
+                    ${app.currentMonth} ${app.currentFY} &bull; Generated ${new Date().toLocaleString()}
+                </p>
+            </div>
+            <div style="display:flex; gap:20px; align-items:flex-start;">
+                <div style="flex:1;">
+                    ${buildTable(leftHalf, 0)}
+                </div>
+                <div style="flex:1;">
+                    ${buildTable(rightHalf, mid)}
+                </div>
+            </div>
+        `;
+
+        const opt = {
+            margin:       0.2,
+            filename:     `Dealer_Performance_${app.currentMonth}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+
+        await html2pdf().set(opt).from(container).save();
+        app.showToast('PDF exported successfully!', 'success');
+        
+    } catch (err) {
+        alert('Failed to generate PDF: ' + err.message);
+        console.error(err);
+    }
+};

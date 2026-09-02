@@ -106,7 +106,7 @@ window.app.renderSODashboard = () => {
                 });
 
                 // Successful manual deliveries logged by this MO (always visible, not filtered by active brand/type tabs)
-                const myManualDeliveries = DB.sales
+                const myManualDeliveries = [...DB.sales, ...(DB.historical_manual_sales || [])]
                     .filter(s => s.territory_id === terrId && s.is_manual)
                     .sort((a, b) => {
                         const tA = Number(a.id.replace('s_man_', '')) || 0;
@@ -1033,6 +1033,15 @@ window.app.showAddDeliveryModal = () => {
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-aci-blue/70">Vehicle Chassis Number</label>
                                 <input type="text" id="del-chassis" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-aci-blue bg-slate-50/50" required placeholder="Enter Chassis Number (e.g. 17 characters)">
                             </div>
+                            
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 text-emerald-600/70">Dealer / Showroom Name</label>
+                                <select id="del-dealer-code" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-emerald-400 bg-slate-50/50 appearance-none" required>
+                                    <option value="">Select Dealer...</option>
+                                    ${(DB.dealers || []).filter(d => app.currentUser.territories.includes(d.territory_id)).map(d => `<option value="${d.code}">${d.name} (${d.code})</option>`).join('')}
+                                    <option value="direct_sales">Direct Sales / No Dealer</option>
+                                </select>
+                            </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
@@ -1364,6 +1373,7 @@ window.app.saveManualDelivery = (e) => {
                 }
                 const customerName = document.getElementById('del-customer-name').value;
                 const customerCode = document.getElementById('del-customer-code').value;
+                const dealerCode = document.getElementById('del-dealer-code').value;
                 const chassisNo = document.getElementById('del-chassis').value;
                 const purpose = document.getElementById('del-purpose')?.value || '';
                 const oldCustomerId = document.getElementById('del-old-customer-id')?.value || '';
@@ -1439,6 +1449,7 @@ window.app.saveManualDelivery = (e) => {
                         is_manual: true,
                         approval_status: 'Pending Approval',
                         admin_comments: '',
+                        dealer_code: dealerCode,
                         timestamp: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     };
 
