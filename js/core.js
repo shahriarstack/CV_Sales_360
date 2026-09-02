@@ -1,4 +1,3 @@
-// --- Sales360 Module: core.js ---
 window.app = window.app || {};
 
 window.app.downloadRawCSV = () => {
@@ -188,7 +187,7 @@ window.app.initNeonDB = async () => {
                     console.log("Connecting to cPanel MySQL database via api.php...");
                     
                     // Check authentication state to determine loading strategy
-                    let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [];
+                    let targets = [], projections = [], emi = [], sales = [], recovery_od = [], users = [], territories = [], models = [], notices = [], links = [], tiv_brands = [], app_settings = [], tiv_submissions = [], dealers = [];
 
                     if (app.currentUser) {
                         // Load all data tables sequentially for authenticated users to prevent "Too many connections" database error
@@ -205,6 +204,15 @@ window.app.initNeonDB = async () => {
                         tiv_brands = await app.neonSQL`SELECT * FROM tiv_brands`;
                         app_settings = await app.neonSQL`SELECT * FROM app_settings`;
                         tiv_submissions = await app.neonSQL`SELECT * FROM tiv_submissions`;
+                        
+                        try {
+                            dealers = await app.neonSQL`SELECT * FROM dealers`;
+                        } catch (e) {
+                            try {
+                                await app.neonSQL`CREATE TABLE IF NOT EXISTS dealers (id VARCHAR(255) PRIMARY KEY, name VARCHAR(255), code VARCHAR(255), territory_id VARCHAR(255))`;
+                                dealers = [];
+                            } catch (err) {}
+                        }
                     } else {
                         // Pre-authentication: Only load sanitized users and territories for login dropdown
                         users = await app.neonSQL`SELECT * FROM users`;
@@ -250,6 +258,7 @@ window.app.initNeonDB = async () => {
                     DB.targets = targets;
                     DB.projections = projections;
                     DB.emi = emi;
+                    DB.dealers = dealers || [];
                     DB.sales = sales.map(s => {
                         return {
                             ...s,
@@ -278,6 +287,42 @@ window.app.initNeonDB = async () => {
                             }
                         });
                     }
+                    
+                    // Force sales_month to currentMonth for carried-forward entries so they perfectly count in all metrics
+                    DB.sales.forEach(s => {
+                        if (s.is_manual && s.is_carried_forward) {
+                            s.sales_month = app.currentMonth;
+                            s.fy = app.currentFY;
+                            
+                            const targetYear = new Date().getFullYear();
+                            const monthMap = { "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06", "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12" };
+                            const monthNum = monthMap[app.currentMonth] || "01";
+                            s.timestamp = `${targetYear}-${monthNum}-01 10:00:00`;
+                        }
+                    });
+
+                    // Extract past manual deliveries so they don't impact any performance reports
+                    DB.historical_manual_sales = DB.sales.filter(s => s.is_manual && !s.is_carried_forward && s.sales_month !== app.currentMonth);
+                    DB.sales = DB.sales.filter(s => !s.is_manual || s.is_carried_forward || s.sales_month === app.currentMonth);
+
+                    // ONE-TIME DB PATCH: Permanently fix timestamps for previously carried-forward entries in the database
+                    if (app.currentUser && app.currentUser.role === 'admin' && !localStorage.getItem('aci_cf_timestamp_db_fixed_v2')) {
+                        try {
+                            const targetYear = new Date().getFullYear();
+                            const monthMap = { "January": "01", "February": "02", "March": "03", "April": "04", "May": "05", "June": "06", "July": "07", "August": "08", "September": "09", "October": "10", "November": "11", "December": "12" };
+                            const monthNum = monthMap[app.currentMonth] || "01";
+                            const newTimestamp = `${targetYear}-${monthNum}-01 10:00:00`;
+                            
+                            app.neonSQL([
+                                `UPDATE sales SET timestamp = '${newTimestamp}' WHERE is_carried_forward = 1 AND timestamp NOT LIKE '%${targetYear}-${monthNum}-01%'`,
+                                `UPDATE manual_deliveries SET timestamp = '${newTimestamp}' WHERE is_carried_forward = 1 AND timestamp NOT LIKE '%${targetYear}-${monthNum}-01%'`
+                            ]).then(() => {
+                                localStorage.setItem('aci_cf_timestamp_db_fixed_v2', 'true');
+                                console.log('Database timestamps patched successfully.');
+                            }).catch(e => console.error(e));
+                        } catch(e) {}
+                    }
+
                     DB.recovery_od = recovery_od;
                     
                     // Parse JSON fields where necessary
@@ -969,6 +1014,7 @@ window.app.setupSidebar = () => {
                         renderSidebarBtn('dashboard', 'Dashboard', 'pie-chart', 'text-aci-gold', 'app.renderAdminDashboard()'),
                         renderSidebarBtn('map', 'Upazila Sales Map', 'map', 'text-emerald-400', 'app.renderAdminSalesMap()'),
                         renderSidebarBtn('emi', 'EMI Analytics', 'banknote', 'text-slate-400', 'app.renderAdminEMI()'),
+                        renderSidebarBtn('dealers', 'Dealer Performance', 'users', 'text-teal-400', 'app.renderAdminDealers()'),
                         renderSidebarBtn('manual', 'Manual Deliveries', 'clipboard-list', 'text-indigo-400', 'app.renderAdminManualDeliveries()'),
                         renderSidebarBtn('tiv', 'TIV Management', 'bar-chart', 'text-amber-400', 'app.renderTIVManagement()'),
                         renderSidebarBtn('ai', 'AI Insights & Analytics', 'brain-circuit', 'text-purple-400', 'app.renderAdminAIInsights()'),

@@ -671,7 +671,10 @@ window.app.executeBatchCF = async () => {
     if (app.neonSQL) {
         try {
             const idListStr = ids.map(id => `'${id.replace(/'/g, "''")}'`).join(',');
-            await app.neonSQL([`UPDATE manual_deliveries SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`]);
+            await app.neonSQL([
+                `UPDATE sales SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`,
+                `UPDATE manual_deliveries SET is_carried_forward = 1, sales_month = '${targetMonth.replace(/'/g, "''")}', fy = '${activeFY.replace(/'/g, "''")}', sales_year = ${targetYear}, timestamp = '${newTimestamp}' WHERE id IN (${idListStr})`
+            ]);
         } catch (err) {
             console.error("Failed to execute batch carry forward", err);
             app.showToast('Database update failed', 'error');
