@@ -18,96 +18,167 @@ window.app.downloadRawCSV = () => {
             };
 
 window.app.downloadPulseCSV = () => {
-                const brandFilter = app.adminBrandTab || 'Foton';
-                const currentSaleType = app.adminSaleTypeTab || 'New Sale';
-                const currentFY = app.selectedFY || app.currentFY || '2025-26';
-                const concludingFY = app.getPreviousFY(app.currentFY);
-                const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : app.currentFY;
-                const activeFY = app.selectedFY || defaultFY;
-                const performanceMonth = app.performanceFilterMonth || app.currentMonth;
-                
-                const isAM = app.currentUser.role === 'am';
-                const baseTerritories = isAM ? DB.territories.filter(t => app.currentUser.territories.includes(t.id)) : DB.territories;
-                
-                let pulseTerritories = [...baseTerritories];
-                if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
-                    pulseTerritories = pulseTerritories.filter(t => t.id === app.adminTerritoryFilter);
-                }
-                if (app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0) {
-                    pulseTerritories = pulseTerritories.filter(t => app.pulseFilterTerritories.includes(t.id));
-                }
+    const brandFilter = app.adminBrandTab || 'Foton';
+    const currentSaleType = app.adminSaleTypeTab || 'New Sale';
+    const currentFY = app.selectedFY || app.currentFY || '2025-26';
+    const concludingFY = app.getPreviousFY(app.currentFY);
+    const defaultFY = (app.currentMonth === 'July' && app.fyReviewActive) ? concludingFY : app.currentFY;
+    const activeFY = app.selectedFY || defaultFY;
+    const performanceMonth = app.performanceFilterMonth || app.currentMonth;
+    
+    const isAM = app.currentUser.role === 'am';
+    const baseTerritories = isAM ? DB.territories.filter(t => app.currentUser.territories.includes(t.id)) : DB.territories;
+    
+    let pulseTerritories = [...baseTerritories];
+    if (app.adminTerritoryFilter && app.adminTerritoryFilter !== 'All') {
+        pulseTerritories = pulseTerritories.filter(t => t.id === app.adminTerritoryFilter);
+    }
+    if (app.pulseFilterTerritories && app.pulseFilterTerritories.length > 0) {
+        pulseTerritories = pulseTerritories.filter(t => app.pulseFilterTerritories.includes(t.id));
+    }
 
-                const mapped = pulseTerritories.map(t => {
-                    const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
-                    const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === activeFY);
-                    const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+    if (pulseTerritories.length === 0) {
+        return app.showToast('No pulse data available to download.', 'error');
+    }
 
-                    const currBudgetTgts = tTargets.filter(tg => tg.month === performanceMonth);
-                    const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
+    const ach = (s, b) => b > 0 ? Math.round((s / b) * 100) : 0;
+    const calcGrw = (s, sp) => sp > 0 ? Math.round(((s - sp) / sp) * 100) : (s > 0 ? 100 : 0);
 
-                    const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === performanceMonth && p.sale_type === currentSaleType);
-                    const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
+    let csv = '';
 
-                    const currSalesRecords = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth && s.fy === activeFY && s.sale_type === currentSaleType);
-                    const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+    if (app.pulseDetailedView) {
+        const fiscalMonths = ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June'];
+        const quarters = {
+            Q1: ['July', 'August', 'September'],
+            Q2: ['October', 'November', 'December'],
+            Q3: ['January', 'February', 'March'],
+            Q4: ['April', 'May', 'June']
+        };
+        const lastFY = app.getPreviousFY(activeFY);
+        const currFYSales = DB.sales.filter(s => s.fy === activeFY);
+        const lastFYSales = DB.sales.filter(s => s.fy === lastFY);
 
-                    const ytdAchVal = perf.ytd.budget > 0 ? Math.round((perf.ytd.sales / perf.ytd.budget) * 100) : 0;
-                    const currAchVal = currBudget > 0 ? Math.round((currSalesUnits / currBudget) * 100) : 0;
-                    const lmAchVal = perf.lastMonth.budget > 0 ? Math.round((perf.lastMonth.sales / perf.lastMonth.budget) * 100) : 0;
+        // Build Headers
+        csv += 'Territory,Total FY Budget,';
+        Object.entries(quarters).forEach(([qName, qMonths]) => {
+            qMonths.forEach(m => {
+                csv += `${m} Budget,${m} Sales,${m} Ach%,${m} SPLY,${m} Gr%,`;
+            });
+            csv += `${qName} Total Budget,${qName} Total Sales,${qName} Total Ach%,${qName} Total SPLY,${qName} Total Gr%,`;
+        });
+        csv += 'FY Total Budget,FY Total Sales,FY Total Ach%,FY Total SPLY,FY Total Gr%\n';
 
-                    return {
-                        name: t.name,
-                        totalFYBudget,
-                        ytdBudget: perf.ytd.budget,
-                        ytdSales: perf.ytd.sales,
-                        ytdAch: ytdAchVal,
-                        lmBudget: perf.lastMonth.budget,
-                        lmSales: perf.lastMonth.sales,
-                        lmAch: lmAchVal,
-                        currBudget,
-                        currProj,
-                        currSalesUnits,
-                        currAch: currAchVal
-                    };
+        pulseTerritories.forEach(t => {
+            const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === activeFY);
+            const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
+
+            const monthlyPerf = {};
+            fiscalMonths.forEach(m => {
+                const monthTgts = tTargets.filter(tg => tg.month === m);
+                const mBudget = monthTgts.length > 0 ? monthTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(totalFYBudget / 12);
+                const mSales = currFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m && s.sale_type === currentSaleType).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                const mSply = lastFYSales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === m && s.sale_type === currentSaleType).reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+                monthlyPerf[m] = { budget: mBudget, sales: mSales, sply: mSply, ach: ach(mSales, mBudget), growth: calcGrw(mSales, mSply) };
+            });
+
+            const quarterPerf = {};
+            Object.entries(quarters).forEach(([qName, qMonths]) => {
+                const qBudget = qMonths.reduce((sum, m) => sum + monthlyPerf[m].budget, 0);
+                const qSales = qMonths.reduce((sum, m) => sum + monthlyPerf[m].sales, 0);
+                const qSply = qMonths.reduce((sum, m) => sum + monthlyPerf[m].sply, 0);
+                quarterPerf[qName] = { budget: qBudget, sales: qSales, sply: qSply, ach: ach(qSales, qBudget), growth: calcGrw(qSales, qSply) };
+            });
+
+            const fyBudget = Object.values(quarterPerf).reduce((sum, q) => sum + q.budget, 0);
+            const fySales = Object.values(quarterPerf).reduce((sum, q) => sum + q.sales, 0);
+            const fySply = Object.values(quarterPerf).reduce((sum, q) => sum + q.sply, 0);
+            const fyAch = ach(fySales, fyBudget);
+            const fyGrowth = calcGrw(fySales, fySply);
+
+            let rowStr = `"${t.name}",${totalFYBudget},`;
+            Object.entries(quarters).forEach(([qName, qMonths]) => {
+                qMonths.forEach(m => {
+                    const p = monthlyPerf[m];
+                    rowStr += `${p.budget},${p.sales},"${p.ach}%",${p.sply},"${p.growth}%",`;
                 });
+                const q = quarterPerf[qName];
+                rowStr += `${q.budget},${q.sales},"${q.ach}%",${q.sply},"${q.growth}%",`;
+            });
+            rowStr += `${fyBudget},${fySales},"${fyAch}%",${fySply},"${fyGrowth}%"\n`;
+            csv += rowStr;
+        });
 
-                if (mapped.length === 0) {
-                    return app.showToast('No pulse data available to download.', 'error');
-                }
+    } else {
+        // Basic pulse download
+        const mapped = pulseTerritories.map(t => {
+            const perf = app.getPerformance(t.id, brandFilter, currentSaleType);
+            const tTargets = DB.targets.filter(tg => tg.territory_id === t.id && tg.brand === brandFilter && tg.sale_type === currentSaleType && tg.fy === activeFY);
+            const totalFYBudget = tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0);
 
-                let csv = 'Territory,Brand,Sale Type,Total FY Budget,YTD Budget,YTD Actual,YTD Ach %,Last Month Budget,Last Month Actual,Last Month Ach %,Current Month Budget,Current Month Projection,Current Month Actual,Current Month Ach %\n';
+            const currBudgetTgts = tTargets.filter(tg => tg.month === performanceMonth);
+            const currBudget = currBudgetTgts.length > 0 ? currBudgetTgts.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) : Math.round(tTargets.reduce((sum, tg) => sum + Number(tg.target_qty || 0), 0) / 12);
 
-                mapped.forEach(row => {
-                    const csvRow = [
-                        `"${row.name}"`,
-                        `"${brandFilter}"`,
-                        `"${currentSaleType}"`,
-                        row.totalFYBudget,
-                        row.ytdBudget,
-                        row.ytdSales,
-                        `"${row.ytdAch}%"`,
-                        row.lmBudget,
-                        row.lmSales,
-                        `"${row.lmAch}%"`,
-                        row.currBudget,
-                        row.currProj,
-                        row.currSalesUnits,
-                        `"${row.currAch}%"`
-                    ];
-                    csv += csvRow.join(',') + '\n';
-                });
+            const tProjs = DB.projections.filter(p => p.territory_id === t.id && p.brand === brandFilter && p.month === performanceMonth && p.sale_type === currentSaleType);
+            const currProj = tProjs.reduce((sum, p) => sum + Number(p.projection_qty || 0), 0);
 
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.setAttribute('href', url);
-                link.setAttribute('download', `Territory_Pulse_${brandFilter}_${currentSaleType}_${performanceMonth}_${activeFY}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                app.showToast('Territory Pulse CSV downloaded successfully!', 'success');
+            const currSalesRecords = DB.sales.filter(s => s.territory_id === t.id && s.brand === brandFilter && s.sales_month === performanceMonth && s.fy === activeFY && s.sale_type === currentSaleType);
+            const currSalesUnits = currSalesRecords.reduce((sum, s) => sum + Number(s.unit_qty || 0), 0);
+
+            const ytdAchVal = perf.ytd.budget > 0 ? Math.round((perf.ytd.sales / perf.ytd.budget) * 100) : 0;
+            const currAchVal = currBudget > 0 ? Math.round((currSalesUnits / currBudget) * 100) : 0;
+            const lmAchVal = perf.lastMonth.budget > 0 ? Math.round((perf.lastMonth.sales / perf.lastMonth.budget) * 100) : 0;
+
+            return {
+                name: t.name,
+                totalFYBudget,
+                ytdBudget: perf.ytd.budget,
+                ytdSales: perf.ytd.sales,
+                ytdAch: ytdAchVal,
+                lmBudget: perf.lastMonth.budget,
+                lmSales: perf.lastMonth.sales,
+                lmAch: lmAchVal,
+                currBudget,
+                currProj,
+                currSalesUnits,
+                currAch: currAchVal
             };
+        });
+
+        csv = 'Territory,Brand,Sale Type,Total FY Budget,YTD Budget,YTD Actual,YTD Ach %,Last Month Budget,Last Month Actual,Last Month Ach %,Current Month Budget,Current Month Projection,Current Month Actual,Current Month Ach %\n';
+
+        mapped.forEach(row => {
+            const csvRow = [
+                `"${row.name}"`,
+                `"${brandFilter}"`,
+                `"${currentSaleType}"`,
+                row.totalFYBudget,
+                row.ytdBudget,
+                row.ytdSales,
+                `"${row.ytdAch}%"`,
+                row.lmBudget,
+                row.lmSales,
+                `"${row.lmAch}%"`,
+                row.currBudget,
+                row.currProj,
+                row.currSalesUnits,
+                `"${row.currAch}%"`
+            ];
+            csv += csvRow.join(',') + '\n';
+        });
+    }
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    const fileName = app.pulseDetailedView ? `Territory_Pulse_Detailed_${brandFilter}_${currentSaleType}_${activeFY}.csv` : `Territory_Pulse_${brandFilter}_${currentSaleType}_${performanceMonth}_${activeFY}.csv`;
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    app.showToast(app.pulseDetailedView ? 'Territory Pulse Detailed CSV downloaded successfully!' : 'Territory Pulse CSV downloaded successfully!', 'success');
+};
 
 window.app.saveDBState = () => {
                 // Deprecated: All data is now persisted directly to Neon DB.
