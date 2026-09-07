@@ -36,26 +36,35 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                         // Carried forward entries should always be preserved
                         if (s.is_carried_forward) return true;
 
-                        // 1. Try parsing s.timestamp
+                        let matchesTime = false;
+                        let hasValidTime = false;
                         if (s.timestamp && s.timestamp !== 'Recent') {
                             const d = new Date(s.timestamp);
                             const t = d.getTime();
                             if (!isNaN(t)) {
-                                return t >= startMs && t <= endMs;
+                                hasValidTime = true;
+                                matchesTime = t >= startMs && t <= endMs;
                             }
                         }
 
-                        // 2. Fallback: match by sales_month & sales_year
+                        let matchesMonth = false;
+                        let hasValidMonth = false;
                         if (s.sales_month) {
                             const mIdx = monthNames.indexOf(s.sales_month);
                             if (mIdx !== -1) {
+                                hasValidMonth = true;
                                 const yr = Number(s.sales_year) || new Date().getFullYear();
                                 const mStartMs = new Date(yr, mIdx, 1, 0, 0, 0).getTime();
                                 const mEndMs = new Date(yr, mIdx + 1, 0, 23, 59, 59, 999).getTime();
-                                return mStartMs <= endMs && mEndMs >= startMs;
+                                matchesMonth = mStartMs <= endMs && mEndMs >= startMs;
                             }
                         }
 
+                        // If both are valid, match if either matches (so Aug 31 logs for Sep show in Sep)
+                        if (hasValidTime && hasValidMonth) return matchesTime || matchesMonth;
+                        if (hasValidTime) return matchesTime;
+                        if (hasValidMonth) return matchesMonth;
+                        
                         return true;
                     });
                 }
