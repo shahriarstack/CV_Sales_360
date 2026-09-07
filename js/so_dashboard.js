@@ -106,7 +106,7 @@ window.app.renderSODashboard = () => {
                 });
 
                 // Successful manual deliveries logged by this MO (always visible, not filtered by active brand/type tabs)
-                const myManualDeliveries = [...DB.sales, ...(DB.historical_manual_sales || [])]
+                const myManualDeliveries = [...DB.sales]
                     .filter(s => s.territory_id === terrId && s.is_manual)
                     .sort((a, b) => {
                         const tA = Number(a.id.replace('s_man_', '')) || 0;
