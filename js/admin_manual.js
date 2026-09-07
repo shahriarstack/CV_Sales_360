@@ -50,7 +50,8 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                         let matchesMonth = false;
                         let hasValidMonth = false;
                         if (s.sales_month) {
-                            const mIdx = monthNames.indexOf(s.sales_month);
+                            const cleanMonth = s.sales_month.toString().trim();
+                            const mIdx = monthNames.findIndex(m => m.toLowerCase() === cleanMonth.toLowerCase());
                             if (mIdx !== -1) {
                                 hasValidMonth = true;
                                 const yr = Number(s.sales_year) || new Date().getFullYear();
@@ -58,6 +59,15 @@ window.app.renderAdminManualDeliveries = (startDate = null, endDate = null) => {
                                 const mEndMs = new Date(yr, mIdx + 1, 0, 23, 59, 59, 999).getTime();
                                 matchesMonth = mStartMs <= endMs && mEndMs >= startMs;
                             }
+                        }
+
+                        // Also check if sales_month exactly matches app.currentMonth as a foolproof fallback
+                        // If it matches the current performance month, it should almost certainly be shown if it overlaps the date range
+                        // Actually, if it's the current performance month, let's just make matchesMonth = true to be absolutely safe
+                        const isCurrentMonth = s.sales_month && s.sales_month.toString().trim().toLowerCase() === (app.currentMonth || '').toLowerCase();
+                        if (isCurrentMonth) {
+                            hasValidMonth = true;
+                            matchesMonth = true;
                         }
 
                         // If both are valid, match if either matches (so Aug 31 logs for Sep show in Sep)
