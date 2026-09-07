@@ -497,9 +497,14 @@ window.app.renderAdminEMI = () => {
                                             </td>
                                             ${!isAM ? `
                                             <td class="px-6 py-1.5 text-right">
-                                                <button onclick="app.openEditAdminEMIModal('${e.id}')" class="text-slate-400 hover:text-aci-blue hover:scale-110 active:scale-95 transition-all p-1 rounded-lg inline-flex items-center justify-center bg-slate-50 border border-slate-100 hover:border-aci-blue/20 hover:bg-aci-blue/5 tooltip" title="Edit Customer Details">
-                                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                                                </button>
+                                                <div class="flex items-center justify-end gap-1">
+                                                    <button onclick="app.openEditAdminEMIModal('${e.id}')" class="text-slate-400 hover:text-aci-blue hover:scale-110 active:scale-95 transition-all p-1 rounded-lg inline-flex items-center justify-center bg-slate-50 border border-slate-100 hover:border-aci-blue/20 hover:bg-aci-blue/5 tooltip" title="Edit Customer Details">
+                                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                    <button onclick="app.deleteAdminEMI('${e.id}')" class="text-slate-400 hover:text-rose-500 hover:scale-110 active:scale-95 transition-all p-1 rounded-lg inline-flex items-center justify-center bg-slate-50 border border-slate-100 hover:border-rose-500/20 hover:bg-rose-500/5 tooltip" title="Delete Customer">
+                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                             ` : ''}
                                         </tr>
@@ -514,3 +519,22 @@ window.app.renderAdminEMI = () => {
                 app.refreshIcons();
             };
 
+
+
+window.app.deleteAdminEMI = async (id) => {
+    if (!confirm('Are you sure you want to delete this customer record? This action cannot be undone.')) return;
+    try {
+        app.showToast('Deleting customer...', 'info');
+        // Delete from Neon DB
+        await app.neonSQL`DELETE FROM emi WHERE id = ${id}`;
+        
+        // Remove from local cache
+        DB.emi = DB.emi.filter(e => e.id !== id);
+        
+        app.showToast('Customer deleted successfully.', 'success');
+        app.renderAdminEMI();
+    } catch (err) {
+        console.error('Delete EMI Error:', err);
+        app.showToast('Failed to delete customer.', 'error');
+    }
+};
